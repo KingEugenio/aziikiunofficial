@@ -1,0 +1,204 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  /* Montserrat is the site-wide font - body copy, headings, onboarding, and
+     UI chrome all route through these three theme tokens, so this is the
+     only place it needs to be set. JetBrains Mono is kept for --font-mono
+     since it serves a structural purpose (fixed-width aligned digits/codes)
+     that a non-monospace font can't replace. */
+  --font-sans: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-heading: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+
+  --color-brand-navy: #102A43;
+  --color-brand-teal: #006837;
+  --color-brand-amber: #F59E0B;
+
+  /* Onboarding flow design system (kept distinct from --color-brand-* above,
+     which are shades used by the rest of the dashboard). */
+  --color-onboard-teal: #1B5E7E;
+  --color-onboard-cream: #F8F5F0;
+  --color-onboard-green: #10B981;
+  --color-onboard-amber: #F59E0B;
+
+  --color-emerald-50: #e5f3ec;
+  --color-emerald-100: #cbe7da;
+  --color-emerald-200: #97cfb4;
+  --color-emerald-300: #64b78e;
+  --color-emerald-400: #319f68;
+  --color-emerald-500: #008745;
+  --color-emerald-600: #006837;
+  --color-emerald-700: #00502a;
+  --color-emerald-800: #00381d;
+  --color-emerald-900: #002010;
+  --color-emerald-950: #001008;
+
+  /* `animate-fade-in` is used across the app wherever a screen or panel
+     should ease in instead of popping into place. Registering it here (a
+     Tailwind v4 @theme animation token needs both this entry and the
+     matching @keyframes below) is what actually makes the class do
+     anything - every existing call site picks it up for free. */
+  --animate-fade-in: fade-in 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Map default headings and buttons to display font (Montserrat) */
+h1, h2, h3, h4, h5, h6, button, .font-display {
+  font-family: var(--font-display);
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #F8FAFC;
+  color: #1E293B;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+/* Visible keyboard focus on every interactive element. Text inputs already
+   got a focus cue from their own focus:border-* utility classes, but
+   buttons, links, and selects across the app had no explicit focus style
+   at all - a keyboard user tabbing through had no way to see where they
+   were. :focus-visible (not :focus) keeps this a keyboard-only affordance,
+   so it never adds an outline around a mouse click. */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #006837;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Premium Design System Token Classes */
+.soft-card {
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 4px 20px -2px rgba(148, 163, 184, 0.06), 0 2px 8px -1px rgba(148, 163, 184, 0.04);
+  border-radius: 16px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.soft-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -4px rgba(148, 163, 184, 0.12), 0 4px 12px -2px rgba(148, 163, 184, 0.06);
+}
+
+.premium-glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04);
+}
+
+.micro-press {
+  transition: transform 0.1s ease;
+}
+.micro-press:active {
+  transform: scale(0.97);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+/* Premium Skeleton Shimmer Animations */
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer-bg {
+  background: linear-gradient(
+    90deg,
+    rgba(226, 232, 240, 0.6) 25%,
+    rgba(241, 245, 249, 0.9) 37%,
+    rgba(226, 232, 240, 0.6) 50%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.8s infinite linear;
+}
+
+.skeleton-pulse {
+  background-color: rgba(226, 232, 240, 0.65);
+  animation: pulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Respect the OS-level "reduce motion" accessibility setting: the shimmer
+   sweep and pulse both stop animating and fall back to a plain static
+   tint. The skeleton shapes themselves stay (so the page-shape preview
+   this whole system exists for is still visible), only the motion goes
+   away, per prefers-reduced-motion best practice. */
+@media (prefers-reduced-motion: reduce) {
+  .shimmer-bg,
+  .skeleton-pulse {
+    animation: none;
+    background: rgba(226, 232, 240, 0.6);
+  }
+}
+
+/* Isolated document printing: window.print() by default prints the entire
+   page (sidebar, nav, buttons, everything visible in the viewport) since
+   there's nothing telling the browser otherwise. This scopes printing to
+   ONLY #mockup-document-view (the actual invoice/receipt/estimate preview
+   in InvoiceReceiptBuilder.tsx) - hide literally everything else in the
+   document, then un-hide that one element and its children, then pull it
+   out of the page flow so it prints starting at the top-left of the page
+   instead of wherever it happened to be scrolled to on screen. */
+@media print {
+  /* A4 physical page size for the print engine itself - this is what
+     actually determines "does it fit on one page" when printing, since
+     that's a real paper-size decision made by the browser's print engine,
+     not something CSS on the page content alone can force. With this set,
+     a short invoice/receipt/estimate prints on exactly one A4 sheet, and
+     only spills onto a second page if the content genuinely doesn't fit -
+     matching "one page unless there are plenty of items" exactly. */
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+  #mockup-document-view,
+  #mockup-document-view * {
+    visibility: visible;
+  }
+  #mockup-document-view {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+}
+

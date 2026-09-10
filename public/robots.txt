@@ -1,0 +1,10 @@
+# Aziiki is a login-gated business app - almost everything past the
+# homepage is authenticated, client-side application state, not content a
+# crawler could meaningfully index (a URL like /dashboard doesn't exist as
+# a distinct page; it's all one SPA shell). Allow the entry point, disallow
+# the API surface explicitly (never meant to be crawled or indexed).
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://aziiki.vercel.app/sitemap.xml

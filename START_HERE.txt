@@ -1,0 +1,43 @@
+AZIIKI v1.4 — BASIC VERSION 1.0 — Ready-to-Run Project Copy
+==============================================================
+
+This is a complete, standalone copy of your project with all the MVP
+refactor changes already applied. It includes your .env file, so it's
+ready to run as-is — no need to copy anything from your old folder.
+
+You do NOT need GitHub to run this. GitHub is only for backing up your
+code / deploying later — it has nothing to do with running the app on
+your own Mac. Just unzip and run locally, as below.
+
+HOW TO RUN IT (VS Code, macOS):
+
+1. Unzip this file. You'll get a folder called
+   "AZIIKI_v1.4_BASIC_VERSION_1.0" — move it wherever you want to keep
+   working from (e.g., your Desktop, or replace your old project folder).
+
+2. Open VS Code -> File -> Open Folder -> select that unzipped folder.
+   (Or from Terminal: `code AZIIKI_v1.4_BASIC_VERSION_1.0`)
+
+3. Open the integrated terminal in VS Code (Ctrl+` / Cmd+`) and run:
+     npm install
+   (node_modules was deliberately left out of this zip — it's huge and
+   platform-specific. This step rebuilds it correctly for your Mac.)
+
+4. Still in that terminal, run:
+     npm run dev
+
+5. Open the URL it prints (e.g. http://localhost:3000) in your browser.
+
+WHAT'S NEW IN THIS COPY vs. your original aziikiv1.4:
+  - Non-MVP features hidden behind a single MVP_MODE flag (nothing deleted)
+  - Simplified email+password sign-in, full forgot-password flow
+  - 10 renamed, professional invoice/receipt/estimate templates (numbering
+    bug fixed — no more #1,#2,#3,#6,#7 jumps)
+  - Basic Inventory restored to the main nav (Core V1 per your latest brief)
+  - New AZIIKI Wealth Calculator inside Reports & Wisdom
+
+Full details: read AZIIKI_BASIC_VERSION.docx and
+AZIIKI_BASIC_VERSION_1.0.docx in this same folder.
+
+If `npm run dev` errors, copy the exact error text back to me and I'll
+fix it directly.
