@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Plus, Trash as Trash2, Warning as AlertTriangle, Package, Phone, User, Tag, Warehouse, CheckCircle, Truck, FileCsv as FileSpreadsheet } from "@phosphor-icons/react";
+import { Plus, Trash as Trash2, Warning as AlertTriangle, Package, Phone, User, Tag, Warehouse, CheckCircle, Truck, FileCsv as FileSpreadsheet, X } from "@phosphor-icons/react";
 import { InventoryItem, Business } from "../types";
 
 interface InventoryManagerProps {
@@ -257,8 +257,8 @@ export default function InventoryManager({
 
         {/* Action success notifications */}
         {notif && (
-          <div className="bg-emerald-50 border border-emerald-250 text-emerald-700 text-[11px] p-2.5 rounded-xl font-sans">
-            ✓ {notif}
+          <div className="bg-emerald-50 border border-emerald-250 text-emerald-700 text-[11px] p-2.5 rounded-xl font-sans flex items-center gap-1.5">
+            <CheckCircle className="w-3.5 h-3.5 shrink-0" /> {notif}
           </div>
         )}
 
@@ -273,9 +273,9 @@ export default function InventoryManager({
               <button
                 onClick={() => setShowBulkImport(false)}
                 aria-label="Close"
-                className="text-slate-450 hover:text-slate-700 font-bold"
+                className="text-slate-450 hover:text-slate-700"
               >
-                ✕
+                <X className="w-3.5 h-3.5" weight="bold" />
               </button>
             </div>
 

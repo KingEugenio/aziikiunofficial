@@ -1,4 +1,5 @@
 import React from "react";
+import { WarningCircle as AlertCircle } from "@phosphor-icons/react";
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -51,8 +52,8 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
       return (
         <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans">
           <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-xl max-w-md w-full text-center space-y-4">
-            <div className="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center mx-auto text-2xl font-black border border-rose-200">
-              ⚠️
+            <div className="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center mx-auto border border-rose-200">
+              <AlertCircle className="w-6 h-6" />
             </div>
             <div>
               <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest">Something went wrong</h3>

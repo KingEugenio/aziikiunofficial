@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Briefcase, Plus, TrendUp as TrendingUp, Pulse as Activity, CaretRight as ChevronRight, Trash as Trash2, Target, Coins, Scales as Scale, Warning as AlertTriangle, CalendarDots as CalendarDays, Percent, MagicWand as Sparkles, ArrowsClockwise as RefreshCw, Globe, MagnifyingGlass as Search, TrendDown as TrendingDown, Wrench, FileText, Clock, ShieldCheck, Calculator, Stack as Layers, Question as HelpCircle, SealCheck as FileCheck, CheckCircle, BookOpen } from "@phosphor-icons/react";
+import { Briefcase, Plus, TrendUp as TrendingUp, Pulse as Activity, CaretRight as ChevronRight, Trash as Trash2, Target, Coins, Scales as Scale, Warning as AlertTriangle, CalendarDots as CalendarDays, Percent, MagicWand as Sparkles, ArrowsClockwise as RefreshCw, Globe, MagnifyingGlass as Search, TrendDown as TrendingDown, Wrench, FileText, Clock, ShieldCheck, Calculator, Stack as Layers, Question as HelpCircle, SealCheck as FileCheck, CheckCircle, BookOpen, Lightbulb, ChartBar, HandCoins } from "@phosphor-icons/react";
 import { Investment, Goal, Debt, Business, Asset } from "../types";
 import { SUPPORTED_CURRENCY_CODES, getCurrencySymbol } from "../lib/currency";
 
@@ -274,7 +274,7 @@ export default function NetWorthInvestments({
 
       const data = await response.json();
       setLiveData(data);
-      triggerAlert("⚡ Live market indicators retrieved successfully via Gemini.");
+      triggerAlert("Live market indicators retrieved successfully via Gemini.");
     } catch (err: any) {
       console.error(err);
       setLiveError(err?.message || "Temporarily unable to query market rate grounding index.");
@@ -309,10 +309,10 @@ export default function NetWorthInvestments({
 
       const data = await response.json();
       setAiAuditData(data);
-      triggerAlert("✨ Custom AI portfolio advisory report compiled successfully!");
+      triggerAlert("Custom AI portfolio advisory report compiled successfully!");
     } catch (err: any) {
       console.error(err);
-      triggerAlert("⚠️ Failed to compile AI portfolio analysis. Using local algorithmic auditor model.", "error");
+      triggerAlert("Failed to compile AI portfolio analysis. Using local algorithmic auditor model.", "error");
       
       const fallbackAudit = {
         healthSummary: "Asset allocation demonstrates sound sovereign risk alignment.",
@@ -442,7 +442,7 @@ export default function NetWorthInvestments({
     // Reset Form
     setAssetName("");
     setIsAddingAsset(false);
-    triggerAlert(`✓ Asset "${assetName}" registered as ${isPlanned ? "planned acquisition" : "owned equipment"} in ledger successfully.`);
+    triggerAlert(`Asset "${assetName}" registered as ${isPlanned ? "planned acquisition" : "owned equipment"} in ledger successfully.`);
   };
 
   const handleConfirmPurchaseAsset = (asset: Asset, actualPrice?: number, docNotes?: string) => {
@@ -460,7 +460,7 @@ export default function NetWorthInvestments({
       documentsNotes: docNotes || asset.documentsNotes,
       maintenanceStatus: "Good"
     });
-    triggerAlert(`✓ Asset "${asset.name}" has been marked as fully purchased & activated!`);
+    triggerAlert(`Asset "${asset.name}" has been marked as fully purchased & activated!`);
   };
 
   // Add Investment Submission
@@ -486,7 +486,7 @@ export default function NetWorthInvestments({
     setInvIns("");
     setInvNotes("");
     setIsAddingInv(false);
-    triggerAlert(`✓ Investment position "${invName}" logged successfully in tracker.`);
+    triggerAlert(`Investment position "${invName}" logged successfully in tracker.`);
   };
 
   // Add Capital Goals Submission
@@ -507,7 +507,7 @@ export default function NetWorthInvestments({
 
     setGoalName("");
     setIsAddingGoal(false);
-    triggerAlert(`✓ Business growth goal "${goalName}" established in milestones.`);
+    triggerAlert(`Business growth goal "${goalName}" established in milestones.`);
   };
 
   // Add Debt Liability Submission
@@ -528,7 +528,7 @@ export default function NetWorthInvestments({
 
     setCreditor("");
     setIsAddingDebt(false);
-    triggerAlert(`✓ Short-term credit liability from "${creditor}" registered successfully.`);
+    triggerAlert(`Short-term credit liability from "${creditor}" registered successfully.`);
   };
 
   // Fund allocation transfer to goal. The available-cash check only applies
@@ -548,7 +548,7 @@ export default function NetWorthInvestments({
       setActiveGoalFormId(null);
       setContributionAmount(100);
       setContributionError(null);
-      triggerAlert(`✓ ${getCurrencySymbol(contributionCurrency)}${contributionAmount} allocated into goal reserves from cash balance.`);
+      triggerAlert(`${getCurrencySymbol(contributionCurrency)}${contributionAmount} allocated into goal reserves from cash balance.`);
     }
   };
 
@@ -562,7 +562,7 @@ export default function NetWorthInvestments({
         currentValue: tempAssetValue
       });
       setUpdatingEstimatedValueAssetId(null);
-      triggerAlert("✓ Asset estimated market value adjusted.");
+      triggerAlert("Asset estimated market value adjusted.");
     }
   };
 
@@ -581,7 +581,7 @@ export default function NetWorthInvestments({
         maintenanceStatus: "Good",
         maintenanceNotes: `Completed scheduled maintenance overhaul on ${todayStr}. All modules operating optimally.`
       });
-      triggerAlert("🔧 Maintenance event logged. Status restored to 'Good'.");
+      triggerAlert("Maintenance event logged. Status restored to 'Good'.");
     }
   };
 
@@ -856,9 +856,9 @@ export default function NetWorthInvestments({
                         className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-2.5 py-2 outline-none font-sans"
                         defaultValue="Medium"
                       >
-                        <option value="High">🔥 High Priority</option>
-                        <option value="Medium">⚡ Medium Priority</option>
-                        <option value="Low">💤 Low Priority</option>
+                        <option value="High">High Priority</option>
+                        <option value="Medium">Medium Priority</option>
+                        <option value="Low">Low Priority</option>
                       </select>
                     </div>
                   )}
@@ -1380,43 +1380,43 @@ export default function NetWorthInvestments({
           <div className="lg:col-span-12 flex flex-wrap gap-2 border-b border-slate-150 pb-2">
             <button
               onClick={() => setInvestmentsSubTab("positions")}
-              className={`px-4 py-2 text-xs font-black rounded-xl transition-all cursor-pointer ${
+              className={`px-4 py-2 text-xs font-black rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5 ${
  investmentsSubTab === "positions"
  ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/10"
  : "bg-slate-100 text-slate-650 hover:bg-slate-200"
  }`}
             >
-              💼 Active Positions & Indices
+              <Briefcase className="w-3.5 h-3.5 shrink-0" /> Active Positions & Indices
             </button>
             <button
               onClick={() => setInvestmentsSubTab("calculator")}
-              className={`px-4 py-2 text-xs font-black rounded-xl transition-all cursor-pointer ${
+              className={`px-4 py-2 text-xs font-black rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5 ${
  investmentsSubTab === "calculator"
  ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/10"
  : "bg-slate-100 text-slate-650 hover:bg-slate-200"
  }`}
             >
-              🧮 Yield Calculator & Estimator
+              <Calculator className="w-3.5 h-3.5 shrink-0" /> Yield Calculator & Estimator
             </button>
             <button
               onClick={() => setInvestmentsSubTab("comparison")}
-              className={`px-4 py-2 text-xs font-black rounded-xl transition-all cursor-pointer ${
+              className={`px-4 py-2 text-xs font-black rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5 ${
  investmentsSubTab === "comparison"
  ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/10"
  : "bg-slate-100 text-slate-650 hover:bg-slate-200"
  }`}
             >
-              ⚖️ Yield Comparison Simulator
+              <Scale className="w-3.5 h-3.5 shrink-0" /> Yield Comparison Simulator
             </button>
             <button
               onClick={() => setInvestmentsSubTab("ai")}
-              className={`px-4 py-2 text-xs font-black rounded-xl transition-all cursor-pointer ${
+              className={`px-4 py-2 text-xs font-black rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5 ${
  investmentsSubTab === "ai"
  ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/10"
  : "bg-slate-100 text-slate-650 hover:bg-slate-200"
  }`}
             >
-              ✨ AI Advisory & Insights
+              <Sparkles className="w-3.5 h-3.5 shrink-0" /> AI Advisory & Insights
             </button>
           </div>
 
@@ -1752,8 +1752,9 @@ export default function NetWorthInvestments({
 
                             {/* Notes */}
                             {inv.notes && (
-                              <p className="mt-2 text-[10px] italic text-slate-500 font-light border-t border-slate-150/40 pt-1.5 leading-snug">
-                                💡 {inv.notes}
+                              <p className="mt-2 text-[10px] italic text-slate-500 font-light border-t border-slate-150/40 pt-1.5 leading-snug flex items-start gap-1">
+                                <Lightbulb className="w-3 h-3 shrink-0 mt-px" />
+                                <span>{inv.notes}</span>
                               </p>
                             )}
                           </div>
@@ -1806,14 +1807,16 @@ export default function NetWorthInvestments({
                   </div>
 
                   {liveError && (
-                    <div className="bg-rose-500/10 border border-rose-500/25 rounded-xl p-3 text-xs text-red-400 font-mono">
-                      ⚠️ {liveError}
+                    <div className="bg-rose-500/10 border border-rose-500/25 rounded-xl p-3 text-xs text-red-400 font-mono flex items-start gap-1.5">
+                      <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-px" />
+                      <span>{liveError}</span>
                     </div>
                   )}
 
                   {!liveData && !isFetchingLive && !liveError && (
-                    <div className="text-center py-6 text-slate-400 text-xs font-sans">
-                      📊 No live research indices loaded yet. Click <strong className="text-emerald-400">Source Live Indices</strong> above to query live figures.
+                    <div className="text-center py-6 text-slate-400 text-xs font-sans flex flex-col items-center gap-1.5">
+                      <ChartBar className="w-5 h-5" />
+                      <span>No live research indices loaded yet. Click <strong className="text-emerald-400">Source Live Indices</strong> above to query live figures.</span>
                     </div>
                   )}
 
@@ -1916,8 +1919,8 @@ export default function NetWorthInvestments({
 
                       {/* Market Advisory Alert */}
                       <div className="bg-emerald-600/10 border border-emerald-500/25 rounded-xl p-4 text-emerald-300 flex items-start gap-3">
-                        <div className="bg-emerald-600/20 text-emerald-400 w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border border-emerald-500/30 font-bold text-xs">
-                          💡
+                        <div className="bg-emerald-600/20 text-emerald-400 w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border border-emerald-500/30">
+                          <Lightbulb className="w-4 h-4" />
                         </div>
                         <div className="space-y-1 text-left">
                           <h5 className="text-[10px] font-mono uppercase tracking-widest font-black text-emerald-250">
@@ -2385,7 +2388,8 @@ export default function NetWorthInvestments({
 
                 {!aiAuditData && !isGeneratingAiAudit && (
                   <div className="text-center py-16 text-slate-400 text-xs space-y-3">
-                    <p className="italic">📊 No portfolio audit generated yet. Click the button above to analyze your tracked positions.</p>
+                    <ChartBar className="w-5 h-5 mx-auto" />
+                    <p className="italic">No portfolio audit generated yet. Click the button above to analyze your tracked positions.</p>
                     <span className="text-[10px] text-slate-400 block max-w-md mx-auto leading-relaxed">
                       This analysis evaluates diversification weights, matches liquid maturities with upcoming capital goals, and checks your cash-to-debt reserve safety ratios.
                     </span>
@@ -2397,7 +2401,7 @@ export default function NetWorthInvestments({
                     {/* Health Summary Card */}
                     <div className="bg-emerald-50/40 border border-emerald-200/40 p-4.5 rounded-2xl flex items-start gap-3">
                       <div className="bg-emerald-600/10 text-emerald-600 w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
-                        💡
+                        <Lightbulb className="w-4.5 h-4.5" />
                       </div>
                       <div className="space-y-1 text-left">
                         <strong className="text-emerald-900 font-black block text-[11px] uppercase tracking-wider">Strategic Executive Assessment</strong>
@@ -2687,7 +2691,7 @@ export default function NetWorthInvestments({
                         className="text-slate-400 hover:text-rose-600 p-1 hover:bg-slate-100 rounded-lg cursor-pointer"
                         title="Delete Debt Entry" aria-label="Delete Debt Entry"
                       >
-                        ✕
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </div>
@@ -2848,7 +2852,7 @@ export default function NetWorthInvestments({
                           aria-label={`Delete goal ${goal.name}`}
                           className="text-slate-400 hover:text-rose-650 p-1 hover:bg-slate-200 rounded-lg cursor-pointer"
                         >
-                          ✕
+                          <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </div>
@@ -2883,9 +2887,9 @@ export default function NetWorthInvestments({
                               setContributionCurrency(goal.currency || currentBusiness?.currency || "GHS");
                             }
                           }}
-                          className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-xl text-[10px] cursor-pointer transition-colors border border-emerald-200/30"
+                          className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-xl text-[10px] cursor-pointer transition-colors border border-emerald-200/30 inline-flex items-center gap-1"
                         >
-                          💸 Allocate Funds
+                          <HandCoins className="w-3 h-3 shrink-0" /> Allocate Funds
                         </button>
                       </div>
 
@@ -2930,8 +2934,9 @@ export default function NetWorthInvestments({
                           )}
 
                           {contributionError && (
-                            <p className="text-[9px] font-mono text-rose-600 leading-tight">
-                              ⚠️ {contributionError}
+                            <p className="text-[9px] font-mono text-rose-600 leading-tight flex items-start gap-1">
+                              <AlertTriangle className="w-3 h-3 shrink-0 mt-px" />
+                              <span>{contributionError}</span>
                             </p>
                           )}
                         </div>

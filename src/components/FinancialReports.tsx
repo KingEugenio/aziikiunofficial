@@ -1119,8 +1119,9 @@ export default function FinancialReports({
                     ))}
                   </select>
                 ) : (
-                  <div className="text-[11px] text-amber-200/60 bg-amber-950 border border-amber-900/60 rounded-xl p-2 font-mono">
-                    ⚠️ No active Savings Goals found. (Contributions log to general ledger sandbox ledger)
+                  <div className="text-[11px] text-amber-200/60 bg-amber-950 border border-amber-900/60 rounded-xl p-2 font-mono flex items-start gap-1.5">
+                    <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-px" />
+                    <span>No active Savings Goals found. (Contributions log to general ledger sandbox ledger)</span>
                   </div>
                 )}
               </div>
@@ -1196,8 +1197,8 @@ export default function FinancialReports({
                 onClick={() => setShowWisdomPanel(true)}
                 className="p-3 bg-indigo-50/40 border border-indigo-100/60 rounded-2xl cursor-pointer hover:bg-indigo-50 transition-all flex items-center gap-3"
               >
-                <div className="w-9 h-9 rounded-xl bg-indigo-100 flex items-center justify-center shrink-0">
-                  <span className="text-sm">📖</span>
+                <div className="w-9 h-9 rounded-xl bg-indigo-100 flex items-center justify-center shrink-0 text-indigo-600">
+                  <BookOpen className="w-4.5 h-4.5" />
                 </div>
                 <div className="space-y-0.5">
                   <p className="text-xs font-bold text-slate-800 font-sans">

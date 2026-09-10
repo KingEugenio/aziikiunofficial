@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { DeviceMobile as Smartphone, BookOpen, Newspaper, FileText, Lightbulb, TrendUp as TrendingUp, CheckCircle, ChatCircle as MessageSquare, Clock, MagicWand as Sparkles, Megaphone, Envelope as Mail, Pulse as Activity, Trash as Trash2, CaretRight as ChevronRight, WarningCircle as AlertCircle } from "@phosphor-icons/react";
+import { DeviceMobile as Smartphone, BookOpen, Newspaper, FileText, Lightbulb, TrendUp as TrendingUp, CheckCircle, ChatCircle as MessageSquare, Clock, MagicWand as Sparkles, Megaphone, Envelope as Mail, Pulse as Activity, Trash as Trash2, CaretRight as ChevronRight, WarningCircle as AlertCircle, Rocket, X } from "@phosphor-icons/react";
 import { getFeatureAnalytics, clearFeatureAnalytics, FeatureUsage } from "../lib/analytics";
 import { api, ApiError } from "../lib/api";
 
@@ -63,7 +63,7 @@ export default function AdMonetizationHub() {
   const handleResetAnalytics = () => {
     const cleared = clearFeatureAnalytics();
     setAnalytics(cleared);
-    setSuccessMsg("⚡ Workspace activity tracker has been safely reset.");
+    setSuccessMsg("Workspace activity tracker has been safely reset.");
     setTimeout(() => setSuccessMsg(null), 3000);
   };
 
@@ -147,8 +147,8 @@ Sovereign SME Treasury pillars:
             <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
             
             <div className="flex items-start gap-4">
-              <div className="bg-white/10 text-white w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-bold shadow-inner shrink-0 mt-1">
-                📱
+              <div className="bg-white/10 text-white w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner shrink-0 mt-1">
+                <Smartphone className="w-6 h-6" />
               </div>
               <div className="space-y-2 text-left">
                 <div className="flex flex-wrap items-center gap-2">
@@ -163,7 +163,7 @@ Sovereign SME Treasury pillars:
                   Our native smartphone application is currently undergoing secure private beta testing! Experience automated real-time MoMo SMS receipt parsing, instant offline database sync, inventory scanning via your phone camera, and instant WhatsApp invoice dispatch.
                 </p>
                 <div className="pt-2 flex items-center gap-4 text-[10px] text-indigo-300 font-mono">
-                  <span>🚀 Launch Schedule: Q3 2027</span>
+                  <span className="inline-flex items-center gap-1"><Rocket className="w-3 h-3" /> Launch Schedule: Q3 2027</span>
                   <span className="text-slate-500">|</span>
                   <span>Target: Android & iOS</span>
                 </div>
@@ -456,9 +456,9 @@ Sovereign SME Treasury pillars:
             <button
               onClick={() => setSelectedArticle(null)}
               aria-label="Close"
-              className="absolute top-4 right-4 w-7 h-7 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-full flex items-center justify-center text-xs transition-colors cursor-pointer font-bold"
+              className="absolute top-4 right-4 w-7 h-7 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-full flex items-center justify-center transition-colors cursor-pointer"
             >
-              ✕
+              <X className="w-3.5 h-3.5" weight="bold" />
             </button>
 
             {(() => {

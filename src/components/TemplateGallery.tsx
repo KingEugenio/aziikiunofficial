@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Star, Copy, CircleNotch as Loader2, WarningCircle as AlertCircle, CheckSquare, ClockCounterClockwise as History, ArrowCounterClockwise as RotateCcw, PencilSimple, Plus } from "@phosphor-icons/react";
+import { Star, Copy, CircleNotch as Loader2, WarningCircle as AlertCircle, CheckSquare, ClockCounterClockwise as History, ArrowCounterClockwise as RotateCcw, PencilSimple, Plus, X } from "@phosphor-icons/react";
 import { api, ApiError } from "../lib/api";
 import TemplateEditor from "./TemplateEditor";
 import { isCustomBlockLayout } from "../lib/documentBlocks";
@@ -248,9 +248,9 @@ export default function TemplateGallery({
               type="button"
               onClick={() => setHistoryTemplate(null)}
               aria-label="Close"
-              className="absolute top-4 right-4 w-7 h-7 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-full flex items-center justify-center text-xs transition-colors cursor-pointer font-bold"
+              className="absolute top-4 right-4 w-7 h-7 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-full flex items-center justify-center transition-colors cursor-pointer"
             >
-              ✕
+              <X className="w-3.5 h-3.5" weight="bold" />
             </button>
 
             <div className="pr-8">

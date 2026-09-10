@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Brain as BrainCircuit, MagicWand as Sparkles, Warning as AlertTriangle, TrendUp as TrendingUp, CurrencyDollar as DollarSign, Calendar, TrendDown as TrendingDown, ArrowUpRight, PaperPlaneTilt as Send, CircleNotch as Loader, ChatCircle as MessageSquare, Sparkle, Target } from "@phosphor-icons/react";
+import { Brain as BrainCircuit, MagicWand as Sparkles, Warning as AlertTriangle, TrendUp as TrendingUp, CurrencyDollar as DollarSign, Calendar, TrendDown as TrendingDown, ArrowUpRight, PaperPlaneTilt as Send, CircleNotch as Loader, ChatCircle as MessageSquare, Sparkle, Target, Palette, DownloadSimple, FileText, Lightbulb, type Icon } from "@phosphor-icons/react";
 import { Transaction, Invoice, Goal, Business } from "../types";
 
 interface AIFieldAssistantProps {
@@ -144,11 +144,11 @@ export default function AIFieldAssistant({
     }
   };
 
-  const appGuides = [
-    { title: "🎨 How to customize Brand?", query: "How do I edit and customize my Company logo, name, and currency? Where does this info sync on my PDF receipts? Also what database is used?" },
-    { title: "📥 How does the SMS Parser work?", query: "Can you explain step-by-step how to use the Mobile Money SMS receipt auto-filler?" },
-    { title: "📄 How to print PDF invoices?", query: "How do I customize and create brand invoices and quote estimates? How do WhatsApp pay links work?" },
-    { title: "📈 What are sovereign yields?", query: "How can I track the live T-bill interest rates using the search grounding tool on Bank of Ghana and Central Bank of Nigeria?" }
+  const appGuides: { title: string; query: string; icon: Icon }[] = [
+    { title: "How to customize Brand?", icon: Palette, query: "How do I edit and customize my Company logo, name, and currency? Where does this info sync on my PDF receipts? Also what database is used?" },
+    { title: "How does the SMS Parser work?", icon: DownloadSimple, query: "Can you explain step-by-step how to use the Mobile Money SMS receipt auto-filler?" },
+    { title: "How to print PDF invoices?", icon: FileText, query: "How do I customize and create brand invoices and quote estimates? How do WhatsApp pay links work?" },
+    { title: "What are sovereign yields?", icon: TrendingUp, query: "How can I track the live T-bill interest rates using the search grounding tool on Bank of Ghana and Central Bank of Nigeria?" }
   ];
 
   const handleQuickQuestion = async (queryText: string) => {
@@ -365,7 +365,9 @@ export default function AIFieldAssistant({
 
         {/* Quick App Guide Presets */}
         <div className="mt-3.5 pt-2.5 border-t border-slate-100 shrink-0">
-          <span className="text-[9px] font-mono text-slate-400 block mb-1.5 uppercase font-bold tracking-wider text-left">💡 Tap to ask how Aziiki works (Gemini AI Guide):</span>
+          <span className="text-[9px] font-mono text-slate-400 mb-1.5 uppercase font-bold tracking-wider text-left flex items-center gap-1.5">
+            <Lightbulb className="w-3 h-3 shrink-0" /> Tap to ask how Aziiki works (Gemini AI Guide):
+          </span>
           <div className="flex flex-wrap gap-1.5 max-h-[70px] overflow-y-auto">
             {appGuides.map((g, i) => (
               <button
@@ -373,9 +375,9 @@ export default function AIFieldAssistant({
                 type="button"
                 disabled={loading}
                 onClick={() => handleQuickQuestion(g.query)}
-                className="px-2.5 py-1 text-[10px] bg-slate-50 hover:bg-emerald-50/70 text-slate-700 hover:text-emerald-700 border border-slate-200 hover:border-emerald-200 rounded-xl transition-all cursor-pointer font-medium active:scale-95"
+                className="px-2.5 py-1 text-[10px] bg-slate-50 hover:bg-emerald-50/70 text-slate-700 hover:text-emerald-700 border border-slate-200 hover:border-emerald-200 rounded-xl transition-all cursor-pointer font-medium active:scale-95 inline-flex items-center gap-1"
               >
-                {g.title}
+                <g.icon className="w-3 h-3 shrink-0" /> {g.title}
               </button>
             ))}
           </div>

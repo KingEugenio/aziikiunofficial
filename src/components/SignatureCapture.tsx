@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Trash, FloppyDisk } from "@phosphor-icons/react";
+import { Trash, FloppyDisk, X } from "@phosphor-icons/react";
 import { api, ApiError } from "../lib/api";
 
 interface SignatureCaptureProps {
@@ -123,8 +123,8 @@ export default function SignatureCapture({
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-6 space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="font-bold text-slate-900 text-sm">Sign Document</h3>
-          <button type="button" onClick={onClose} aria-label="Close" className="w-7 h-7 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-xs font-bold cursor-pointer">
-            ✕
+          <button type="button" onClick={onClose} aria-label="Close" className="w-7 h-7 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center cursor-pointer">
+            <X className="w-3.5 h-3.5" weight="bold" />
           </button>
         </div>
 

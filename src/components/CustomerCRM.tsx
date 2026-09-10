@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { User, Phone, Envelope as Mail, Plus, Trash as Trash2, CaretRight as ChevronRight, MagnifyingGlass as Search, ChatCircle as MessageSquare, CheckCircle, WarningCircle as AlertCircle, FileCsv as FileSpreadsheet, Buildings as Building, CurrencyDollar as DollarSign } from "@phosphor-icons/react";
+import { User, Phone, Envelope as Mail, Plus, Trash as Trash2, CaretRight as ChevronRight, MagnifyingGlass as Search, ChatCircle as MessageSquare, CheckCircle, WarningCircle as AlertCircle, FileCsv as FileSpreadsheet, Buildings as Building, CurrencyDollar as DollarSign, X } from "@phosphor-icons/react";
 import { Customer, Invoice, Transaction, Business } from "../types";
 import { SUPPORTED_CURRENCY_CODES } from "../lib/currency";
 
@@ -315,8 +315,8 @@ export default function CustomerCRM({
         </div>
 
         {notif && (
-          <div className="bg-emerald-50 border border-emerald-250 text-emerald-700 text-[11px] p-2.5 rounded-xl font-sans">
-            ✓ {notif}
+          <div className="bg-emerald-50 border border-emerald-250 text-emerald-700 text-[11px] p-2.5 rounded-xl font-sans flex items-center gap-1.5">
+            <CheckCircle className="w-3.5 h-3.5 shrink-0" /> {notif}
           </div>
         )}
 
@@ -331,9 +331,9 @@ export default function CustomerCRM({
               <button
                 onClick={() => setShowBulkImport(false)}
                 aria-label="Close"
-                className="text-slate-450 hover:text-slate-700 font-bold"
+                className="text-slate-450 hover:text-slate-700"
               >
-                ✕
+                <X className="w-3.5 h-3.5" weight="bold" />
               </button>
             </div>
 

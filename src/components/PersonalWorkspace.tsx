@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { PiggyBank, CreditCard, Wallet, TrendUp as TrendingUp, TrendDown as TrendingDown, Plus, Trash as Trash2, Calendar, Warning as AlertTriangle, CheckCircle as CheckCircle2, Target, Pulse as Activity, MagicWand as Sparkles, CurrencyDollar as DollarSign, ChartLine as LucideLineChart, Brain as BrainCircuit, ArrowUpRight, ArrowDownRight, Percent, ShieldWarning as ShieldAlert, ChatCircle as MessageSquare, Question as HelpCircle, User, PlusCircle, FileCsv as FileSpreadsheet } from "@phosphor-icons/react";
+import { PiggyBank, CreditCard, Wallet, TrendUp as TrendingUp, TrendDown as TrendingDown, Plus, Trash as Trash2, Calendar, Warning as AlertTriangle, CheckCircle as CheckCircle2, Target, Pulse as Activity, MagicWand as Sparkles, CurrencyDollar as DollarSign, ChartLine as LucideLineChart, Brain as BrainCircuit, ArrowUpRight, ArrowDownRight, Percent, ShieldWarning as ShieldAlert, ChatCircle as MessageSquare, Question as HelpCircle, User, PlusCircle, FileCsv as FileSpreadsheet, X, ArrowCircleDown, ArrowCircleUp, PencilSimple, FolderOpen, HandCoins, Robot, Lightbulb, LockKey } from "@phosphor-icons/react";
 import { 
   ResponsiveContainer, 
   BarChart, 
@@ -647,8 +647,8 @@ export default function PersonalWorkspace({
       {/* Premium Workspace Header with mini-selector navigation */}
       <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 text-left">
         <div className="flex items-center gap-3.5">
-          <div className="bg-emerald-50 text-emerald-600 w-12 h-12 rounded-2xl border border-emerald-100 flex items-center justify-center text-xl font-black shadow-inner">
-            👤
+          <div className="bg-emerald-50 text-emerald-600 w-12 h-12 rounded-2xl border border-emerald-100 flex items-center justify-center shadow-inner">
+            <User className="w-6 h-6" />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -870,7 +870,7 @@ export default function PersonalWorkspace({
  ? "bg-emerald-50 text-emerald-600" 
  : "bg-slate-100 text-slate-500"
  }`}>
-                            {t.type === "income" ? "📥" : "📤"}
+                            {t.type === "income" ? <ArrowCircleDown className="w-4 h-4" /> : <ArrowCircleUp className="w-4 h-4" />}
                           </div>
                           <div className="text-left min-w-0">
                             <strong className="text-slate-800 block truncate leading-tight font-sans">{t.description}</strong>
@@ -958,8 +958,8 @@ export default function PersonalWorkspace({
             
             {/* Form Column */}
             <div className="lg:col-span-5 bg-white border border-slate-200 rounded-3xl p-5 space-y-4">
-              <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider font-mono border-b border-slate-100 pb-2">
-                ✍️ Log Cash Inflow / Outflow
+              <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider font-mono border-b border-slate-100 pb-2 flex items-center gap-1.5">
+                <PencilSimple className="w-3.5 h-3.5 shrink-0" /> Log Cash Inflow / Outflow
               </h3>
 
               <form onSubmit={handleSaveTransaction} className="space-y-3.5 text-xs">
@@ -971,11 +971,11 @@ export default function PersonalWorkspace({
                       setTxType("income");
                       setTxCategory("Salary");
                     }}
-                    className={`py-1.5 text-[10px] font-bold font-sans rounded-lg transition-colors cursor-pointer ${
+                    className={`py-1.5 text-[10px] font-bold font-sans rounded-lg transition-colors cursor-pointer inline-flex items-center justify-center gap-1 ${
  txType === "income" ? "bg-emerald-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-700 bg-transparent"
  }`}
                   >
-                    📥 Cash Inflow (Income)
+                    <ArrowCircleDown className="w-3.5 h-3.5 shrink-0" /> Cash Inflow (Income)
                   </button>
                   <button
                     type="button"
@@ -983,11 +983,11 @@ export default function PersonalWorkspace({
                       setTxType("expense");
                       setTxCategory("Food");
                     }}
-                    className={`py-1.5 text-[10px] font-bold font-sans rounded-lg transition-colors cursor-pointer ${
+                    className={`py-1.5 text-[10px] font-bold font-sans rounded-lg transition-colors cursor-pointer inline-flex items-center justify-center gap-1 ${
  txType === "expense" ? "bg-emerald-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-700 bg-transparent"
  }`}
                   >
-                    📤 Cash Outflow (Spend)
+                    <ArrowCircleUp className="w-3.5 h-3.5 shrink-0" /> Cash Outflow (Spend)
                   </button>
                 </div>
 
@@ -1070,8 +1070,8 @@ export default function PersonalWorkspace({
 
             {/* List Column */}
             <div className="lg:col-span-7 bg-white border border-slate-200 rounded-3xl p-5 space-y-4">
-              <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider font-mono border-b border-slate-100 pb-2">
-                📂 Personal Transaction Ledger
+              <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider font-mono border-b border-slate-100 pb-2 flex items-center gap-1.5">
+                <FolderOpen className="w-3.5 h-3.5 shrink-0" /> Personal Transaction Ledger
               </h3>
 
               {workspaceTransactions.length === 0 ? (
@@ -1086,7 +1086,7 @@ export default function PersonalWorkspace({
  ? "bg-emerald-50 text-emerald-600" 
  : "bg-slate-100 text-slate-500"
  }`}>
-                          {t.type === "income" ? "📥" : "📤"}
+                          {t.type === "income" ? <ArrowCircleDown className="w-4 h-4" /> : <ArrowCircleUp className="w-4 h-4" />}
                         </div>
                         <div className="text-left min-w-0">
                           <strong className="text-slate-800 block truncate leading-tight font-sans">{t.description}</strong>
@@ -1123,8 +1123,8 @@ export default function PersonalWorkspace({
             
             {/* Form Column */}
             <div className="lg:col-span-4 bg-white border border-slate-200 rounded-3xl p-5 space-y-4">
-              <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider font-mono border-b border-slate-100 pb-2">
-                ➕ Add Wallet / Bank
+              <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider font-mono border-b border-slate-100 pb-2 flex items-center gap-1.5">
+                <Plus className="w-3.5 h-3.5 shrink-0" /> Add Wallet / Bank
               </h3>
 
               <form onSubmit={handleAddAccount} className="space-y-3.5 text-xs">
@@ -1180,8 +1180,8 @@ export default function PersonalWorkspace({
 
             {/* List Column */}
             <div className="lg:col-span-8 bg-white border border-slate-200 rounded-3xl p-5 space-y-4">
-              <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider font-mono border-b border-slate-100 pb-2">
-                💳 Registered Payment Accounts
+              <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider font-mono border-b border-slate-100 pb-2 flex items-center gap-1.5">
+                <CreditCard className="w-3.5 h-3.5 shrink-0" /> Registered Payment Accounts
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1224,8 +1224,8 @@ export default function PersonalWorkspace({
             
             {/* Form Column */}
             <div className="lg:col-span-4 bg-white border border-slate-200 rounded-3xl p-5 space-y-4">
-              <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider font-mono border-b border-slate-100 pb-2">
-                🐷 Create Savings Goal
+              <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider font-mono border-b border-slate-100 pb-2 flex items-center gap-1.5">
+                <PiggyBank className="w-3.5 h-3.5 shrink-0" /> Create Savings Goal
               </h3>
 
               <form onSubmit={handleCreateGoal} className="space-y-3.5 text-xs">
@@ -1301,8 +1301,8 @@ export default function PersonalWorkspace({
 
             {/* List Column */}
             <div className="lg:col-span-8 bg-white border border-slate-200 rounded-3xl p-5 space-y-4">
-              <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider font-mono border-b border-slate-100 pb-2">
-                🐷 Savings Goals Progress Tracker
+              <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider font-mono border-b border-slate-100 pb-2 flex items-center gap-1.5">
+                <PiggyBank className="w-3.5 h-3.5 shrink-0" /> Savings Goals Progress Tracker
               </h3>
 
               {workspaceGoals.length === 0 ? (
@@ -1327,7 +1327,7 @@ export default function PersonalWorkspace({
                             aria-label={`Delete goal ${g.name}`}
                             className="text-slate-400 hover:text-rose-500 p-1 rounded hover:bg-slate-100 transition-colors cursor-pointer"
                           >
-                            ✕
+                            <X className="w-3.5 h-3.5" weight="bold" />
                           </button>
                         </div>
 
@@ -1346,9 +1346,9 @@ export default function PersonalWorkspace({
                           <span className="text-slate-400">Remaining: {currencySymbol}{remaining.toLocaleString()}</span>
                           <button
                             onClick={() => setContributingGoalId(g.id)}
-                            className="px-2.5 py-1 text-[10px] font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg cursor-pointer"
+                            className="px-2.5 py-1 text-[10px] font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg cursor-pointer inline-flex items-center gap-1"
                           >
-                            💰 Contribute Cash
+                            <HandCoins className="w-3 h-3 shrink-0" /> Contribute Cash
                           </button>
                         </div>
 
@@ -1363,7 +1363,7 @@ export default function PersonalWorkspace({
                 <div className="border border-emerald-500/30 bg-emerald-50/50 p-4 rounded-2xl space-y-3 mt-4 text-xs">
                   <div className="flex justify-between items-center">
                     <strong className="text-emerald-800">Defray/Contribute cash to selected target</strong>
-                    <button onClick={() => setContributingGoalId(null)} aria-label="Close" className="font-bold text-slate-400 hover:text-slate-650">✕</button>
+                    <button onClick={() => setContributingGoalId(null)} aria-label="Close" className="font-bold text-slate-400 hover:text-slate-650"><X className="w-3 h-3 inline" weight="bold" /></button>
                   </div>
 
                   <form onSubmit={handleExecuteGoalContribution} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -1412,8 +1412,8 @@ export default function PersonalWorkspace({
             
             {/* Form Column */}
             <div className="lg:col-span-4 bg-white border border-slate-200 rounded-3xl p-5 space-y-4">
-              <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider font-mono border-b border-slate-100 pb-2">
-                🎯 Set Budget Caps
+              <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider font-mono border-b border-slate-100 pb-2 flex items-center gap-1.5">
+                <Target className="w-3.5 h-3.5 shrink-0" /> Set Budget Caps
               </h3>
 
               <form onSubmit={handleSaveBudget} className="space-y-3.5 text-xs">
@@ -1454,8 +1454,8 @@ export default function PersonalWorkspace({
 
             {/* List Column */}
             <div className="lg:col-span-8 bg-white border border-slate-200 rounded-3xl p-5 space-y-4">
-              <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider font-mono border-b border-slate-100 pb-2">
-                🎯 Configure Monthly Expenditure Budgets
+              <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider font-mono border-b border-slate-100 pb-2 flex items-center gap-1.5">
+                <Target className="w-3.5 h-3.5 shrink-0" /> Configure Monthly Expenditure Budgets
               </h3>
 
               <div className="space-y-3.5">
@@ -1483,7 +1483,7 @@ export default function PersonalWorkspace({
                             aria-label={`Delete budget ${b.category}`}
                             className="text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
                           >
-                            ✕
+                            <X className="w-3.5 h-3.5" weight="bold" />
                           </button>
                         </div>
                       </div>
@@ -1606,7 +1606,7 @@ export default function PersonalWorkspace({
                   {/* Debt tracker */}
                   <div className="space-y-3.5">
                     <div className="flex justify-between items-center text-xs font-bold text-slate-800 border-b border-slate-50 pb-1">
-                      <span>💸 Creditors & Loans</span>
+                      <span className="inline-flex items-center gap-1"><HandCoins className="w-3.5 h-3.5 shrink-0" /> Creditors & Loans</span>
                       <button onClick={() => setRepayingDebtId("new")} className="text-[10px] text-emerald-600 hover:underline">Add Debt</button>
                     </div>
 
@@ -1621,7 +1621,7 @@ export default function PersonalWorkspace({
                               aria-label={`Delete debt ${d.creditor}`}
                               className="absolute top-1.5 right-1.5 text-[9px] font-black text-slate-400 hover:text-rose-500"
                             >
-                              ✕
+                              <X className="w-3.5 h-3.5" weight="bold" />
                             </button>
                             <div className="text-left font-sans font-bold text-slate-750 pr-4">{d.creditor}</div>
                             <div className="flex justify-between font-mono font-bold text-[10px] mt-1 text-slate-500">
@@ -1646,7 +1646,7 @@ export default function PersonalWorkspace({
                   {/* Investment tracker */}
                   <div className="space-y-3.5">
                     <div className="flex justify-between items-center text-xs font-bold text-slate-800 border-b border-slate-50 pb-1">
-                      <span>📈 Investment Assets</span>
+                      <span className="inline-flex items-center gap-1"><LucideLineChart className="w-3.5 h-3.5 shrink-0" /> Investment Assets</span>
                       <button onClick={() => setRepayingDebtId("new-investment")} className="text-[10px] text-emerald-600 hover:underline">Add asset</button>
                     </div>
 
@@ -1661,7 +1661,7 @@ export default function PersonalWorkspace({
                               aria-label={`Delete investment ${i.name}`}
                               className="absolute top-1.5 right-1.5 text-[9px] font-black text-slate-400 hover:text-rose-500"
                             >
-                              ✕
+                              <X className="w-3.5 h-3.5" weight="bold" />
                             </button>
                             <div className="text-left font-sans font-bold text-slate-750 pr-4">{i.name}</div>
                             <div className="flex justify-between font-mono font-bold text-[10px] mt-1 text-slate-500">
@@ -1681,7 +1681,7 @@ export default function PersonalWorkspace({
                   <div className="border border-rose-500/20 bg-rose-500/5 p-3 rounded-xl space-y-2 text-xs">
                     <div className="flex justify-between items-center">
                       <strong className="text-rose-700">Log Debt Repayment</strong>
-                      <button onClick={() => setRepayingDebtId(null)} aria-label="Close" className="font-bold text-slate-450 hover:text-slate-600">✕</button>
+                      <button onClick={() => setRepayingDebtId(null)} aria-label="Close" className="font-bold text-slate-450 hover:text-slate-600"><X className="w-3 h-3 inline" weight="bold" /></button>
                     </div>
                     <form onSubmit={handleExecuteDebtRepayment} className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                       <input
@@ -1711,7 +1711,7 @@ export default function PersonalWorkspace({
                   <div className="border border-slate-200 bg-slate-50 p-4 rounded-xl space-y-3 mt-4 text-xs">
                     <div className="flex justify-between items-center">
                       <strong className="text-slate-800">Register Credit Outstanding</strong>
-                      <button onClick={() => setRepayingDebtId(null)} aria-label="Close" className="font-bold text-slate-450 hover:text-slate-650">✕</button>
+                      <button onClick={() => setRepayingDebtId(null)} aria-label="Close" className="font-bold text-slate-450 hover:text-slate-650"><X className="w-3 h-3 inline" weight="bold" /></button>
                     </div>
 
                     <form onSubmit={handleCreateDebt} className="space-y-2">
@@ -1768,7 +1768,7 @@ export default function PersonalWorkspace({
                   <div className="border border-slate-200 bg-slate-50 p-4 rounded-xl space-y-3 mt-4 text-xs">
                     <div className="flex justify-between items-center">
                       <strong className="text-slate-800">Log Wealth Asset Placement</strong>
-                      <button onClick={() => setRepayingDebtId(null)} aria-label="Close" className="font-bold text-slate-450 hover:text-slate-650">✕</button>
+                      <button onClick={() => setRepayingDebtId(null)} aria-label="Close" className="font-bold text-slate-450 hover:text-slate-650"><X className="w-3 h-3 inline" weight="bold" /></button>
                     </div>
 
                     <form onSubmit={handleCreateInvestment} className="space-y-2">
@@ -1849,10 +1849,10 @@ export default function PersonalWorkspace({
               <div className="flex-1 overflow-y-auto py-4 space-y-3.5 pr-2 custom-scrollbar">
                 {coachChat.map((msg, idx) => (
                   <div key={idx} className={`flex gap-3 text-xs leading-relaxed max-w-[85%] ${msg.sender === "user" ? "ml-auto flex-row-reverse" : "mr-auto"}`}>
-                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold shrink-0 ${
+                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
  msg.sender === "coach" ? "bg-emerald-500 text-white" : "bg-slate-200 text-slate-700"
  }`}>
-                      {msg.sender === "coach" ? "🤖" : "👤"}
+                      {msg.sender === "coach" ? <Robot className="w-4 h-4" /> : <User className="w-4 h-4" />}
                     </div>
                     
                     <div className={`p-3 rounded-2xl text-left shadow-sm ${
@@ -1867,7 +1867,7 @@ export default function PersonalWorkspace({
 
                 {isCoachLoading && (
                   <div className="flex gap-3 text-xs items-center mr-auto animate-pulse">
-                    <div className="w-7 h-7 rounded-lg bg-emerald-500 text-white flex items-center justify-center">🤖</div>
+                    <div className="w-7 h-7 rounded-lg bg-emerald-500 text-white flex items-center justify-center"><Robot className="w-4 h-4" /></div>
                     <div className="p-3 bg-slate-50 text-slate-450 border border-slate-100 rounded-2xl">
                       Thinking and auditing wallet entries...
                     </div>
@@ -1902,7 +1902,7 @@ export default function PersonalWorkspace({
               
               <div className="space-y-3 text-xs font-sans">
                 <div className="p-3 bg-slate-50 border rounded-xl flex items-start gap-2.5">
-                  <span className="text-base mt-0.5">💡</span>
+                  <Lightbulb className="w-4 h-4 mt-0.5 shrink-0 text-slate-500" />
                   <div>
                     <h4 className="font-bold text-slate-800 text-[11px]">Primary Spend Outflow</h4>
                     <p className="text-[10.5px] text-slate-500 mt-0.5">Your biggest spending category this month is <strong>{coachStats.topCategory !== "None" ? coachStats.topCategory : "not set yet"}</strong>.</p>
@@ -1910,7 +1910,7 @@ export default function PersonalWorkspace({
                 </div>
 
                 <div className="p-3 bg-slate-50 border rounded-xl flex items-start gap-2.5">
-                  <span className="text-base mt-0.5">📈</span>
+                  <LucideLineChart className="w-4 h-4 mt-0.5 shrink-0 text-slate-500" />
                   <div>
                     <h4 className="font-bold text-slate-800 text-[11px]">Savings Target Pace</h4>
                     <p className="text-[10.5px] text-slate-500 mt-0.5">You have satisfied <strong>{coachStats.savingsProgress}%</strong> of combined goals parameters.</p>
@@ -1918,7 +1918,7 @@ export default function PersonalWorkspace({
                 </div>
 
                 <div className="p-3 bg-slate-50 border rounded-xl flex items-start gap-2.5">
-                  <span className="text-base mt-0.5">🔒</span>
+                  <LockKey className="w-4 h-4 mt-0.5 shrink-0 text-slate-500" />
                   <div>
                     <h4 className="font-bold text-slate-800 text-[11px]">Financial Health Index</h4>
                     <p className="text-[10.5px] text-slate-500 mt-0.5">Your Score is <strong>{healthScore}/100</strong>. Cap entertainment limits and fund emergency reserves to raise it.</p>
