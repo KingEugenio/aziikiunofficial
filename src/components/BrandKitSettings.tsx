@@ -3,6 +3,7 @@ import { Palette, CheckCircle, WarningCircle as AlertCircle } from "@phosphor-ic
 import { api, ApiError } from "../lib/api";
 import { LoadingSwap } from "./LoadingSwap";
 import { SkeletonForm } from "./Skeleton";
+import { useFeatureFlags } from "../lib/featureFlags";
 
 interface BrandKitSettingsProps {
   businessId: string;
@@ -47,6 +48,8 @@ const EMPTY_FORM: BrandKitFormState = {
  * actually edited.
  */
 export default function BrandKitSettings({ businessId }: BrandKitSettingsProps) {
+  const { isEnabled } = useFeatureFlags();
+  const showAdvancedFields = isEnabled("brand_kit_advanced_fields");
   const [form, setForm] = useState<BrandKitFormState>(EMPTY_FORM);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -135,8 +138,9 @@ export default function BrandKitSettings({ businessId }: BrandKitSettingsProps) 
         <h3 className="font-bold text-slate-900 text-sm">Brand Kit</h3>
       </div>
       <p className="text-[11px] text-slate-500 leading-relaxed -mt-2">
-        Every invoice, receipt, and quotation you generate pulls its colors, tax details, and footer
-        text from here automatically.
+        {showAdvancedFields
+          ? "Every invoice, receipt, and quotation you generate pulls its colors, tax details, and footer text from here automatically."
+          : "Every invoice, receipt, and quotation you generate uses your logo and accent color automatically."}
       </p>
 
       {error && (
@@ -151,59 +155,66 @@ export default function BrandKitSettings({ businessId }: BrandKitSettingsProps) 
       )}
 
       <form onSubmit={handleSave} className="space-y-5 text-xs">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {colorField("Primary Color", "primaryColor")}
-          {colorField("Secondary Color", "secondaryColor")}
+        {/* MVP ships logo + one accent color only, per the product teardown. The
+            other two color fields still exist and save fine - they're just not
+            editable here until brand_kit_advanced_fields is on. */}
+        <div className={`grid grid-cols-1 gap-3 ${showAdvancedFields ? "sm:grid-cols-3" : "max-w-xs"}`}>
+          {showAdvancedFields && colorField("Primary Color", "primaryColor")}
+          {showAdvancedFields && colorField("Secondary Color", "secondaryColor")}
           {colorField("Accent Color", "accentColor")}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div className="space-y-1">
-            <label htmlFor="brandkit-registrationNumber" className="text-[9px] font-mono text-slate-450 uppercase tracking-wider block">Registration No.</label>
-            <input id="brandkit-registrationNumber" value={form.registrationNumber} onChange={(e) => update("registrationNumber", e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 outline-none focus:border-emerald-500" />
-          </div>
-          <div className="space-y-1">
-            <label htmlFor="brandkit-taxId" className="text-[9px] font-mono text-slate-450 uppercase tracking-wider block">Tax ID</label>
-            <input id="brandkit-taxId" value={form.taxId} onChange={(e) => update("taxId", e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 outline-none focus:border-emerald-500" />
-          </div>
-          <div className="space-y-1">
-            <label htmlFor="brandkit-vatNumber" className="text-[9px] font-mono text-slate-450 uppercase tracking-wider block">VAT Number</label>
-            <input id="brandkit-vatNumber" value={form.vatNumber} onChange={(e) => update("vatNumber", e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 outline-none focus:border-emerald-500" />
-          </div>
-        </div>
+        {showAdvancedFields && (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="space-y-1">
+                <label htmlFor="brandkit-registrationNumber" className="text-[9px] font-mono text-slate-450 uppercase tracking-wider block">Registration No.</label>
+                <input id="brandkit-registrationNumber" value={form.registrationNumber} onChange={(e) => update("registrationNumber", e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 outline-none focus:border-emerald-500" />
+              </div>
+              <div className="space-y-1">
+                <label htmlFor="brandkit-taxId" className="text-[9px] font-mono text-slate-450 uppercase tracking-wider block">Tax ID</label>
+                <input id="brandkit-taxId" value={form.taxId} onChange={(e) => update("taxId", e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 outline-none focus:border-emerald-500" />
+              </div>
+              <div className="space-y-1">
+                <label htmlFor="brandkit-vatNumber" className="text-[9px] font-mono text-slate-450 uppercase tracking-wider block">VAT Number</label>
+                <input id="brandkit-vatNumber" value={form.vatNumber} onChange={(e) => update("vatNumber", e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 outline-none focus:border-emerald-500" />
+              </div>
+            </div>
 
-        <div className="space-y-1">
-          <label htmlFor="brandkit-address" className="text-[9px] font-mono text-slate-450 uppercase tracking-wider block">Business Address</label>
-          <input id="brandkit-address" value={form.address} onChange={(e) => update("address", e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 outline-none focus:border-emerald-500" />
-        </div>
+            <div className="space-y-1">
+              <label htmlFor="brandkit-address" className="text-[9px] font-mono text-slate-450 uppercase tracking-wider block">Business Address</label>
+              <input id="brandkit-address" value={form.address} onChange={(e) => update("address", e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 outline-none focus:border-emerald-500" />
+            </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div className="space-y-1">
-            <label htmlFor="brandkit-phone" className="text-[9px] font-mono text-slate-450 uppercase tracking-wider block">Phone</label>
-            <input id="brandkit-phone" value={form.phone} onChange={(e) => update("phone", e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 outline-none focus:border-emerald-500" />
-          </div>
-          <div className="space-y-1">
-            <label htmlFor="brandkit-email" className="text-[9px] font-mono text-slate-450 uppercase tracking-wider block">Email</label>
-            <input id="brandkit-email" type="email" value={form.email} onChange={(e) => update("email", e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 outline-none focus:border-emerald-500" />
-          </div>
-          <div className="space-y-1">
-            <label htmlFor="brandkit-website" className="text-[9px] font-mono text-slate-450 uppercase tracking-wider block">Website</label>
-            <input id="brandkit-website" value={form.website} onChange={(e) => update("website", e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 outline-none focus:border-emerald-500" />
-          </div>
-        </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="space-y-1">
+                <label htmlFor="brandkit-phone" className="text-[9px] font-mono text-slate-450 uppercase tracking-wider block">Phone</label>
+                <input id="brandkit-phone" value={form.phone} onChange={(e) => update("phone", e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 outline-none focus:border-emerald-500" />
+              </div>
+              <div className="space-y-1">
+                <label htmlFor="brandkit-email" className="text-[9px] font-mono text-slate-450 uppercase tracking-wider block">Email</label>
+                <input id="brandkit-email" type="email" value={form.email} onChange={(e) => update("email", e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 outline-none focus:border-emerald-500" />
+              </div>
+              <div className="space-y-1">
+                <label htmlFor="brandkit-website" className="text-[9px] font-mono text-slate-450 uppercase tracking-wider block">Website</label>
+                <input id="brandkit-website" value={form.website} onChange={(e) => update("website", e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 outline-none focus:border-emerald-500" />
+              </div>
+            </div>
 
-        <div className="space-y-1">
-          <label htmlFor="brandkit-invoiceFooterText" className="text-[9px] font-mono text-slate-450 uppercase tracking-wider block">Invoice Footer Text</label>
-          <textarea id="brandkit-invoiceFooterText" rows={2} value={form.invoiceFooterText} onChange={(e) => update("invoiceFooterText", e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 outline-none focus:border-emerald-500 resize-none" />
-        </div>
-        <div className="space-y-1">
-          <label htmlFor="brandkit-receiptFooterText" className="text-[9px] font-mono text-slate-450 uppercase tracking-wider block">Receipt Footer Text</label>
-          <textarea id="brandkit-receiptFooterText" rows={2} value={form.receiptFooterText} onChange={(e) => update("receiptFooterText", e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 outline-none focus:border-emerald-500 resize-none" />
-        </div>
-        <div className="space-y-1">
-          <label htmlFor="brandkit-legalDisclaimer" className="text-[9px] font-mono text-slate-450 uppercase tracking-wider block">Legal Disclaimer</label>
-          <textarea id="brandkit-legalDisclaimer" rows={2} value={form.legalDisclaimer} onChange={(e) => update("legalDisclaimer", e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 outline-none focus:border-emerald-500 resize-none" />
-        </div>
+            <div className="space-y-1">
+              <label htmlFor="brandkit-invoiceFooterText" className="text-[9px] font-mono text-slate-450 uppercase tracking-wider block">Invoice Footer Text</label>
+              <textarea id="brandkit-invoiceFooterText" rows={2} value={form.invoiceFooterText} onChange={(e) => update("invoiceFooterText", e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 outline-none focus:border-emerald-500 resize-none" />
+            </div>
+            <div className="space-y-1">
+              <label htmlFor="brandkit-receiptFooterText" className="text-[9px] font-mono text-slate-450 uppercase tracking-wider block">Receipt Footer Text</label>
+              <textarea id="brandkit-receiptFooterText" rows={2} value={form.receiptFooterText} onChange={(e) => update("receiptFooterText", e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 outline-none focus:border-emerald-500 resize-none" />
+            </div>
+            <div className="space-y-1">
+              <label htmlFor="brandkit-legalDisclaimer" className="text-[9px] font-mono text-slate-450 uppercase tracking-wider block">Legal Disclaimer</label>
+              <textarea id="brandkit-legalDisclaimer" rows={2} value={form.legalDisclaimer} onChange={(e) => update("legalDisclaimer", e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 outline-none focus:border-emerald-500 resize-none" />
+            </div>
+          </>
+        )}
 
         <button
           type="submit"

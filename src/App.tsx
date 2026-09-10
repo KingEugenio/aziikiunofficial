@@ -7,7 +7,7 @@ import BusinessDashboard from "./components/BusinessDashboard";
 import AIFieldAssistant from "./components/AIFieldAssistant";
 import { Skeleton, SkeletonDashboard, SkeletonTable, SkeletonDetail, SkeletonForm, SkeletonCRM, SkeletonInventory, SkeletonBillingBuilder, SkeletonReportsCharts, SkeletonAppShell } from "./components/Skeleton";
 import { useMinimumLoadingTime, useLoadingTimedOut } from "./hooks/useMinimumLoadingTime";
-import Logo from "./components/Logo";
+import BrandLogo from "./components/BrandLogo";
 import NotificationBanner from "./components/NotificationBanner";
 import AnnouncementBanner from "./components/AnnouncementBanner";
 import SurveyPrompt from "./components/SurveyPrompt";
@@ -1576,7 +1576,7 @@ export default function App() {
         {/* Logo and Switcher combo */}
         <div className="flex flex-col gap-4 text-left">
           <div className="flex items-center gap-3">
-            <Logo size={36} className="shadow-md rounded-xl" />
+            <BrandLogo size={36} className="shadow-md rounded-xl" />
             <div>
               <h1 className="text-lg font-black tracking-tighter flex items-center gap-1.5 font-sans text-slate-900">
                 Aziiki

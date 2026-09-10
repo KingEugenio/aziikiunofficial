@@ -4,7 +4,7 @@ import Phase1Ask, { AskStep } from "./Phase1Ask";
 import Phase2Aha from "./Phase2Aha";
 import Phase3Commit, { CommitStep } from "./Phase3Commit";
 import { OnboardingAnswers, BusinessType, RevenueBracket, Challenge } from "./utils/personalization";
-import Logo from "../Logo";
+import BrandLogo from "../BrandLogo";
 import { ONBOARDING_COMPLETE_KEY } from "./onboardingStorage";
 
 const STORAGE_KEY = "aziiki_onboarding_state";
@@ -128,7 +128,7 @@ export default function OnboardingFlow({ onFinish }: OnboardingFlowProps) {
   return (
     <div className="min-h-screen bg-[color:var(--color-onboard-cream)] flex flex-col items-center justify-between p-5 sm:p-8 font-sans">
       <div className="w-full max-w-md mx-auto flex items-center justify-center gap-2 mb-6 mt-2">
-        <Logo size={28} className="shadow-sm rounded-lg" />
+        <BrandLogo size={28} className="shadow-sm rounded-lg" />
         <span className="font-heading font-extrabold text-slate-900 text-sm tracking-tight">Aziiki</span>
       </div>
 

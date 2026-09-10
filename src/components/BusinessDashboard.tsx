@@ -127,6 +127,12 @@ export default function BusinessDashboard({
   };
 
   const healthScore = calcHealthScore();
+  // Cold-start guard: a brand-new account with almost no ledger history
+  // would otherwise get a confident-looking numeric score computed from
+  // data that barely exists yet - the same >5 threshold calcHealthScore
+  // itself already uses for its "active ledger" bonus. Below that, the
+  // dashboard shows a neutral "not enough data" state instead of a score.
+  const hasEnoughDataForHealthScore = activeTransactions.length >= 5;
 
   const handleParseSms = () => {
     if (!rawSmsText.trim()) {
@@ -564,55 +570,82 @@ export default function BusinessDashboard({
             </p>
           </div>
 
-          {/* Dials visual graphics */}
-          <div className="relative w-32 h-32 mx-auto flex items-center justify-center">
-            {/* SVG circle meter */}
-            <svg className="w-full h-full transform -rotate-90">
-              <circle
-                cx="64"
-                cy="64"
-                r="50"
-                className="stroke-slate-100"
-                strokeWidth="8.5"
-                fill="transparent"
-              />
-              <circle
-                cx="64"
-                cy="64"
-                r="50"
-                className="stroke-emerald-600"
-                strokeWidth="8.5"
-                fill="transparent"
-                strokeDasharray={314}
-                strokeDashoffset={314 - (314 * healthScore) / 100}
-                strokeLinecap="round"
-                style={{ transition: "stroke-dashoffset 0.8s ease-in-out" }}
-              />
-            </svg>
-            
-            <div className="absolute text-center">
-              <strong className="text-2xl font-black font-mono text-slate-900 tracking-tighter">
-                {healthScore}
-              </strong>
-              <span className="text-[10px] text-emerald-600 font-mono block tracking-widest">PTS</span>
-            </div>
-          </div>
+          {hasEnoughDataForHealthScore ? (
+            <>
+              {/* Dials visual graphics */}
+              <div className="relative w-32 h-32 mx-auto flex items-center justify-center">
+                {/* SVG circle meter */}
+                <svg className="w-full h-full transform -rotate-90">
+                  <circle
+                    cx="64"
+                    cy="64"
+                    r="50"
+                    className="stroke-slate-100"
+                    strokeWidth="8.5"
+                    fill="transparent"
+                  />
+                  <circle
+                    cx="64"
+                    cy="64"
+                    r="50"
+                    className="stroke-emerald-600"
+                    strokeWidth="8.5"
+                    fill="transparent"
+                    strokeDasharray={314}
+                    strokeDashoffset={314 - (314 * healthScore) / 100}
+                    strokeLinecap="round"
+                    style={{ transition: "stroke-dashoffset 0.8s ease-in-out" }}
+                  />
+                </svg>
 
-          {/* Health feedback text */}
-          <div className="pt-2">
-            <span className="font-sans font-bold text-xs text-slate-900 flex items-center justify-center gap-1.5">
-              {healthScore >= 75 ? (
-                <><TrendingUp className="w-3.5 h-3.5 text-emerald-600" /> Pristine Solvency Position</>
-              ) : healthScore >= 50 ? (
-                <><Lightning className="w-3.5 h-3.5 text-amber-500" /> Variable Operational Health</>
-              ) : (
-                <><AlertCircle className="w-3.5 h-3.5 text-rose-600" /> High Liquidity Warnings</>
-              )}
-            </span>
-            <p className="text-[11px] text-slate-500 max-w-xs mx-auto leading-relaxed mt-1 font-sans">
-              Calculated based on profit margin targets, cash liquidity levels, and collection delays.
-            </p>
-          </div>
+                <div className="absolute text-center">
+                  <strong className="text-2xl font-black font-mono text-slate-900 tracking-tighter">
+                    {healthScore}
+                  </strong>
+                  <span className="text-[10px] text-emerald-600 font-mono block tracking-widest">PTS</span>
+                </div>
+              </div>
+
+              {/* Health feedback text */}
+              <div className="pt-2">
+                <span className="font-sans font-bold text-xs text-slate-900 flex items-center justify-center gap-1.5">
+                  {healthScore >= 75 ? (
+                    <><TrendingUp className="w-3.5 h-3.5 text-emerald-600" /> Pristine Solvency Position</>
+                  ) : healthScore >= 50 ? (
+                    <><Lightning className="w-3.5 h-3.5 text-amber-500" /> Variable Operational Health</>
+                  ) : (
+                    <><AlertCircle className="w-3.5 h-3.5 text-rose-600" /> High Liquidity Warnings</>
+                  )}
+                </span>
+                <p className="text-[11px] text-slate-500 max-w-xs mx-auto leading-relaxed mt-1 font-sans">
+                  Calculated based on profit margin targets, cash liquidity levels, and collection delays.
+                </p>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Cold-start state: no numeric score at all until there's enough
+                  ledger history for it to mean something - a 2-transaction
+                  account getting a confident-looking low score is worse than
+                  no score. */}
+              <div className="relative w-32 h-32 mx-auto flex items-center justify-center">
+                <svg className="w-full h-full transform -rotate-90">
+                  <circle cx="64" cy="64" r="50" className="stroke-slate-100" strokeWidth="8.5" fill="transparent" />
+                </svg>
+                <div className="absolute text-center">
+                  <History className="w-6 h-6 text-slate-300 mx-auto" />
+                </div>
+              </div>
+              <div className="pt-2">
+                <span className="font-sans font-bold text-xs text-slate-900 flex items-center justify-center gap-1.5">
+                  Not Enough Data Yet
+                </span>
+                <p className="text-[11px] text-slate-500 max-w-xs mx-auto leading-relaxed mt-1 font-sans">
+                  Log {5 - activeTransactions.length} more transaction{5 - activeTransactions.length === 1 ? "" : "s"} and your Health Score will appear here.
+                </p>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Rapid Ledger Cashbook trigger panel */}

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Logo from "./Logo";
+import BrandLogo from "./BrandLogo";
 import { supabase } from "../lib/supabaseClient";
 import { api, ApiError } from "../lib/api";
 import { ShieldCheck, Lock, Envelope as Mail, DeviceMobile as Smartphone, Monitor, Database, WarningCircle as AlertCircle, CheckCircle, CaretRight as ChevronRight, ArrowRight, Key as KeyRound, Eye, EyeSlash } from "@phosphor-icons/react";
@@ -283,7 +283,7 @@ export default function AuthPortal({ onAuthSuccess, onEnterGuest, recoveryMode, 
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans">
         <div className="w-full max-w-md bg-white border border-slate-200 rounded-3xl shadow-2xl p-8 space-y-5">
           <div className="flex items-center gap-2.5">
-            <Logo size={36} className="shadow-md rounded-xl" />
+            <BrandLogo size={36} className="shadow-md rounded-xl" />
             <h2 className="text-base font-black tracking-tight text-slate-900">Set a new password</h2>
           </div>
           {errorMsg && (
@@ -338,7 +338,7 @@ export default function AuthPortal({ onAuthSuccess, onEnterGuest, recoveryMode, 
 
           <div className="relative">
             <div className="flex items-center gap-2.5">
-              <Logo size={36} className="shadow-md rounded-xl" />
+              <BrandLogo size={36} className="shadow-md rounded-xl" />
               <div>
                 <h2 className="text-base font-black tracking-tight text-white font-sans">Aziiki</h2>
                 <p className="text-[10px] text-slate-400 font-mono tracking-wider">Your Business. Organized.</p>

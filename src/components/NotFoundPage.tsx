@@ -1,6 +1,6 @@
 import React from "react";
 import { House } from "@phosphor-icons/react";
-import Logo from "./Logo";
+import BrandLogo from "./BrandLogo";
 
 interface NotFoundPageProps {
   onGoHome: () => void;
@@ -10,7 +10,7 @@ export default function NotFoundPage({ onGoHome }: NotFoundPageProps) {
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans">
       <div className="bg-white border border-slate-200 rounded-3xl p-8 sm:p-10 shadow-sm max-w-md w-full text-center space-y-5">
-        <Logo size={44} className="mx-auto" />
+        <BrandLogo size={44} className="mx-auto" />
         <div>
           <p className="text-5xl font-black text-slate-200 tracking-tight leading-none mb-2">404</p>
           <h1 className="text-lg font-black text-slate-900">Page not found</h1>

@@ -1,22 +1,34 @@
 import React, { Suspense, lazy, useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
-import { ToggleLeft, Megaphone, ClipboardText, SignOut as LogOut, ShieldWarning } from "@phosphor-icons/react";
+import {
+  SquaresFour as LayoutDashboard,
+  ToggleLeft,
+  Megaphone,
+  ClipboardText,
+  Image as ImageIcon,
+  SignOut as LogOut,
+  ShieldWarning,
+} from "@phosphor-icons/react";
 import { supabase } from "../lib/supabaseClient";
 import { api } from "../lib/api";
-import Logo from "../components/Logo";
+import BrandLogo from "../components/BrandLogo";
+import AdminDashboardHome from "./AdminDashboardHome";
 import FeatureFlagsPanel from "./FeatureFlagsPanel";
 import AnnouncementsPanel from "./AnnouncementsPanel";
 import SurveysPanel from "./SurveysPanel";
+import BrandingPanel from "./BrandingPanel";
 
 const AuthPortal = lazy(() => import("../components/AuthPortal"));
 
 type AdminStatus = "checking" | "authorized" | "unauthorized";
-type Tab = "flags" | "announcements" | "surveys";
+type Tab = "dashboard" | "flags" | "announcements" | "surveys" | "branding";
 
-const TABS: { id: Tab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+const NAV: { id: Tab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "flags", label: "Feature Flags", icon: ToggleLeft },
   { id: "announcements", label: "Announcements", icon: Megaphone },
   { id: "surveys", label: "Surveys", icon: ClipboardText },
+  { id: "branding", label: "Branding & Files", icon: ImageIcon },
 ];
 
 /**
@@ -30,7 +42,7 @@ const TABS: { id: Tab; label: string; icon: React.ComponentType<{ className?: st
 export default function AdminApp() {
   const [session, setSession] = useState<Session | null | undefined>(undefined);
   const [adminStatus, setAdminStatus] = useState<AdminStatus>("checking");
-  const [activeTab, setActiveTab] = useState<Tab>("flags");
+  const [activeTab, setActiveTab] = useState<Tab>("dashboard");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session));
@@ -104,48 +116,90 @@ export default function AdminApp() {
     );
   }
 
+  const activeNav = NAV.find((n) => n.id === activeTab)!;
+
   return (
-    <div className="min-h-screen bg-slate-50 font-sans">
-      <header className="bg-white border-b border-slate-200 px-4 sm:px-8 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <Logo className="w-7 h-7" />
+    <div className="min-h-screen bg-slate-50 font-sans flex">
+      {/* Sidebar */}
+      <aside className="hidden md:flex md:w-60 shrink-0 bg-white border-r border-slate-200 flex-col">
+        <div className="flex items-center gap-2.5 px-5 py-5 border-b border-slate-100">
+          <BrandLogo className="w-8 h-8" />
           <div>
-            <h1 className="text-sm font-black text-slate-900">Aziiki Admin</h1>
-            <p className="text-[10px] text-slate-400 font-mono">{session.user.email}</p>
+            <p className="text-sm font-black text-slate-900 leading-tight">Aziiki</p>
+            <p className="text-[9px] font-mono uppercase tracking-widest text-slate-400">Admin</p>
           </div>
         </div>
-        <button
-          onClick={handleSignOut}
-          className="text-xs font-bold text-slate-500 hover:text-slate-800 flex items-center gap-1.5 cursor-pointer"
-        >
-          <LogOut className="w-3.5 h-3.5" /> Sign out
-        </button>
-      </header>
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-8 py-6">
-        <nav className="flex gap-1.5 mb-6 bg-white border border-slate-200 rounded-2xl p-1.5">
-          {TABS.map((tab) => {
-            const TabIcon = tab.icon;
-            const active = activeTab === tab.id;
+        <nav className="flex-1 px-3 py-4 space-y-1">
+          {NAV.map((item) => {
+            const NavIcon = item.icon;
+            const active = activeTab === item.id;
             return (
               <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 flex items-center justify-center gap-1.5 text-[11px] font-bold px-3 py-2 rounded-xl transition-colors cursor-pointer ${
-                  active ? "bg-emerald-600 text-white" : "text-slate-500 hover:bg-slate-100"
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                  active ? "bg-slate-900 text-white shadow-sm" : "text-slate-500 hover:bg-slate-100"
                 }`}
               >
-                <TabIcon className="w-3.5 h-3.5" /> {tab.label}
+                <NavIcon className="w-4 h-4 shrink-0" /> {item.label}
               </button>
             );
           })}
         </nav>
 
-        <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6">
-          {activeTab === "flags" && <FeatureFlagsPanel />}
-          {activeTab === "announcements" && <AnnouncementsPanel />}
-          {activeTab === "surveys" && <SurveysPanel />}
+        <div className="px-3 py-4 border-t border-slate-100 space-y-2">
+          <p className="text-[9px] font-mono text-slate-400 px-3 truncate">{session.user.email}</p>
+          <button
+            onClick={handleSignOut}
+            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100 cursor-pointer"
+          >
+            <LogOut className="w-4 h-4 shrink-0" /> Sign out
+          </button>
         </div>
+      </aside>
+
+      {/* Main content */}
+      <div className="flex-1 min-w-0 flex flex-col">
+        <header className="bg-white border-b border-slate-200 px-4 sm:px-8 py-4 flex items-center justify-between md:justify-start gap-3">
+          <div className="flex items-center gap-2 md:hidden">
+            <BrandLogo className="w-6 h-6" />
+            <span className="text-xs font-black text-slate-900">Aziiki Admin</span>
+          </div>
+          <h1 className="hidden md:block text-sm font-black text-slate-900">{activeNav.label}</h1>
+          <button onClick={handleSignOut} className="md:hidden text-slate-400 cursor-pointer">
+            <LogOut className="w-4 h-4" />
+          </button>
+        </header>
+
+        {/* Mobile nav (no sidebar below md) */}
+        <nav className="md:hidden flex gap-1.5 overflow-x-auto px-4 py-2.5 bg-white border-b border-slate-200">
+          {NAV.map((item) => {
+            const NavIcon = item.icon;
+            const active = activeTab === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold whitespace-nowrap cursor-pointer ${
+                  active ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-500"
+                }`}
+              >
+                <NavIcon className="w-3.5 h-3.5 shrink-0" /> {item.label}
+              </button>
+            );
+          })}
+        </nav>
+
+        <main className="flex-1 p-4 sm:p-8 max-w-4xl w-full">
+          <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6">
+            {activeTab === "dashboard" && <AdminDashboardHome />}
+            {activeTab === "flags" && <FeatureFlagsPanel />}
+            {activeTab === "announcements" && <AnnouncementsPanel />}
+            {activeTab === "surveys" && <SurveysPanel />}
+            {activeTab === "branding" && <BrandingPanel />}
+          </div>
+        </main>
       </div>
     </div>
   );

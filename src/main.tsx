@@ -4,7 +4,25 @@ import {IconContext} from '@phosphor-icons/react';
 import App from './App.tsx';
 import AdminApp from './admin/AdminApp.tsx';
 import { ErrorBoundary } from './components/ErrorBoundary.tsx';
+import { api } from './lib/api.ts';
 import './index.css';
+
+// Swaps the browser-tab favicon for the admin-uploaded one (see /admin ->
+// Branding & Files), if one exists. Runs once at boot, outside React,
+// since a <link> tag in <head> isn't part of the component tree - falls
+// back to whatever's already in index.html on any failure.
+api.config
+  .branding()
+  .then(({ faviconUrl }) => {
+    if (!faviconUrl) return;
+    const link = document.querySelector<HTMLLinkElement>("link[rel='icon']") ?? document.createElement('link');
+    link.rel = 'icon';
+    link.href = faviconUrl;
+    if (!link.parentNode) document.head.appendChild(link);
+  })
+  .catch(() => {
+    // Keep the static default favicon already in index.html.
+  });
 
 // /admin is a second, separate root component (its own auth/admin check,
 // its own bundle) rather than a route within <App/> - this app has no

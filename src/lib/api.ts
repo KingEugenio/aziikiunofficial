@@ -134,6 +134,7 @@ export const api = {
       request<{ emailSendingEnabled: boolean; paystackEnabled: boolean; flags: Record<string, boolean> }>(
         "/config/features"
       ),
+    branding: () => request<{ logoUrl: string | null; faviconUrl: string | null }>("/config/branding"),
   },
 
   brandKits: {
@@ -321,6 +322,33 @@ export const api = {
             questions: Array<{ id: string; prompt: string; type: "text" | "choice"; counts?: Record<string, number>; answers?: string[] }>;
           };
         }>(`/admin/surveys/${id}/results`).then((r) => r.data),
+    },
+
+    stats: {
+      get: () =>
+        request<{
+          data: { totalUsers: number; totalBusinesses: number; activeAnnouncements: number; activeSurveys: number; flagsEnabled: number };
+        }>("/admin/stats").then((r) => r.data),
+    },
+
+    assets: {
+      list: () =>
+        request<{
+          data: Array<{
+            id: string;
+            kind: "logo" | "favicon" | "document";
+            fileName: string;
+            storagePath: string;
+            url: string;
+            contentType: string;
+            sizeBytes: number;
+            isActive: boolean;
+            createdAt: string;
+          }>;
+        }>("/admin/assets").then((r) => r.data),
+      create: (payload: { kind: "logo" | "favicon" | "document"; fileName: string; storagePath: string; contentType: string; sizeBytes: number }) =>
+        request<{ data: unknown }>("/admin/assets", { method: "POST", body: JSON.stringify(payload) }),
+      remove: (id: string) => request<void>(`/admin/assets/${id}`, { method: "DELETE" }),
     },
   },
 };

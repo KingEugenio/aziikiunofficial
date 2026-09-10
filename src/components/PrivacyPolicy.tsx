@@ -1,6 +1,6 @@
 import React from "react";
 import { ArrowLeft } from "@phosphor-icons/react";
-import Logo from "./Logo";
+import BrandLogo from "./BrandLogo";
 
 interface PrivacyPolicyProps {
   onBack: () => void;
@@ -19,7 +19,7 @@ export default function PrivacyPolicy({ onBack }: PrivacyPolicyProps) {
 
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-sm space-y-8">
           <div className="flex items-center gap-3 pb-6 border-b border-slate-150">
-            <Logo size={40} />
+            <BrandLogo size={40} />
             <div>
               <h1 className="text-xl font-black text-slate-900">Privacy Policy</h1>
               <p className="text-xs text-slate-400 font-mono">Last updated: August 2026</p>

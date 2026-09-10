@@ -2,6 +2,8 @@ import { Router, type Request, type Response } from "express";
 import { adminFeatureFlagsRouter } from "./featureFlags";
 import { adminAnnouncementsRouter } from "./announcements";
 import { adminSurveysRouter } from "./surveys";
+import { adminAssetsRouter } from "./assets";
+import { adminStatsRouter } from "./stats";
 
 export const adminRouter = Router();
 
@@ -15,3 +17,5 @@ adminRouter.get("/me", (req: Request, res: Response) => {
 adminRouter.use("/feature-flags", adminFeatureFlagsRouter);
 adminRouter.use("/announcements", adminAnnouncementsRouter);
 adminRouter.use("/surveys", adminSurveysRouter);
+adminRouter.use("/assets", adminAssetsRouter);
+adminRouter.use("/stats", adminStatsRouter);

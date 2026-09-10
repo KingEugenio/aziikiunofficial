@@ -31,3 +31,11 @@ export const surveyCreateSchema = z.object({
 export const surveyResponseSchema = z.object({
   answers: z.record(z.string(), z.string().trim().max(2000)),
 });
+
+export const siteAssetCreateSchema = z.object({
+  kind: z.enum(["logo", "favicon", "document"]),
+  fileName: z.string().trim().min(1).max(255),
+  storagePath: z.string().trim().min(1).max(500),
+  contentType: z.string().trim().min(1).max(100),
+  sizeBytes: z.number().int().positive().max(20 * 1024 * 1024), // 20MB cap
+});
