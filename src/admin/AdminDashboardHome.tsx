@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Users, Buildings, Megaphone, ClipboardText, ToggleLeft } from "@phosphor-icons/react";
 import { api } from "../lib/api";
+import { LoadingSwap } from "../components/LoadingSwap";
+import { SkeletonAdminDashboard } from "../components/Skeleton";
 
 interface Stats {
   totalUsers: number;
@@ -20,12 +22,18 @@ const CARDS: { key: keyof Stats; label: string; icon: React.ComponentType<{ clas
 
 export default function AdminDashboardHome() {
   const [stats, setStats] = useState<Stats | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.admin.stats.get().then(setStats).catch(() => setStats(null));
+    api.admin.stats
+      .get()
+      .then(setStats)
+      .catch(() => setStats(null))
+      .finally(() => setLoading(false));
   }, []);
 
   return (
+    <LoadingSwap isLoading={loading} skeleton={<SkeletonAdminDashboard />}>
     <div className="space-y-6">
       <div>
         <h2 className="text-sm font-black text-slate-900">Overview</h2>
@@ -63,5 +71,6 @@ export default function AdminDashboardHome() {
         </ul>
       </div>
     </div>
+    </LoadingSwap>
   );
 }

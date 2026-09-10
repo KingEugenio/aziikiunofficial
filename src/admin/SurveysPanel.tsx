@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { ClipboardText, Plus, Trash as Trash2, ChartBar } from "@phosphor-icons/react";
 import { api, type SurveyQuestion } from "../lib/api";
+import { LoadingSwap } from "../components/LoadingSwap";
+import { SkeletonAdminItemList } from "../components/Skeleton";
 
 interface SurveyRow {
   id: string;
@@ -227,9 +229,8 @@ export default function SurveysPanel() {
 
       <div className="space-y-2">
         <h3 className="text-xs font-bold text-slate-800">Surveys</h3>
-        {loading ? (
-          <p className="text-xs text-slate-400">Loading...</p>
-        ) : surveys.length === 0 ? (
+        <LoadingSwap isLoading={loading} skeleton={<SkeletonAdminItemList />}>
+        {surveys.length === 0 ? (
           <p className="text-xs text-slate-400">No surveys yet.</p>
         ) : (
           surveys.map((s) => (
@@ -263,6 +264,7 @@ export default function SurveysPanel() {
             </div>
           ))
         )}
+        </LoadingSwap>
       </div>
     </div>
   );

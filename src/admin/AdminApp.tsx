@@ -41,20 +41,36 @@ const NAV: { id: Tab; label: string; icon: React.ComponentType<{ className?: str
  */
 export default function AdminApp() {
   const [session, setSession] = useState<Session | null | undefined>(undefined);
+  const [sessionLoaded, setSessionLoaded] = useState(false);
   const [adminStatus, setAdminStatus] = useState<AdminStatus>("checking");
   const [activeTab, setActiveTab] = useState<Tab>("dashboard");
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      setSessionLoaded(true);
+    });
     const { data: subscription } = supabase.auth.onAuthStateChange((_event, newSession) => {
       setSession(newSession);
+      setSessionLoaded(true);
     });
     return () => subscription.subscription.unsubscribe();
   }, []);
 
+  // Deliberately keyed on the access token string (a stable primitive), not
+  // the `session` object itself: supabase-js hands onAuthStateChange a
+  // brand-new Session object on effectively every event, including ones
+  // that don't change who's signed in (tab focus, token auto-refresh
+  // ticks, ...). Depending on the object caused this effect to refire
+  // continuously - each refire called api.admin.me(), which itself calls
+  // getSession() (see src/lib/api.ts), producing another auth event and
+  // never letting "authorized" stay painted long enough to render.
+  const accessToken = session?.access_token;
+
   useEffect(() => {
-    if (!session) {
-      setAdminStatus(session === null ? "unauthorized" : "checking");
+    if (!sessionLoaded) return; // still loading the initial session
+    if (!accessToken) {
+      setAdminStatus("unauthorized");
       return;
     }
     setAdminStatus("checking");
@@ -62,7 +78,7 @@ export default function AdminApp() {
       .me()
       .then(() => setAdminStatus("authorized"))
       .catch(() => setAdminStatus("unauthorized"));
-  }, [session]);
+  }, [sessionLoaded, accessToken]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();

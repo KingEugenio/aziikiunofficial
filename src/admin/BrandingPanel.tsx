@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { Image as ImageIcon, Browser as FaviconIcon, FileArrowUp, Trash as Trash2, UploadSimple } from "@phosphor-icons/react";
 import { supabase } from "../lib/supabaseClient";
 import { api } from "../lib/api";
+import { LoadingSwap } from "../components/LoadingSwap";
+import { SkeletonAdminBranding } from "../components/Skeleton";
 
 interface AssetRow {
   id: string;
@@ -170,9 +172,8 @@ export default function BrandingPanel() {
     load();
   };
 
-  if (loading) return <p className="text-xs text-slate-400">Loading...</p>;
-
   return (
+    <LoadingSwap isLoading={loading} skeleton={<SkeletonAdminBranding />}>
     <div className="space-y-6">
       <p className="text-xs text-slate-500 leading-relaxed">
         The logo and favicon here replace Aziiki's built-in defaults everywhere they're shown to visitors and signed-in users.
@@ -222,5 +223,6 @@ export default function BrandingPanel() {
         </button>
       </div>
     </div>
+    </LoadingSwap>
   );
 }

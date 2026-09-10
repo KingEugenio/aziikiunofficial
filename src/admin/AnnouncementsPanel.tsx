@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Megaphone, PaperPlaneTilt as Send } from "@phosphor-icons/react";
 import { api } from "../lib/api";
+import { LoadingSwap } from "../components/LoadingSwap";
+import { SkeletonAdminItemList } from "../components/Skeleton";
 
 interface AnnouncementRow {
   id: string;
@@ -92,9 +94,8 @@ export default function AnnouncementsPanel() {
 
       <div className="space-y-2">
         <h3 className="text-xs font-bold text-slate-800">Sent announcements</h3>
-        {loading ? (
-          <p className="text-xs text-slate-400">Loading...</p>
-        ) : announcements.length === 0 ? (
+        <LoadingSwap isLoading={loading} skeleton={<SkeletonAdminItemList />}>
+        {announcements.length === 0 ? (
           <p className="text-xs text-slate-400">Nothing sent yet.</p>
         ) : (
           announcements.map((a) => (
@@ -118,6 +119,7 @@ export default function AnnouncementsPanel() {
             </div>
           ))
         )}
+        </LoadingSwap>
       </div>
     </div>
   );

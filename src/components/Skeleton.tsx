@@ -522,3 +522,135 @@ export function SkeletonAppShell() {
     </div>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Admin portal skeletons (src/admin/*.tsx). Same "matches the real shape"
+// rule as everything above - the admin screens previously just showed plain
+// "Loading..." text with nothing to do with what was about to render.
+// ---------------------------------------------------------------------------
+
+// Mirrors AdminDashboardHome: 5 colored stat cards + the "what each screen
+// does" info card. Cards stay neutral gray here rather than mimicking each
+// card's real color - a skeleton in someone else's brand colors reads as a
+// rendering bug, not a loading state.
+export function SkeletonAdminDashboard() {
+  return (
+    <div className="space-y-6 w-full text-left" id="skeleton-admin-dashboard">
+      <div className="space-y-2">
+        <Skeleton width="30%" height="1.1rem" />
+        <Skeleton width="50%" height="0.8rem" />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="bg-slate-100 rounded-2xl p-5 space-y-3" style={{ animationDelay: `${i * 60}ms` }}>
+            <div className="flex items-start justify-between">
+              <Skeleton width="60%" height="0.7rem" className="bg-slate-200" />
+              <Skeleton width="2.25rem" height="2.25rem" className="rounded-xl bg-slate-200" />
+            </div>
+            <Skeleton width="35%" height="1.5rem" className="bg-slate-200" />
+          </div>
+        ))}
+      </div>
+      <div className="border border-slate-200 rounded-2xl p-5 space-y-2.5">
+        <Skeleton width="35%" height="0.9rem" />
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} height="0.75rem" width={`${90 - i * 8}%`} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Mirrors FeatureFlagsPanel: an intro line, then a stack of flag cards each
+// with a name + phase badge, a description line, and a toggle switch shape.
+export function SkeletonAdminFlags() {
+  return (
+    <div className="space-y-3 w-full text-left" id="skeleton-admin-flags">
+      <Skeleton width="80%" height="0.8rem" />
+      {Array.from({ length: 5 }).map((_, i) => (
+        <div key={i} className="border border-slate-200 rounded-2xl p-4 flex items-center justify-between gap-4" style={{ animationDelay: `${i * 50}ms` }}>
+          <div className="space-y-1.5 flex-1">
+            <div className="flex items-center gap-2">
+              <Skeleton width="35%" height="0.85rem" />
+              <Skeleton width="15%" height="0.6rem" className="rounded" />
+            </div>
+            <Skeleton width="70%" height="0.7rem" />
+          </div>
+          <Skeleton width="2.5rem" height="1.375rem" className="rounded-full shrink-0" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Mirrors AnnouncementsPanel / SurveysPanel: a composer card (title input,
+// message/description area, submit button) followed by a short list of
+// already-sent items - both screens share this same "compose then list"
+// shape, just with different field counts.
+export function SkeletonAdminComposer() {
+  return (
+    <div className="space-y-6 w-full text-left" id="skeleton-admin-composer">
+      <div className="border border-slate-200 rounded-2xl p-4 space-y-3">
+        <Skeleton width="45%" height="0.9rem" />
+        <Skeleton width="70%" height="0.75rem" />
+        <Skeleton height="2.25rem" className="rounded-xl" />
+        <Skeleton height="4.5rem" className="rounded-xl" />
+        <Skeleton width="140px" height="2.25rem" className="rounded-xl" />
+      </div>
+      <div className="space-y-2">
+        <Skeleton width="30%" height="0.85rem" />
+        {Array.from({ length: 2 }).map((_, i) => (
+          <div key={i} className="border border-slate-200 rounded-2xl p-4 space-y-1.5" style={{ animationDelay: `${i * 60}ms` }}>
+            <Skeleton width="40%" height="0.85rem" />
+            <Skeleton width="80%" height="0.7rem" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// A shorter list-only version of SkeletonAdminComposer's bottom half - for
+// AnnouncementsPanel/SurveysPanel, whose composer form renders immediately
+// (it needs no data fetch) and only the "already sent" list below it is
+// actually loading.
+export function SkeletonAdminItemList({ count = 2 }: { count?: number }) {
+  return (
+    <div className="space-y-2 w-full text-left" id="skeleton-admin-item-list">
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className="border border-slate-200 rounded-2xl p-4 flex items-start justify-between gap-4" style={{ animationDelay: `${i * 60}ms` }}>
+          <div className="space-y-1.5 flex-1">
+            <Skeleton width="40%" height="0.85rem" />
+            <Skeleton width="80%" height="0.7rem" />
+          </div>
+          <Skeleton width="70px" height="1.75rem" className="rounded-lg shrink-0" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Mirrors BrandingPanel: two side-by-side upload slots (logo/favicon) plus
+// a documents list with an upload link.
+export function SkeletonAdminBranding() {
+  return (
+    <div className="space-y-6 w-full text-left" id="skeleton-admin-branding">
+      <Skeleton width="90%" height="0.8rem" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {Array.from({ length: 2 }).map((_, i) => (
+          <div key={i} className="border border-slate-200 rounded-2xl p-4 space-y-3" style={{ animationDelay: `${i * 60}ms` }}>
+            <div className="flex items-center gap-2">
+              <Skeleton width="2rem" height="2rem" className="rounded-lg" />
+              <Skeleton width="50%" height="0.8rem" />
+            </div>
+            <Skeleton height="2.25rem" className="rounded-xl" />
+          </div>
+        ))}
+      </div>
+      <div className="border border-slate-200 rounded-2xl p-4 space-y-2">
+        <Skeleton width="25%" height="0.85rem" />
+        <Skeleton width="60%" height="0.7rem" />
+      </div>
+    </div>
+  );
+}

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { CaretDown, CaretUp, Plus, Trash as Trash2 } from "@phosphor-icons/react";
 import { api } from "../lib/api";
+import { LoadingSwap } from "../components/LoadingSwap";
+import { SkeletonAdminFlags } from "../components/Skeleton";
 
 interface FlagRow {
   key: string;
@@ -142,9 +144,8 @@ export default function FeatureFlagsPanel() {
     }
   };
 
-  if (loading) return <p className="text-xs text-slate-400">Loading feature flags...</p>;
-
   return (
+    <LoadingSwap isLoading={loading} skeleton={<SkeletonAdminFlags />}>
     <div className="space-y-3">
       <p className="text-xs text-slate-500 leading-relaxed">
         Every feature outside the Phase 1 MVP ships in the code, switched off by default. Flip one on for everyone, or expand it
@@ -200,5 +201,6 @@ export default function FeatureFlagsPanel() {
         );
       })}
     </div>
+    </LoadingSwap>
   );
 }
