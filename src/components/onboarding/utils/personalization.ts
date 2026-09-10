@@ -3,6 +3,9 @@
 // data - no state, no API calls - so Phase2Aha and Phase3Commit can stay
 // dumb render layers that simply call these.
 
+import type { Icon } from "@phosphor-icons/react";
+import { ShoppingCart, Briefcase, BowlFood, Sparkle, Alarm, Waves, Receipt, ChartLineUp } from "@phosphor-icons/react";
+
 export type BusinessType = "retail" | "freelancer" | "food_beverage" | "other";
 export type RevenueBracket = "starting" | "small" | "growing" | "established";
 export type Challenge = "late_payments" | "cash_flow" | "expenses" | "margins";
@@ -13,11 +16,11 @@ export interface OnboardingAnswers {
   challenge?: Challenge;
 }
 
-export const BUSINESS_TYPE_OPTIONS: { value: BusinessType; label: string; emoji: string }[] = [
-  { value: "retail", label: "Retail / Shop", emoji: "🛒" },
-  { value: "freelancer", label: "Freelancer / Services", emoji: "💼" },
-  { value: "food_beverage", label: "Food & Beverage", emoji: "🍲" },
-  { value: "other", label: "Something else", emoji: "✨" },
+export const BUSINESS_TYPE_OPTIONS: { value: BusinessType; label: string; icon: Icon }[] = [
+  { value: "retail", label: "Retail / Shop", icon: ShoppingCart },
+  { value: "freelancer", label: "Freelancer / Services", icon: Briefcase },
+  { value: "food_beverage", label: "Food & Beverage", icon: BowlFood },
+  { value: "other", label: "Something else", icon: Sparkle },
 ];
 
 export const REVENUE_OPTIONS: { value: RevenueBracket; label: string }[] = [
@@ -27,11 +30,11 @@ export const REVENUE_OPTIONS: { value: RevenueBracket; label: string }[] = [
   { value: "established", label: "GHS 20,000+ / month" },
 ];
 
-export const CHALLENGE_OPTIONS: { value: Challenge; label: string; emoji: string }[] = [
-  { value: "late_payments", label: "Chasing late payments", emoji: "⏰" },
-  { value: "cash_flow", label: "Managing cash flow", emoji: "🌊" },
-  { value: "expenses", label: "Tracking expenses", emoji: "🧾" },
-  { value: "margins", label: "Growing profit margins", emoji: "📈" },
+export const CHALLENGE_OPTIONS: { value: Challenge; label: string; icon: Icon }[] = [
+  { value: "late_payments", label: "Chasing late payments", icon: Alarm },
+  { value: "cash_flow", label: "Managing cash flow", icon: Waves },
+  { value: "expenses", label: "Tracking expenses", icon: Receipt },
+  { value: "margins", label: "Growing profit margins", icon: ChartLineUp },
 ];
 
 /** Scales sample numbers in the Aha moment so they feel like THIS user's

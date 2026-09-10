@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { Router } from "express";
 import { membershipInviteSchema, membershipUpdateSchema } from "../validation/businessMemberships";
 import { getServiceRoleClient } from "../supabaseClients";
+import { findUserByEmail } from "../lib/findUserByEmail";
 
 function fromRow(row: any) {
   return {
@@ -37,32 +38,6 @@ businessMembershipsRouter.get("/", async (req: Request, res: Response) => {
 
   res.json({ data: (data ?? []).map(fromRow) });
 });
-
-// The auth.admin API has no direct "find user by email" in this SDK version -
-// only paginated listUsers(). Bounded to 10 pages (10k users) since this is
-// only ever used as a fallback when inviteUserByEmail reports the address is
-// already registered; beyond that bound we report a clear error rather than
-// searching indefinitely.
-async function findExistingUserByEmail(email: string) {
-  const adminClient = getServiceRoleClient();
-  const normalized = email.trim().toLowerCase();
-  const MAX_PAGES = 10;
-  for (let page = 1; page <= MAX_PAGES; page++) {
-    const result = await adminClient.auth.admin.listUsers({ page, perPage: 1000 });
-    if (result.error) throw result.error;
-    // Cast needed because listUsers()'s return type is a discriminated union
-    // on { data, error } that TypeScript can't narrow through the
-    // already-checked `result.error` above once accessed as
-    // `result.data.users` (a known limitation of destructured/nested
-    // discriminant narrowing) - the runtime check on the line above is what
-    // actually guarantees this is the non-error branch.
-    const users = result.data.users as Array<{ id: string; email?: string | null }>;
-    const match = users.find((u) => u.email?.toLowerCase() === normalized);
-    if (match) return match;
-    if (users.length < 1000) break;
-  }
-  return null;
-}
 
 businessMembershipsRouter.post("/invite", async (req: Request, res: Response) => {
   const parsed = membershipInviteSchema.safeParse(req.body);
@@ -106,7 +81,7 @@ businessMembershipsRouter.post("/invite", async (req: Request, res: Response) =>
         res.status(400).json({ error: inviteError.message });
         return;
       }
-      const existingUser = await findExistingUserByEmail(email);
+      const existingUser = await findUserByEmail(email);
       if (!existingUser) {
         res.status(404).json({
           error: "This email is already registered but could not be located. Please double-check the address.",

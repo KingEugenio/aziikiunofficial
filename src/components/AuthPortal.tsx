@@ -3,6 +3,7 @@ import Logo from "./Logo";
 import { supabase } from "../lib/supabaseClient";
 import { api, ApiError } from "../lib/api";
 import { ShieldCheck, Lock, Envelope as Mail, DeviceMobile as Smartphone, Monitor, Database, WarningCircle as AlertCircle, CheckCircle, CaretRight as ChevronRight, ArrowRight, Key as KeyRound, Eye, EyeSlash } from "@phosphor-icons/react";
+import { useFeatureFlags } from "../lib/featureFlags";
 
 interface AuthPortalProps {
   onAuthSuccess: (info: { user: any; isNewUser: boolean; businessName?: string; currency?: string; seedDemoData?: boolean }) => void;
@@ -45,6 +46,7 @@ type Mode = "password" | "magic-link" | "otp" | "reset-request" | "otp-code" | "
 const GENERIC_LOGIN_ERROR = "Incorrect email or password.";
 
 export default function AuthPortal({ onAuthSuccess, onEnterGuest, recoveryMode, linkErrorMessage, onDismissLinkError, prefillEmail, initialTab, onShowPrivacyPolicy }: AuthPortalProps) {
+  const { isEnabled } = useFeatureFlags();
   const [isSignUp, setIsSignUp] = useState(initialTab === "create");
   const [mode, setMode] = useState<Mode>(recoveryMode ? "recovery" : linkErrorMessage ? "reset-request" : "password");
   const [email, setEmail] = useState(prefillEmail ?? "");
@@ -635,9 +637,12 @@ export default function AuthPortal({ onAuthSuccess, onEnterGuest, recoveryMode, 
                       <button onClick={() => { resetNotices(); setMode("magic-link"); }} className="text-emerald-700 hover:underline text-[10px] font-bold">
                         Email me a sign-in link
                       </button>
+                      {/* One-time-code sign in: off by default in Phase 1 (password + magic link is the whole auth surface), code preserved. Toggle via admin portal -> auth_otp_method. */}
+                      {isEnabled("auth_otp_method") && (
                       <button onClick={() => { resetNotices(); setMode("otp"); }} className="text-emerald-700 hover:underline text-[10px] font-bold">
                         Email me a one-time code
                       </button>
+                      )}
                     </div>
                   )}
                 </div>

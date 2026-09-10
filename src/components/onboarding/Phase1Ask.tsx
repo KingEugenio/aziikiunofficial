@@ -50,7 +50,7 @@ export default function Phase1Ask({ step, answers, onAnswer }: Phase1AskProps) {
                 <QuestionCard
                   key={opt.value}
                   label={opt.label}
-                  emoji={opt.emoji}
+                  icon={opt.icon}
                   index={i}
                   selected={answers.businessType === opt.value}
                   onSelect={() => onAnswer(opt.value)}
@@ -113,7 +113,7 @@ export default function Phase1Ask({ step, answers, onAnswer }: Phase1AskProps) {
                 <QuestionCard
                   key={opt.value}
                   label={opt.label}
-                  emoji={opt.emoji}
+                  icon={opt.icon}
                   index={i}
                   selected={answers.challenge === opt.value}
                   onSelect={() => onAnswer(opt.value)}

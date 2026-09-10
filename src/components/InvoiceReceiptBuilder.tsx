@@ -14,6 +14,7 @@ import PurchaseOrderManager from "./PurchaseOrderManager";
 import TeamManager from "./TeamManager";
 import ExchangeRateSettings from "./ExchangeRateSettings";
 import { CustomBlockLayout } from "../lib/documentBlocks";
+import { useFeatureFlags } from "../lib/featureFlags";
 
 interface InvoiceReceiptBuilderProps {
   currentBusiness: Business;
@@ -44,7 +45,6 @@ interface InvoiceReceiptBuilderProps {
 // curate a smaller set again — the underlying DESIGN_TEMPLATES data and
 // every template's rendering logic stay untouched either way.
 // ─────────────────────────────────────────────────────────────────────────
-const MVP_MODE = true;
 const MVP_TEMPLATE_IDS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 const DESIGN_TEMPLATES = [
@@ -211,6 +211,7 @@ export default function InvoiceReceiptBuilder({
   onConvertQuote,
   onUpdateInvoiceStatus
 }: InvoiceReceiptBuilderProps) {
+  const { isEnabled } = useFeatureFlags();
   // Navigation tabs: "builder" (Form Info) | "style" (10 Designs + Customs) | "history" (Past Invoices Ledger)
   // "pdfImport" was removed entirely - it was a fully simulated "OCR" that
   // never read the uploaded file's actual content at all (only its
@@ -224,8 +225,14 @@ export default function InvoiceReceiptBuilder({
   const [activePaneTab, setActivePaneTab] = useState<"builder" | "style" | "history" | "gallery" | "brandKit" | "purchaseOrders" | "team" | "currencies">("builder");
 
   const changePaneTab = (tab: "builder" | "style" | "history" | "gallery" | "brandKit" | "purchaseOrders" | "team" | "currencies") => {
-    // AZIIKI BASIC VERSION: block navigation to hidden-but-preserved panes.
-    if (MVP_MODE && (tab === "gallery" || tab === "purchaseOrders" || tab === "team" || tab === "currencies")) {
+    // Block navigation to a pane whose feature flag is off (defends against
+    // stale UI state, not just hidden tab buttons).
+    if (
+      (tab === "gallery" && !isEnabled("document_template_editor")) ||
+      (tab === "purchaseOrders" && !isEnabled("purchase_orders")) ||
+      (tab === "team" && !isEnabled("team_memberships_invite_ui")) ||
+      (tab === "currencies" && !isEnabled("exchange_rate_live_switching"))
+    ) {
       setActivePaneTab("builder");
       return;
     }
@@ -906,8 +913,8 @@ export default function InvoiceReceiptBuilder({
           >
             <span className="inline-flex items-center gap-1"><History className="w-3.5 h-3.5" /> Past Ledger</span>
           </button>
-          {/* AZIIKI BASIC VERSION: custom-template Gallery hidden — MVP ships 5 fixed templates only. Code preserved. */}
-          {!MVP_MODE && (
+          {/* Custom-template Gallery: off by default in Phase 1 (fixed templates only), code preserved. Toggle via admin portal -> document_template_editor. */}
+          {isEnabled("document_template_editor") && (
           <button
             onClick={() => changePaneTab("gallery")}
             className={`flex-1 pb-2 text-[10px] font-bold font-sans border-b-2 text-center cursor-pointer transition-colors ${
@@ -925,8 +932,8 @@ export default function InvoiceReceiptBuilder({
           >
             <span className="inline-flex items-center gap-1"><Tag className="w-3.5 h-3.5" /> Brand Kit</span>
           </button>
-          {/* AZIIKI BASIC VERSION: Purchase Orders / Team / Exchange Rates hidden from MVP. Code preserved. */}
-          {!MVP_MODE && (
+          {/* Purchase Orders / Team / Exchange Rates: off by default in Phase 1, code preserved. Toggle via admin portal. */}
+          {isEnabled("purchase_orders") && (
           <button
             onClick={() => changePaneTab("purchaseOrders")}
             className={`flex-1 pb-2 text-[10px] font-bold font-sans border-b-2 text-center cursor-pointer transition-colors ${
@@ -936,7 +943,7 @@ export default function InvoiceReceiptBuilder({
             <span className="inline-flex items-center gap-1"><Package className="w-3.5 h-3.5" /> Purchase Orders</span>
           </button>
           )}
-          {!MVP_MODE && (
+          {isEnabled("team_memberships_invite_ui") && (
           <button
             onClick={() => changePaneTab("team")}
             className={`flex-1 pb-2 text-[10px] font-bold font-sans border-b-2 text-center cursor-pointer transition-colors ${
@@ -946,7 +953,7 @@ export default function InvoiceReceiptBuilder({
             <span className="inline-flex items-center gap-1"><Users className="w-3.5 h-3.5" /> Team</span>
           </button>
           )}
-          {!MVP_MODE && (
+          {isEnabled("exchange_rate_live_switching") && (
           <button
             onClick={() => changePaneTab("currencies")}
             className={`flex-1 pb-2 text-[10px] font-bold font-sans border-b-2 text-center cursor-pointer transition-colors ${
@@ -1369,7 +1376,7 @@ export default function InvoiceReceiptBuilder({
             {/* Template switcher section. MVP_TEMPLATE_IDS controls which of the 10 named designs are shown; trim it to curate a smaller set (array itself untouched either way). */}
             <div>
               <span className="text-[10px] font-mono font-bold text-slate-400 block uppercase tracking-wider mb-2">
-                Choose from {MVP_MODE ? MVP_TEMPLATE_IDS.length : DESIGN_TEMPLATES.length} Layout Designs
+                Choose from {MVP_TEMPLATE_IDS.length} Layout Designs
               </span>
 
               {/* Grid of designs. AZIIKI BASIC VERSION 1.0 fix: the badge number is now the design's
@@ -1379,7 +1386,7 @@ export default function InvoiceReceiptBuilder({
                   use the template's real array id underneath, so saved documents keep pointing at the
                   correct design regardless of what's currently shown. */}
               <div className="grid grid-cols-2 gap-2 max-h-[220px] overflow-y-auto pr-1">
-                {(MVP_MODE ? DESIGN_TEMPLATES.filter((t) => MVP_TEMPLATE_IDS.includes(t.id)) : DESIGN_TEMPLATES).map((tpl, displayPosition) => {
+                {DESIGN_TEMPLATES.filter((t) => MVP_TEMPLATE_IDS.includes(t.id)).map((tpl, displayPosition) => {
                   const i = tpl.id; // real array index — used for state/rendering, never shown to the user
                   const displayNumber = displayPosition + 1; // what the user sees — always sequential
                   return (
@@ -2027,10 +2034,10 @@ export default function InvoiceReceiptBuilder({
           </div>
         )}
 
-        {/* AZIIKI BASIC VERSION: Template Gallery / Purchase Orders / Team / Exchange Rates gated behind MVP_MODE, code preserved for future re-activation. */}
+        {/* Template Gallery / Purchase Orders / Team / Exchange Rates: off by default in Phase 1, code preserved for the admin portal to turn on later. */}
 
         {/* PANE 5: Template Gallery (browse/favorite/duplicate saved designs) */}
-        {!MVP_MODE && activePaneTab === "gallery" && (
+        {isEnabled("document_template_editor") && activePaneTab === "gallery" && (
           <TemplateGallery
             businessId={currentBusiness.id}
             documentType={mode}
@@ -2054,15 +2061,15 @@ export default function InvoiceReceiptBuilder({
         {activePaneTab === "brandKit" && <BrandKitSettings businessId={currentBusiness.id} />}
 
         {/* PANE 7: Purchase Orders (buying FROM a supplier - the opposite direction of an invoice) */}
-        {!MVP_MODE && activePaneTab === "purchaseOrders" && (
+        {isEnabled("purchase_orders") && activePaneTab === "purchaseOrders" && (
           <PurchaseOrderManager businessId={currentBusiness.id} businessCurrency={currentBusiness.currency} />
         )}
 
         {/* PANE 8: Team (invite people to help run this business, with real per-role access) */}
-        {!MVP_MODE && activePaneTab === "team" && <TeamManager businessId={currentBusiness.id} />}
+        {isEnabled("team_memberships_invite_ui") && activePaneTab === "team" && <TeamManager businessId={currentBusiness.id} />}
 
         {/* PANE 9: Exchange Rates (manual rates that auto-fill foreign-currency documents) */}
-        {!MVP_MODE && activePaneTab === "currencies" && (
+        {isEnabled("exchange_rate_live_switching") && activePaneTab === "currencies" && (
           <ExchangeRateSettings businessId={currentBusiness.id} businessCurrency={currentBusiness.currency} />
         )}
         </div>
@@ -2733,8 +2740,8 @@ export default function InvoiceReceiptBuilder({
               Send by Email
             </button>
           )}
-          {/* AZIIKI BASIC VERSION: signature capture hidden from MVP. Code preserved. */}
-          {!MVP_MODE && (mode === "invoice" || mode === "quotation") && (
+          {/* Signature capture: off by default in Phase 1, code preserved. Toggle via admin portal -> signature_capture. */}
+          {isEnabled("signature_capture") && (mode === "invoice" || mode === "quotation") && (
             <button
               type="button"
               onClick={() => setIsSignatureModalOpen(true)}
@@ -2786,7 +2793,7 @@ export default function InvoiceReceiptBuilder({
 
       </div>
 
-      {!MVP_MODE && isSignatureModalOpen && savedDocumentId && (mode === "invoice" || mode === "quotation") && (
+      {isEnabled("signature_capture") && isSignatureModalOpen && savedDocumentId && (mode === "invoice" || mode === "quotation") && (
         <SignatureCapture
           businessId={currentBusiness.id}
           documentType={mode}

@@ -130,7 +130,10 @@ export const api = {
   },
 
   config: {
-    features: () => request<{ emailSendingEnabled: boolean; paystackEnabled: boolean }>("/config/features"),
+    features: () =>
+      request<{ emailSendingEnabled: boolean; paystackEnabled: boolean; flags: Record<string, boolean> }>(
+        "/config/features"
+      ),
   },
 
   brandKits: {
@@ -230,6 +233,103 @@ export const api = {
     }) => request<{ data: any }>("/signatures", { method: "POST", body: JSON.stringify(payload) }).then((r) => r.data),
     remove: (id: string) => request<void>(`/signatures/${id}`, { method: "DELETE" }),
   },
+
+  announcements: {
+    list: () =>
+      request<{ data: Array<{ id: string; title: string; message: string; createdAt: string; read: boolean }> }>(
+        "/announcements"
+      ).then((r) => r.data),
+    markRead: (id: string) => request<void>(`/announcements/${id}/read`, { method: "POST" }),
+  },
+
+  surveys: {
+    listActive: () =>
+      request<{ data: Array<{ id: string; title: string; description?: string; questions: SurveyQuestion[]; createdAt: string }> }>(
+        "/surveys"
+      ).then((r) => r.data),
+    submitResponse: (id: string, answers: Record<string, string>) =>
+      request<{ message: string }>(`/surveys/${id}/responses`, { method: "POST", body: JSON.stringify({ answers }) }),
+  },
+
+  admin: {
+    me: () => request<{ data: { id: string; email: string } }>("/admin/me"),
+
+    featureFlags: {
+      list: () =>
+        request<{
+          data: Array<{
+            key: string;
+            name: string;
+            description: string;
+            phase: number;
+            enabledDefault: boolean;
+            updatedAt: string;
+            overrideCount: number;
+          }>;
+        }>("/admin/feature-flags").then((r) => r.data),
+      setDefault: (key: string, enabledDefault: boolean) =>
+        request<{ data: unknown }>(`/admin/feature-flags/${key}`, {
+          method: "PATCH",
+          body: JSON.stringify({ enabledDefault }),
+        }),
+      listOverrides: (key: string) =>
+        request<{ data: Array<{ userId: string; email: string; enabled: boolean; createdAt: string }> }>(
+          `/admin/feature-flags/${key}/overrides`
+        ).then((r) => r.data),
+      setOverride: (key: string, email: string, enabled: boolean) =>
+        request<{ data: unknown }>(`/admin/feature-flags/${key}/overrides`, {
+          method: "PUT",
+          body: JSON.stringify({ email, enabled }),
+        }),
+      removeOverride: (key: string, userId: string) =>
+        request<void>(`/admin/feature-flags/${key}/overrides/${userId}`, { method: "DELETE" }),
+    },
+
+    announcements: {
+      list: () =>
+        request<{
+          data: Array<{ id: string; title: string; message: string; isActive: boolean; createdAt: string; readCount: number }>;
+        }>("/admin/announcements").then((r) => r.data),
+      create: (title: string, message: string) =>
+        request<{ data: unknown }>("/admin/announcements", { method: "POST", body: JSON.stringify({ title, message }) }),
+      setActive: (id: string, isActive: boolean) =>
+        request<{ data: unknown }>(`/admin/announcements/${id}`, { method: "PATCH", body: JSON.stringify({ isActive }) }),
+    },
+
+    surveys: {
+      list: () =>
+        request<{
+          data: Array<{
+            id: string;
+            title: string;
+            description?: string;
+            questions: SurveyQuestion[];
+            isActive: boolean;
+            createdAt: string;
+            responseCount: number;
+          }>;
+        }>("/admin/surveys").then((r) => r.data),
+      create: (payload: { title: string; description?: string; questions: SurveyQuestion[] }) =>
+        request<{ data: unknown }>("/admin/surveys", { method: "POST", body: JSON.stringify(payload) }),
+      setActive: (id: string, isActive: boolean) =>
+        request<{ data: unknown }>(`/admin/surveys/${id}`, { method: "PATCH", body: JSON.stringify({ isActive }) }),
+      results: (id: string) =>
+        request<{
+          data: {
+            survey: { id: string; title: string };
+            responseCount: number;
+            questions: Array<{ id: string; prompt: string; type: "text" | "choice"; counts?: Record<string, number>; answers?: string[] }>;
+          };
+        }>(`/admin/surveys/${id}/results`).then((r) => r.data),
+    },
+  },
 };
+
+export interface SurveyQuestion {
+  id: string;
+  type: "text" | "choice";
+  prompt: string;
+  options?: string[];
+}
 
 export { ApiError };

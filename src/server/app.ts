@@ -13,6 +13,7 @@ import "express-async-errors";
 import { env } from "./env";
 import { apiLimiter, paystackWebhookLimiter } from "./rateLimiters";
 import { requireAuth } from "./middleware/requireAuth";
+import { requireAdmin } from "./middleware/requireAdmin";
 
 import { authRouter } from "./routes/auth";
 import { geminiRouter } from "./routes/gemini";
@@ -47,6 +48,9 @@ import { notificationsRouter } from "./routes/notifications";
 import { signaturesRouter } from "./routes/signatures";
 import { businessMembershipsRouter } from "./routes/businessMemberships";
 import { exchangeRatesRouter } from "./routes/exchangeRates";
+import { announcementsRouter } from "./routes/announcements";
+import { surveysRouter } from "./routes/surveys";
+import { adminRouter } from "./routes/admin";
 
 export function createApp(): express.Express {
   const app = express();
@@ -131,6 +135,14 @@ export function createApp(): express.Express {
   app.use("/api/signatures", requireAuth, signaturesRouter);
   app.use("/api/business-memberships", requireAuth, businessMembershipsRouter);
   app.use("/api/exchange-rates", requireAuth, exchangeRatesRouter);
+  app.use("/api/announcements", requireAuth, announcementsRouter);
+  app.use("/api/surveys", requireAuth, surveysRouter);
+
+  // ---------------------------------------------------------------------
+  // Admin portal routes - requireAuth then requireAdmin (profiles.is_admin,
+  // migration 0031). See src/admin/AdminApp.tsx for the portal itself.
+  // ---------------------------------------------------------------------
+  app.use("/api/admin", requireAuth, requireAdmin, adminRouter);
 
   // Final error-handling middleware (must be registered last, and must take
   // 4 arguments for Express to recognize it as an error handler).

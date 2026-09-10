@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BookOpen, Question as HelpCircle, Database, SquaresFour as LayoutDashboard, Receipt, Users, Package, Bank as Landmark, ChartLine as LineChart, MagicWand as Sparkles, WarningCircle as AlertCircle, ShoppingBag, Briefcase, FileText, Compass, CaretRight as ChevronRight, TrendUp as TrendingUp, Percent, Stack as Layers, Certificate as Award, BookmarkSimple as BookMarked } from "@phosphor-icons/react";
+import { BookOpen, Question as HelpCircle, Database, SquaresFour as LayoutDashboard, Receipt, Users, Package, Bank as Landmark, ChartLine as LineChart, MagicWand as Sparkles, WarningCircle as AlertCircle, ShoppingBag, Briefcase, FileText, Compass, CaretRight as ChevronRight, TrendUp as TrendingUp, Percent, Stack as Layers, Certificate as Award, BookmarkSimple as BookMarked, Globe, Microphone, Lightbulb, ShieldCheck, Rocket, LinkSimple, Brain, Scales, LockKey } from "@phosphor-icons/react";
 
 export default function AppGuide() {
   const [activeChapter, setActiveChapter] = useState<
@@ -54,15 +54,16 @@ export default function AppGuide() {
           
           <nav className="space-y-1 pt-2">
             {[
-              { id: "overview", label: "🌟 Guide Overview", desc: "Philosophies & Setup" },
-              { id: "scorecard", label: "📊 Cash Scorecards", desc: "Gross Margin & Ledgers" },
-              { id: "billing", label: "🧾 Invoices & Receipts", desc: "Billing & Share links" },
-              { id: "inventory", label: "📦 Smart Warehouse", desc: "Stocks & Auto-deduction" },
-              { id: "sovereign", label: "💼 Sovereign Reserves", desc: "T-Bill Ladder & Yields" },
-              { id: "ai", label: "🧠 CFO AI & Advisors", desc: "Advisory & Simulators" },
-              { id: "playbooks", label: "📖 SME Playbooks", desc: "Tactical Retailer & Freelancer" }
+              { id: "overview", label: "Guide Overview", desc: "Philosophies & Setup", icon: Compass },
+              { id: "scorecard", label: "Cash Scorecards", desc: "Gross Margin & Ledgers", icon: LayoutDashboard },
+              { id: "billing", label: "Invoices & Receipts", desc: "Billing & Share links", icon: Receipt },
+              { id: "inventory", label: "Smart Warehouse", desc: "Stocks & Auto-deduction", icon: Package },
+              { id: "sovereign", label: "Sovereign Reserves", desc: "T-Bill Ladder & Yields", icon: Landmark },
+              { id: "ai", label: "CFO AI & Advisors", desc: "Advisory & Simulators", icon: Sparkles },
+              { id: "playbooks", label: "SME Playbooks", desc: "Tactical Retailer & Freelancer", icon: BookMarked }
             ].map((chapter) => {
               const active = activeChapter === chapter.id;
+              const ChapterIcon = chapter.icon;
               return (
                 <button
                   key={chapter.id}
@@ -73,7 +74,10 @@ export default function AppGuide() {
  : "hover:bg-slate-50 text-slate-650"
  }`}
                 >
-                  <span className="text-xs">{chapter.label}</span>
+                  <span className="text-xs flex items-center gap-1.5">
+                    <ChapterIcon className="w-3.5 h-3.5 shrink-0" />
+                    {chapter.label}
+                  </span>
                   <span className={`text-[10px] font-light ${active ? "text-emerald-105 text-emerald-200" : "text-slate-450"}`}>
                     {chapter.desc}
                   </span>
@@ -104,8 +108,8 @@ export default function AppGuide() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs leading-relaxed">
                 <div className="space-y-3.5">
-                  <h4 className="font-extrabold text-slate-900 uppercase tracking-wider text-[10px] font-mono text-indigo-600">
-                    🌍 Cultural Origin & Meaning
+                  <h4 className="font-extrabold text-slate-900 uppercase tracking-wider text-[10px] font-mono text-indigo-600 flex items-center gap-1.5">
+                    <Globe className="w-3.5 h-3.5 shrink-0" /> Cultural Origin & Meaning
                   </h4>
                   <p className="text-slate-650 font-light">
                     <strong className="font-semibold text-slate-900">Aziiki</strong> is inspired by the <strong className="font-semibold text-slate-950">Hausa word "arziki"</strong>, spoken across West Africa and widely understood well beyond it.
@@ -113,7 +117,9 @@ export default function AppGuide() {
 
                   {/* Pronunciation & Phonetic Breakdown Card */}
                   <div className="bg-slate-50 border border-slate-150 rounded-2xl p-3.5 space-y-2">
-                    <span className="text-[9px] font-mono font-bold text-indigo-600 uppercase tracking-widest block">🗣️ How to Pronounce It</span>
+                    <span className="text-[9px] font-mono font-bold text-indigo-600 uppercase tracking-widest flex items-center gap-1.5">
+                      <Microphone className="w-3 h-3 shrink-0" /> How to Pronounce It
+                    </span>
                     <div className="flex flex-wrap items-baseline gap-2">
                       <span className="text-sm font-extrabold text-slate-900">/ah-ZEE-kee/</span>
                       <span className="text-xs font-medium text-emerald-600 font-mono">"ah-ZEE-kee"</span>
@@ -132,8 +138,8 @@ export default function AppGuide() {
                 </div>
 
                 <div className="space-y-3.5">
-                  <h4 className="font-extrabold text-slate-900 uppercase tracking-wider text-[10px] font-mono text-indigo-600">
-                    💡 Why Aziiki Exists
+                  <h4 className="font-extrabold text-slate-900 uppercase tracking-wider text-[10px] font-mono text-indigo-600 flex items-center gap-1.5">
+                    <Lightbulb className="w-3.5 h-3.5 shrink-0" /> Why Aziiki Exists
                   </h4>
                   <p className="text-slate-650 font-light">
                     Traditional accounting is heavy, filled with double-entry terminology, and hardwired into credit structures that do not support localized cash drawers, Mobile Money, and asset preservation.
@@ -151,8 +157,8 @@ export default function AppGuide() {
               <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-4 flex gap-3 text-xs leading-relaxed">
                 <Database className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                 <div className="space-y-1">
-                  <span className="font-bold text-emerald-800 uppercase text-[9px] tracking-wider block font-mono">
-                    🛡️ Passive Non-Custodial Integrity
+                  <span className="font-bold text-emerald-800 uppercase text-[9px] tracking-wider flex items-center gap-1.5 font-mono">
+                    <ShieldCheck className="w-3.5 h-3.5 shrink-0" /> Passive Non-Custodial Integrity
                   </span>
                   <p className="text-slate-650 font-light text-[11px]">
                     Aziiki is a <strong className="font-semibold text-slate-900">pure bookkeeping ledger</strong>. We do NOT hold custody of your capital, link directly to your central bank reserves, or execute financial transactions on your behalf. All data is backed up safely to your local browser storage and secure synced cloud profiles. You are always in absolute sovereign control.
@@ -230,8 +236,8 @@ export default function AppGuide() {
                 </div>
 
                 <div className="space-y-3.5">
-                  <h4 className="font-extrabold text-slate-900 uppercase tracking-wider text-[10px] font-mono text-indigo-600">
-                    💡 How to Get Maximum Value from Your Ledgers
+                  <h4 className="font-extrabold text-slate-900 uppercase tracking-wider text-[10px] font-mono text-indigo-600 flex items-center gap-1.5">
+                    <Lightbulb className="w-3.5 h-3.5 shrink-0" /> How to Get Maximum Value from Your Ledgers
                   </h4>
                   <ul className="space-y-2.5 list-disc pl-5 text-slate-650 font-light">
                     <li>
@@ -291,8 +297,8 @@ export default function AppGuide() {
                 </div>
 
                 <div className="space-y-3.5">
-                  <h4 className="font-extrabold text-slate-900 uppercase tracking-wider text-[10px] font-mono text-indigo-600">
-                    🚀 WhatsApp Direct Link Sharing
+                  <h4 className="font-extrabold text-slate-900 uppercase tracking-wider text-[10px] font-mono text-indigo-600 flex items-center gap-1.5">
+                    <Rocket className="w-3.5 h-3.5 shrink-0" /> WhatsApp Direct Link Sharing
                   </h4>
                   <p className="text-slate-650 font-light">
                     African trading runs on message threads. Instead of emailing heavy attachments that get ignored, tap the <strong className="font-semibold text-emerald-600">"WhatsApp Share"</strong> button. Aziiki automatically copies a professional invitation template and a direct-sharing link. Your customer can click this link on any phone to instantly review their document!
@@ -378,15 +384,16 @@ export default function AppGuide() {
                   </div>
 
                   {grossMarginPercent < 35 && (
-                    <p className="text-[10px] text-amber-600 bg-amber-500/10 border border-amber-500/20 rounded-xl p-2 font-sans font-light italic leading-snug">
-                      ⚠️ Margin Alert: Your profit margin sits below the recommended 35%. Inflationary pressures or shipping hikes may easily wipe out your profitability. Consider optimized purchasing or repricing.
+                    <p className="text-[10px] text-amber-600 bg-amber-500/10 border border-amber-500/20 rounded-xl p-2 font-sans font-light italic leading-snug flex items-start gap-1.5">
+                      <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-px" />
+                      <span>Margin Alert: Your profit margin sits below the recommended 35%. Inflationary pressures or shipping hikes may easily wipe out your profitability. Consider optimized purchasing or repricing.</span>
                     </p>
                   )}
                 </div>
 
                 <div className="space-y-3.5">
-                  <h4 className="font-extrabold text-slate-900 uppercase tracking-wider text-[10px] font-mono text-indigo-600">
-                    🔗 Automated Stock Auto-Reduction
+                  <h4 className="font-extrabold text-slate-900 uppercase tracking-wider text-[10px] font-mono text-indigo-600 flex items-center gap-1.5">
+                    <LinkSimple className="w-3.5 h-3.5 shrink-0" /> Automated Stock Auto-Reduction
                   </h4>
                   <p className="text-slate-650 font-light">
                     You do not need to manually log inventory subtractions after every deal. In Aziiki, when you create an invoice and list your items with identical names as those logged in your Smart Warehouse, marking that Invoice as <strong className="font-semibold text-emerald-600">"Paid"</strong> automatically reduces the inventory matching those listed quantities! This keeps your warehouse synchronized with your physical cash drawer.
@@ -503,8 +510,8 @@ export default function AppGuide() {
                 </div>
 
                 <div className="space-y-3.5">
-                  <h4 className="font-extrabold text-slate-900 uppercase tracking-wider text-[10px] font-mono text-indigo-600">
-                    🌍 Sourcing Real-Time Global Market Indices
+                  <h4 className="font-extrabold text-slate-900 uppercase tracking-wider text-[10px] font-mono text-indigo-600 flex items-center gap-1.5">
+                    <Globe className="w-3.5 h-3.5 shrink-0" /> Sourcing Real-Time Global Market Indices
                   </h4>
                   <p className="text-slate-650 font-light">
                     Inside the SME Investment Desk, use the **Live Sourcing Desk** to search for real-time central bank policy rates, sovereign bond yields, and regional consumer inflation metrics from online databases. By comparing these live figures against your business's average yields, you can identify if your hard-earned profits are gaining or losing ground against inflation.
@@ -538,7 +545,7 @@ export default function AppGuide() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="p-4 border border-slate-150 rounded-2xl space-y-2 text-left">
                     <span className="text-xs font-bold text-slate-900 block flex items-center gap-1.5">
-                      🧠 CFO AI Conversational Assistant
+                      <Brain className="w-3.5 h-3.5 shrink-0" /> CFO AI Conversational Assistant
                     </span>
                     <p className="text-[11px] text-slate-500 font-light leading-relaxed">
                       Powered by advanced Gemini AI, the advisor acts as a private, highly educated financial controller. It reads your ledger aggregates to help you identify capital opportunities. Ask it: <em>"Analyze my high-yield portfolio allocations"</em> or <em>"Suggest three expense adjustments based on my current logs."</em>
@@ -547,7 +554,7 @@ export default function AppGuide() {
 
                   <div className="p-4 border border-slate-150 rounded-2xl space-y-2 text-left">
                     <span className="text-xs font-bold text-slate-900 block flex items-center gap-1.5">
-                      ⚖️ Yield Comparison Simulator
+                      <Scales className="w-3.5 h-3.5 shrink-0" /> Yield Comparison Simulator
                     </span>
                     <p className="text-[11px] text-slate-500 font-light leading-relaxed">
                       Before committing your cash reserves into static commercial accounts, use the yield comparison tools to simulate Sovereign Papers, High-Yield Mutual Funds, and Standard Bank Accounts side-by-side. This helps you calculate opportunity costs clearly.
@@ -556,8 +563,8 @@ export default function AppGuide() {
                 </div>
 
                 <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 text-slate-600">
-                  <span className="font-bold text-amber-700 uppercase text-[9px] font-mono tracking-wider block mb-1">
-                    🔒 Server-Side Privacy Guarantee
+                  <span className="font-bold text-amber-700 uppercase text-[9px] font-mono tracking-wider flex items-center gap-1.5 mb-1">
+                    <LockKey className="w-3.5 h-3.5 shrink-0" /> Server-Side Privacy Guarantee
                   </span>
                   <p className="text-[11px] font-light leading-relaxed">
                     Any analysis sent to the CFO AI runs strictly via encrypted, server-side requests. Your proprietary customer invoice values, warehouse logs, and contact credentials remain entirely private—never exposed to browser trackers or used to train public models.

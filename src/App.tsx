@@ -10,6 +10,7 @@ import { useMinimumLoadingTime, useLoadingTimedOut } from "./hooks/useMinimumLoa
 import Logo from "./components/Logo";
 import NotificationBanner from "./components/NotificationBanner";
 import { ONBOARDING_COMPLETE_KEY } from "./components/onboarding/onboardingStorage";
+import { useFeatureFlags } from "./lib/featureFlags";
 
 // Code-split the heaviest views: each is only downloaded when the user
 // actually navigates to that tab, instead of bloating the initial bundle.
@@ -48,20 +49,14 @@ import { detectBrowserCountryCode, detectBrowserTimezone, describeTimezoneOffset
 import { COUNTRIES } from "./lib/countries";
 import { trackFeatureUsage } from "./lib/analytics";
 
-// ─────────────────────────────────────────────────────────────────────────
-// AZIIKI BASIC VERSION 1.0 — MVP mode switch.
-// When true, non-Core-V1 features (Wealth & Goals/investments, Updates &
-// Growth/ad monetization, multi-business Partners/Shareholders ledger, and
-// the Personal Workspace toggle) are hidden from navigation and UI, but
-// their code, routes, and components are NOT deleted. Basic Inventory
-// (Warehouse Stock) is explicitly part of Core V1 in the 1.0 spec and is no
-// longer gated by this flag. Flip this back to false (or delete the gating
-// below) to fully restore the expanded product. See AZIIKI_BASIC_VERSION.docx
-// for the full rationale.
-// ─────────────────────────────────────────────────────────────────────────
-const MVP_MODE = true;
-
 export default function App() {
+  // Granular, admin-controlled feature flags (see supabase/migrations/0032
+  // and the /admin portal) - replaces the single hardcoded MVP_MODE boolean
+  // that used to live here. Each Phase-2+ feature (Net Worth/Investments,
+  // Ad Monetization Hub, Personal Workspace, Business Partners/Shareholders,
+  // Inventory, ...) now has its own flag, off by default, code and routes
+  // left fully intact ("hide, not delete" per the product teardown).
+  const { isEnabled } = useFeatureFlags();
   // Custom 404: Aziiki is a single-page app served entirely at "/" - there
   // is no real routing, everything else is client-side tab state, not a
   // distinct URL. A path other than "/" means someone followed a stale or
@@ -106,12 +101,13 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<string>("dashboard");
 
   const changeTab = (tab: string) => {
-    // AZIIKI BASIC VERSION 1.0: block navigation to hidden-but-preserved tabs
-    // (defends against stale deep links / persisted state, not just hidden buttons).
-    // "stock" (Basic Inventory) was restored to Core V1 in this pass, so it's
-    // no longer in this blocklist — Wealth & Goals and ad monetization remain
-    // deferred (not on the latest Core V1 list).
-    if (MVP_MODE && (tab === "wealth" || tab === "monetize")) {
+    // Block navigation to a tab whose feature flag is off (defends against
+    // stale deep links / persisted state, not just hidden nav buttons).
+    if (
+      (tab === "wealth" && !isEnabled("net_worth_investments")) ||
+      (tab === "monetize" && !isEnabled("ad_monetization_hub")) ||
+      (tab === "stock" && !isEnabled("inventory_management"))
+    ) {
       setActiveTab("dashboard");
       return;
     }
@@ -1648,6 +1644,8 @@ export default function App() {
                   {currentBusiness?.locked ? (<><Lock className="w-3 h-3" /> Locked</>) : (<><GearSix className="w-3 h-3" /> Edit</>)}
                 </span>
               </button>
+              {/* Adding a second+ business: off by default in Phase 1 per the product teardown ("Multi-Business Profiles" is a v1.1 problem), code preserved. Toggle via admin portal -> multi_business_profiles. */}
+              {isEnabled("multi_business_profiles") && (
               <button
                 onClick={() => {
                   setIsAddingNewBiz(true);
@@ -1659,6 +1657,7 @@ export default function App() {
               >
                 <span className="flex items-center gap-1"><Plus className="w-3 h-3" /> New</span>
               </button>
+              )}
             </div>
           </div>
         </div>
@@ -1709,8 +1708,8 @@ export default function App() {
               <Users className="w-4 h-4 shrink-0" /> Customer CRM
             </button>
 
-            {/* AZIIKI BASIC VERSION: Wealth & Goals hidden from MVP nav (code preserved below). */}
-            {!MVP_MODE && (
+            {/* Wealth & Goals: off by default in Phase 1, code preserved. Toggle via admin portal -> net_worth_investments. */}
+            {isEnabled("net_worth_investments") && (
             <button
               id="tab-wealth-btn"
               onClick={() => changeTab("wealth")}
@@ -1724,7 +1723,8 @@ export default function App() {
             </button>
             )}
 
-            {/* AZIIKI BASIC VERSION 1.0: Basic Inventory is explicitly part of Core V1 in the latest spec — restored to the nav (previous pass had hidden it; see the spec doc for the reconciliation note). */}
+            {/* Warehouse Stock: off by default in Phase 1 per the product teardown (Phase 2 - "Inventory Management"), code preserved. Toggle via admin portal -> inventory_management. */}
+            {isEnabled("inventory_management") && (
             <button
               id="tab-stock-btn"
               onClick={() => changeTab("stock")}
@@ -1736,6 +1736,7 @@ export default function App() {
             >
               <Warehouse className="w-4 h-4 shrink-0" /> Warehouse Stock
             </button>
+            )}
 
             <button
               id="tab-reports-btn"
@@ -1761,8 +1762,8 @@ export default function App() {
               <BrainCircuit className="w-4 h-4 shrink-0 animate-pulse text-brand-teal" /> CFO AI Advisor
             </button>
 
-            {/* AZIIKI BASIC VERSION: Updates & Growth (ad monetization hub) hidden from MVP nav (code preserved below). */}
-            {!MVP_MODE && (
+            {/* Updates & Growth (ad monetization hub): off by default in Phase 1, code preserved. Toggle via admin portal -> ad_monetization_hub. */}
+            {isEnabled("ad_monetization_hub") && (
             <button
               id="tab-monetize-btn"
               onClick={() => changeTab("monetize")}
@@ -1971,8 +1972,8 @@ export default function App() {
                   <span>This profile is locked, so fields below can't be edited. Uncheck "Lock Business Profile Details" near the bottom to make changes.</span>
                 </div>
               )}
-              {/* AZIIKI BASIC VERSION: Personal Workspace toggle hidden — MVP is commercial/SME only. Code preserved. */}
-              {isAddingNewBiz && !MVP_MODE && (
+              {/* Personal Workspace toggle: off by default in Phase 1 (commercial/SME only), code preserved. Toggle via admin portal -> personal_workspace. */}
+              {isAddingNewBiz && isEnabled("personal_workspace") && (
                 <div>
                   <label className="text-[9px] font-mono font-bold text-slate-450 uppercase block mb-1">Select Workspace Category</label>
                   <div className="grid grid-cols-2 gap-2 bg-slate-50 p-1 rounded-xl border border-slate-200">
@@ -2228,9 +2229,9 @@ export default function App() {
                 </div>
               )}
 
-              {/* AZIIKI BASIC VERSION: Partners/Shareholders registry hidden from MVP. Code preserved. */}
+              {/* Partners/Shareholders registry: off by default in Phase 1, code preserved. Toggle via admin portal -> business_partners_shareholders. */}
               {/* Partnership Configuration Deck */}
-              {!MVP_MODE && bizFormType === "Partnership" && (
+              {isEnabled("business_partners_shareholders") && bizFormType === "Partnership" && (
                 <div className="border border-slate-200/80 bg-slate-50/50 rounded-2xl p-4 space-y-3">
                   <h4 className="font-bold text-slate-900 text-xs font-sans flex items-center gap-1.5 border-b border-slate-200/60 pb-1.5">
                     <UsersThree className="w-3.5 h-3.5" /> Partnership Registry & Capital Splits
@@ -2331,9 +2332,9 @@ export default function App() {
                 </div>
               )}
 
-              {/* AZIIKI BASIC VERSION: Shareholders/Roles registry hidden from MVP. Code preserved. */}
+              {/* Shareholders/Roles registry: off by default in Phase 1, code preserved. Toggle via admin portal -> business_partners_shareholders. */}
               {/* Company Configuration Deck */}
-              {!MVP_MODE && bizFormType === "Company" && (
+              {isEnabled("business_partners_shareholders") && bizFormType === "Company" && (
                 <div className="border border-slate-200/85 bg-slate-50/50 rounded-2xl p-4 space-y-4">
                   <h4 className="font-bold text-slate-900 text-xs font-sans flex items-center gap-1.5 border-b border-slate-200/60 pb-1.5">
                     <GearSix className="w-3.5 h-3.5" /> Corporate Governance & Team Delegations
@@ -2639,8 +2640,8 @@ export default function App() {
                   </Suspense>
                 )}
 
-                {/* AZIIKI BASIC VERSION: gated behind MVP_MODE, code preserved for future re-activation. */}
-                {!MVP_MODE && activeTab === "wealth" && (
+                {/* Off by default in Phase 1, code preserved for the admin portal to turn on later. */}
+                {isEnabled("net_worth_investments") && activeTab === "wealth" && (
                   <Suspense
                     fallback={
                       <div className="space-y-6">
@@ -2671,8 +2672,8 @@ export default function App() {
                   </Suspense>
                 )}
 
-                {/* AZIIKI BASIC VERSION 1.0: Basic Inventory restored to Core V1 — no longer gated. */}
-                {activeTab === "stock" && (
+                {/* Off by default in Phase 1 per the product teardown, code preserved for the admin portal to turn on later. */}
+                {isEnabled("inventory_management") && activeTab === "stock" && (
                   <Suspense fallback={<SkeletonInventory />}>
                     <InventoryManager
                       currentBusiness={currentBusiness}
@@ -2710,8 +2711,8 @@ export default function App() {
                   />
                 )}
 
-                {/* AZIIKI BASIC VERSION: gated behind MVP_MODE, code preserved for future re-activation. */}
-                {!MVP_MODE && activeTab === "monetize" && (
+                {/* Off by default in Phase 1, code preserved for the admin portal to turn on later. */}
+                {isEnabled("ad_monetization_hub") && activeTab === "monetize" && (
                   <Suspense fallback={<SkeletonForm />}>
                     <AdMonetizationHub />
                   </Suspense>

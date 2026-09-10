@@ -1,9 +1,10 @@
 import React from "react";
 import { motion } from "motion/react";
+import { Check, type Icon } from "@phosphor-icons/react";
 
 interface QuestionCardProps {
   label: string;
-  emoji?: string;
+  icon?: Icon;
   selected?: boolean;
   onSelect: () => void;
   index?: number;
@@ -11,7 +12,7 @@ interface QuestionCardProps {
 
 /** A single-tap answer card. Selecting it is the entire interaction - no
  * separate "confirm" step, no form fields. */
-export default function QuestionCard({ label, emoji, selected, onSelect, index = 0 }: QuestionCardProps) {
+export default function QuestionCard({ label, icon: OptionIcon, selected, onSelect, index = 0 }: QuestionCardProps) {
   return (
     <motion.button
       type="button"
@@ -26,7 +27,15 @@ export default function QuestionCard({ label, emoji, selected, onSelect, index =
           : "border-slate-200 bg-white hover:border-[color:var(--color-onboard-teal)]/40 hover:bg-[color:var(--color-onboard-cream)]"
       }`}
     >
-      {emoji && <span className="text-xl leading-none shrink-0">{emoji}</span>}
+      {OptionIcon && (
+        <span
+          className={`shrink-0 w-8 h-8 rounded-xl flex items-center justify-center ${
+            selected ? "bg-[color:var(--color-onboard-teal)]/15 text-[color:var(--color-onboard-teal)]" : "bg-slate-100 text-slate-500"
+          }`}
+        >
+          <OptionIcon className="w-4.5 h-4.5" weight="bold" />
+        </span>
+      )}
       <span
         className={`text-sm font-semibold ${
           selected ? "text-[color:var(--color-onboard-teal)]" : "text-slate-700"
@@ -35,8 +44,8 @@ export default function QuestionCard({ label, emoji, selected, onSelect, index =
         {label}
       </span>
       {selected && (
-        <span className="ml-auto w-5 h-5 rounded-full bg-[color:var(--color-onboard-teal)] text-white flex items-center justify-center text-[11px] shrink-0">
-          ✓
+        <span className="ml-auto w-5 h-5 rounded-full bg-[color:var(--color-onboard-teal)] text-white flex items-center justify-center shrink-0">
+          <Check className="w-3 h-3" weight="bold" />
         </span>
       )}
     </motion.button>

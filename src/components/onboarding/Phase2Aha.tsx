@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "motion/react";
+import { Lightbulb } from "@phosphor-icons/react";
 import { getAhaContent, OnboardingAnswers } from "./utils/personalization";
 
 interface Phase2AhaProps {
@@ -75,7 +76,10 @@ export default function Phase2Aha({ answers, onContinue }: Phase2AhaProps) {
         </div>
       </div>
 
-      <p className="text-xs text-slate-500 italic mt-4 mb-6 leading-relaxed">💡 {content.tip}</p>
+      <p className="text-xs text-slate-500 italic mt-4 mb-6 leading-relaxed flex items-start gap-1.5">
+        <Lightbulb className="w-3.5 h-3.5 shrink-0 mt-0.5 text-[color:var(--color-onboard-amber)]" weight="fill" />
+        <span>{content.tip}</span>
+      </p>
 
       <button
         type="button"
