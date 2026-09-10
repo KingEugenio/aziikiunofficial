@@ -9,6 +9,8 @@ import { Skeleton, SkeletonDashboard, SkeletonTable, SkeletonDetail, SkeletonFor
 import { useMinimumLoadingTime, useLoadingTimedOut } from "./hooks/useMinimumLoadingTime";
 import Logo from "./components/Logo";
 import NotificationBanner from "./components/NotificationBanner";
+import AnnouncementBanner from "./components/AnnouncementBanner";
+import SurveyPrompt from "./components/SurveyPrompt";
 import { ONBOARDING_COMPLETE_KEY } from "./components/onboarding/onboardingStorage";
 import { useFeatureFlags } from "./lib/featureFlags";
 
@@ -1932,6 +1934,12 @@ export default function App() {
             that a payment/low-stock/overdue-invoice email went out. Guest
             mode has no backend session to fetch notifications from. */}
         {!isGuest && <NotificationBanner userEmail={user?.email} />}
+
+        {/* Admin-portal broadcast channel: product announcements and
+            surveys, controlled from /admin. Guest mode has no backend
+            session to fetch these from either. */}
+        {!isGuest && <AnnouncementBanner />}
+        {!isGuest && <SurveyPrompt />}
 
         {showBrandConfig && (
           <div className="mb-6 bg-white border-2 border-slate-200/95 rounded-2xl p-5 shadow-lg border-emerald-500/20 text-left animate-fade-in text-xs max-w-2xl mx-auto">

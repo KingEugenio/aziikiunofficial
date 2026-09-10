@@ -30,6 +30,10 @@ interface AuthPortalProps {
   initialTab?: "signin" | "create";
   /** Shows the Privacy Policy page instead of this one. */
   onShowPrivacyPolicy?: () => void;
+  /** Hides the "Skip as Guest" option - used by the admin portal, where
+   * guest mode has no meaning (there's nothing to see without an admin
+   * account). */
+  hideGuestOption?: boolean;
 }
 
 // AZIIKI BASIC VERSION: how long a user must wait before they can re-request
@@ -45,7 +49,7 @@ type Mode = "password" | "magic-link" | "otp" | "reset-request" | "otp-code" | "
 // server-side behavior.
 const GENERIC_LOGIN_ERROR = "Incorrect email or password.";
 
-export default function AuthPortal({ onAuthSuccess, onEnterGuest, recoveryMode, linkErrorMessage, onDismissLinkError, prefillEmail, initialTab, onShowPrivacyPolicy }: AuthPortalProps) {
+export default function AuthPortal({ onAuthSuccess, onEnterGuest, recoveryMode, linkErrorMessage, onDismissLinkError, prefillEmail, initialTab, onShowPrivacyPolicy, hideGuestOption }: AuthPortalProps) {
   const { isEnabled } = useFeatureFlags();
   const [isSignUp, setIsSignUp] = useState(initialTab === "create");
   const [mode, setMode] = useState<Mode>(recoveryMode ? "recovery" : linkErrorMessage ? "reset-request" : "password");
@@ -425,13 +429,15 @@ export default function AuthPortal({ onAuthSuccess, onEnterGuest, recoveryMode, 
               </button>
             </div>
 
-            <button
-              onClick={onEnterGuest}
-              type="button"
-              className="text-[10px] font-mono text-slate-500 hover:text-emerald-600 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 transition-colors flex items-center gap-1 cursor-pointer"
-            >
-              Skip as Guest <ArrowRight className="w-3 h-3" />
-            </button>
+            {!hideGuestOption && (
+              <button
+                onClick={onEnterGuest}
+                type="button"
+                className="text-[10px] font-mono text-slate-500 hover:text-emerald-600 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 transition-colors flex items-center gap-1 cursor-pointer"
+              >
+                Skip as Guest <ArrowRight className="w-3 h-3" />
+              </button>
+            )}
           </div>
 
           <div className="my-6">
