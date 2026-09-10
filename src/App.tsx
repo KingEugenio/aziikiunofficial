@@ -2426,7 +2426,13 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Team Roles and Permissions */}
+                  {/* Team Roles and Permissions: this is the OLD, informational-only
+                      roster (business_roles) - a second "team member" system
+                      duplicating the real one (business_memberships, gated by
+                      team_memberships_invite_ui in InvoiceReceiptBuilder.tsx).
+                      Off by default in Phase 1, code and any existing data
+                      preserved. Toggle via admin portal -> team_memberships_invite_ui. */}
+                  {isEnabled("team_memberships_invite_ui") && (
                   <div className="space-y-1.5 pt-2 border-t border-slate-200/60">
                     <span className="text-[10px] font-bold text-slate-700 flex items-center gap-1"><LockKey className="w-3 h-3" /> Role-Based Access Controls</span>
                     {roles.length === 0 ? (
@@ -2505,6 +2511,7 @@ export default function App() {
                       </div>
                     </div>
                   </div>
+                  )}
 
                   {/* Approvals Workflow switch */}
                   <div className="flex items-start gap-2 pt-2 border-t border-slate-200/60 leading-normal">

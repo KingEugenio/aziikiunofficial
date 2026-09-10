@@ -136,3 +136,22 @@ export const apiLimiter = rateLimit({
   keyGenerator: (req) => ipKeyGenerator(req.ip ?? "unknown"),
   store: new UpstashRateLimitStore("api"),
 });
+
+/**
+ * Gemini-backed AI routes (insights, chat, live-investments): 15 / hour,
+ * keyed by user id when signed in, IP otherwise - these routes are
+ * deliberately mounted with no requireAuth (guest mode calls /insights and
+ * /chat directly), so IP is the only key available for anonymous callers.
+ * Every call here is a real, metered LLM API cost, unlike the rest of the
+ * API surface - the general apiLimiter (300/5min) is nowhere near tight
+ * enough on its own to bound that cost, per the product teardown's "AI CFO
+ * Advisor: keep in MVP, but cap usage/cost" call.
+ */
+export const geminiLimiter = rateLimit({
+  ...standardOptions,
+  windowMs: 60 * 60 * 1000,
+  max: 15,
+  keyGenerator: (req) => (req.user?.id ? `user:${req.user.id}` : `ip:${ipKeyGenerator(req.ip ?? "unknown")}`),
+  store: new UpstashRateLimitStore("gemini"),
+  message: { error: "You've reached the hourly limit for AI features. Please try again in a bit." },
+});
