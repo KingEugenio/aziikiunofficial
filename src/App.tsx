@@ -12,6 +12,7 @@ import NotificationBanner from "./components/NotificationBanner";
 import AnnouncementBanner from "./components/AnnouncementBanner";
 import SurveyPrompt from "./components/SurveyPrompt";
 import MobileNavBar from "./components/MobileNavBar";
+import OfflineStatusBanner from "./components/OfflineStatusBanner";
 import { ONBOARDING_COMPLETE_KEY } from "./components/onboarding/onboardingStorage";
 import { useFeatureFlags } from "./lib/featureFlags";
 
@@ -1935,6 +1936,11 @@ export default function App() {
             </button>
           </div>
         )}
+
+        {/* Offline-sync status - see src/lib/offlineDb.ts / offlineSync.ts.
+            Shown regardless of guest/signed-in status; connectivity is
+            universal, not an account-scoped concern. */}
+        <OfflineStatusBanner />
 
         {/* Aziiki has no SMS/push channel - this is the only in-app signal
             that a payment/low-stock/overdue-invoice email went out. Guest

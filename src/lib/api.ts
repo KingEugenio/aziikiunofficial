@@ -1,4 +1,5 @@
 import { supabase } from "./supabaseClient";
+import { getCachedResponse, setCachedResponse, enqueueWrite } from "./offlineDb";
 
 async function getAccessToken(): Promise<string | null> {
   const { data } = await supabase.auth.getSession();
@@ -15,7 +16,35 @@ class ApiError extends Error {
   }
 }
 
+/**
+ * Thrown instead of a generic ApiError when a mutating request couldn't
+ * reach the network at all (not a validation/auth/server error - the
+ * request never got a response). The write has already been queued in
+ * IndexedDB (see offlineDb.ts) and will replay automatically once the
+ * browser is back online (see offlineSync.ts).
+ *
+ * Deliberately a subclass of ApiError, not a plain Error: every existing
+ * call site across the app already does `catch (err) { ... err instanceof
+ * ApiError ? err.message : "generic fallback" ... }` - subclassing means
+ * this flows through that same existing handling everywhere for free,
+ * showing the real "saved for later" message instead of a generic
+ * failure, with no changes needed at any of those ~10 call sites.
+ */
+class OfflineQueuedError extends ApiError {
+  constructor() {
+    super("You're offline - this has been saved and will sync automatically once you're back online.", 0);
+  }
+}
+
+// GET responses cached for offline reading are scoped to paths worth
+// re-showing with no network: the one bulk load-everything endpoint,
+// plus config the pre-login/pre-sync screens need. Deliberately NOT every
+// GET - caching e.g. a one-off document-numbering preview would be actively
+// wrong to replay stale.
+const CACHEABLE_GET_PREFIXES = ["/sync", "/config/features", "/config/branding"];
+
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const method = (options.method ?? "GET").toUpperCase();
   const token = await getAccessToken();
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -23,7 +52,21 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   };
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const response = await fetch(`/api${path}`, { ...options, headers });
+  let response: Response;
+  try {
+    response = await fetch(`/api${path}`, { ...options, headers });
+  } catch {
+    // fetch() only throws for a genuine network failure (offline, DNS,
+    // connection refused, ...) - a real HTTP error status (400, 500, ...)
+    // still resolves normally and is handled below, not here.
+    if (method === "GET") {
+      const cached = await getCachedResponse(path);
+      if (cached !== undefined) return cached as T;
+      throw new ApiError("You're offline, and this hasn't been loaded before on this device.", 0);
+    }
+    await enqueueWrite({ path, method, body: options.body as string | undefined });
+    throw new OfflineQueuedError();
+  }
 
   if (response.status === 204) return undefined as T;
 
@@ -31,6 +74,11 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   if (!response.ok) {
     throw new ApiError(body.error || `Request failed (${response.status})`, response.status, body.issues);
   }
+
+  if (method === "GET" && CACHEABLE_GET_PREFIXES.some((prefix) => path.startsWith(prefix))) {
+    setCachedResponse(path, body);
+  }
+
   return body as T;
 }
 
@@ -360,4 +408,4 @@ export interface SurveyQuestion {
   options?: string[];
 }
 
-export { ApiError };
+export { ApiError, OfflineQueuedError, request };
