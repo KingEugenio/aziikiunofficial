@@ -11,6 +11,7 @@ import BrandLogo from "./components/BrandLogo";
 import NotificationBanner from "./components/NotificationBanner";
 import AnnouncementBanner from "./components/AnnouncementBanner";
 import SurveyPrompt from "./components/SurveyPrompt";
+import MobileNavBar from "./components/MobileNavBar";
 import { ONBOARDING_COMPLETE_KEY } from "./components/onboarding/onboardingStorage";
 import { useFeatureFlags } from "./lib/featureFlags";
 
@@ -1673,7 +1674,12 @@ export default function App() {
             Workspace Panels
           </div>
           
-          <nav className="flex md:flex-col items-center md:items-stretch gap-1.5 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 custom-scrollbar scrollbar-none text-xs">
+          {/* Desktop-only: the sidebar list below. Small screens use the fixed
+              bottom MobileNavBar instead (rendered once, near the end of this
+              component) - the old approach (this same list horizontally
+              scrolling on mobile) had no visual hint it was scrollable, so it
+              just looked like navigation was missing after the first 2-3 items. */}
+          <nav className="hidden md:flex md:flex-col items-center md:items-stretch gap-1.5 md:overflow-x-visible pb-2 md:pb-0 text-xs">
             <button
               id="tab-dashboard-btn"
               onClick={() => changeTab("dashboard")}
@@ -1849,7 +1855,7 @@ export default function App() {
       </aside>
 
       {/* Main Workspace Frame container */}
-      <main className="flex-1 p-6 max-w-7xl mx-auto w-full animate-fade-in">
+      <main className="flex-1 p-4 sm:p-6 pb-24 md:pb-6 max-w-7xl mx-auto w-full animate-fade-in">
         
         {/* Critical sync failure banner - shown whenever the workspace
             failed to load or create a business at all (see the catch
@@ -2759,6 +2765,8 @@ export default function App() {
         </footer>
 
       </main>
+
+      <MobileNavBar activeTab={activeTab} onChangeTab={changeTab} isEnabled={isEnabled} />
 
     </div>
   );
