@@ -1,0 +1,647 @@
+<title>Aziiki Field Manual</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #faf9f4;
+    --paper-raised: #ffffff;
+    --ink: #1c2b22;
+    --ink-soft: #4c5c52;
+    --ink-faint: #8b9a8f;
+    --line: #ded7c4;
+    --line-soft: #ece7d8;
+    --teal: #006837;
+    --teal-soft: #e4efe6;
+    --teal-strong: #004d29;
+    --navy: #102a43;
+    --navy-soft: #eaeef3;
+    --gold: #93672a;
+    --gold-soft: #f3ead9;
+    --rose: #9c3b3b;
+    --rose-soft: #f5e7e4;
+    --code-bg: #f1ede0;
+    --shadow: 0 1px 2px rgba(28,43,34,0.06), 0 8px 24px -12px rgba(28,43,34,0.16);
+    --radius: 14px;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #131c17;
+      --paper-raised: #1a251f;
+      --ink: #e9ede8;
+      --ink-soft: #aebcb2;
+      --ink-faint: #6d7d72;
+      --line: #2c3a31;
+      --line-soft: #223029;
+      --teal: #3fae7a;
+      --teal-soft: #16281f;
+      --teal-strong: #6ecb9b;
+      --navy: #9fb3cc;
+      --navy-soft: #1a2430;
+      --gold: #cfa361;
+      --gold-soft: #2a2416;
+      --rose: #d98b8b;
+      --rose-soft: #2a1c1c;
+      --code-bg: #1e2820;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #131c17;
+    --paper-raised: #1a251f;
+    --ink: #e9ede8;
+    --ink-soft: #aebcb2;
+    --ink-faint: #6d7d72;
+    --line: #2c3a31;
+    --line-soft: #223029;
+    --teal: #3fae7a;
+    --teal-soft: #16281f;
+    --teal-strong: #6ecb9b;
+    --navy: #9fb3cc;
+    --navy-soft: #1a2430;
+    --gold: #cfa361;
+    --gold-soft: #2a2416;
+    --rose: #d98b8b;
+    --rose-soft: #2a1c1c;
+    --code-bg: #1e2820;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Source Sans 3', -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  h1, h2, h3, h4 { font-family: 'Fraunces', Georgia, serif; text-wrap: balance; color: var(--ink); }
+  code, .mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+
+  a { color: var(--teal); }
+
+  .doc-shell {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 780px);
+    justify-content: center;
+    gap: 56px;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 48px 24px 120px;
+  }
+
+  /* ---- Cover ---- */
+  .cover {
+    grid-column: 1 / -1;
+    max-width: 780px;
+    margin: 0 auto 8px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--line);
+  }
+  .cover .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--teal);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .cover .eyebrow .mark {
+    width: 22px; height: 22px; border-radius: 7px;
+    background: var(--teal);
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--paper-raised); font-family: 'Fraunces', serif; font-weight: 700; font-size: 13px;
+  }
+  .cover h1 { font-size: clamp(34px, 5vw, 50px); font-weight: 600; line-height: 1.06; margin: 0 0 14px; letter-spacing: -0.01em; }
+  .cover .sub { font-size: 18px; color: var(--ink-soft); max-width: 62ch; margin: 0 0 28px; font-weight: 400; }
+  .cover .meta-row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .meta-chip {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    padding: 6px 12px;
+    border-radius: 999px;
+  }
+  .meta-chip b { color: var(--ink); font-weight: 600; }
+
+  /* ---- TOC ---- */
+  nav.toc {
+    position: sticky; top: 40px; align-self: start;
+    max-height: calc(100vh - 80px); overflow-y: auto;
+    font-size: 13.5px;
+  }
+  nav.toc .toc-title {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 14px; font-weight: 600;
+  }
+  nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: toc; display: flex; flex-direction: column; gap: 2px; }
+  nav.toc ol > li { counter-increment: toc; }
+  nav.toc a {
+    display: flex; gap: 8px; padding: 6px 8px; border-radius: 8px; text-decoration: none;
+    color: var(--ink-soft); line-height: 1.35;
+  }
+  nav.toc a:hover { background: var(--teal-soft); color: var(--teal-strong); }
+  nav.toc a::before {
+    content: counter(toc, decimal-leading-zero); font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    color: var(--ink-faint); padding-top: 1px;
+  }
+  nav.toc ul { list-style: none; margin: 2px 0 6px 26px; padding: 0; display: flex; flex-direction: column; gap: 1px; }
+  nav.toc ul a { font-size: 12.5px; padding: 4px 8px; }
+  nav.toc ul a::before { content: '—'; color: var(--line); }
+
+  /* ---- Main content ---- */
+  main { min-width: 0; }
+  section { padding-top: 64px; margin-top: -20px; }
+  section:first-of-type { padding-top: 8px; }
+  .kicker {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--teal); font-weight: 600; margin: 0 0 8px;
+  }
+  h2 { font-size: 30px; font-weight: 600; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .section-intro { color: var(--ink-soft); font-size: 15.5px; max-width: 68ch; margin: 0 0 28px; }
+  h3 { font-size: 20px; font-weight: 600; margin: 36px 0 10px; }
+  h3 .mono-tag { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--ink-faint); font-weight: 400; margin-left: 8px; }
+  h4 { font-size: 15px; font-weight: 700; margin: 20px 0 6px; }
+  p { margin: 0 0 14px; color: var(--ink); }
+  p.lede { font-size: 15.5px; color: var(--ink-soft); }
+  ul.plain, ol.plain { margin: 0 0 14px; padding-left: 22px; }
+  ul.plain li, ol.plain li { margin-bottom: 6px; }
+
+  .callout {
+    background: var(--teal-soft); border: 1px solid var(--line-soft); border-left: 3px solid var(--teal);
+    border-radius: 10px; padding: 14px 16px; font-size: 14px; color: var(--ink-soft); margin: 18px 0;
+  }
+  .callout.warn { background: var(--gold-soft); border-left-color: var(--gold); }
+  .callout.gap { background: var(--rose-soft); border-left-color: var(--rose); }
+  .callout b { color: var(--ink); }
+
+  code.inline {
+    background: var(--code-bg); border: 1px solid var(--line-soft); border-radius: 5px;
+    padding: 1px 6px; font-size: 0.86em; color: var(--teal-strong);
+  }
+
+  /* Phase badge */
+  .phase-badge {
+    display: inline-flex; align-items: center; gap: 6px; font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.04em; padding: 3px 10px 3px 8px;
+    border-radius: 999px; white-space: nowrap;
+  }
+  .phase-1 { background: var(--teal-soft); color: var(--teal-strong); }
+  .phase-2 { background: var(--navy-soft); color: var(--navy); }
+  .phase-3 { background: var(--gold-soft); color: var(--gold); }
+  .phase-4 { background: var(--rose-soft); color: var(--rose); }
+  .phase-5 { background: var(--line-soft); color: var(--ink-soft); }
+  .phase-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+  /* Feature table (card-list, not a literal table — reads better at this width) */
+  .feature-list { display: flex; flex-direction: column; border-top: 1px solid var(--line); margin: 8px 0 32px; }
+  .feature-row {
+    display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; align-items: start;
+    padding: 16px 4px; border-bottom: 1px solid var(--line);
+  }
+  .feature-row .fname { font-weight: 600; font-size: 15px; }
+  .feature-row .fdesc { grid-column: 1 / 2; color: var(--ink-soft); font-size: 13.5px; margin-top: 2px; max-width: 58ch; }
+  .feature-row .fflag { grid-column: 1 / 2; margin-top: 6px; }
+  .feature-row .fbadge { grid-column: 2; grid-row: 1; justify-self: end; }
+
+  /* Architecture diagram grid (pure CSS, no external image) */
+  .arch-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0 8px;
+  }
+  .arch-tier { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; gap: 10px; }
+  .arch-box {
+    background: var(--paper-raised); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px;
+    box-shadow: var(--shadow);
+  }
+  .arch-box .t { font-weight: 700; font-size: 13.5px; margin-bottom: 3px; }
+  .arch-box .d { font-size: 12px; color: var(--ink-faint); line-height: 1.4; }
+  .arch-tier-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); grid-column: 1/-1; margin-top: 10px; }
+  .arch-tier-label:first-child { margin-top: 0; }
+  .arch-arrow { text-align: center; color: var(--ink-faint); font-size: 13px; grid-column: 1/-1; margin: -2px 0; }
+
+  /* Timeline for SDLC */
+  .timeline { position: relative; margin: 20px 0 32px; padding-left: 28px; border-left: 2px solid var(--line-soft); }
+  .tl-item { position: relative; padding-bottom: 26px; }
+  .tl-item:last-child { padding-bottom: 0; }
+  .tl-item::before {
+    content: ''; position: absolute; left: -34px; top: 3px; width: 11px; height: 11px; border-radius: 50%;
+    background: var(--paper); border: 2px solid var(--teal);
+  }
+  .tl-item .tl-h { font-weight: 700; font-size: 14.5px; margin-bottom: 3px; }
+  .tl-item .tl-b { font-size: 13.5px; color: var(--ink-soft); max-width: 60ch; }
+
+  /* Table (real table, for the appendix) */
+  table.ref { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0 28px; }
+  table.ref caption { caption-side: bottom; }
+  table.ref th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint); font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  table.ref td { padding: 8px 10px; border-bottom: 1px solid var(--line-soft); vertical-align: top; color: var(--ink-soft); }
+  table.ref td:first-child, table.ref th:first-child { font-family: 'IBM Plex Mono', monospace; color: var(--ink); font-size: 12.5px; white-space: nowrap; }
+  .table-wrap { overflow-x: auto; }
+
+  footer.doc-footer {
+    grid-column: 1 / -1; max-width: 780px; margin: 60px auto 0; padding-top: 24px; border-top: 1px solid var(--line);
+    font-size: 12.5px; color: var(--ink-faint); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  }
+
+  ::selection { background: var(--teal-soft); color: var(--teal-strong); }
+
+  @media (max-width: 900px) {
+    .doc-shell { grid-template-columns: 1fr; padding: 32px 18px 80px; }
+    nav.toc { position: static; max-height: none; margin-bottom: 8px; }
+    .arch-grid { grid-template-columns: 1fr; }
+    .arch-tier { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 560px) {
+    /* Badge moves below the name instead of sharing a row with it — at
+       narrow widths there's no room for both a long feature name and a
+       phase badge side by side without one of them overflowing. */
+    .feature-row { grid-template-columns: 1fr; }
+    .feature-row .fbadge { grid-column: 1; grid-row: 2; justify-self: start; margin-top: 8px; }
+  }
+
+  @media print {
+    nav.toc { display: none; }
+    .doc-shell { grid-template-columns: 1fr; max-width: 100%; padding: 0 6mm; }
+    section { padding-top: 22px; break-inside: avoid-page; }
+    body { font-size: 12.5px; }
+    .callout, .feature-row, .arch-box { box-shadow: none; }
+  }
+</style>
+
+<div class="doc-shell">
+
+  <div class="cover">
+    <div class="eyebrow"><span class="mark">A</span> Aziiki · Internal Reference</div>
+    <h1>The Aziiki Field Manual</h1>
+    <p class="sub">Every screen, every phase, every moving part — what it does, how it's built, and why it's built that way. Written for the founder, not for a pitch deck.</p>
+    <div class="meta-row">
+      <span class="meta-chip">Version <b>1.0</b></span>
+      <span class="meta-chip">Stack <b>React 19 · Express · Supabase</b></span>
+      <span class="meta-chip">Market <b>Ghana → West Africa → Global</b></span>
+      <span class="meta-chip">Print this page (⌘P) to save as PDF</span>
+    </div>
+  </div>
+
+  <nav class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><a href="#overview">What Aziiki Is</a></li>
+      <li><a href="#spine">The Transaction Spine</a></li>
+      <li><a href="#phase1"><span>Phase 1 — Core Loop</span></a>
+        <ul>
+          <li><a href="#phase1">Always-on & toggleable core</a></li>
+        </ul>
+      </li>
+      <li><a href="#phase2">Phase 2 — Workflow Depth</a></li>
+      <li><a href="#phase3">Phase 3 — Advanced Management</a></li>
+      <li><a href="#phase4">Phase 4 — Power User</a></li>
+      <li><a href="#phase5">Phase 5 — Enterprise</a></li>
+      <li><a href="#tiers">Plans & Payments</a></li>
+      <li><a href="#admin">The Admin Portal</a></li>
+      <li><a href="#architecture">Architecture</a>
+        <ul>
+          <li><a href="#stack">System diagram</a></li>
+          <li><a href="#flags">Feature-flag engine</a></li>
+          <li><a href="#offline">Offline-first sync</a></li>
+          <li><a href="#security">Security model</a></li>
+        </ul>
+      </li>
+      <li><a href="#sdlc">SDLC — How This Was Built</a></li>
+      <li><a href="#appendix">Appendix</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section id="overview">
+      <p class="kicker">01 · Positioning</p>
+      <h2>What Aziiki Is</h2>
+      <p class="section-intro">Not an accounting app, an invoicing tool, or a CRM — a single financial engine those jobs run through.</p>
+
+      <p>Aziiki is an AI-powered Business Operating System for entrepreneurs, freelancers, sole proprietors, and companies across Africa, built Ghana-first. The bet is simple: a business owner's record today is scattered across a notebook, WhatsApp threads, mobile money, and a bank app. Aziiki's job is to become the one place all of that lives — usable even when connectivity isn't.</p>
+
+      <p>The product ships in five phases. Every phase after the first exists in the codebase today, fully built, switched off by default — <b>hide, not delete</b>. An admin turns each one on, globally or for one account at a time, from the admin portal. Nothing here is vaporware; every feature described below is real, working code, gated by a flag that anyone with admin access can flip.</p>
+    </section>
+
+    <section id="spine">
+      <p class="kicker">02 · Architecture Idea</p>
+      <h2>The Transaction Spine</h2>
+      <p class="section-intro">One confirmed event updates every connected record — no duplicate entry, ever.</p>
+
+      <p>A transaction is the shared event every other part of Aziiki derives its state from. A paid invoice isn't just a document marked "paid" — the payment updates the account balance, creates the income record, feeds cash-flow reporting, and becomes available context for the AI Advisor, all from one confirmed event.</p>
+
+      <div class="arch-grid">
+        <div class="arch-tier-label">Inputs</div>
+        <div class="arch-tier">
+          <div class="arch-box"><div class="t">Customers & Sales</div><div class="d">CRM entries, invoices, receipts, estimates</div></div>
+          <div class="arch-box"><div class="t">Expenses</div><div class="d">MoMo / Cash / Bank tagged</div></div>
+          <div class="arch-box"><div class="t">Inventory Events</div><div class="d">Stock adjustments, auto-deduction on paid invoice</div></div>
+        </div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-tier-label">Hub</div>
+        <div class="arch-tier" style="grid-template-columns: 1fr;">
+          <div class="arch-box"><div class="t">Financial Ledger</div><div class="d">Account-based tracking across mobile money, bank, and cash — the one source of truth every screen reads from</div></div>
+        </div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-tier-label">Outputs</div>
+        <div class="arch-tier">
+          <div class="arch-box"><div class="t">Health Score & Reports</div><div class="d">Cash-flow, P&L, cold-start-safe</div></div>
+          <div class="arch-box"><div class="t">Dashboards</div><div class="d">Scorecard, Wealth & Goals, CRM balances</div></div>
+          <div class="arch-box"><div class="t">AI Insights</div><div class="d">Grounded only in this business's real recorded data</div></div>
+        </div>
+      </div>
+      <p class="section-intro" style="margin-top:4px;">Engineering rule carried through every phase below: a module that doesn't connect cleanly to this spine gets challenged before it's built.</p>
+    </section>
+
+    <!-- PHASE 1 -->
+    <section id="phase1">
+      <p class="kicker">03 · Launch Surface</p>
+      <h2>Phase 1 — The Core Loop <span class="phase-badge phase-1"><span class="phase-dot"></span>MVP</span></h2>
+      <p class="section-intro">Everything here answers one test: does it help someone abandon their notebook this week? Every item is now individually toggleable too — even the core loop can be switched off screen-by-screen from Feature Flags, not just the phases after it.</p>
+
+      <div class="feature-list">
+        <div class="feature-row">
+          <div><div class="fname">Scorecard (Dashboard)</div><div class="fdesc">The daily cash view — money in, money out, Business Health Score with a real cold-start state ("Not Enough Data Yet" below 5 transactions, instead of a scary low number), and quick transaction entry via the Ledger Book Drawer or a pasted MoMo/bank SMS.</div><div class="fflag"><code class="inline">core_dashboard</code></div></div>
+          <div class="fbadge phase-badge phase-1"><span class="phase-dot"></span>Phase 1</div>
+        </div>
+        <div class="feature-row">
+          <div><div class="fname">Billing & PDFs</div><div class="fdesc">Invoices, receipts, and estimates across 10 fixed professional templates, automatic sequential numbering, WhatsApp/email sharing, PNG-only logo upload with initials-based fallback badges, and optional Paystack pay-enabled invoices.</div><div class="fflag"><code class="inline">core_billing</code></div></div>
+          <div class="fbadge phase-badge phase-1"><span class="phase-dot"></span>Phase 1</div>
+        </div>
+        <div class="feature-row">
+          <div><div class="fname">Customer CRM</div><div class="fdesc">Customer directory with running balances, full invoice/payment history per customer, and private notes.</div><div class="fflag"><code class="inline">core_customers</code></div></div>
+          <div class="fbadge phase-badge phase-1"><span class="phase-dot"></span>Phase 1</div>
+        </div>
+        <div class="feature-row">
+          <div><div class="fname">Reports & Wisdom</div><div class="fdesc">P&L and cash-flow views by Daily/Weekly/Monthly/Quarterly/Annual period — the detailed answer behind the Scorecard's one-glance Health Score.</div><div class="fflag"><code class="inline">core_reports</code></div></div>
+          <div class="fbadge phase-badge phase-1"><span class="phase-dot"></span>Phase 1</div>
+        </div>
+        <div class="feature-row">
+          <div><div class="fname">CFO AI Advisor</div><div class="fdesc">Chat grounded only in this business's own recorded numbers — never invents figures, states plainly when there isn't enough data, and refuses (as a hard system-prompt rule) to reveal its own configuration or help with anything resembling an attack on the app or its database.</div><div class="fflag"><code class="inline">core_ai_advisor</code></div></div>
+          <div class="fbadge phase-badge phase-1"><span class="phase-dot"></span>Phase 1</div>
+        </div>
+        <div class="feature-row">
+          <div><div class="fname">App Guide & Academy</div><div class="fdesc">In-app manual, chaptered to match the sidebar exactly — a chapter's visibility is wired to the same flag as the feature it explains, so turning a feature on surfaces its explanation automatically.</div><div class="fflag"><code class="inline">core_app_guide</code></div></div>
+          <div class="fbadge phase-badge phase-1"><span class="phase-dot"></span>Phase 1</div>
+        </div>
+        <div class="feature-row">
+          <div><div class="fname">Settings</div><div class="fdesc">Password change, MFA enrollment (TOTP authenticator app, QR-code setup), promotional-email opt-in, and account deletion — a real Danger Zone with type-to-confirm and server-side removal.</div><div class="fflag"><code class="inline">core_settings</code></div></div>
+          <div class="fbadge phase-badge phase-1"><span class="phase-dot"></span>new</div>
+        </div>
+        <div class="feature-row">
+          <div><div class="fname">Help & Support</div><div class="fdesc">Help Center link, support email/phone/WhatsApp, Legal & Policies (Privacy Policy, Terms of Service, Refund Policy), and an FAQ accordion — every field editable from the admin portal, no redeploy.</div><div class="fflag"><code class="inline">core_help_support</code></div></div>
+          <div class="fbadge phase-badge phase-1"><span class="phase-dot"></span>new</div>
+        </div>
+        <div class="feature-row">
+          <div><div class="fname">Offline-First Sync</div><div class="fdesc">Every write queues in IndexedDB when offline and replays in order once reconnected, with a periodic safety-net retry and a visible "syncing / synced / dropped write" banner — the trust foundation the rest of the product depends on.</div><div class="fflag">always on — infrastructure, not a toggle</div></div>
+          <div class="fbadge phase-badge phase-1"><span class="phase-dot"></span>infra</div>
+        </div>
+        <div class="feature-row">
+          <div><div class="fname">Auth (password + magic link)</div><div class="fdesc">Two primary sign-in paths at launch, deliberately not four — OTP and MFA-onboarding-nudge exist in the code and are individually flaggable, not forced into first-run.</div><div class="fflag"><code class="inline">auth_otp_method</code>, <code class="inline">mfa_onboarding_prompt</code></div></div>
+          <div class="fbadge phase-badge phase-1"><span class="phase-dot"></span>infra</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PHASE 2 -->
+    <section id="phase2">
+      <p class="kicker">04 · Post-PMF</p>
+      <h2>Phase 2 — Workflow Depth <span class="phase-badge phase-2"><span class="phase-dot"></span>Standard plan</span></h2>
+      <p class="section-intro">Returns once the daily habit is proven — a real transaction baseline exists to build on.</p>
+      <div class="feature-list">
+        <div class="feature-row"><div><div class="fname">Warehouse Stock (Inventory)</div><div class="fdesc">Unit cost, stock thresholds, low-stock alerts, and automatic deduction when a matching invoice line item is marked Paid.</div><div class="fflag"><code class="inline">inventory_management</code></div></div><div class="fbadge phase-badge phase-2"><span class="phase-dot"></span>Phase 2</div></div>
+        <div class="feature-row"><div><div class="fname">Goals Tracking</div><div class="fdesc">Set and track growth/revenue targets with a real baseline behind them, limited to 80 characters per goal name.</div><div class="fflag"><code class="inline">goals_tracking</code></div></div><div class="fbadge phase-badge phase-2"><span class="phase-dot"></span>Phase 2</div></div>
+        <div class="feature-row"><div><div class="fname">Debts Owed Tracking</div><div class="fdesc">Loans and supplier credit the business itself owes, separate from customer balances.</div><div class="fflag"><code class="inline">debts_tracking</code></div></div><div class="fbadge phase-badge phase-2"><span class="phase-dot"></span>Phase 2</div></div>
+        <div class="feature-row"><div><div class="fname">Multi-Business Profiles</div><div class="fdesc">More than one business per account, switchable from the sidebar.</div><div class="fflag"><code class="inline">multi_business_profiles</code></div></div><div class="fbadge phase-badge phase-2"><span class="phase-dot"></span>Phase 2</div></div>
+        <div class="feature-row"><div><div class="fname">Signature Capture</div><div class="fdesc">Strictly the Business Representative's full name (two-word minimum, client- and server-validated) — not a drawn signature.</div><div class="fflag"><code class="inline">signature_capture</code></div></div><div class="fbadge phase-badge phase-2"><span class="phase-dot"></span>Phase 2</div></div>
+        <div class="feature-row"><div><div class="fname">Brand Kit — Advanced Fields</div><div class="fdesc">Registration number, tax ID, VAT, address, website, legal disclaimer — beyond the MVP's logo + one accent color.</div><div class="fflag"><code class="inline">brand_kit_advanced_fields</code></div></div><div class="fbadge phase-badge phase-2"><span class="phase-dot"></span>Phase 2</div></div>
+      </div>
+    </section>
+
+    <!-- PHASE 3 -->
+    <section id="phase3">
+      <p class="kicker">05 · Advanced Management</p>
+      <h2>Phase 3 — Advanced Business Management <span class="phase-badge phase-3"><span class="phase-dot"></span>Standard + Pro</span></h2>
+      <p class="section-intro">Real trust and transaction history behind them before these return.</p>
+      <div class="feature-list">
+        <div class="feature-row"><div><div class="fname">Wealth & Goals (Net Worth & Investments)</div><div class="fdesc">Asset registry, SME investment desk, and a Live Investment Indices Sourcing Desk — Gemini with Google Search grounding fetches real Treasury-bill and inflation rates for the business's currency, with static per-currency fallbacks if search quota is exhausted.</div><div class="fflag"><code class="inline">net_worth_investments</code></div></div><div class="fbadge phase-badge phase-3"><span class="phase-dot"></span>Phase 2*</div></div>
+        <div class="feature-row"><div><div class="fname">Purchase Orders</div><div class="fdesc">Formal supplier ordering, including foreign-currency POs — its own top-level screen, not buried in the Billing builder.</div><div class="fflag"><code class="inline">purchase_orders</code></div></div><div class="fbadge phase-badge phase-3"><span class="phase-dot"></span>Phase 3</div></div>
+        <div class="feature-row"><div><div class="fname">Live Exchange Rates</div><div class="fdesc">Manual rates that auto-fill foreign-currency documents — its own screen.</div><div class="fflag"><code class="inline">exchange_rate_live_switching</code></div></div><div class="fbadge phase-badge phase-3"><span class="phase-dot"></span>Phase 3</div></div>
+        <div class="feature-row"><div><div class="fname">Ad Monetization Hub</div><div class="fdesc">In-app articles, ads, and a feedback/contact form.</div><div class="fflag"><code class="inline">ad_monetization_hub</code></div></div><div class="fbadge phase-badge phase-3"><span class="phase-dot"></span>Phase 3</div></div>
+      </div>
+      <p style="font-size:12.5px; color:var(--ink-faint); margin-top:-16px;">* Net Worth & Investments was reclassified from Phase 3 to Phase 2 after direct request — full PocketCFO feature parity confirmed before the move.</p>
+    </section>
+
+    <!-- PHASE 4 -->
+    <section id="phase4">
+      <p class="kicker">06 · Power User</p>
+      <h2>Phase 4 — Power-User Features <span class="phase-badge phase-4"><span class="phase-dot"></span>Pro plan</span></h2>
+      <p class="section-intro">Single-owner retention proven, and real demand for staff or co-owner access.</p>
+      <div class="feature-list">
+        <div class="feature-row"><div><div class="fname">Team</div><div class="fdesc">Invite UI on top of a fully built RBAC layer (five roles: Owner, Accountant, Manager, Sales Staff, Storekeeper) — its own screen.</div><div class="fflag"><code class="inline">team_memberships_invite_ui</code></div></div><div class="fbadge phase-badge phase-4"><span class="phase-dot"></span>Phase 4</div></div>
+        <div class="feature-row"><div><div class="fname">Business Partners / Shareholders</div><div class="fdesc">Ownership %, capital, and equity value tracking for multi-owner businesses.</div><div class="fflag"><code class="inline">business_partners_shareholders</code></div></div><div class="fbadge phase-badge phase-4"><span class="phase-dot"></span>Phase 4</div></div>
+      </div>
+    </section>
+
+    <!-- PHASE 5 -->
+    <section id="phase5">
+      <p class="kicker">07 · Enterprise & Ecosystem</p>
+      <h2>Phase 5 — Enterprise <span class="phase-badge phase-5"><span class="phase-dot"></span>Strategic</span></h2>
+      <p class="section-intro">A deliberate strategy decision, not an automatic usage-milestone trigger.</p>
+      <div class="feature-list">
+        <div class="feature-row"><div><div class="fname">Personal Workspace</div><div class="fdesc">A full second product inside the account — personal accounts, budgets, savings goals, and an AI coach, entirely separate from any business ledger.</div><div class="fflag"><code class="inline">personal_workspace</code></div></div><div class="fbadge phase-badge phase-5"><span class="phase-dot"></span>Phase 5</div></div>
+      </div>
+      <div class="callout">The teardown's own words: return Personal Workspace only after a deliberate decision to spin it off as a separate product or a clearly-labeled premium add-on — not automatically.</div>
+    </section>
+
+    <!-- TIERS -->
+    <section id="tiers">
+      <p class="kicker">08 · Monetization</p>
+      <h2>Plans & Payments</h2>
+      <p class="section-intro">Three tiers, self-service by default, with a manual override for the accounts that shouldn't have to pay.</p>
+
+      <div class="feature-list">
+        <div class="feature-row"><div><div class="fname">Basic</div><div class="fdesc">The full Phase 1 core loop, free. Every new account starts here.</div></div><div class="fbadge phase-badge phase-1"><span class="phase-dot"></span>free</div></div>
+        <div class="feature-row"><div><div class="fname">Standard</div><div class="fdesc">Basic, plus everything through Phase 2 — inventory, goals, debts, multi-business, signature capture, advanced brand kit.</div></div><div class="fbadge phase-badge phase-2"><span class="phase-dot"></span>paid</div></div>
+        <div class="feature-row"><div><div class="fname">Pro</div><div class="fdesc">Everything — no phase ceiling.</div></div><div class="fbadge phase-badge phase-3"><span class="phase-dot"></span>paid</div></div>
+      </div>
+
+      <h3>How an upgrade actually happens</h3>
+      <ol class="plain">
+        <li>Admin creates a Paystack Payment Page for each paid tier and pastes the link + its exact price into <code class="inline">/admin → Payments</code> — no code change, no redeploy, addable whenever the link is ready.</li>
+        <li>A signed-in user clicks "Upgrade" in the sidebar; Aziiki appends their email to the Payment Page URL automatically.</li>
+        <li>On successful payment, Paystack calls the same webhook already used for invoice payments. It matches the charge's amount back to a tier and upgrades that account — never downgrades automatically.</li>
+        <li>Every attempt is logged (matched or not) in <code class="inline">subscription_payment_events</code> for admin visibility.</li>
+      </ol>
+      <div class="callout">Comping an account (family, friends, internal testing) doesn't require a payment at all — <code class="inline">/admin → Payments → Manually set an account's plan</code> sets any tier directly by email.</div>
+    </section>
+
+    <!-- ADMIN -->
+    <section id="admin">
+      <p class="kicker">09 · Control Surface</p>
+      <h2>The Admin Portal</h2>
+      <p class="section-intro">A separate root component at <code class="inline">/admin</code>, its own auth check, its own bundle — nothing about it ships to a regular user's download.</p>
+
+      <table class="ref">
+        <thead><tr><th>Section</th><th>What it controls</th></tr></thead>
+        <tbody>
+          <tr><td>Dashboard</td><td>Platform-wide totals at a glance — users, businesses, active announcements/surveys, flags enabled.</td></tr>
+          <tr><td>Feature Flags</td><td>Every Phase 1–5 screen, on/off, globally or per-user override.</td></tr>
+          <tr><td>Announcements</td><td>Dismissible banners, targetable by screen, subscription plan, and activity level (new vs. active accounts).</td></tr>
+          <tr><td>Surveys</td><td>Structured feedback collection and results.</td></tr>
+          <tr><td>Payments</td><td>Paystack Payment Page links + prices per tier; manual per-account plan overrides.</td></tr>
+          <tr><td>Branding & Files</td><td>Logo/favicon upload, shared document storage.</td></tr>
+          <tr><td>Site Content</td><td>Support contact info, social links, Terms of Service / Refund Policy text, FAQ list.</td></tr>
+          <tr><td>Guides</td><td>An internal, checkable punch-list for setup and improvement to-dos — not shown to end users.</td></tr>
+          <tr><td>Admins</td><td>Superadmin-only. Grant/revoke admin access and choose exactly which of the sections above each admin can reach.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Roles</h3>
+      <p>Two levels: <b>superadmin</b> (every founder-level account today — full access, always) and <b>admin</b> (added by a superadmin, starts with zero sections granted, access enforced server-side per route, not just hidden in the UI).</p>
+    </section>
+
+    <!-- ARCHITECTURE -->
+    <section id="architecture">
+      <p class="kicker">10 · How It's Built</p>
+      <h2>Architecture</h2>
+      <p class="section-intro">One Express app, shared between local dev and Vercel; one Supabase project for Postgres, Auth, and Storage; a single React bundle that code-splits per screen.</p>
+
+      <div id="stack">
+        <h3>System diagram</h3>
+        <div class="arch-grid">
+          <div class="arch-tier-label">Client</div>
+          <div class="arch-tier">
+            <div class="arch-box"><div class="t">React 19 + Vite</div><div class="d">Tailwind v4, Phosphor icons, no client router — one root component, tab state</div></div>
+            <div class="arch-box"><div class="t">IndexedDB</div><div class="d">Offline write queue + response cache (offlineDb.ts)</div></div>
+            <div class="arch-box"><div class="t">/admin bundle</div><div class="d">Separate root component (AdminApp.tsx), own auth check</div></div>
+          </div>
+          <div class="arch-arrow">↓ fetch('/api/...')</div>
+          <div class="arch-tier-label">Server</div>
+          <div class="arch-tier">
+            <div class="arch-box"><div class="t">Express (createApp)</div><div class="d">Shared by server.ts (local) and api/index.ts (Vercel)</div></div>
+            <div class="arch-box"><div class="t">Zod validation</div><div class="d">Every route body-validated before it touches Supabase</div></div>
+            <div class="arch-box"><div class="t">Upstash Redis</div><div class="d">Rate limiting + short-TTL response caching</div></div>
+          </div>
+          <div class="arch-arrow">↓</div>
+          <div class="arch-tier-label">Data & Services</div>
+          <div class="arch-tier">
+            <div class="arch-box"><div class="t">Supabase Postgres</div><div class="d">Row Level Security on every table — the real enforcement layer, not just the Express checks</div></div>
+            <div class="arch-box"><div class="t">Supabase Auth + Storage</div><div class="d">Sessions, MFA (TOTP), logo/document buckets</div></div>
+            <div class="arch-box"><div class="t">Gemini · Paystack · Resend</div><div class="d">AI Advisor, payments, transactional email — all server-side only, keys never reach the client</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="flags">
+        <h3>Feature-flag engine</h3>
+        <p><code class="inline">feature_flags</code> (key, phase, enabled_default) + <code class="inline">user_feature_overrides</code> (per-account exceptions). <code class="inline">GET /api/config/features</code> merges them into one map, computed fresh per request:</p>
+        <ol class="plain">
+          <li>Start from <code class="inline">enabled_default</code> for every flag.</li>
+          <li>Cap by the caller's subscription tier — a flag's <code class="inline">phase</code> must clear the tier's ceiling (Basic → phase 1 only, Standard → ≤2, Pro → unlimited).</li>
+          <li>A per-user override always wins over both, regardless of tier — the deliberate "let one account try it early" escape hatch.</li>
+        </ol>
+        <p>New flags fail <b>open</b> by design: if a flag's own migration hasn't been run yet, the client treats it as its intended default rather than silently off — the alternative would hide screens for real users the moment new code ships, before the matching SQL has a chance to run.</p>
+      </div>
+
+      <div id="offline">
+        <h3>Offline-first sync</h3>
+        <p>A write that fails due to a genuine network error (not an HTTP error status) enqueues in IndexedDB instead of throwing. GETs fall back to the last cached response. A background loop replays the queue in order once connectivity returns, with a 45-second periodic safety-net retry independent of the browser's own online/offline events, and a visible banner distinguishing "syncing," "synced," and "a write had to be dropped."</p>
+      </div>
+
+      <div id="security">
+        <h3>Security model</h3>
+        <ul class="plain">
+          <li><b>Row Level Security everywhere</b> — a bug in a route handler cannot leak another business's data; Postgres itself refuses the query.</li>
+          <li><b>AI prompt-injection resistance</b> — the system prompt is a separate, higher-priority channel from user input, with explicit rules against revealing its own configuration or assisting any attack on the app or database, regardless of claimed authority in the message.</li>
+          <li><b>No secrets in the client bundle</b> — Gemini/Paystack/Resend/Supabase-service-role keys exist only in server environment variables.</li>
+          <li><b>Login lockout + security event logging</b> on repeated failed attempts.</li>
+          <li><b>Account deletion</b> requires the service-role client — a user's own session token can never delete an <code class="inline">auth.users</code> row by itself.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SDLC -->
+    <section id="sdlc">
+      <p class="kicker">11 · Process</p>
+      <h2>SDLC — How This Was Built</h2>
+      <p class="section-intro">Not waterfall, not a sprint board — a single continuous session, phased by the product teardown, verified in a real browser before every commit.</p>
+
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-h">Teardown → Roadmap</div>
+          <div class="tl-b">A panel-review document (product, engineering, growth) scored all 22 existing features and assigned each a launch phase. That scoring is the roadmap above, not a guess.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-h">Flag-gate, don't delete</div>
+          <div class="tl-b">Every feature outside Phase 1 got a migration adding it to <code class="inline">feature_flags</code>, then its nav entry and render path wrapped in <code class="inline">isEnabled(key)</code>. No feature code was ever removed to hit the "smallest lovable" surface — it was switched off.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-h">Admin portal, built last</div>
+          <div class="tl-b">Deliberately sequenced after the flags existed to control — a control surface with nothing to control yet is premature.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-h">Build → verify → commit</div>
+          <div class="tl-b">Each batch of work was type-checked (<code class="inline">tsc --noEmit</code>), driven live in a browser against a throwaway test account, and only then committed with a message explaining the <i>why</i>, not just the diff.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-h">Bugs caught by verifying, not assuming</div>
+          <div class="tl-b">Two release-blocking bugs — an admin-roles check that would have locked every admin out, and new flags defaulting to "off" before their migration ran — were both caught live against a real account before shipping, specifically because verification happened in the actual running app rather than being inferred from the code.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-h">Migrations, handed off deliberately</div>
+          <div class="tl-b">Data-only changes (seeding a flag, flipping a default) were applied directly via the Supabase service-role key. Schema changes — new tables, new columns — were written as numbered SQL files and handed to the founder to run in the Supabase SQL editor, since this environment has no direct Postgres DDL access.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- APPENDIX -->
+    <section id="appendix">
+      <p class="kicker">12 · Reference</p>
+      <h2>Appendix</h2>
+
+      <h3>Migration index (0031–0047)</h3>
+      <div class="table-wrap">
+      <table class="ref">
+        <thead><tr><th>Range</th><th>What it added</th></tr></thead>
+        <tbody>
+          <tr><td>0031–0032</td><td>Admin role + the feature_flags / user_feature_overrides tables</td></tr>
+          <tr><td>0033–0034</td><td>Announcements and surveys</td></tr>
+          <tr><td>0035</td><td>site_assets table + storage bucket (logo/favicon/documents)</td></tr>
+          <tr><td>0036–0039</td><td>Brand kit fields, phase reclassification, initial flag defaults</td></tr>
+          <tr><td>0040</td><td>Removed the custom Document Template Editor + Gallery entirely</td></tr>
+          <tr><td>0041</td><td>Announcement screen targeting</td></tr>
+          <tr><td>0042</td><td>Subscription tiers + Paystack-matched upgrade events</td></tr>
+          <tr><td>0043</td><td>Admin Guides punch-list</td></tr>
+          <tr><td>0044</td><td>Phase 1 core screens made individually flaggable</td></tr>
+          <tr><td>0045</td><td>Superadmin role + per-admin section permissions</td></tr>
+          <tr><td>0046</td><td>Announcement targeting by plan + activity level</td></tr>
+          <tr><td>0047</td><td>Site Content (support/social/legal) + FAQ + email preference</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <h3>Known, honest gaps</h3>
+      <div class="callout gap"><b>No graduated rollout.</b> Flags are global-on/off plus per-user override today — not a staged internal → beta → percentage-rollout pipeline.</div>
+      <div class="callout gap"><b>Offline conflict resolution isn't a written, deliberate policy yet</b> — the replay logic exists and works; the exact strategy for two conflicting offline edits hasn't been formally decided and documented.</div>
+      <div class="callout gap"><b>No documented backup/recovery plan</b> for financial records or critical configuration.</div>
+      <div class="callout gap"><b>Feature-usage analytics are browser-local only</b> (localStorage) — never synced server-side, so announcements can't yet target "people who use X feature most."</div>
+    </section>
+
+  </main>
+
+  <footer class="doc-footer">
+    <span>Aziiki Field Manual · v1.0</span>
+    <span>Compiled from the live codebase, not a spec — every flag key, table name, and route named here exists today.</span>
+  </footer>
+
+</div>
