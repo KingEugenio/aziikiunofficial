@@ -125,6 +125,15 @@ export const api = {
     mfaVerify: (factorId: string, challengeId: string, code: string) =>
       request<{ session: any }>("/auth/mfa/verify", { method: "POST", body: JSON.stringify({ factorId, challengeId, code }) }),
     mfaUnenroll: (factorId: string) => request<void>("/auth/mfa/unenroll", { method: "POST", body: JSON.stringify({ factorId }) }),
+    deleteAccount: () => request<void>("/auth/account", { method: "DELETE" }),
+  },
+
+  profile: {
+    get: () => request<{ data: { marketingEmailsEnabled: boolean } }>("/profile").then((r) => r.data),
+    update: (payload: { marketingEmailsEnabled: boolean }) =>
+      request<{ data: { marketingEmailsEnabled: boolean } }>("/profile", { method: "PATCH", body: JSON.stringify(payload) }).then(
+        (r) => r.data
+      ),
   },
 
   sync: {
@@ -187,6 +196,8 @@ export const api = {
       request<{
         data: Array<{ tier: string; paystackLink: string | null; priceMinorUnits: number | null; currency: string }>;
       }>("/config/plans").then((r) => r.data),
+    siteSettings: () => request<{ data: Record<string, string> }>("/config/site-settings").then((r) => r.data),
+    faq: () => request<{ data: Array<{ id: string; question: string; answer: string }> }>("/config/faq").then((r) => r.data),
   },
 
   brandKits: {
@@ -412,6 +423,24 @@ export const api = {
         request<{
           data: { totalUsers: number; totalBusinesses: number; activeAnnouncements: number; activeSurveys: number; flagsEnabled: number };
         }>("/admin/stats").then((r) => r.data),
+    },
+
+    siteSettings: {
+      list: () => request<{ data: Array<{ key: string; value: string }> }>("/admin/site-settings").then((r) => r.data),
+      set: (key: string, value: string) =>
+        request<{ data: unknown }>("/admin/site-settings", { method: "PUT", body: JSON.stringify({ key, value }) }),
+    },
+
+    faqItems: {
+      list: () =>
+        request<{
+          data: Array<{ id: string; question: string; answer: string; sortOrder: number; isActive: boolean; createdAt: string }>;
+        }>("/admin/faq-items").then((r) => r.data),
+      create: (question: string, answer: string, sortOrder: number) =>
+        request<{ data: unknown }>("/admin/faq-items", { method: "POST", body: JSON.stringify({ question, answer, sortOrder }) }),
+      update: (id: string, payload: { question?: string; answer?: string; sortOrder?: number; isActive?: boolean }) =>
+        request<{ data: unknown }>(`/admin/faq-items/${id}`, { method: "PATCH", body: JSON.stringify(payload) }),
+      remove: (id: string) => request<void>(`/admin/faq-items/${id}`, { method: "DELETE" }),
     },
 
     guideItems: {

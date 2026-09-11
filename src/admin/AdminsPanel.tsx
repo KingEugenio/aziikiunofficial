@@ -18,6 +18,7 @@ const SECTION_OPTIONS: { value: string; label: string }[] = [
   { value: "surveys", label: "Surveys" },
   { value: "payments", label: "Payments" },
   { value: "branding", label: "Branding & Files" },
+  { value: "content", label: "Site Content" },
   { value: "guides", label: "Guides" },
 ];
 

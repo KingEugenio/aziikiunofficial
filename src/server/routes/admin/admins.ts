@@ -3,7 +3,7 @@ import { z } from "zod";
 
 export const adminAdminsRouter = Router();
 
-const ALL_SECTIONS = ["dashboard", "flags", "announcements", "surveys", "payments", "branding", "guides", "admins"] as const;
+const ALL_SECTIONS = ["dashboard", "flags", "announcements", "surveys", "payments", "branding", "content", "guides", "admins"] as const;
 
 function requireSuperAdmin(req: Request, res: Response): boolean {
   if (!req.isSuperAdmin) {

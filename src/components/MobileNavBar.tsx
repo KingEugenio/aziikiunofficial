@@ -13,6 +13,8 @@ import {
   Package,
   CurrencyCircleDollar,
   MagicWand as Sparkles,
+  Question as HelpCircle,
+  GearSix,
   SignOut as LogOut,
   X,
 } from "@phosphor-icons/react";
@@ -58,6 +60,8 @@ export default function MobileNavBar({ activeTab, onChangeTab, isEnabled, tier, 
     { id: "team", label: "Team", icon: UsersThree, show: isEnabled("team_memberships_invite_ui") },
     { id: "exchangeRates", label: "Exchange Rates", icon: CurrencyCircleDollar, show: isEnabled("exchange_rate_live_switching") },
     { id: "monetize", label: "Updates & Growth", icon: Sparkles, show: isEnabled("ad_monetization_hub") },
+    { id: "helpSupport", label: "Help & Support", icon: HelpCircle, show: isEnabled("core_help_support") },
+    { id: "settings", label: "Settings", icon: GearSix, show: isEnabled("core_settings") },
   ].filter((item) => item.show);
 
   const isMoreActive = moreItems.some((item) => item.id === activeTab);

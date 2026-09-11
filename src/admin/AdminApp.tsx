@@ -9,6 +9,7 @@ import {
   CreditCard,
   BookOpen,
   UsersThree,
+  Notebook,
   SignOut as LogOut,
   ShieldWarning,
 } from "@phosphor-icons/react";
@@ -23,11 +24,12 @@ import BrandingPanel from "./BrandingPanel";
 import PaymentsPanel from "./PaymentsPanel";
 import GuidesPanel from "./GuidesPanel";
 import AdminsPanel from "./AdminsPanel";
+import SiteContentPanel from "./SiteContentPanel";
 
 const AuthPortal = lazy(() => import("../components/AuthPortal"));
 
 type AdminStatus = "checking" | "authorized" | "unauthorized";
-type Tab = "dashboard" | "flags" | "announcements" | "surveys" | "branding" | "payments" | "guides" | "admins";
+type Tab = "dashboard" | "flags" | "announcements" | "surveys" | "branding" | "payments" | "content" | "guides" | "admins";
 
 const NAV: { id: Tab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -36,6 +38,7 @@ const NAV: { id: Tab; label: string; icon: React.ComponentType<{ className?: str
   { id: "surveys", label: "Surveys", icon: ClipboardText },
   { id: "payments", label: "Payments", icon: CreditCard },
   { id: "branding", label: "Branding & Files", icon: ImageIcon },
+  { id: "content", label: "Site Content", icon: Notebook },
   { id: "guides", label: "Guides", icon: BookOpen },
   { id: "admins", label: "Admins", icon: UsersThree },
 ];
@@ -254,6 +257,7 @@ export default function AdminApp() {
             {activeTab === "surveys" && <SurveysPanel />}
             {activeTab === "payments" && <PaymentsPanel />}
             {activeTab === "branding" && <BrandingPanel />}
+            {activeTab === "content" && <SiteContentPanel />}
             {activeTab === "guides" && <GuidesPanel />}
             {activeTab === "admins" && <AdminsPanel />}
           </div>

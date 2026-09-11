@@ -24,6 +24,8 @@ const CORE_FLAG_DEFAULTS: Record<string, boolean> = {
   core_reports: true,
   core_ai_advisor: true,
   core_app_guide: true,
+  core_settings: true,
+  core_help_support: true,
 };
 
 /**
@@ -166,4 +168,49 @@ configRouter.get("/plans", async (_req: Request, res: Response) => {
       currency: row.currency,
     })),
   });
+});
+
+/**
+ * Support contact info, social links, and legal text (migration 0047) -
+ * editable from /admin -> Site Content, no code change or redeploy needed.
+ * Public: the footer's social icons and the pre-login Help links need this
+ * before anyone signs in.
+ */
+configRouter.get("/site-settings", async (_req: Request, res: Response) => {
+  const anonClient = getAnonClient();
+  const { data, error } = await anonClient.from("site_settings").select("key, value");
+
+  if (error) {
+    // Fail open to an empty map - a missing table before migration 0047 is
+    // applied must not break every page load (same reasoning throughout
+    // this file).
+    res.json({ data: {} });
+    return;
+  }
+
+  const map: Record<string, string> = {};
+  for (const row of data ?? []) {
+    map[row.key] = row.value ?? "";
+  }
+  res.json({ data: map });
+});
+
+/**
+ * Active FAQ entries (migration 0047), public - shown on the Help &
+ * Support page, reachable before login too.
+ */
+configRouter.get("/faq", async (_req: Request, res: Response) => {
+  const anonClient = getAnonClient();
+  const { data, error } = await anonClient
+    .from("faq_items")
+    .select("id, question, answer, sort_order")
+    .eq("is_active", true)
+    .order("sort_order");
+
+  if (error) {
+    res.json({ data: [] });
+    return;
+  }
+
+  res.json({ data: (data ?? []).map((row) => ({ id: row.id, question: row.question, answer: row.answer })) });
 });

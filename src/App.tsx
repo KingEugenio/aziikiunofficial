@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useMemo, Suspense, lazy } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Buildings as Building2, Stack as Layers2, Coins, Users, Target, Warehouse, Brain as BrainCircuit, MagicWand as Sparkles, CurrencyDollar as DollarSign, DeviceMobile as Smartphone, CheckCircle, TrendUp as TrendingUp, WarningCircle as AlertCircle, Database, ShieldCheck, SignOut as LogOut, UserCheck, ChartLine as LineChart, BookOpen, ArrowsClockwise, Lock, GearSix, Plus, X, Globe, ArrowRight, User, UsersThree, ChartBar, LockKey, CaretDown, CaretUp, Package, CurrencyCircleDollar } from "@phosphor-icons/react";
+import { Buildings as Building2, Stack as Layers2, Coins, Users, Target, Warehouse, Brain as BrainCircuit, MagicWand as Sparkles, CurrencyDollar as DollarSign, DeviceMobile as Smartphone, CheckCircle, TrendUp as TrendingUp, WarningCircle as AlertCircle, Database, ShieldCheck, SignOut as LogOut, UserCheck, ChartLine as LineChart, BookOpen, ArrowsClockwise, Lock, GearSix, Plus, X, Globe, ArrowRight, User, UsersThree, ChartBar, LockKey, CaretDown, CaretUp, Package, CurrencyCircleDollar, Question as HelpCircle } from "@phosphor-icons/react";
 import { Business, Customer, Transaction, Invoice, Receipt, Quotation, Investment, Asset, Goal, Debt, InventoryItem, Partner, Shareholder, UserRole, AuditLog } from "./types";
 import BusinessDashboard from "./components/BusinessDashboard";
 
 import AIFieldAssistant from "./components/AIFieldAssistant";
 import { Skeleton, SkeletonDashboard, SkeletonTable, SkeletonDetail, SkeletonForm, SkeletonCRM, SkeletonInventory, SkeletonBillingBuilder, SkeletonReportsCharts, SkeletonAppShell } from "./components/Skeleton";
 import { useMinimumLoadingTime, useLoadingTimedOut } from "./hooks/useMinimumLoadingTime";
+import { useDocumentTitle } from "./hooks/useDocumentTitle";
 import BrandLogo from "./components/BrandLogo";
 import NotificationBanner from "./components/NotificationBanner";
 import AnnouncementBanner from "./components/AnnouncementBanner";
 import SurveyPrompt from "./components/SurveyPrompt";
 import MobileNavBar from "./components/MobileNavBar";
+import Footer from "./components/Footer";
 import OfflineStatusBanner from "./components/OfflineStatusBanner";
 import { ONBOARDING_COMPLETE_KEY } from "./components/onboarding/onboardingStorage";
 import { useFeatureFlags } from "./lib/featureFlags";
@@ -30,6 +32,9 @@ const AdMonetizationHub = lazy(() => import("./components/AdMonetizationHub"));
 const AuthPortal = lazy(() => import("./components/AuthPortal"));
 const OnboardingFlow = lazy(() => import("./components/onboarding/OnboardingFlow"));
 const PrivacyPolicy = lazy(() => import("./components/PrivacyPolicy"));
+const LegalTextPage = lazy(() => import("./components/LegalTextPage"));
+const SettingsPage = lazy(() => import("./components/SettingsPage"));
+const HelpSupportPage = lazy(() => import("./components/HelpSupportPage"));
 import NotFoundPage from "./components/NotFoundPage";
 // CustomerCRM and InventoryManager were previously eager-imported (bundled
 // into the main chunk with everything else), which meant there was never a
@@ -74,6 +79,8 @@ export default function App() {
     () => window.location.pathname !== "/" && window.location.pathname !== "/index.html"
   );
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState<boolean>(false);
+  const [showTermsOfService, setShowTermsOfService] = useState<boolean>(false);
+  const [showRefundPolicy, setShowRefundPolicy] = useState<boolean>(false);
 
   // Authentication, Firestore Loading list and sync markers
   const [user, setUser] = useState<any>(null);
@@ -107,6 +114,27 @@ export default function App() {
   // Options: "dashboard" | "billing" | "crm" | "wealth" | "stock" | "monetize" | "ai"
   const [activeTab, setActiveTab] = useState<string>("dashboard");
 
+  // Unique per-tab browser title (see useDocumentTitle) - Aziiki has no
+  // client-side router, so this is the only thing that ever changes
+  // document.title away from index.html's static default.
+  const TAB_TITLES: Record<string, string> = {
+    dashboard: "Scorecard",
+    billing: "Billing & PDFs",
+    crm: "Customer CRM",
+    wealth: "Wealth & Goals",
+    stock: "Warehouse Stock",
+    purchaseOrders: "Purchase Orders",
+    team: "Team",
+    exchangeRates: "Exchange Rates",
+    reports: "Reports & Wisdom",
+    ai: "CFO AI Advisor",
+    monetize: "Updates & Growth",
+    guide: "App Guide & Academy",
+    helpSupport: "Help & Support",
+    settings: "Settings",
+  };
+  useDocumentTitle(`${TAB_TITLES[activeTab] ?? "Dashboard"} — Aziiki`);
+
   // Priority order to fall back through if the current/requested tab's flag
   // is off - covers both the original Phase 2+ flags and the Phase 1 "core"
   // ones added in migration 0044, since an admin can now switch any of
@@ -136,6 +164,8 @@ export default function App() {
       purchaseOrders: "purchase_orders",
       team: "team_memberships_invite_ui",
       exchangeRates: "exchange_rate_live_switching",
+      settings: "core_settings",
+      helpSupport: "core_help_support",
       ...CORE_TAB_FLAGS,
     };
     const requiredFlag = flagForTab[tab];
@@ -1651,9 +1681,34 @@ export default function App() {
     );
   }
 
+  // Legal pages, reachable from the Footer / Help & Support while signed
+  // in too, not just pre-login - full-screen overlay over the whole app,
+  // same as the pre-login PrivacyPolicy render above.
+  if (showPrivacyPolicy) {
+    return (
+      <Suspense fallback={fullScreenFallback}>
+        <PrivacyPolicy onBack={() => setShowPrivacyPolicy(false)} />
+      </Suspense>
+    );
+  }
+  if (showTermsOfService) {
+    return (
+      <Suspense fallback={fullScreenFallback}>
+        <LegalTextPage title="Terms of Service" settingKey="legal_terms_of_service" onBack={() => setShowTermsOfService(false)} />
+      </Suspense>
+    );
+  }
+  if (showRefundPolicy) {
+    return (
+      <Suspense fallback={fullScreenFallback}>
+        <LegalTextPage title="Refund Policy" settingKey="legal_refund_policy" onBack={() => setShowRefundPolicy(false)} />
+      </Suspense>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col md:flex-row font-sans selection:bg-brand-navy/15 transition-colors duration-200">
-      
+
       {/* Sticky Left Navigation Sidebar */}
       <aside className="w-full md:w-80 bg-white border-b md:border-b-0 md:border-r border-slate-200 sticky top-0 z-50 p-4 md:p-6 flex flex-col justify-between md:h-screen md:overflow-y-auto gap-4 shadow-sm transition-colors duration-200 md:shrink-0" id="sidebar-navigation">
         
@@ -1948,6 +2003,34 @@ export default function App() {
  }`}
             >
               <BookOpen className="w-4 h-4 shrink-0 text-indigo-600" /> App Guide & Academy
+            </button>
+            )}
+
+            {isEnabled("core_help_support") && (
+            <button
+              id="tab-helpSupport-btn"
+              onClick={() => changeTab("helpSupport")}
+              className={`px-4 py-2.5 rounded-xl font-bold font-sans transition-all flex items-center gap-2 cursor-pointer shrink-0 md:w-full md:justify-start ${
+ activeTab === "helpSupport"
+ ? "bg-brand-navy text-white shadow-sm shadow-brand-navy/15"
+ : "text-slate-600 hover:bg-slate-100"
+ }`}
+            >
+              <HelpCircle className="w-4 h-4 shrink-0" /> Help & Support
+            </button>
+            )}
+
+            {isEnabled("core_settings") && (
+            <button
+              id="tab-settings-btn"
+              onClick={() => changeTab("settings")}
+              className={`px-4 py-2.5 rounded-xl font-bold font-sans transition-all flex items-center gap-2 cursor-pointer shrink-0 md:w-full md:justify-start ${
+ activeTab === "settings"
+ ? "bg-brand-navy text-white shadow-sm shadow-brand-navy/15"
+ : "text-slate-600 hover:bg-slate-100"
+ }`}
+            >
+              <GearSix className="w-4 h-4 shrink-0" /> Settings
             </button>
             )}
           </nav>
@@ -2980,6 +3063,23 @@ export default function App() {
                   </Suspense>
                 )}
 
+                {isEnabled("core_help_support") && activeTab === "helpSupport" && (
+                  <Suspense fallback={<Skeleton width="100%" height="20rem" />}>
+                    <HelpSupportPage
+                      onGoToGuide={() => changeTab("guide")}
+                      onShowPrivacyPolicy={() => setShowPrivacyPolicy(true)}
+                      onShowTermsOfService={() => setShowTermsOfService(true)}
+                      onShowRefundPolicy={() => setShowRefundPolicy(true)}
+                    />
+                  </Suspense>
+                )}
+
+                {isEnabled("core_settings") && activeTab === "settings" && (
+                  <Suspense fallback={<Skeleton width="100%" height="20rem" />}>
+                    <SettingsPage userEmail={user?.email ?? null} onAccountDeleted={handleLogout} />
+                  </Suspense>
+                )}
+
                 {/* Every core screen switched off from the admin portal at once - an edge case, but one that must explain itself rather than render an empty page. */}
                 {flagsLoaded && !getFallbackTab() && (
                   <div className="text-center py-20 text-slate-400 text-sm">
@@ -2991,13 +3091,11 @@ export default function App() {
         </AnimatePresence>
 
 
-        {/* Ethical B2B Sustainable monetization banner (Aids monetization logic constraint!) */}
-        <footer className="mt-16 bg-white border border-slate-200 p-6 rounded-2xl flex flex-col justify-between items-center gap-6 text-xs shadow-sm shadow-slate-100/10">
-          {/* General terms copyright matches */}
-          <div className="w-full font-sans text-slate-500 space-y-1 text-center md:text-left">
-            <p>© 2026 Aziiki. Your Business. Organized.</p>
-          </div>
-        </footer>
+        <Footer
+          onShowPrivacyPolicy={() => setShowPrivacyPolicy(true)}
+          onShowTermsOfService={() => setShowTermsOfService(true)}
+          onGoToHelp={isEnabled("core_help_support") ? () => changeTab("helpSupport") : undefined}
+        />
 
       </main>
 

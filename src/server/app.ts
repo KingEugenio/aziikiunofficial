@@ -45,6 +45,7 @@ import { documentNumberingRouter } from "./routes/documentNumbering";
 import { paymentsRouter } from "./routes/payments";
 import { paymentsWebhookRouter } from "./routes/paymentsWebhook";
 import { notificationsRouter } from "./routes/notifications";
+import { profileRouter } from "./routes/profile";
 import { signaturesRouter } from "./routes/signatures";
 import { businessMembershipsRouter } from "./routes/businessMemberships";
 import { exchangeRatesRouter } from "./routes/exchangeRates";
@@ -133,6 +134,7 @@ export function createApp(): express.Express {
   app.use("/api/document-numbering", requireAuth, documentNumberingRouter);
   app.use("/api/payments", requireAuth, paymentsRouter);
   app.use("/api/notifications", requireAuth, notificationsRouter);
+  app.use("/api/profile", requireAuth, profileRouter);
   app.use("/api/signatures", requireAuth, signaturesRouter);
   app.use("/api/business-memberships", requireAuth, businessMembershipsRouter);
   app.use("/api/exchange-rates", requireAuth, exchangeRatesRouter);

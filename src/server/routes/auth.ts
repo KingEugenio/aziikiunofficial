@@ -1,5 +1,5 @@
 import { Router, type Request, type Response } from "express";
-import { getAnonClient } from "../supabaseClients";
+import { getAnonClient, getServiceRoleClient } from "../supabaseClients";
 import { requireAuth } from "../middleware/requireAuth";
 import {
   loginLimiter,
@@ -306,6 +306,24 @@ authRouter.post("/mfa/unenroll", requireAuth, async (req: Request, res: Response
   const { error } = await req.supabase!.auth.mfa.unenroll({ factorId });
   if (error) {
     res.status(400).json({ error: error.message });
+    return;
+  }
+
+  res.status(204).send();
+});
+
+// Permanently deletes the caller's own account and everything tied to it
+// (businesses, transactions, invoices, ...) via the same on-delete-cascade
+// foreign keys the rest of the schema already relies on for auth.users.
+// Requires the service-role client - a user's own token can never delete
+// an auth.users row, by design.
+authRouter.delete("/account", requireAuth, async (req: Request, res: Response) => {
+  const serviceClient = getServiceRoleClient();
+  const { error } = await serviceClient.auth.admin.deleteUser(req.user!.id);
+
+  if (error) {
+    console.error("[auth/account] failed to delete account:", error.message);
+    res.status(500).json({ error: "Couldn't delete your account right now. Please try again shortly." });
     return;
   }
 
