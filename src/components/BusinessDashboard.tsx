@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ArrowUpRight, ArrowDownRight, Coins, Calculator, TrendUp as TrendingUp, Pulse as Activity, Plus, Trash as Trash2, CheckCircle, DeviceMobile as Smartphone, Wallet, Buildings as Building, WarningCircle as AlertCircle, DownloadSimple as Download, UploadSimple as Upload, Database, MagicWand as Sparkles, ShieldWarning as ShieldAlert, Users, Briefcase, ClockCounterClockwise as History, TrendDown as TrendingDown, UserCheck, Lightning } from "@phosphor-icons/react";
+import { ArrowUpRight, ArrowDownRight, Coins, Calculator, TrendUp as TrendingUp, Pulse as Activity, Plus, Trash as Trash2, CheckCircle, DeviceMobile as Smartphone, Wallet, Buildings as Building, WarningCircle as AlertCircle, DownloadSimple as Download, UploadSimple as Upload, Database, MagicWand as Sparkles, ShieldWarning as ShieldAlert, Users, Briefcase, ClockCounterClockwise as History, TrendDown as TrendingDown, UserCheck, Lightning, FileCsv as FileSpreadsheetIcon } from "@phosphor-icons/react";
 import { Transaction, Customer, Business, Invoice, Debt, Partner, Shareholder, AuditLog, UserRole } from "../types";
 
 interface BusinessDashboardProps {
@@ -279,6 +279,41 @@ export default function BusinessDashboard({
     setTimeout(() => setDbStatus(null), 3005);
   };
 
+  const [isImportingSpreadsheet, setIsImportingSpreadsheet] = useState(false);
+
+  const handleImportSpreadsheet = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-selecting the same file after a failed attempt
+    if (!file) return;
+
+    setIsImportingSpreadsheet(true);
+    try {
+      const { parseTransactionsFromSpreadsheet } = await import("../lib/spreadsheetImport");
+      const { transactions, totalRows, skippedRows } = await parseTransactionsFromSpreadsheet(file, currentBusiness.id);
+
+      if (transactions.length === 0) {
+        setDbStatus(
+          totalRows === 0
+            ? "That file had no rows to import."
+            : "Couldn't find a usable Amount column - check the file has a Date/Amount/Type header row."
+        );
+      } else {
+        transactions.forEach((t) => onAddTransaction(t));
+        setDbStatus(
+          skippedRows > 0
+            ? `Imported ${transactions.length} transaction${transactions.length === 1 ? "" : "s"}, skipped ${skippedRows} row${skippedRows === 1 ? "" : "s"} with no valid amount.`
+            : `Imported ${transactions.length} transaction${transactions.length === 1 ? "" : "s"} successfully!`
+        );
+      }
+    } catch (err) {
+      console.error("Failed to import spreadsheet:", err);
+      setDbStatus("Couldn't read that file. Make sure it's a valid .xlsx, .xls, or .csv file.");
+    } finally {
+      setIsImportingSpreadsheet(false);
+      setTimeout(() => setDbStatus(null), 6000);
+    }
+  };
+
   const handleImportJSON = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -540,6 +575,26 @@ export default function BusinessDashboard({
                   type="file"
                   accept=".json"
                   onChange={handleImportJSON}
+                  className="hidden"
+                />
+              </label>
+            </div>
+
+            {/* IMPORT FROM EXCEL/CSV BLOCK */}
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2">
+              <span className="text-[9px] font-mono text-slate-400 uppercase tracking-wider font-bold block text-left">Import from Excel / CSV</span>
+              <p className="text-[10px] text-slate-550 leading-relaxed text-left">
+                Upload a spreadsheet with Date, Type, Category, Amount, Description, and Payment Method columns to add them as transactions.
+              </p>
+
+              <label className={`flex items-center justify-center gap-1.5 bg-white hover:bg-slate-100 text-slate-700 font-bold py-1.5 px-3 rounded-lg border border-slate-200 transition-colors text-[10px] ${isImportingSpreadsheet ? "opacity-50 cursor-wait" : "cursor-pointer"}`}>
+                <FileSpreadsheetIcon className="w-3 h-3 text-emerald-600" />
+                {isImportingSpreadsheet ? "Importing..." : "Upload .xlsx, .xls or .csv"}
+                <input
+                  type="file"
+                  accept=".xlsx,.xls,.csv"
+                  onChange={handleImportSpreadsheet}
+                  disabled={isImportingSpreadsheet}
                   className="hidden"
                 />
               </label>
@@ -914,6 +969,26 @@ export default function BusinessDashboard({
                   type="file"
                   accept=".json"
                   onChange={handleImportJSON}
+                  className="hidden"
+                />
+              </label>
+            </div>
+
+            {/* IMPORT FROM EXCEL/CSV BLOCK */}
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2">
+              <span className="text-[9px] font-mono text-slate-400 uppercase tracking-wider font-bold block text-left">Import from Excel / CSV</span>
+              <p className="text-[10px] text-slate-550 leading-relaxed text-left">
+                Upload a spreadsheet with Date, Type, Category, Amount, Description, and Payment Method columns to add them as transactions.
+              </p>
+
+              <label className={`flex items-center justify-center gap-1.5 bg-white hover:bg-slate-100 text-slate-700 font-bold py-1.5 px-3 rounded-lg border border-slate-200 transition-colors text-[10px] ${isImportingSpreadsheet ? "opacity-50 cursor-wait" : "cursor-pointer"}`}>
+                <FileSpreadsheetIcon className="w-3 h-3 text-emerald-600" />
+                {isImportingSpreadsheet ? "Importing..." : "Upload .xlsx, .xls or .csv"}
+                <input
+                  type="file"
+                  accept=".xlsx,.xls,.csv"
+                  onChange={handleImportSpreadsheet}
+                  disabled={isImportingSpreadsheet}
                   className="hidden"
                 />
               </label>

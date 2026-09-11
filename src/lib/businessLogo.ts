@@ -18,7 +18,22 @@ export function isImageLogo(logo: string | undefined | null): boolean {
 /** Safe for any plain-text context (dropdown options, labels). */
 export function businessLogoGlyph(business: { logo?: string; name: string }): string {
   if (isImageLogo(business.logo)) {
-    return business.name?.trim()?.[0]?.toUpperCase() || "🏢";
+    return getInitials(business.name);
   }
-  return business.logo || "🏢";
+  return business.logo || getInitials(business.name);
+}
+
+/**
+ * First letter of up to the first two words in a name (e.g. "BlueStar
+ * Logistics" -> "BL", "Acme" -> "A"). The default document-logo badge when
+ * someone hasn't uploaded a real logo or picked a preset icon - a business's
+ * own initials, not a generic placeholder graphic.
+ */
+export function getInitials(name: string | undefined | null): string {
+  const words = (name ?? "").trim().split(/\s+/).filter(Boolean);
+  if (words.length === 0) return "?";
+  return words
+    .slice(0, 2)
+    .map((w) => w[0]!.toUpperCase())
+    .join("");
 }

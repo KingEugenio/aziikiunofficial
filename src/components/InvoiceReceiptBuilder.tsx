@@ -15,6 +15,7 @@ import TeamManager from "./TeamManager";
 import ExchangeRateSettings from "./ExchangeRateSettings";
 import { CustomBlockLayout } from "../lib/documentBlocks";
 import { useFeatureFlags } from "../lib/featureFlags";
+import { getInitials } from "../lib/businessLogo";
 
 interface InvoiceReceiptBuilderProps {
   currentBusiness: Business;
@@ -326,7 +327,10 @@ export default function InvoiceReceiptBuilder({
 
   // Custom Logo uploading / Selection
   const [uploadedLogo, setUploadedLogo] = useState<string | null>(null);
-  const [selectedPresetLogo, setSelectedPresetLogo] = useState<string | null>("consult");
+  // No preset pre-selected by default - an unset logo now falls back to the
+  // business's own initials (see getInitials()) at the render sites below,
+  // not a generic sparkle icon nobody chose.
+  const [selectedPresetLogo, setSelectedPresetLogo] = useState<string | null>(null);
 
   // Editable Issuer (Issued By) Details
   const [issuerName, setIssuerName] = useState<string>(currentBusiness.name);
@@ -470,6 +474,16 @@ export default function InvoiceReceiptBuilder({
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // PNG only - a fixed, predictable format for something that gets
+    // composited into every generated PDF (JPEG's lossy artifacts and lack
+    // of transparency, or an SVG that could carry arbitrary markup, are
+    // both worse fits here than one simple, well-understood raster format).
+    if (file.type !== "image/png") {
+      triggerToast("Please upload a PNG file for your logo.");
+      e.target.value = "";
+      return;
+    }
+
     try {
       // Resized/compressed before ever becoming a data URL - see
       // imageCompress.ts. A raw phone-camera photo used as a "logo" used
@@ -487,8 +501,8 @@ export default function InvoiceReceiptBuilder({
   // Clean uploaded logo
   const clearUploadedLogo = () => {
     setUploadedLogo(null);
-    setSelectedPresetLogo("consult");
-    triggerToast("Switched back to standard graphic presets.");
+    setSelectedPresetLogo(null);
+    triggerToast("Logo removed - using your business initials until you upload or pick one.");
   };
 
 
@@ -1657,18 +1671,18 @@ export default function InvoiceReceiptBuilder({
                       <span className="text-[10px] font-bold block text-slate-800">
                         {uploadedLogo ? "Brand Imaged loaded" : "Upload Custom Logo"}
                       </span>
-                      <span className="text-[9px] text-slate-400 block">PNG, JPEG or SVG</span>
+                      <span className="text-[9px] text-slate-400 block">PNG only</span>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-1.5">
                     <label className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg px-2.5 py-1 text-[9px] font-bold cursor-pointer font-sans transition-colors shrink-0">
                       Browse
-                      <input 
-                        type="file" 
-                        accept="image/*" 
-                        onChange={handleLogoUpload} 
-                        className="hidden" 
+                      <input
+                        type="file"
+                        accept="image/png"
+                        onChange={handleLogoUpload}
+                        className="hidden"
                       />
                     </label>
                     {uploadedLogo && (
@@ -2172,12 +2186,14 @@ export default function InvoiceReceiptBuilder({
                       alt="Company Custom Logo"
                       className="w-14 h-14 rounded-xl object-contain bg-white p-1 border border-white/30 shadow-sm select-none"
                     />
+                  ) : selectedPresetLogo ? (
+                    <div className="w-14 h-14 rounded-full flex items-center justify-center text-white text-2xl font-bold select-none bg-white/15 border border-white/25">
+                      {PRESET_LOGOS.find(l => l.id === selectedPresetLogo)?.char}
+                    </div>
                   ) : (
-                    selectedPresetLogo && (
-                      <div className="w-14 h-14 rounded-full flex items-center justify-center text-white text-2xl font-bold select-none bg-white/15 border border-white/25">
-                        {PRESET_LOGOS.find(l => l.id === selectedPresetLogo)?.char || "✦"}
-                      </div>
-                    )
+                    <div className="w-14 h-14 rounded-full flex items-center justify-center text-white text-xl font-black select-none bg-white/15 border border-white/25 tracking-tight">
+                      {getInitials(issuerName)}
+                    </div>
                   )}
                   <div className={logoPlacement === "Center" ? "text-center" : "text-left"}>
                     <h3 className="font-sans font-extrabold text-lg tracking-tight text-white">
@@ -2224,17 +2240,19 @@ export default function InvoiceReceiptBuilder({
                 
                 {/* Brand Logo rendering */}
                 {uploadedLogo ? (
-                  <img 
-                    src={uploadedLogo} 
-                    alt="Company Custom Logo" 
+                  <img
+                    src={uploadedLogo}
+                    alt="Company Custom Logo"
                     className="w-14 h-14 rounded-xl object-contain bg-slate-50 p-1 border shadow-sm select-none"
                   />
+                ) : selectedPresetLogo ? (
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center text-white text-xl font-bold select-none shadow-sm shadow-emerald-500/10" style={{ backgroundColor: accentColor }}>
+                    {PRESET_LOGOS.find(l => l.id === selectedPresetLogo)?.char}
+                  </div>
                 ) : (
-                  selectedPresetLogo && (
-                    <div className="w-11 h-11 rounded-xl flex items-center justify-center text-white text-xl font-bold select-none shadow-sm shadow-emerald-500/10" style={{ backgroundColor: accentColor }}>
-                      {PRESET_LOGOS.find(l => l.id === selectedPresetLogo)?.char || "✦"}
-                    </div>
-                  )
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center text-white text-base font-black select-none shadow-sm shadow-emerald-500/10 tracking-tight" style={{ backgroundColor: accentColor }}>
+                    {getInitials(issuerName)}
+                  </div>
                 )}
 
                 <div className={logoPlacement === "Center" || headerLayout === "Centered" ? "text-center" : "text-left"}>

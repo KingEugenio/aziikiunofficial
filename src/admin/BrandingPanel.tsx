@@ -47,6 +47,11 @@ function SingleAssetSlot({
 
   const handleFile = async (file: File) => {
     setError(null);
+    if (file.type !== "image/png") {
+      setError(`Please upload a PNG file for your ${label.toLowerCase()}.`);
+      if (inputRef.current) inputRef.current.value = "";
+      return;
+    }
     setIsUploading(true);
     try {
       const path = `${kind}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
@@ -100,7 +105,7 @@ function SingleAssetSlot({
       <input
         ref={inputRef}
         type="file"
-        accept="image/*"
+        accept="image/png"
         className="hidden"
         onChange={(e) => {
           const file = e.target.files?.[0];

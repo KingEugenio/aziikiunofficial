@@ -2178,10 +2178,15 @@ export default function App() {
                               Upload Custom Logo File
                               <input
                                 type="file"
-                                accept="image/*"
+                                accept="image/png"
                                 onChange={async (e) => {
                                   const file = e.target.files?.[0];
                                   if (file) {
+                                    if (file.type !== "image/png") {
+                                      setBrandFormError("Please upload a PNG file for your logo.");
+                                      e.target.value = "";
+                                      return;
+                                    }
                                     try {
                                       // See imageCompress.ts - resized/
                                       // compressed before storage instead
@@ -2189,8 +2194,10 @@ export default function App() {
                                       // multi-megabyte upload as-is.
                                       const dataUrl = await compressImageForStorage(file);
                                       setBizFormLogo(dataUrl);
+                                      setBrandFormError(null);
                                     } catch (err) {
                                       console.error("Failed to process uploaded logo:", err);
+                                      setBrandFormError("Couldn't process that image. Please try a different PNG file.");
                                     }
                                   }
                                 }}
