@@ -1,44 +1,35 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Trash, FloppyDisk, X } from "@phosphor-icons/react";
+import React, { useEffect, useState } from "react";
+import { FloppyDisk, X } from "@phosphor-icons/react";
 import { api, ApiError } from "../lib/api";
 
 interface SignatureCaptureProps {
   businessId: string;
   documentType: "invoice" | "receipt" | "quotation";
   documentId: string;
-  defaultSignerName?: string;
   onSaved: (signature: any) => void;
   onClose: () => void;
 }
 
-const CANVAS_WIDTH = 460;
-const CANVAS_HEIGHT = 160;
-
 /**
- * Captures a customer's signature against one specific document (drawn on
- * a canvas, or typed and rendered in a script font) and saves it via
- * POST /api/signatures. Scoped to the business owner capturing it in
- * person (see the migration's comment) - there's no public unauthenticated
- * signing link here.
+ * Captures the signing business representative's full name against one
+ * specific document, saved via POST /api/signatures. Deliberately just a
+ * typed full name, not a free-hand drawing or an arbitrary short signature -
+ * this represents a specific person at the business certifying the
+ * document, so it's validated as a real first-and-last name rather than
+ * accepting a scribble, initials, or a single word. Scoped to the business
+ * owner capturing it in person (see the migration's comment) - there's no
+ * public unauthenticated signing link here.
  */
 export default function SignatureCapture({
   businessId,
   documentType,
   documentId,
-  defaultSignerName,
   onSaved,
   onClose,
 }: SignatureCaptureProps) {
-  const [mode, setMode] = useState<"drawn" | "typed">("drawn");
-  const [signerName, setSignerName] = useState(defaultSignerName ?? "");
-  const [typedSignature, setTypedSignature] = useState(defaultSignerName ?? "");
-  const [pathPoints, setPathPoints] = useState<{ x: number; y: number }[][]>([]);
+  const [fullName, setFullName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const svgRef = useRef<SVGSVGElement>(null);
-  const currentStroke = useRef<{ x: number; y: number }[] | null>(null);
-  const isDrawing = useRef(false);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -48,54 +39,17 @@ export default function SignatureCapture({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
-  const getRelativePoint = (e: React.PointerEvent<SVGSVGElement>) => {
-    const rect = svgRef.current!.getBoundingClientRect();
-    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
-  };
-
-  const handlePointerDown = (e: React.PointerEvent<SVGSVGElement>) => {
-    (e.target as Element).setPointerCapture(e.pointerId);
-    isDrawing.current = true;
-    currentStroke.current = [getRelativePoint(e)];
-    setPathPoints((prev) => [...prev, currentStroke.current!]);
-  };
-
-  const handlePointerMove = (e: React.PointerEvent<SVGSVGElement>) => {
-    if (!isDrawing.current || !currentStroke.current) return;
-    currentStroke.current.push(getRelativePoint(e));
-    // Force a re-render by cloning the array reference for the last stroke.
-    setPathPoints((prev) => {
-      const next = [...prev];
-      next[next.length - 1] = [...currentStroke.current!];
-      return next;
-    });
-  };
-
-  const handlePointerUp = () => {
-    isDrawing.current = false;
-    currentStroke.current = null;
-  };
-
-  const clearDrawing = () => setPathPoints([]);
-
-  const strokesToSvgPaths = (): string[] =>
-    pathPoints
-      .filter((stroke) => stroke.length > 0)
-      .map((stroke) => stroke.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" "));
-
-  const hasDrawnContent = pathPoints.some((s) => s.length > 1);
+  // At least a first and last name - "strictly" the representative's full
+  // name, not initials or a single word.
+  const isFullName = fullName.trim().split(/\s+/).filter(Boolean).length >= 2;
 
   const handleSave = async () => {
-    if (!signerName.trim()) {
-      setError("Please enter the signer's name.");
+    if (!fullName.trim()) {
+      setError("Please enter the business representative's full name.");
       return;
     }
-    if (mode === "drawn" && !hasDrawnContent) {
-      setError("Please draw a signature first, or switch to Type.");
-      return;
-    }
-    if (mode === "typed" && !typedSignature.trim()) {
-      setError("Please type a signature.");
+    if (!isFullName) {
+      setError("Please enter a full name (first and last), not just one word.");
       return;
     }
 
@@ -106,9 +60,9 @@ export default function SignatureCapture({
         businessId,
         documentType,
         documentId,
-        signerName: signerName.trim(),
-        signatureKind: mode,
-        signatureData: mode === "drawn" ? JSON.stringify(strokesToSvgPaths()) : typedSignature.trim(),
+        signerName: fullName.trim(),
+        signatureKind: "typed",
+        signatureData: fullName.trim(),
       });
       onSaved(signature);
     } catch (err) {
@@ -131,71 +85,19 @@ export default function SignatureCapture({
         {error && <div className="bg-rose-50 border border-rose-200 text-rose-700 p-2.5 rounded-xl text-xs">{error}</div>}
 
         <div className="space-y-1">
-          <label htmlFor="signer-name" className="text-[9px] font-mono text-slate-450 uppercase tracking-wider block">Signer Name</label>
+          <label htmlFor="signer-name" className="text-[9px] font-mono text-slate-450 uppercase tracking-wider block">
+            Business Representative Full Name
+          </label>
+          <p className="text-[10px] text-slate-450">The full name of the person at your business signing this document.</p>
           <input
             id="signer-name"
-            value={signerName}
-            onChange={(e) => setSignerName(e.target.value)}
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
             placeholder="e.g. Yaw Mensah"
-            className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs outline-none focus:border-emerald-500"
+            className="w-full border border-slate-300 rounded-xl p-4 text-2xl bg-slate-50 outline-none focus:border-emerald-500"
+            style={{ fontFamily: "'Georgia', serif", fontStyle: "italic" }}
           />
         </div>
-
-        <div className="flex gap-1.5">
-          <button
-            type="button"
-            onClick={() => setMode("drawn")}
-            className={`flex-1 text-[10px] font-bold uppercase tracking-wide py-2 rounded-lg cursor-pointer ${mode === "drawn" ? "bg-emerald-600 text-white" : "bg-slate-100 text-slate-600"}`}
-          >
-            Draw
-          </button>
-          <button
-            type="button"
-            onClick={() => setMode("typed")}
-            className={`flex-1 text-[10px] font-bold uppercase tracking-wide py-2 rounded-lg cursor-pointer ${mode === "typed" ? "bg-emerald-600 text-white" : "bg-slate-100 text-slate-600"}`}
-          >
-            Type
-          </button>
-        </div>
-
-        {mode === "drawn" ? (
-          <div className="space-y-2">
-            <svg
-              ref={svgRef}
-              width={CANVAS_WIDTH}
-              height={CANVAS_HEIGHT}
-              viewBox={`0 0 ${CANVAS_WIDTH} ${CANVAS_HEIGHT}`}
-              onPointerDown={handlePointerDown}
-              onPointerMove={handlePointerMove}
-              onPointerUp={handlePointerUp}
-              className="w-full border border-dashed border-slate-300 rounded-xl bg-slate-50 cursor-crosshair touch-none"
-              role="img"
-              aria-label="Signature drawing pad"
-            >
-              {strokesToSvgPaths().map((d, i) => (
-                <path key={i} d={d} fill="none" stroke="#0f172a" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-              ))}
-            </svg>
-            <button
-              type="button"
-              onClick={clearDrawing}
-              className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 hover:text-rose-600 cursor-pointer"
-            >
-              <Trash className="w-3.5 h-3.5" /> Clear
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-1">
-            <label htmlFor="typed-signature" className="text-[9px] font-mono text-slate-450 uppercase tracking-wider block">Type Your Signature</label>
-            <input
-              id="typed-signature"
-              value={typedSignature}
-              onChange={(e) => setTypedSignature(e.target.value)}
-              className="w-full border border-slate-300 rounded-xl p-4 text-2xl bg-slate-50 outline-none focus:border-emerald-500"
-              style={{ fontFamily: "'Georgia', serif", fontStyle: "italic" }}
-            />
-          </div>
-        )}
 
         <button
           type="button"

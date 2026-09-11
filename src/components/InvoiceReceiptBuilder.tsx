@@ -2621,7 +2621,12 @@ export default function InvoiceReceiptBuilder({
                   <span className="text-[8px] font-mono text-slate-400 tracking-widest block uppercase mt-0.5">Authorized Officer</span>
                 </div>
 
-                {/* Customer e-signature (invoice/quotation only) */}
+                {/* Business representative signature (invoice/quotation only) -
+                    strictly the full name of the person at the business
+                    signing the document, not the customer's. New captures
+                    are always signatureKind "typed" (SignatureCapture.tsx no
+                    longer offers hand-drawing); the "drawn" branch here only
+                    renders signatures captured before that change. */}
                 {(mode === "invoice" || mode === "quotation") && (
                   <div className="text-center border-t border-slate-200 pt-1.5 w-36">
                     {documentSignature ? (
@@ -2640,7 +2645,7 @@ export default function InvoiceReceiptBuilder({
                       <span className="text-[10px] text-slate-300 italic">Not yet signed</span>
                     )}
                     <span className="text-[8px] font-mono text-slate-400 tracking-widest block uppercase mt-0.5">
-                      {documentSignature ? documentSignature.signerName : "Customer Signature"}
+                      {documentSignature ? documentSignature.signerName : "Business Representative"}
                     </span>
                   </div>
                 )}
@@ -2764,7 +2769,7 @@ export default function InvoiceReceiptBuilder({
               type="button"
               onClick={() => setIsSignatureModalOpen(true)}
               disabled={!savedDocumentId}
-              title={!savedDocumentId ? `Save this ${mode} first to capture a signature.` : documentSignature ? "Replace the captured signature" : "Capture the customer's signature"}
+              title={!savedDocumentId ? `Save this ${mode} first to capture a signature.` : documentSignature ? "Replace the captured signature" : "Capture the business representative's signature"}
               className="bg-white border border-slate-205 text-slate-700 hover:bg-slate-100 font-bold text-[10px] px-3.5 py-2.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Signature className="w-3.5 h-3.5" /> {documentSignature ? "Signed" : "Sign Document"}
@@ -2816,7 +2821,6 @@ export default function InvoiceReceiptBuilder({
           businessId={currentBusiness.id}
           documentType={mode}
           documentId={savedDocumentId}
-          defaultSignerName={resolvedDocCustomer?.name ?? (customerId === "custom" ? customClientName : undefined)}
           onSaved={(signature) => {
             setDocumentSignature(signature);
             setIsSignatureModalOpen(false);
