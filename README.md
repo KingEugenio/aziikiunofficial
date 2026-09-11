@@ -1,23 +1,35 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Aziiki
 
-# Run and deploy your AI Studio app
+The free Business Operating System for African entrepreneurs — income and
+expense tracking, invoices/receipts/quotations, customer CRM, and an AI CFO
+Advisor, built offline-first for low-connectivity use.
 
-This contains everything you need to run your app locally.
+## Run locally
 
-View your app in AI Studio: https://ai.studio/apps/ef022a73-4503-49ee-a7b0-eb2ad3697ad3
-
-## Run Locally
-
-**Prerequisites:**  Node.js
-
+**Prerequisites:** Node.js, a Supabase project, an Upstash Redis instance.
 
 1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+   ```
+   npm install
+   ```
+2. Copy `.env.example` to `.env` and fill in every value (Supabase project
+   keys and Upstash Redis are required; Gemini/Resend/Paystack are optional
+   feature-by-feature - see the comments in `.env.example`).
+3. Apply the database migrations in `supabase/migrations/` to your Supabase
+   project (via the Supabase CLI, or paste each file into the SQL Editor in
+   order).
+4. Run the app:
+   ```
+   npm run dev
+   ```
+
+## Admin portal
+
+Visit `/admin` and sign in with an account that has `is_admin = true` set
+on its `profiles` row (see the comment on migration `0031_admin_role.sql`
+for how to set the first one). From there: toggle features on/off globally
+or for specific users, send in-app announcements, run surveys, and manage
+the site logo/favicon/shared documents.
 
 ## Production deployment notes
 

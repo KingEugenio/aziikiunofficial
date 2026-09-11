@@ -7,8 +7,8 @@ import { env } from "./env";
  * configured (AI features stay disabled, same as before).
  *
  * IMPORTANT CAVEAT worth knowing: this only adds real capacity if the
- * extra keys come from separate Google Cloud / AI Studio projects with
- * their own independent quota allocation. Multiple keys generated inside
+ * extra keys come from separate Google Cloud projects with their own
+ * independent quota allocation. Multiple keys generated inside
  * the SAME project commonly share one quota pool, in which case rotating
  * between them doesn't actually increase how many requests you can make -
  * it just spreads the same limit across more keys. This code will use
@@ -58,7 +58,7 @@ export async function generateContentWithFailover(
   let lastError: unknown = null;
 
   for (let i = 0; i < keys.length; i++) {
-    const ai = new GoogleGenAI({ apiKey: keys[i], httpOptions: { headers: { "User-Agent": "aistudio-build" } } });
+    const ai = new GoogleGenAI({ apiKey: keys[i] });
     try {
       return await ai.models.generateContent(params);
     } catch (err) {
