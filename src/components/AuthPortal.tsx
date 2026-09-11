@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import BrandLogo from "./BrandLogo";
+import AnnouncementBanner from "./AnnouncementBanner";
 import { supabase } from "../lib/supabaseClient";
 import { api, ApiError } from "../lib/api";
 import { ShieldCheck, Lock, Envelope as Mail, DeviceMobile as Smartphone, Monitor, Database, WarningCircle as AlertCircle, CheckCircle, CaretRight as ChevronRight, ArrowRight, Key as KeyRound, Eye, EyeSlash } from "@phosphor-icons/react";
@@ -329,7 +330,8 @@ export default function AuthPortal({ onAuthSuccess, onEnterGuest, recoveryMode, 
   }
 
   return (
-    <div id="auth-portal-frame" className="min-h-screen bg-slate-50 flex items-center justify-center p-4 select-none font-sans">
+    <div id="auth-portal-frame" className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-4 p-4 select-none font-sans">
+      <AnnouncementBanner screen={isSignUp ? "auth_signup" : "auth_signin"} authenticated={false} className="w-full max-w-5xl" />
       <div className="w-full max-w-5xl bg-white border border-slate-205 rounded-3xl overflow-hidden shadow-2xl shadow-emerald-900/5 grid grid-cols-1 lg:grid-cols-12 min-h-[600px]">
         {/* LEFT COLUMN: branding */}
         <div className="lg:col-span-5 bg-slate-900 text-white p-8 sm:p-10 flex flex-col justify-between relative overflow-hidden">

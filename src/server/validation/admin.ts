@@ -10,9 +10,32 @@ export const flagOverrideSchema = z.object({
   enabled: z.boolean(),
 });
 
+// Where an announcement is allowed to show. Mirrors App.tsx's `activeTab`
+// ids plus the two pre-auth screens - kept in sync manually since the tab
+// ids aren't otherwise centrally typed (App.tsx's activeTab is a plain
+// string, not a union).
+export const ANNOUNCEMENT_TARGET_SCREENS = [
+  "all",
+  "auth_signin",
+  "auth_signup",
+  "dashboard",
+  "billing",
+  "crm",
+  "wealth",
+  "stock",
+  "purchaseOrders",
+  "team",
+  "exchangeRates",
+  "reports",
+  "ai",
+  "monetize",
+  "guide",
+] as const;
+
 export const announcementCreateSchema = z.object({
   title: z.string().trim().min(1).max(200),
   message: z.string().trim().min(1).max(2000),
+  targetScreen: z.enum(ANNOUNCEMENT_TARGET_SCREENS).optional(),
 });
 
 const surveyQuestionSchema = z.object({

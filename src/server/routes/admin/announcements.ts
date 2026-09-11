@@ -8,6 +8,7 @@ function fromRow(row: any) {
     id: row.id,
     title: row.title,
     message: row.message,
+    targetScreen: row.target_screen,
     isActive: row.is_active,
     createdAt: row.created_at,
   };
@@ -53,7 +54,12 @@ adminAnnouncementsRouter.post("/", async (req: Request, res: Response) => {
   const supabase = req.supabase!;
   const { data, error } = await supabase
     .from("admin_announcements")
-    .insert({ title: parsed.data.title, message: parsed.data.message, created_by: req.user!.id })
+    .insert({
+      title: parsed.data.title,
+      message: parsed.data.message,
+      target_screen: parsed.data.targetScreen ?? "all",
+      created_by: req.user!.id,
+    })
     .select("*")
     .single();
 

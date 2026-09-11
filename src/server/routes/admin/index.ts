@@ -4,6 +4,8 @@ import { adminAnnouncementsRouter } from "./announcements";
 import { adminSurveysRouter } from "./surveys";
 import { adminAssetsRouter } from "./assets";
 import { adminStatsRouter } from "./stats";
+import { adminSubscriptionPlansRouter } from "./subscriptionPlans";
+import { adminGuideItemsRouter } from "./guideItems";
 
 export const adminRouter = Router();
 
@@ -19,3 +21,5 @@ adminRouter.use("/announcements", adminAnnouncementsRouter);
 adminRouter.use("/surveys", adminSurveysRouter);
 adminRouter.use("/assets", adminAssetsRouter);
 adminRouter.use("/stats", adminStatsRouter);
+adminRouter.use("/subscription-plans", adminSubscriptionPlansRouter);
+adminRouter.use("/guide-items", adminGuideItemsRouter);

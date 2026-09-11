@@ -48,7 +48,7 @@ import { notificationsRouter } from "./routes/notifications";
 import { signaturesRouter } from "./routes/signatures";
 import { businessMembershipsRouter } from "./routes/businessMemberships";
 import { exchangeRatesRouter } from "./routes/exchangeRates";
-import { announcementsRouter } from "./routes/announcements";
+import { announcementsRouter, publicAnnouncementsRouter } from "./routes/announcements";
 import { surveysRouter } from "./routes/surveys";
 import { adminRouter } from "./routes/admin";
 
@@ -103,6 +103,7 @@ export function createApp(): express.Express {
   app.use("/api/auth", authRouter);
   app.use("/api/gemini", geminiRouter);
   app.use("/api/config", configRouter);
+  app.use("/api/announcements/public", publicAnnouncementsRouter);
 
   // ---------------------------------------------------------------------
   // Everything below requires a valid Supabase session.

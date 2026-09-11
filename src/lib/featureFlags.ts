@@ -10,6 +10,7 @@ import { api } from "./api";
  */
 export function useFeatureFlags() {
   const [flags, setFlags] = useState<Record<string, boolean>>({});
+  const [tier, setTier] = useState<string>("basic");
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -17,7 +18,10 @@ export function useFeatureFlags() {
     api.config
       .features()
       .then((res) => {
-        if (!cancelled) setFlags(res.flags ?? {});
+        if (!cancelled) {
+          setFlags(res.flags ?? {});
+          setTier(res.tier ?? "basic");
+        }
       })
       .catch(() => {
         // Fail closed: an unreachable config endpoint means every
@@ -34,5 +38,5 @@ export function useFeatureFlags() {
 
   const isEnabled = (key: string) => flags[key] === true;
 
-  return { flags, isEnabled, loaded };
+  return { flags, isEnabled, loaded, tier };
 }

@@ -63,7 +63,7 @@ export default function App() {
   // Ad Monetization Hub, Personal Workspace, Business Partners/Shareholders,
   // Inventory, ...) now has its own flag, off by default, code and routes
   // left fully intact ("hide, not delete" per the product teardown).
-  const { isEnabled } = useFeatureFlags();
+  const { isEnabled, tier } = useFeatureFlags();
   // Custom 404: Aziiki is a single-page app served entirely at "/" - there
   // is no real routing, everything else is client-side tab state, not a
   // distinct URL. A path other than "/" means someone followed a stale or
@@ -133,6 +133,19 @@ export default function App() {
   // that without touching the desktop layout at all.
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
   const [dismissedTravelBannerFor, setDismissedTravelBannerFor] = useState<string | null>(null);
+  // Persisted (not just per-session) - once someone closes the Launch
+  // Edition welcome banner, it should free up that space for good, not
+  // reappear on every reload.
+  const [launchBannerDismissed, setLaunchBannerDismissed] = useState<boolean>(
+    () => localStorage.getItem("aziiki_launch_banner_dismissed") === "true"
+  );
+  const [plans, setPlans] = useState<Array<{ tier: string; paystackLink: string | null; priceMinorUnits: number | null; currency: string }>>([]);
+  useEffect(() => {
+    api.config
+      .plans()
+      .then(setPlans)
+      .catch(() => setPlans([]));
+  }, []);
 
   // Business Profile Editing & Registration States
   const [showBrandConfig, setShowBrandConfig] = useState<boolean>(false);
@@ -1931,6 +1944,39 @@ export default function App() {
               </button>
             )}
           </div>
+
+          {/* Plan badge + upgrade link. Basic/Standard/Pro is per-account
+              (see useFeatureFlags' `tier`), not per-business - a paid
+              Payment Page click here is the only way a user unlocks
+              Standard/Pro themselves; Paystack's webhook applies the
+              upgrade automatically once the payment clears (no manual
+              step from the admin). */}
+          {user && (() => {
+            const nextTier = tier === "basic" ? "standard" : tier === "standard" ? "pro" : null;
+            const nextPlan = nextTier ? plans.find((p) => p.tier === nextTier) : undefined;
+            const upgradeUrl =
+              nextPlan?.paystackLink && user.email
+                ? `${nextPlan.paystackLink}${nextPlan.paystackLink.includes("?") ? "&" : "?"}email=${encodeURIComponent(user.email)}`
+                : nextPlan?.paystackLink;
+            return (
+              <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-2xl p-2.5 w-full text-left">
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[9px] font-mono text-slate-450 uppercase tracking-widest">Plan</span>
+                  <span className="text-[11px] font-bold text-slate-800 capitalize">{tier}</span>
+                </div>
+                {upgradeUrl && (
+                  <a
+                    href={upgradeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[9px] font-bold text-emerald-600 hover:underline cursor-pointer bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200 shrink-0 capitalize"
+                  >
+                    Upgrade to {nextTier}
+                  </a>
+                )}
+              </div>
+            );
+          })()}
         </div>
 
       </aside>
@@ -1965,6 +2011,7 @@ export default function App() {
         )}
 
         {/* Aziiki Launch Edition Welcome Banner */}
+        {!launchBannerDismissed && (
         <div className="mb-6 bg-brand-teal border border-brand-teal rounded-2xl p-4 text-white shadow-md flex flex-col md:flex-row items-center justify-between gap-4 animate-fade-in" id="launch-edition-promotion-banner">
           <div className="flex items-center gap-3">
             <div className="bg-white/15 w-10 h-10 rounded-xl flex items-center justify-center shrink-0 p-1.5">
@@ -1984,13 +2031,26 @@ export default function App() {
               </p>
             </div>
           </div>
-          <button
-            onClick={() => changeTab("guide")}
-            className="bg-white hover:bg-slate-50 text-brand-teal font-extrabold text-[10px] px-3.5 py-2 rounded-xl transition-all cursor-pointer shadow-sm hover:shadow shrink-0 font-sans flex items-center gap-1"
-          >
-            See How It Works <ArrowRight className="w-3 h-3" />
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => changeTab("guide")}
+              className="bg-white hover:bg-slate-50 text-brand-teal font-extrabold text-[10px] px-3.5 py-2 rounded-xl transition-all cursor-pointer shadow-sm hover:shadow shrink-0 font-sans flex items-center gap-1"
+            >
+              See How It Works <ArrowRight className="w-3 h-3" />
+            </button>
+            <button
+              onClick={() => {
+                setLaunchBannerDismissed(true);
+                localStorage.setItem("aziiki_launch_banner_dismissed", "true");
+              }}
+              aria-label="Dismiss"
+              className="text-white/70 hover:text-white cursor-pointer p-1.5 shrink-0"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
+        )}
 
         {/* Traveling-user notice: only when this business has a saved home
             timezone AND it differs from the browser's current one, and the
@@ -2030,7 +2090,7 @@ export default function App() {
         {/* Admin-portal broadcast channel: product announcements and
             surveys, controlled from /admin. Guest mode has no backend
             session to fetch these from either. */}
-        {!isGuest && <AnnouncementBanner />}
+        {!isGuest && <AnnouncementBanner screen={activeTab} />}
         {!isGuest && <SurveyPrompt />}
 
         {showBrandConfig && (

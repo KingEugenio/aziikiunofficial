@@ -6,6 +6,8 @@ import {
   Megaphone,
   ClipboardText,
   Image as ImageIcon,
+  CreditCard,
+  BookOpen,
   SignOut as LogOut,
   ShieldWarning,
 } from "@phosphor-icons/react";
@@ -17,18 +19,22 @@ import FeatureFlagsPanel from "./FeatureFlagsPanel";
 import AnnouncementsPanel from "./AnnouncementsPanel";
 import SurveysPanel from "./SurveysPanel";
 import BrandingPanel from "./BrandingPanel";
+import PaymentsPanel from "./PaymentsPanel";
+import GuidesPanel from "./GuidesPanel";
 
 const AuthPortal = lazy(() => import("../components/AuthPortal"));
 
 type AdminStatus = "checking" | "authorized" | "unauthorized";
-type Tab = "dashboard" | "flags" | "announcements" | "surveys" | "branding";
+type Tab = "dashboard" | "flags" | "announcements" | "surveys" | "branding" | "payments" | "guides";
 
 const NAV: { id: Tab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "flags", label: "Feature Flags", icon: ToggleLeft },
   { id: "announcements", label: "Announcements", icon: Megaphone },
   { id: "surveys", label: "Surveys", icon: ClipboardText },
+  { id: "payments", label: "Payments", icon: CreditCard },
   { id: "branding", label: "Branding & Files", icon: ImageIcon },
+  { id: "guides", label: "Guides", icon: BookOpen },
 ];
 
 /**
@@ -213,7 +219,9 @@ export default function AdminApp() {
             {activeTab === "flags" && <FeatureFlagsPanel />}
             {activeTab === "announcements" && <AnnouncementsPanel />}
             {activeTab === "surveys" && <SurveysPanel />}
+            {activeTab === "payments" && <PaymentsPanel />}
             {activeTab === "branding" && <BrandingPanel />}
+            {activeTab === "guides" && <GuidesPanel />}
           </div>
         </main>
       </div>

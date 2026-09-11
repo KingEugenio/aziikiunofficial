@@ -179,10 +179,14 @@ export const api = {
 
   config: {
     features: () =>
-      request<{ emailSendingEnabled: boolean; paystackEnabled: boolean; flags: Record<string, boolean> }>(
+      request<{ emailSendingEnabled: boolean; paystackEnabled: boolean; flags: Record<string, boolean>; tier: string }>(
         "/config/features"
       ),
     branding: () => request<{ logoUrl: string | null; faviconUrl: string | null }>("/config/branding"),
+    plans: () =>
+      request<{
+        data: Array<{ tier: string; paystackLink: string | null; priceMinorUnits: number | null; currency: string }>;
+      }>("/config/plans").then((r) => r.data),
   },
 
   brandKits: {
@@ -285,10 +289,15 @@ export const api = {
 
   announcements: {
     list: () =>
-      request<{ data: Array<{ id: string; title: string; message: string; createdAt: string; read: boolean }> }>(
-        "/announcements"
-      ).then((r) => r.data),
+      request<{
+        data: Array<{ id: string; title: string; message: string; targetScreen: string; createdAt: string; read: boolean }>;
+      }>("/announcements").then((r) => r.data),
     markRead: (id: string) => request<void>(`/announcements/${id}/read`, { method: "POST" }),
+    // Pre-auth (sign-in/sign-up screen) variant - no session required.
+    public: () =>
+      request<{ data: Array<{ id: string; title: string; message: string; targetScreen: string; createdAt: string }> }>(
+        "/announcements/public"
+      ).then((r) => r.data),
   },
 
   surveys: {
@@ -337,10 +346,21 @@ export const api = {
     announcements: {
       list: () =>
         request<{
-          data: Array<{ id: string; title: string; message: string; isActive: boolean; createdAt: string; readCount: number }>;
+          data: Array<{
+            id: string;
+            title: string;
+            message: string;
+            targetScreen: string;
+            isActive: boolean;
+            createdAt: string;
+            readCount: number;
+          }>;
         }>("/admin/announcements").then((r) => r.data),
-      create: (title: string, message: string) =>
-        request<{ data: unknown }>("/admin/announcements", { method: "POST", body: JSON.stringify({ title, message }) }),
+      create: (title: string, message: string, targetScreen: string) =>
+        request<{ data: unknown }>("/admin/announcements", {
+          method: "POST",
+          body: JSON.stringify({ title, message, targetScreen }),
+        }),
       setActive: (id: string, isActive: boolean) =>
         request<{ data: unknown }>(`/admin/announcements/${id}`, { method: "PATCH", body: JSON.stringify({ isActive }) }),
     },
@@ -377,6 +397,32 @@ export const api = {
         request<{
           data: { totalUsers: number; totalBusinesses: number; activeAnnouncements: number; activeSurveys: number; flagsEnabled: number };
         }>("/admin/stats").then((r) => r.data),
+    },
+
+    guideItems: {
+      list: () =>
+        request<{
+          data: Array<{ id: string; title: string; description: string | null; isDone: boolean; createdAt: string }>;
+        }>("/admin/guide-items").then((r) => r.data),
+      create: (title: string, description: string) =>
+        request<{ data: unknown }>("/admin/guide-items", { method: "POST", body: JSON.stringify({ title, description }) }),
+      setDone: (id: string, isDone: boolean) =>
+        request<{ data: unknown }>(`/admin/guide-items/${id}`, { method: "PATCH", body: JSON.stringify({ isDone }) }),
+      remove: (id: string) => request<void>(`/admin/guide-items/${id}`, { method: "DELETE" }),
+    },
+
+    subscriptionPlans: {
+      list: () =>
+        request<{
+          data: Array<{ tier: string; paystackLink: string | null; priceMinorUnits: number | null; currency: string; updatedAt: string }>;
+        }>("/admin/subscription-plans").then((r) => r.data),
+      save: (tier: "standard" | "pro", payload: { paystackLink: string | null; priceMinorUnits: number | null; currency: string }) =>
+        request<{ data: unknown }>(`/admin/subscription-plans/${tier}`, { method: "PUT", body: JSON.stringify(payload) }),
+      setUserTier: (email: string, tier: "basic" | "standard" | "pro") =>
+        request<{ data: unknown }>(`/admin/subscription-plans/users/${encodeURIComponent(email)}/tier`, {
+          method: "PUT",
+          body: JSON.stringify({ tier }),
+        }),
     },
 
     assets: {
