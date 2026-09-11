@@ -32,10 +32,15 @@ export const ANNOUNCEMENT_TARGET_SCREENS = [
   "guide",
 ] as const;
 
+export const ANNOUNCEMENT_TARGET_TIERS = ["all", "basic", "standard", "pro"] as const;
+export const ANNOUNCEMENT_TARGET_ACTIVITY = ["all", "new", "active"] as const;
+
 export const announcementCreateSchema = z.object({
   title: z.string().trim().min(1).max(200),
   message: z.string().trim().min(1).max(2000),
   targetScreen: z.enum(ANNOUNCEMENT_TARGET_SCREENS).optional(),
+  targetTier: z.enum(ANNOUNCEMENT_TARGET_TIERS).optional(),
+  targetActivity: z.enum(ANNOUNCEMENT_TARGET_ACTIVITY).optional(),
 });
 
 const surveyQuestionSchema = z.object({

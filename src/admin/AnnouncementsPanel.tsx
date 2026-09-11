@@ -9,9 +9,31 @@ interface AnnouncementRow {
   title: string;
   message: string;
   targetScreen: string;
+  targetTier: string;
+  targetActivity: string;
   isActive: boolean;
   createdAt: string;
   readCount: number;
+}
+
+const TARGET_TIER_OPTIONS: { value: string; label: string }[] = [
+  { value: "all", label: "Any plan" },
+  { value: "basic", label: "Basic only" },
+  { value: "standard", label: "Standard only" },
+  { value: "pro", label: "Pro only" },
+];
+
+const TARGET_ACTIVITY_OPTIONS: { value: string; label: string }[] = [
+  { value: "all", label: "Any activity level" },
+  { value: "new", label: "Brand new (0 transactions logged)" },
+  { value: "active", label: "Active (5+ transactions logged)" },
+];
+
+function targetTierLabel(value: string): string {
+  return TARGET_TIER_OPTIONS.find((o) => o.value === value)?.label ?? value;
+}
+function targetActivityLabel(value: string): string {
+  return TARGET_ACTIVITY_OPTIONS.find((o) => o.value === value)?.label ?? value;
 }
 
 // Kept in sync manually with ANNOUNCEMENT_TARGET_SCREENS in
@@ -44,6 +66,8 @@ export default function AnnouncementsPanel() {
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [targetScreen, setTargetScreen] = useState("all");
+  const [targetTier, setTargetTier] = useState("all");
+  const [targetActivity, setTargetActivity] = useState("all");
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -63,10 +87,12 @@ export default function AnnouncementsPanel() {
     setError(null);
     setIsSending(true);
     try {
-      await api.admin.announcements.create(title, message, targetScreen);
+      await api.admin.announcements.create(title, message, targetScreen, targetTier, targetActivity);
       setTitle("");
       setMessage("");
       setTargetScreen("all");
+      setTargetTier("all");
+      setTargetActivity("all");
       load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Couldn't send that announcement.");
@@ -109,20 +135,55 @@ export default function AnnouncementsPanel() {
           onChange={(e) => setMessage(e.target.value)}
           className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs resize-none focus:border-emerald-500"
         />
-        <div className="space-y-1">
-          <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Show on</label>
-          <select
-            value={targetScreen}
-            onChange={(e) => setTargetScreen(e.target.value)}
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
-          >
-            {TARGET_SCREEN_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="space-y-1">
+            <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Show on</label>
+            <select
+              value={targetScreen}
+              onChange={(e) => setTargetScreen(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
+            >
+              {TARGET_SCREEN_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Plan</label>
+            <select
+              value={targetTier}
+              onChange={(e) => setTargetTier(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
+            >
+              {TARGET_TIER_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Activity</label>
+            <select
+              value={targetActivity}
+              onChange={(e) => setTargetActivity(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
+            >
+              {TARGET_ACTIVITY_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
+        <p className="text-[10px] text-slate-400 leading-relaxed">
+          All three narrow the audience together (screen AND plan AND activity level). Targeting by which features
+          someone uses most isn't available yet - that would need feature-usage data synced to the server, which isn't
+          built yet.
+        </p>
         {error && <p className="text-[10px] text-rose-600">{error}</p>}
         <button
           type="submit"
@@ -147,6 +208,16 @@ export default function AnnouncementsPanel() {
                   <span className="text-[9px] font-mono uppercase tracking-wider text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">
                     {targetScreenLabel(a.targetScreen)}
                   </span>
+                  {a.targetTier !== "all" && (
+                    <span className="text-[9px] font-mono uppercase tracking-wider text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded">
+                      {targetTierLabel(a.targetTier)}
+                    </span>
+                  )}
+                  {a.targetActivity !== "all" && (
+                    <span className="text-[9px] font-mono uppercase tracking-wider text-teal-700 bg-teal-50 px-1.5 py-0.5 rounded">
+                      {targetActivityLabel(a.targetActivity)}
+                    </span>
+                  )}
                 </div>
                 <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">{a.message}</p>
                 <p className="text-[9px] font-mono text-slate-400 mt-1.5">

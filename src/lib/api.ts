@@ -310,7 +310,20 @@ export const api = {
   },
 
   admin: {
-    me: () => request<{ data: { id: string; email: string } }>("/admin/me"),
+    me: () =>
+      request<{ data: { id: string; email: string; isSuperAdmin: boolean; sections: string[] } }>("/admin/me"),
+
+    admins: {
+      list: () =>
+        request<{ data: Array<{ id: string; email: string; isSuperAdmin: boolean; sections: string[] }> }>(
+          "/admin/admins"
+        ).then((r) => r.data),
+      grant: (email: string, sections: string[]) =>
+        request<{ data: unknown }>("/admin/admins", { method: "POST", body: JSON.stringify({ email, sections }) }),
+      setSections: (userId: string, sections: string[]) =>
+        request<{ data: unknown }>(`/admin/admins/${userId}/sections`, { method: "PUT", body: JSON.stringify({ sections }) }),
+      revoke: (userId: string) => request<void>(`/admin/admins/${userId}`, { method: "DELETE" }),
+    },
 
     featureFlags: {
       list: () =>
@@ -351,15 +364,17 @@ export const api = {
             title: string;
             message: string;
             targetScreen: string;
+            targetTier: string;
+            targetActivity: string;
             isActive: boolean;
             createdAt: string;
             readCount: number;
           }>;
         }>("/admin/announcements").then((r) => r.data),
-      create: (title: string, message: string, targetScreen: string) =>
+      create: (title: string, message: string, targetScreen: string, targetTier: string, targetActivity: string) =>
         request<{ data: unknown }>("/admin/announcements", {
           method: "POST",
-          body: JSON.stringify({ title, message, targetScreen }),
+          body: JSON.stringify({ title, message, targetScreen, targetTier, targetActivity }),
         }),
       setActive: (id: string, isActive: boolean) =>
         request<{ data: unknown }>(`/admin/announcements/${id}`, { method: "PATCH", body: JSON.stringify({ isActive }) }),

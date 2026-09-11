@@ -2745,13 +2745,17 @@ export default function NetWorthInvestments({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Goal Description</label>
+                  <div className="flex items-center justify-between">
+                    <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Goal Description</label>
+                    <span className="text-[9px] font-mono text-slate-400">{goalName.length}/80</span>
+                  </div>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Procure prime prime sewing equipment"
+                    maxLength={80}
+                    placeholder="e.g. Procure prime sewing equipment"
                     value={goalName}
-                    onChange={(e) => setGoalName(e.target.value)}
+                    onChange={(e) => setGoalName(e.target.value.slice(0, 80))}
                     className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans"
                   />
                 </div>

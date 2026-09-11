@@ -13,6 +13,7 @@ import {
   Package,
   CurrencyCircleDollar,
   MagicWand as Sparkles,
+  SignOut as LogOut,
   X,
 } from "@phosphor-icons/react";
 
@@ -20,13 +21,19 @@ interface MobileNavBarProps {
   activeTab: string;
   onChangeTab: (tab: string) => void;
   isEnabled: (key: string) => boolean;
+  /** Current account's plan (basic/standard/pro) - undefined when signed
+   * out/guest, in which case neither the plan row nor sign-out show. */
+  tier?: string;
+  upgradeUrl?: string | null;
+  nextTier?: string | null;
+  onLogout?: () => void;
 }
 
 const PRIMARY_TABS = [
-  { id: "dashboard", label: "Scorecard", icon: Layers2 },
-  { id: "billing", label: "Billing", icon: Coins },
-  { id: "crm", label: "Customers", icon: Users },
-  { id: "ai", label: "AI Advisor", icon: BrainCircuit },
+  { id: "dashboard", label: "Scorecard", icon: Layers2, flag: "core_dashboard" },
+  { id: "billing", label: "Billing", icon: Coins, flag: "core_billing" },
+  { id: "crm", label: "Customers", icon: Users, flag: "core_customers" },
+  { id: "ai", label: "AI Advisor", icon: BrainCircuit, flag: "core_ai_advisor" },
 ];
 
 /**
@@ -37,12 +44,14 @@ const PRIMARY_TABS = [
  * report this fixes. A fixed bottom tab bar is always fully visible with
  * no scrolling required, and is the standard mobile nav pattern.
  */
-export default function MobileNavBar({ activeTab, onChangeTab, isEnabled }: MobileNavBarProps) {
+export default function MobileNavBar({ activeTab, onChangeTab, isEnabled, tier, upgradeUrl, nextTier, onLogout }: MobileNavBarProps) {
   const [showMore, setShowMore] = useState(false);
 
+  const visiblePrimaryTabs = PRIMARY_TABS.filter((tab) => isEnabled(tab.flag));
+
   const moreItems = [
-    { id: "reports", label: "Reports & Wisdom", icon: LineChart, show: true },
-    { id: "guide", label: "App Guide & Academy", icon: BookOpen, show: true },
+    { id: "reports", label: "Reports & Wisdom", icon: LineChart, show: isEnabled("core_reports") },
+    { id: "guide", label: "App Guide & Academy", icon: BookOpen, show: isEnabled("core_app_guide") },
     { id: "wealth", label: "Wealth & Goals", icon: Target, show: isEnabled("net_worth_investments") },
     { id: "stock", label: "Warehouse Stock", icon: Warehouse, show: isEnabled("inventory_management") },
     { id: "purchaseOrders", label: "Purchase Orders", icon: Package, show: isEnabled("purchase_orders") },
@@ -64,7 +73,7 @@ export default function MobileNavBar({ activeTab, onChangeTab, isEnabled }: Mobi
         className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-[0_-2px_12px_rgba(0,0,0,0.06)] flex items-stretch"
         style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       >
-        {PRIMARY_TABS.map((tab) => {
+        {visiblePrimaryTabs.map((tab) => {
           const TabIcon = tab.icon;
           const active = activeTab === tab.id;
           return (
@@ -119,6 +128,36 @@ export default function MobileNavBar({ activeTab, onChangeTab, isEnabled }: Mobi
                 </button>
               );
             })}
+
+            {/* Plan + sign out: last, and only here on mobile/tablet - the
+                desktop sidebar shows both directly instead (always
+                visible there, so no need to bury them in a sheet). */}
+            {tier && (
+              <div className="w-full flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50 mt-2">
+                <div className="flex flex-col">
+                  <span className="text-[9px] font-mono text-slate-450 uppercase tracking-widest">Plan</span>
+                  <span className="text-sm font-bold text-slate-800 capitalize">{tier}</span>
+                </div>
+                {upgradeUrl && (
+                  <a
+                    href={upgradeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 capitalize"
+                  >
+                    Upgrade to {nextTier}
+                  </a>
+                )}
+              </div>
+            )}
+            {onLogout && (
+              <button
+                onClick={onLogout}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm cursor-pointer text-rose-600 hover:bg-rose-50"
+              >
+                <LogOut className="w-4.5 h-4.5 shrink-0" /> Log out
+              </button>
+            )}
           </div>
         </div>
       )}

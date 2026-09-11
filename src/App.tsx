@@ -63,7 +63,7 @@ export default function App() {
   // Ad Monetization Hub, Personal Workspace, Business Partners/Shareholders,
   // Inventory, ...) now has its own flag, off by default, code and routes
   // left fully intact ("hide, not delete" per the product teardown).
-  const { isEnabled, tier } = useFeatureFlags();
+  const { isEnabled, tier, loaded: flagsLoaded, flags } = useFeatureFlags();
   // Custom 404: Aziiki is a single-page app served entirely at "/" - there
   // is no real routing, everything else is client-side tab state, not a
   // distinct URL. A path other than "/" means someone followed a stale or
@@ -107,15 +107,40 @@ export default function App() {
   // Options: "dashboard" | "billing" | "crm" | "wealth" | "stock" | "monetize" | "ai"
   const [activeTab, setActiveTab] = useState<string>("dashboard");
 
+  // Priority order to fall back through if the current/requested tab's flag
+  // is off - covers both the original Phase 2+ flags and the Phase 1 "core"
+  // ones added in migration 0044, since an admin can now switch any of
+  // these off too. Returns null only if literally every one of them is off.
+  const CORE_TAB_FLAGS: Record<string, string> = {
+    dashboard: "core_dashboard",
+    billing: "core_billing",
+    crm: "core_customers",
+    reports: "core_reports",
+    ai: "core_ai_advisor",
+    guide: "core_app_guide",
+  };
+  const getFallbackTab = (): string | null => {
+    for (const t of ["dashboard", "billing", "crm", "reports", "ai", "guide"]) {
+      if (isEnabled(CORE_TAB_FLAGS[t])) return t;
+    }
+    return null;
+  };
+
   const changeTab = (tab: string) => {
     // Block navigation to a tab whose feature flag is off (defends against
     // stale deep links / persisted state, not just hidden nav buttons).
-    if (
-      (tab === "wealth" && !isEnabled("net_worth_investments")) ||
-      (tab === "monetize" && !isEnabled("ad_monetization_hub")) ||
-      (tab === "stock" && !isEnabled("inventory_management"))
-    ) {
-      setActiveTab("dashboard");
+    const flagForTab: Record<string, string> = {
+      wealth: "net_worth_investments",
+      monetize: "ad_monetization_hub",
+      stock: "inventory_management",
+      purchaseOrders: "purchase_orders",
+      team: "team_memberships_invite_ui",
+      exchangeRates: "exchange_rate_live_switching",
+      ...CORE_TAB_FLAGS,
+    };
+    const requiredFlag = flagForTab[tab];
+    if (requiredFlag && !isEnabled(requiredFlag)) {
+      setActiveTab(getFallbackTab() ?? tab);
       return;
     }
     setActiveTab(tab);
@@ -123,6 +148,20 @@ export default function App() {
     if (tab === "ai") trackFeatureUsage("aiQueries");
     if (tab === "guide") trackFeatureUsage("guideViews");
   };
+
+  // Safety net: if the currently-active tab's flag goes off after the fact
+  // (admin flips it mid-session, or flags finish loading after mount and
+  // the default "dashboard" turns out to be disabled), fall back instead of
+  // showing a blank content area.
+  useEffect(() => {
+    if (!flagsLoaded) return;
+    const requiredFlag = CORE_TAB_FLAGS[activeTab];
+    if (requiredFlag && !isEnabled(requiredFlag)) {
+      const fallback = getFallbackTab();
+      if (fallback) setActiveTab(fallback);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flagsLoaded, activeTab, flags]);
   const [showMobileBanner, setShowMobileBanner] = useState<boolean>(true);
   // Mobile only: the sidebar is `sticky top-0` (see <aside> below) so it
   // stays pinned while the page scrolls, rather than a true side column
@@ -146,6 +185,14 @@ export default function App() {
       .then(setPlans)
       .catch(() => setPlans([]));
   }, []);
+  // Shared by the desktop sidebar's plan badge and MobileNavBar's "More"
+  // sheet, so both surfaces link to the same upgrade destination.
+  const nextTier = tier === "basic" ? "standard" : tier === "standard" ? "pro" : null;
+  const nextPlan = nextTier ? plans.find((p) => p.tier === nextTier) : undefined;
+  const upgradeUrl =
+    nextPlan?.paystackLink && user?.email
+      ? `${nextPlan.paystackLink}${nextPlan.paystackLink.includes("?") ? "&" : "?"}email=${encodeURIComponent(user.email)}`
+      : nextPlan?.paystackLink;
 
   // Business Profile Editing & Registration States
   const [showBrandConfig, setShowBrandConfig] = useState<boolean>(false);
@@ -1731,6 +1778,8 @@ export default function App() {
               scrolling on mobile) had no visual hint it was scrollable, so it
               just looked like navigation was missing after the first 2-3 items. */}
           <nav className="hidden md:flex md:flex-col items-center md:items-stretch gap-1.5 md:overflow-x-visible pb-2 md:pb-0 text-xs">
+            {/* Every Phase 1 "core" screen below is now flag-gated too (migration 0044) - defaults on, but can be switched off from the admin portal like any other feature. */}
+            {isEnabled("core_dashboard") && (
             <button
               id="tab-dashboard-btn"
               onClick={() => changeTab("dashboard")}
@@ -1742,7 +1791,9 @@ export default function App() {
             >
               <Layers2 className="w-4 h-4 shrink-0" /> Scorecard
             </button>
-            
+            )}
+
+            {isEnabled("core_billing") && (
             <button
               id="tab-billing-btn"
               onClick={() => changeTab("billing")}
@@ -1754,7 +1805,9 @@ export default function App() {
             >
               <Coins className="w-4 h-4 shrink-0" /> Billing & PDFs
             </button>
+            )}
 
+            {isEnabled("core_customers") && (
             <button
               id="tab-crm-btn"
               onClick={() => changeTab("crm")}
@@ -1766,6 +1819,7 @@ export default function App() {
             >
               <Users className="w-4 h-4 shrink-0" /> Customer CRM
             </button>
+            )}
 
             {/* Wealth & Goals: off by default in Phase 1, code preserved. Toggle via admin portal -> net_worth_investments. */}
             {isEnabled("net_worth_investments") && (
@@ -1840,6 +1894,7 @@ export default function App() {
             </button>
             )}
 
+            {isEnabled("core_reports") && (
             <button
               id="tab-reports-btn"
               onClick={() => changeTab("reports")}
@@ -1851,18 +1906,21 @@ export default function App() {
             >
               <LineChart className="w-4 h-4 shrink-0" /> Reports & Wisdom
             </button>
+            )}
 
+            {isEnabled("core_ai_advisor") && (
             <button
               id="tab-ai-btn"
               onClick={() => changeTab("ai")}
               className={`px-4 py-2.5 rounded-xl font-bold font-sans transition-all flex items-center gap-2 cursor-pointer shrink-0 border md:w-full md:justify-start ${
- activeTab === "ai" 
- ? "bg-brand-navy text-white border-brand-navy font-bold" 
+ activeTab === "ai"
+ ? "bg-brand-navy text-white border-brand-navy font-bold"
  : "text-brand-teal bg-teal-50/70 hover:bg-teal-100/60 border-teal-100"
  }`}
             >
               <BrainCircuit className="w-4 h-4 shrink-0 animate-pulse text-brand-teal" /> CFO AI Advisor
             </button>
+            )}
 
             {/* Updates & Growth (ad monetization hub): off by default in Phase 1, code preserved. Toggle via admin portal -> ad_monetization_hub. */}
             {isEnabled("ad_monetization_hub") && (
@@ -1879,17 +1937,19 @@ export default function App() {
             </button>
             )}
 
+            {isEnabled("core_app_guide") && (
             <button
               id="tab-guide-btn"
               onClick={() => changeTab("guide")}
               className={`px-4 py-2.5 rounded-xl font-sans transition-all flex items-center gap-2 cursor-pointer shrink-0 border md:w-full md:justify-start ${
- activeTab === "guide" 
- ? "bg-slate-800 text-white border-slate-700 font-bold" 
+ activeTab === "guide"
+ ? "bg-slate-800 text-white border-slate-700 font-bold"
  : "text-indigo-700 bg-indigo-50/60 hover:bg-indigo-100 border-indigo-150 font-bold"
  }`}
             >
               <BookOpen className="w-4 h-4 shrink-0 text-indigo-600" /> App Guide & Academy
             </button>
+            )}
           </nav>
         </div>
 
@@ -1925,10 +1985,13 @@ export default function App() {
             </div>
 
             {user ? (
+              // Hidden on mobile/tablet (md:flex) - moved into MobileNavBar's
+              // "More" sheet as the last item there instead, so it isn't
+              // competing for space in this always-visible header card.
               <button
                 onClick={handleLogout}
                 title="Sign Out of SME Cloud"
-                className="p-1.5 hover:bg-slate-200 text-slate-400 hover:text-rose-600 rounded-lg transition-colors cursor-pointer shrink-0"
+                className="hidden md:flex p-1.5 hover:bg-slate-200 text-slate-400 hover:text-rose-600 rounded-lg transition-colors cursor-pointer shrink-0"
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -1950,33 +2013,26 @@ export default function App() {
               Payment Page click here is the only way a user unlocks
               Standard/Pro themselves; Paystack's webhook applies the
               upgrade automatically once the payment clears (no manual
-              step from the admin). */}
-          {user && (() => {
-            const nextTier = tier === "basic" ? "standard" : tier === "standard" ? "pro" : null;
-            const nextPlan = nextTier ? plans.find((p) => p.tier === nextTier) : undefined;
-            const upgradeUrl =
-              nextPlan?.paystackLink && user.email
-                ? `${nextPlan.paystackLink}${nextPlan.paystackLink.includes("?") ? "&" : "?"}email=${encodeURIComponent(user.email)}`
-                : nextPlan?.paystackLink;
-            return (
-              <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-2xl p-2.5 w-full text-left">
-                <div className="flex flex-col min-w-0">
-                  <span className="text-[9px] font-mono text-slate-450 uppercase tracking-widest">Plan</span>
-                  <span className="text-[11px] font-bold text-slate-800 capitalize">{tier}</span>
-                </div>
-                {upgradeUrl && (
-                  <a
-                    href={upgradeUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[9px] font-bold text-emerald-600 hover:underline cursor-pointer bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200 shrink-0 capitalize"
-                  >
-                    Upgrade to {nextTier}
-                  </a>
-                )}
+              step from the admin). Hidden on mobile/tablet - shown in
+              MobileNavBar's "More" sheet instead, as the last item there. */}
+          {user && (
+            <div className="hidden md:flex items-center justify-between bg-slate-50 border border-slate-200 rounded-2xl p-2.5 w-full text-left">
+              <div className="flex flex-col min-w-0">
+                <span className="text-[9px] font-mono text-slate-450 uppercase tracking-widest">Plan</span>
+                <span className="text-[11px] font-bold text-slate-800 capitalize">{tier}</span>
               </div>
-            );
-          })()}
+              {upgradeUrl && (
+                <a
+                  href={upgradeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[9px] font-bold text-emerald-600 hover:underline cursor-pointer bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200 shrink-0 capitalize"
+                >
+                  Upgrade to {nextTier}
+                </a>
+              )}
+            </div>
+          )}
         </div>
 
       </aside>
@@ -2743,7 +2799,7 @@ export default function App() {
             className="w-full"
           >
             <>
-                {activeTab === "dashboard" && (
+                {isEnabled("core_dashboard") && activeTab === "dashboard" && (
                   currentBusiness.isPersonal ? (
                     <Suspense fallback={<SkeletonDashboard />}>
                       <PersonalWorkspace
@@ -2781,7 +2837,7 @@ export default function App() {
                   )
                 )}
 
-                {activeTab === "billing" && (
+                {isEnabled("core_billing") && activeTab === "billing" && (
                   <Suspense fallback={<SkeletonBillingBuilder />}>
                     <InvoiceReceiptBuilder
                       currentBusiness={currentBusiness}
@@ -2799,7 +2855,7 @@ export default function App() {
                   </Suspense>
                 )}
 
-                {activeTab === "crm" && (
+                {isEnabled("core_customers") && activeTab === "crm" && (
                   <Suspense fallback={<SkeletonCRM />}>
                     <CustomerCRM
                       currentBusiness={currentBusiness}
@@ -2880,7 +2936,7 @@ export default function App() {
                   </Suspense>
                 )}
 
-                {activeTab === "reports" && (
+                {isEnabled("core_reports") && activeTab === "reports" && (
                   <Suspense fallback={<SkeletonReportsCharts />}>
                     <FinancialReports
                       currentBusiness={currentBusiness}
@@ -2894,7 +2950,7 @@ export default function App() {
                   </Suspense>
                 )}
 
-                {activeTab === "ai" && (
+                {isEnabled("core_ai_advisor") && activeTab === "ai" && (
                   <AIFieldAssistant
                     currentBusiness={currentBusiness}
                     transactions={transactions}
@@ -2911,7 +2967,7 @@ export default function App() {
                   </Suspense>
                 )}
 
-                {activeTab === "guide" && (
+                {isEnabled("core_app_guide") && activeTab === "guide" && (
                   <Suspense
                     fallback={
                       <div className="space-y-4">
@@ -2922,6 +2978,13 @@ export default function App() {
                   >
                     <AppGuide />
                   </Suspense>
+                )}
+
+                {/* Every core screen switched off from the admin portal at once - an edge case, but one that must explain itself rather than render an empty page. */}
+                {flagsLoaded && !getFallbackTab() && (
+                  <div className="text-center py-20 text-slate-400 text-sm">
+                    Every workspace screen is currently turned off. Turn at least one back on from the admin portal's Feature Flags.
+                  </div>
                 )}
               </>
           </motion.div>
@@ -2938,7 +3001,15 @@ export default function App() {
 
       </main>
 
-      <MobileNavBar activeTab={activeTab} onChangeTab={changeTab} isEnabled={isEnabled} />
+      <MobileNavBar
+        activeTab={activeTab}
+        onChangeTab={changeTab}
+        isEnabled={isEnabled}
+        tier={user ? tier : undefined}
+        upgradeUrl={upgradeUrl}
+        nextTier={nextTier}
+        onLogout={user ? handleLogout : undefined}
+      />
 
     </div>
   );

@@ -9,6 +9,8 @@ function fromRow(row: any) {
     title: row.title,
     message: row.message,
     targetScreen: row.target_screen,
+    targetTier: row.target_tier,
+    targetActivity: row.target_activity,
     isActive: row.is_active,
     createdAt: row.created_at,
   };
@@ -58,6 +60,8 @@ adminAnnouncementsRouter.post("/", async (req: Request, res: Response) => {
       title: parsed.data.title,
       message: parsed.data.message,
       target_screen: parsed.data.targetScreen ?? "all",
+      target_tier: parsed.data.targetTier ?? "all",
+      target_activity: parsed.data.targetActivity ?? "all",
       created_by: req.user!.id,
     })
     .select("*")

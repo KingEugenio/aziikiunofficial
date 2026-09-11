@@ -8,6 +8,7 @@ import {
   Image as ImageIcon,
   CreditCard,
   BookOpen,
+  UsersThree,
   SignOut as LogOut,
   ShieldWarning,
 } from "@phosphor-icons/react";
@@ -21,11 +22,12 @@ import SurveysPanel from "./SurveysPanel";
 import BrandingPanel from "./BrandingPanel";
 import PaymentsPanel from "./PaymentsPanel";
 import GuidesPanel from "./GuidesPanel";
+import AdminsPanel from "./AdminsPanel";
 
 const AuthPortal = lazy(() => import("../components/AuthPortal"));
 
 type AdminStatus = "checking" | "authorized" | "unauthorized";
-type Tab = "dashboard" | "flags" | "announcements" | "surveys" | "branding" | "payments" | "guides";
+type Tab = "dashboard" | "flags" | "announcements" | "surveys" | "branding" | "payments" | "guides" | "admins";
 
 const NAV: { id: Tab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -35,6 +37,7 @@ const NAV: { id: Tab; label: string; icon: React.ComponentType<{ className?: str
   { id: "payments", label: "Payments", icon: CreditCard },
   { id: "branding", label: "Branding & Files", icon: ImageIcon },
   { id: "guides", label: "Guides", icon: BookOpen },
+  { id: "admins", label: "Admins", icon: UsersThree },
 ];
 
 /**
@@ -49,7 +52,8 @@ export default function AdminApp() {
   const [session, setSession] = useState<Session | null | undefined>(undefined);
   const [sessionLoaded, setSessionLoaded] = useState(false);
   const [adminStatus, setAdminStatus] = useState<AdminStatus>("checking");
-  const [activeTab, setActiveTab] = useState<Tab>("dashboard");
+  const [activeTab, setActiveTab] = useState<Tab | null>(null);
+  const [sections, setSections] = useState<string[]>([]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -82,9 +86,16 @@ export default function AdminApp() {
     setAdminStatus("checking");
     api.admin
       .me()
-      .then(() => setAdminStatus("authorized"))
+      .then(({ data }) => {
+        const mySections = data.isSuperAdmin ? NAV.map((n) => n.id) : data.sections;
+        setSections(mySections);
+        setActiveTab((mySections[0] as Tab) ?? null);
+        setAdminStatus("authorized");
+      })
       .catch(() => setAdminStatus("unauthorized"));
   }, [sessionLoaded, accessToken]);
+
+  const visibleNav = NAV.filter((item) => sections.includes(item.id));
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -138,7 +149,29 @@ export default function AdminApp() {
     );
   }
 
-  const activeNav = NAV.find((n) => n.id === activeTab)!;
+  if (!activeTab) {
+    return (
+      <CenteredMessage>
+        <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-xl max-w-sm w-full text-center space-y-4">
+          <div>
+            <h3 className="text-sm font-black text-slate-900">No sections granted yet</h3>
+            <p className="text-xs text-slate-500 mt-2 leading-relaxed">
+              This account ({session.user.email}) has admin access but no sections have been granted yet. Ask a superadmin
+              to grant some from Admins.
+            </p>
+          </div>
+          <button
+            onClick={handleSignOut}
+            className="bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-colors cursor-pointer"
+          >
+            Sign out
+          </button>
+        </div>
+      </CenteredMessage>
+    );
+  }
+
+  const activeNav = visibleNav.find((n) => n.id === activeTab)!;
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans flex">
@@ -153,7 +186,7 @@ export default function AdminApp() {
         </div>
 
         <nav className="flex-1 px-3 py-4 space-y-1">
-          {NAV.map((item) => {
+          {visibleNav.map((item) => {
             const NavIcon = item.icon;
             const active = activeTab === item.id;
             return (
@@ -196,7 +229,7 @@ export default function AdminApp() {
 
         {/* Mobile nav (no sidebar below md) */}
         <nav className="md:hidden flex gap-1.5 overflow-x-auto px-4 py-2.5 bg-white border-b border-slate-200">
-          {NAV.map((item) => {
+          {visibleNav.map((item) => {
             const NavIcon = item.icon;
             const active = activeTab === item.id;
             return (
@@ -222,6 +255,7 @@ export default function AdminApp() {
             {activeTab === "payments" && <PaymentsPanel />}
             {activeTab === "branding" && <BrandingPanel />}
             {activeTab === "guides" && <GuidesPanel />}
+            {activeTab === "admins" && <AdminsPanel />}
           </div>
         </main>
       </div>

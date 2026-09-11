@@ -1231,13 +1231,17 @@ export default function PersonalWorkspace({
               <form onSubmit={handleCreateGoal} className="space-y-3.5 text-xs">
                 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-mono text-slate-400 uppercase font-bold block">Goal Description Name</label>
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] font-mono text-slate-400 uppercase font-bold block">Goal Description Name</label>
+                    <span className="text-[9px] font-mono text-slate-400">{newGoalName.length}/80</span>
+                  </div>
                   <input
                     type="text"
                     required
+                    maxLength={80}
                     placeholder="e.g. Purchase High-Spec Laptop"
                     value={newGoalName}
-                    onChange={(e) => setNewGoalName(e.target.value)}
+                    onChange={(e) => setNewGoalName(e.target.value.slice(0, 80))}
                     className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans"
                   />
                 </div>

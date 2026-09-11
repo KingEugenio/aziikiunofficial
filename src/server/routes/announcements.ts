@@ -34,15 +34,35 @@ announcementsRouter.get("/", async (req: Request, res: Response) => {
 
   const readIds = new Set((reads ?? []).map((r) => r.announcement_id));
 
+  // Tier + activity targeting (migration 0046): resolved once per request
+  // and applied here rather than trusting the client to filter, since the
+  // whole point is a user shouldn't even see an announcement not meant for
+  // their audience. Both default to "all" in the DB, so most rows never
+  // even reach these checks.
+  const needsTierOrActivity = (announcements ?? []).some((r) => r.target_tier !== "all" || r.target_activity !== "all");
+  let callerTier = "basic";
+  let callerTransactionCount = 0;
+  if (needsTierOrActivity) {
+    const { data: profileRow } = await supabase.from("profiles").select("tier").eq("id", userId).maybeSingle();
+    if (profileRow?.tier) callerTier = profileRow.tier;
+    const { count } = await supabase.from("transactions").select("id", { count: "exact", head: true }).eq("user_id", userId);
+    callerTransactionCount = count ?? 0;
+  }
+
+  const matchesActivity = (target: string) =>
+    target === "all" || (target === "new" && callerTransactionCount === 0) || (target === "active" && callerTransactionCount >= 5);
+
   res.json({
-    data: (announcements ?? []).map((row) => ({
-      id: row.id,
-      title: row.title,
-      message: row.message,
-      targetScreen: row.target_screen,
-      createdAt: row.created_at,
-      read: readIds.has(row.id),
-    })),
+    data: (announcements ?? [])
+      .filter((row) => (row.target_tier === "all" || row.target_tier === callerTier) && matchesActivity(row.target_activity))
+      .map((row) => ({
+        id: row.id,
+        title: row.title,
+        message: row.message,
+        targetScreen: row.target_screen,
+        createdAt: row.created_at,
+        read: readIds.has(row.id),
+      })),
   });
 });
 
