@@ -2,22 +2,26 @@ import React, { useEffect, useState } from "react";
 import { BookOpen, Question as HelpCircle, Database, SquaresFour as LayoutDashboard, Receipt, Users, Package, Bank as Landmark, ChartLine as LineChart, MagicWand as Sparkles, WarningCircle as AlertCircle, ShoppingBag, Briefcase, FileText, Compass, CaretRight as ChevronRight, TrendUp as TrendingUp, Percent, Stack as Layers, Certificate as Award, BookmarkSimple as BookMarked, Globe, Microphone, Lightbulb, ShieldCheck, Rocket, LinkSimple, Brain, Scales, LockKey, User, Wrench, ClipboardText, UsersThree, CurrencyCircleDollar, Megaphone, Buildings } from "@phosphor-icons/react";
 import { useFeatureFlags } from "../lib/featureFlags";
 
-type ChapterId = "overview" | "scorecard" | "billing" | "inventory" | "sovereign" | "ai" | "playbooks" | "personal" | "tools" | "growth";
+type ChapterId = "overview" | "scorecard" | "billing" | "crm" | "inventory" | "sovereign" | "reports" | "ai" | "playbooks" | "personal" | "tools" | "growth";
 
-// Each chapter's `flag` ties it to the same feature flag that gates the
-// feature itself (see src/lib/featureFlags.ts) - flip it on in the admin
-// portal and this chapter appears here automatically, no separate step.
-// `flag: null` means always visible (core Phase 1, not behind any flag).
+// Each chapter's `flag` ties it to the SAME feature flag that gates the
+// matching Workspace Panels nav button (see App.tsx) - flip that button on
+// or off in the admin portal's Feature Flags, and this chapter's
+// information appears or disappears here automatically, no separate step.
+// `flag: null` means always visible (a meta/overview chapter that doesn't
+// map to one single toggleable button).
 const CHAPTERS: { id: ChapterId; label: string; desc: string; icon: any; flag: string | null }[] = [
   { id: "overview", label: "Guide Overview", desc: "Philosophies & Setup", icon: Compass, flag: null },
-  { id: "scorecard", label: "Cash Scorecards", desc: "Gross Margin & Ledgers", icon: LayoutDashboard, flag: null },
-  { id: "billing", label: "Invoices & Receipts", desc: "Billing & Share links", icon: Receipt, flag: null },
+  { id: "scorecard", label: "Cash Scorecards", desc: "Gross Margin & Ledgers", icon: LayoutDashboard, flag: "core_dashboard" },
+  { id: "billing", label: "Invoices & Receipts", desc: "Billing & Share links", icon: Receipt, flag: "core_billing" },
+  { id: "crm", label: "Customer CRM", desc: "Who Owes You, and How Much", icon: Users, flag: "core_customers" },
   { id: "inventory", label: "Smart Warehouse", desc: "Stocks & Auto-deduction", icon: Package, flag: "inventory_management" },
   { id: "sovereign", label: "Sovereign Reserves", desc: "T-Bill Ladder & Yields", icon: Landmark, flag: "net_worth_investments" },
   { id: "personal", label: "Personal Workspace", desc: "Your Own Money, Separately", icon: User, flag: "personal_workspace" },
   { id: "tools", label: "Advanced Billing Tools", desc: "Purchase Orders, Team, Templates", icon: Wrench, flag: null },
   { id: "growth", label: "Growth & Multi-Business", desc: "Ad Hub & Second Ventures", icon: TrendingUp, flag: null },
-  { id: "ai", label: "CFO AI & Advisors", desc: "Advisory & Simulators", icon: Sparkles, flag: null },
+  { id: "reports", label: "Reports & Wisdom", desc: "P&L and Cash-Flow Views", icon: LineChart, flag: "core_reports" },
+  { id: "ai", label: "CFO AI & Advisors", desc: "Advisory & Simulators", icon: Sparkles, flag: "core_ai_advisor" },
   { id: "playbooks", label: "SME Playbooks", desc: "Tactical Retailer & Freelancer", icon: BookMarked, flag: null }
 ];
 
@@ -215,7 +219,7 @@ export default function AppGuide() {
           )}
 
           {/* CHAPTER 2: SCORECARDS & LEDGERS */}
-          {activeChapter === "scorecard" && (
+          {activeChapter === "scorecard" && isEnabled("core_dashboard") && (
             <div className="space-y-6 animate-fade-in">
               <div className="border-b border-slate-150 pb-4">
                 <span className="text-[10px] font-mono font-bold text-emerald-600 uppercase tracking-widest block mb-1">
@@ -278,7 +282,7 @@ export default function AppGuide() {
           )}
 
           {/* CHAPTER 3: INVOICES & RECEIPTS */}
-          {activeChapter === "billing" && (
+          {activeChapter === "billing" && isEnabled("core_billing") && (
             <div className="space-y-6 animate-fade-in">
               <div className="border-b border-slate-150 pb-4">
                 <span className="text-[10px] font-mono font-bold text-emerald-600 uppercase tracking-widest block mb-1">
@@ -325,6 +329,54 @@ export default function AppGuide() {
                   <p className="text-slate-650 font-light">
                     African trading runs on message threads. Instead of emailing heavy attachments that get ignored, tap the <strong className="font-semibold text-emerald-600">"WhatsApp Share"</strong> button. Aziiki automatically copies a professional invitation template and a direct-sharing link. Your customer can click this link on any phone to instantly review their document!
                   </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* CHAPTER: CUSTOMER CRM */}
+          {activeChapter === "crm" && isEnabled("core_customers") && (
+            <div className="space-y-6 animate-fade-in">
+              <div className="border-b border-slate-150 pb-4">
+                <span className="text-[10px] font-mono font-bold text-emerald-600 uppercase tracking-widest block mb-1">
+                  Workspace Panel
+                </span>
+                <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                  <Users className="w-5 h-5 text-emerald-600" />
+                  Customer CRM
+                </h3>
+                <p className="text-xs text-slate-400 mt-1">
+                  Your customer directory — who you sell to, and who still owes you.
+                </p>
+              </div>
+
+              <div className="space-y-4 text-xs leading-relaxed">
+                <p className="text-slate-650 font-light">
+                  Every customer you invoice gets a profile here automatically. Use it to see, at a glance, their full
+                  transaction history and current outstanding balance — the second core daily question after
+                  "how's my cash," right after "who owes me."
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 bg-slate-50 border border-slate-150 rounded-2xl space-y-2">
+                    <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
+                      <FileText className="w-4 h-4 text-emerald-600" />
+                      Balance & History
+                    </h5>
+                    <p className="text-slate-500 text-[11px] font-light">
+                      Every invoice, receipt, and estimate tied to a customer shows on their profile, with a running
+                      total of what's outstanding.
+                    </p>
+                  </div>
+                  <div className="p-4 bg-slate-50 border border-slate-150 rounded-2xl space-y-2">
+                    <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
+                      <Lightbulb className="w-4 h-4 text-indigo-600" />
+                      Notes
+                    </h5>
+                    <p className="text-slate-500 text-[11px] font-light">
+                      Add private notes on a customer — payment habits, preferences, anything worth remembering next
+                      time they order.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -678,8 +730,56 @@ export default function AppGuide() {
             </div>
           )}
 
+          {/* CHAPTER: REPORTS & WISDOM */}
+          {activeChapter === "reports" && isEnabled("core_reports") && (
+            <div className="space-y-6 animate-fade-in">
+              <div className="border-b border-slate-150 pb-4">
+                <span className="text-[10px] font-mono font-bold text-emerald-600 uppercase tracking-widest block mb-1">
+                  Workspace Panel
+                </span>
+                <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                  <LineChart className="w-5 h-5 text-emerald-600" />
+                  Reports & Wisdom
+                </h3>
+                <p className="text-xs text-slate-400 mt-1">
+                  Your Profit & Loss and cash-flow views, without a deep accounting suite to wade through.
+                </p>
+              </div>
+
+              <div className="space-y-4 text-xs leading-relaxed">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 bg-slate-50 border border-slate-150 rounded-2xl space-y-2">
+                    <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
+                      <TrendingUp className="w-4 h-4 text-emerald-600" />
+                      Profit & Loss
+                    </h5>
+                    <p className="text-slate-500 text-[11px] font-light">
+                      Revenue minus expenses, by category, for the period you pick — Daily, Weekly, Monthly, Quarterly,
+                      or Annual.
+                    </p>
+                  </div>
+                  <div className="p-4 bg-slate-50 border border-slate-150 rounded-2xl space-y-2">
+                    <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
+                      <Percent className="w-4 h-4 text-indigo-600" />
+                      Cash-Flow View
+                    </h5>
+                    <p className="text-slate-500 text-[11px] font-light">
+                      What's actually moving in and out of your accounts, separate from paper profit — the two can
+                      genuinely disagree, and this is where you'd see it.
+                    </p>
+                  </div>
+                </div>
+                <p className="text-slate-650 font-light">
+                  This is deliberately the simpler of Aziiki's two "how's my business doing" answers — the{" "}
+                  <strong className="font-semibold text-slate-900">Business Health Score</strong> on your Scorecard is
+                  the one-glance version; this is where you go when you want the numbers behind it.
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* CHAPTER 9: AI CFO ADVISORS */}
-          {activeChapter === "ai" && (
+          {activeChapter === "ai" && isEnabled("core_ai_advisor") && (
             <div className="space-y-6 animate-fade-in">
               <div className="border-b border-slate-150 pb-4">
                 <span className="text-[10px] font-mono font-bold text-emerald-600 uppercase tracking-widest block mb-1">

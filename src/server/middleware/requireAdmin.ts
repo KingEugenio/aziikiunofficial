@@ -9,20 +9,27 @@ import type { Request, Response, NextFunction } from "express";
  *
  * Also loads is_superadmin and admin_permissions.sections (migration 0045)
  * onto the request, so requireSection below doesn't need a second query.
+ * Deliberately two separate queries, not one `select is_admin, is_superadmin`
+ * - selecting a column that doesn't exist yet (migration 0045 not applied)
+ * would error the WHOLE query and lock every admin out of the entire
+ * portal, is_admin included. is_superadmin/sections fail open to "not a
+ * superadmin, no sections" instead, same as config.ts's tier handling.
  */
 export async function requireAdmin(req: Request, res: Response, next: NextFunction): Promise<void> {
-  const { data, error } = await req
-    .supabase!.from("profiles")
-    .select("is_admin, is_superadmin")
-    .eq("id", req.user!.id)
-    .single();
+  const { data, error } = await req.supabase!.from("profiles").select("is_admin").eq("id", req.user!.id).single();
 
   if (error || !data?.is_admin) {
     res.status(403).json({ error: "Admin access required." });
     return;
   }
 
-  req.isSuperAdmin = Boolean(data.is_superadmin);
+  const { data: superRow, error: superError } = await req.supabase!.from("profiles").select("is_superadmin").eq("id", req.user!.id).maybeSingle();
+  // superError means migration 0045 hasn't been applied yet (the column
+  // doesn't exist) - treat that as "the permissions system isn't installed
+  // yet," which must mean full access for any is_admin account, exactly
+  // like every admin had before this feature existed. Only once the column
+  // genuinely exists does its real value start deciding access.
+  req.isSuperAdmin = superError ? true : Boolean(superRow?.is_superadmin);
 
   if (!req.isSuperAdmin) {
     const { data: permRow } = await req.supabase!.from("admin_permissions").select("sections").eq("user_id", req.user!.id).maybeSingle();

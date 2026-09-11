@@ -8,6 +8,24 @@ import { env } from "../env";
 // pro has no cap (Infinity), so every phase clears it.
 const TIER_MAX_PHASE: Record<string, number> = { basic: 1, standard: 2, pro: Infinity };
 
+// The six Phase 1 "core" screens (migration 0044) default to true. Until
+// that migration is applied, these keys simply don't exist in feature_flags
+// at all - which must NOT be read as "off": the client's isEnabled(key)
+// only knows true/not-true, so a missing key and an explicitly-disabled
+// key would look identical, hiding every workspace screen for every real
+// user the moment this code shipped, before anyone had a chance to run the
+// migration. Backfilling the default here (only when the DB row is truly
+// absent) keeps pre-migration behavior identical to today's, and stops
+// mattering at all the instant the migration runs and a real row exists.
+const CORE_FLAG_DEFAULTS: Record<string, boolean> = {
+  core_dashboard: true,
+  core_billing: true,
+  core_customers: true,
+  core_reports: true,
+  core_ai_advisor: true,
+  core_app_guide: true,
+};
+
 /**
  * Public, non-sensitive feature flags the frontend needs before a user is
  * even signed in (e.g. to disable a button rather than let them click it
@@ -76,6 +94,10 @@ configRouter.get("/features", async (req: Request, res: Response) => {
 
     for (const row of flagRows ?? []) {
       flags[row.key] = row.key in overrides ? overrides[row.key] : row.enabled_default && row.phase <= maxPhase;
+    }
+
+    for (const [key, fallback] of Object.entries(CORE_FLAG_DEFAULTS)) {
+      if (!(key in flags)) flags[key] = fallback;
     }
   } catch (err) {
     console.error("[config/features] failed to load feature flags:", err);

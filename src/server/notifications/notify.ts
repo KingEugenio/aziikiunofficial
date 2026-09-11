@@ -1,5 +1,6 @@
 import { getServiceRoleClient } from "../supabaseClients";
 import { isEmailConfigured, sendTransactionalEmail } from "../email/resendClient";
+import { wrapEmailHtml } from "../email/emailTemplate";
 
 export type NotificationType = "invoice_overdue" | "low_stock" | "payment_received";
 
@@ -47,13 +48,14 @@ export async function createNotification(params: CreateNotificationParams): Prom
     await sendTransactionalEmail({
       to: params.recipientEmail,
       subject: params.title,
-      html: `
-        <div style="font-family: sans-serif; color: #1e293b;">
-          <p style="font-size: 16px; font-weight: bold; margin-bottom: 8px;">${params.title}</p>
-          <p style="font-size: 14px; line-height: 1.6; color: #475569;">${params.message}</p>
-          <p style="font-size: 12px; color: #94a3b8; margin-top: 24px;">Sign in to Aziiki to see the full details.</p>
-        </div>
-      `,
+      html: wrapEmailHtml({
+        preheader: params.message,
+        bodyHtml: `
+          <p style="font-size:17px; font-weight:800; color:#0f172a; margin:0 0 10px;">${params.title}</p>
+          <p style="font-size:14px; line-height:1.6; color:#475569; margin:0 0 20px;">${params.message}</p>
+          <a href="https://aziiki.com" style="display:inline-block; background-color:#006837; color:#ffffff; font-size:13px; font-weight:700; text-decoration:none; padding:10px 20px; border-radius:10px;">Open Aziiki</a>
+        `,
+      }),
     });
     await supabase.from("notification_log").update({ email_sent_at: new Date().toISOString() }).eq("id", row.id);
   } catch (err) {
