@@ -181,15 +181,15 @@ export default function FeatureFlagsPanel() {
                   }`}
                 >
                   <span
-                    // Inline transform, not a Tailwind translate-x-* class: the
-                    // arbitrary-value class here was silently not compiling to
-                    // any actual `transform` CSS (confirmed via
-                    // getComputedStyle - it read "none" in both states), so
-                    // the thumb never visually moved even though the track
-                    // color and aria-checked were both correct. An inline
-                    // style can't fail to compile the same way.
-                    className="absolute top-0.5 w-4.5 h-4.5 bg-white rounded-full shadow transition-transform duration-150"
-                    style={{ transform: flag.enabledDefault ? "translateX(19px)" : "translateX(2px)" }}
+                    // Explicit pixel `left`, not `left: auto` + a transform:
+                    // without a `left` set, an absolutely-positioned child's
+                    // pre-transform "static position" is computed by the
+                    // browser (here landing well right of the track's own
+                    // left edge), so translateX() alone pushed the thumb
+                    // outside the 40px track instead of sliding inside it.
+                    // Anchoring `left` directly removes that ambiguity.
+                    className="absolute top-0.5 w-4.5 h-4.5 bg-white rounded-full shadow transition-[left] duration-150"
+                    style={{ left: flag.enabledDefault ? 20 : 2 }}
                   />
                 </button>
                 <button
