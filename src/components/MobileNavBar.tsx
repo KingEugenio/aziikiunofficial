@@ -3,12 +3,15 @@ import {
   Stack as Layers2,
   Coins,
   Users,
+  UsersThree,
   DotsThreeOutline as MoreIcon,
   ChartLine as LineChart,
   Brain as BrainCircuit,
   BookOpen,
   Target,
   Warehouse,
+  Package,
+  CurrencyCircleDollar,
   MagicWand as Sparkles,
   X,
 } from "@phosphor-icons/react";
@@ -42,6 +45,9 @@ export default function MobileNavBar({ activeTab, onChangeTab, isEnabled }: Mobi
     { id: "guide", label: "App Guide & Academy", icon: BookOpen, show: true },
     { id: "wealth", label: "Wealth & Goals", icon: Target, show: isEnabled("net_worth_investments") },
     { id: "stock", label: "Warehouse Stock", icon: Warehouse, show: isEnabled("inventory_management") },
+    { id: "purchaseOrders", label: "Purchase Orders", icon: Package, show: isEnabled("purchase_orders") },
+    { id: "team", label: "Team", icon: UsersThree, show: isEnabled("team_memberships_invite_ui") },
+    { id: "exchangeRates", label: "Exchange Rates", icon: CurrencyCircleDollar, show: isEnabled("exchange_rate_live_switching") },
     { id: "monetize", label: "Updates & Growth", icon: Sparkles, show: isEnabled("ad_monetization_hub") },
   ].filter((item) => item.show);
 

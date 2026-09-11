@@ -1,18 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { FileText, Receipt as ReceiptIcon, Plus, Trash as Trash2, ShareNetwork as Share2, Printer, ArrowsClockwise as RefreshCw, Check, Palette, CheckCircle, WarningCircle as AlertCircle, UploadSimple as Upload, FileArrowUp as FileUp, FileArrowDown, Sliders, TextT as Type, FileCsv as FileSpreadsheet, Certificate as Award, Image as ImageIcon, Percent as BadgePercent, Barcode, MagnifyingGlass as Search, CheckSquare, MagicWand as Sparkles, Envelope as Mail, CircleNotch as Loader2, CreditCard, PencilSimple, Images, Tag, Package, Users, CurrencyCircleDollar, Buildings, Lock, User, Wrench, ClockCounterClockwise as History, Warning, XCircle, ArrowBendUpRight, Signature } from "@phosphor-icons/react";
+import { FileText, Receipt as ReceiptIcon, Plus, Trash as Trash2, ShareNetwork as Share2, Printer, ArrowsClockwise as RefreshCw, Check, Palette, CheckCircle, WarningCircle as AlertCircle, UploadSimple as Upload, FileArrowUp as FileUp, FileArrowDown, Sliders, TextT as Type, FileCsv as FileSpreadsheet, Certificate as Award, Image as ImageIcon, Percent as BadgePercent, Barcode, MagnifyingGlass as Search, CheckSquare, MagicWand as Sparkles, Envelope as Mail, CircleNotch as Loader2, CreditCard, PencilSimple, Tag, Buildings, Lock, User, Wrench, ClockCounterClockwise as History, Warning, XCircle, ArrowBendUpRight, Signature } from "@phosphor-icons/react";
 import { Invoice, Receipt, Quotation, Customer, Business, InvoiceItem } from "../types";
 import { calculateInvoiceTotals, subtractMoney } from "../lib/money";
 import { compressImageForStorage } from "../lib/imageCompress";
 import { SUPPORTED_CURRENCY_CODES, formatMoneyIntl } from "../lib/currency";
 import { api, ApiError } from "../lib/api";
 import { renderDocumentToPdf, sharePdfToWhatsApp, downloadFile } from "../lib/documentPdf";
-import TemplateGallery from "./TemplateGallery";
 import BrandKitSettings from "./BrandKitSettings";
 import DocumentBlockRenderer from "./DocumentBlockRenderer";
 import SignatureCapture from "./SignatureCapture";
-import PurchaseOrderManager from "./PurchaseOrderManager";
-import TeamManager from "./TeamManager";
-import ExchangeRateSettings from "./ExchangeRateSettings";
 import { CustomBlockLayout } from "../lib/documentBlocks";
 import { useFeatureFlags } from "../lib/featureFlags";
 import { getInitials } from "../lib/businessLogo";
@@ -223,20 +219,9 @@ export default function InvoiceReceiptBuilder({
   // fabricated numbers. Removed rather than relabeled - a disclaimer
   // wouldn't fix the underlying risk of a "Populate Editor fields using
   // OCR" button writing fake data into a real financial document.
-  const [activePaneTab, setActivePaneTab] = useState<"builder" | "style" | "history" | "gallery" | "brandKit" | "purchaseOrders" | "team" | "currencies">("builder");
+  const [activePaneTab, setActivePaneTab] = useState<"builder" | "style" | "history" | "brandKit">("builder");
 
-  const changePaneTab = (tab: "builder" | "style" | "history" | "gallery" | "brandKit" | "purchaseOrders" | "team" | "currencies") => {
-    // Block navigation to a pane whose feature flag is off (defends against
-    // stale UI state, not just hidden tab buttons).
-    if (
-      (tab === "gallery" && !isEnabled("document_template_editor")) ||
-      (tab === "purchaseOrders" && !isEnabled("purchase_orders")) ||
-      (tab === "team" && !isEnabled("team_memberships_invite_ui")) ||
-      (tab === "currencies" && !isEnabled("exchange_rate_live_switching"))
-    ) {
-      setActivePaneTab("builder");
-      return;
-    }
+  const changePaneTab = (tab: "builder" | "style" | "history" | "brandKit") => {
     setActivePaneTab(tab);
   };
 
@@ -927,17 +912,6 @@ export default function InvoiceReceiptBuilder({
           >
             <span className="inline-flex items-center gap-1"><History className="w-3.5 h-3.5" /> Past Ledger</span>
           </button>
-          {/* Custom-template Gallery: off by default in Phase 1 (fixed templates only), code preserved. Toggle via admin portal -> document_template_editor. */}
-          {isEnabled("document_template_editor") && (
-          <button
-            onClick={() => changePaneTab("gallery")}
-            className={`flex-1 pb-2 text-[10px] font-bold font-sans border-b-2 text-center cursor-pointer transition-colors ${
-              activePaneTab === "gallery" ? "border-emerald-600 text-emerald-600 font-extrabold" : "border-transparent text-slate-455 hover:text-slate-700"
-            }`}
-          >
-            <span className="inline-flex items-center gap-1"><Images className="w-3.5 h-3.5" /> Gallery</span>
-          </button>
-          )}
           <button
             onClick={() => changePaneTab("brandKit")}
             className={`flex-1 pb-2 text-[10px] font-bold font-sans border-b-2 text-center cursor-pointer transition-colors ${
@@ -946,37 +920,6 @@ export default function InvoiceReceiptBuilder({
           >
             <span className="inline-flex items-center gap-1"><Tag className="w-3.5 h-3.5" /> Brand Kit</span>
           </button>
-          {/* Purchase Orders / Team / Exchange Rates: off by default in Phase 1, code preserved. Toggle via admin portal. */}
-          {isEnabled("purchase_orders") && (
-          <button
-            onClick={() => changePaneTab("purchaseOrders")}
-            className={`flex-1 pb-2 text-[10px] font-bold font-sans border-b-2 text-center cursor-pointer transition-colors ${
-              activePaneTab === "purchaseOrders" ? "border-emerald-600 text-emerald-600 font-extrabold" : "border-transparent text-slate-455 hover:text-slate-700"
-            }`}
-          >
-            <span className="inline-flex items-center gap-1"><Package className="w-3.5 h-3.5" /> Purchase Orders</span>
-          </button>
-          )}
-          {isEnabled("team_memberships_invite_ui") && (
-          <button
-            onClick={() => changePaneTab("team")}
-            className={`flex-1 pb-2 text-[10px] font-bold font-sans border-b-2 text-center cursor-pointer transition-colors ${
-              activePaneTab === "team" ? "border-emerald-600 text-emerald-600 font-extrabold" : "border-transparent text-slate-455 hover:text-slate-700"
-            }`}
-          >
-            <span className="inline-flex items-center gap-1"><Users className="w-3.5 h-3.5" /> Team</span>
-          </button>
-          )}
-          {isEnabled("exchange_rate_live_switching") && (
-          <button
-            onClick={() => changePaneTab("currencies")}
-            className={`flex-1 pb-2 text-[10px] font-bold font-sans border-b-2 text-center cursor-pointer transition-colors ${
-              activePaneTab === "currencies" ? "border-emerald-600 text-emerald-600 font-extrabold" : "border-transparent text-slate-455 hover:text-slate-700"
-            }`}
-          >
-            <span className="inline-flex items-center gap-1"><CurrencyCircleDollar className="w-3.5 h-3.5" /> Exchange Rates</span>
-          </button>
-          )}
         </div>
 
         {/* Global Toast Alerts */}
@@ -2048,44 +1991,8 @@ export default function InvoiceReceiptBuilder({
           </div>
         )}
 
-        {/* Template Gallery / Purchase Orders / Team / Exchange Rates: off by default in Phase 1, code preserved for the admin portal to turn on later. */}
-
-        {/* PANE 5: Template Gallery (browse/favorite/duplicate saved designs) */}
-        {isEnabled("document_template_editor") && activePaneTab === "gallery" && (
-          <TemplateGallery
-            businessId={currentBusiness.id}
-            documentType={mode}
-            activeTemplateIndex={templateIndex}
-            onUseTemplate={(idx) => {
-              setActiveCustomLayout(null);
-              setActiveCustomTemplateId(undefined);
-              setTemplateIndex(idx);
-              changePaneTab("style");
-            }}
-            activeCustomTemplateId={activeCustomTemplateId}
-            onUseCustomTemplate={(layoutConfig, templateId) => {
-              setActiveCustomLayout(layoutConfig);
-              setActiveCustomTemplateId(templateId);
-              changePaneTab("style");
-            }}
-          />
-        )}
-
-        {/* PANE 6: Brand Kit (colors, tax info, footer text used on every document) — kept in MVP */}
+        {/* PANE 5: Brand Kit (colors, tax info, footer text used on every document) — kept in MVP */}
         {activePaneTab === "brandKit" && <BrandKitSettings businessId={currentBusiness.id} />}
-
-        {/* PANE 7: Purchase Orders (buying FROM a supplier - the opposite direction of an invoice) */}
-        {isEnabled("purchase_orders") && activePaneTab === "purchaseOrders" && (
-          <PurchaseOrderManager businessId={currentBusiness.id} businessCurrency={currentBusiness.currency} />
-        )}
-
-        {/* PANE 8: Team (invite people to help run this business, with real per-role access) */}
-        {isEnabled("team_memberships_invite_ui") && activePaneTab === "team" && <TeamManager businessId={currentBusiness.id} />}
-
-        {/* PANE 9: Exchange Rates (manual rates that auto-fill foreign-currency documents) */}
-        {isEnabled("exchange_rate_live_switching") && activePaneTab === "currencies" && (
-          <ExchangeRateSettings businessId={currentBusiness.id} businessCurrency={currentBusiness.currency} />
-        )}
         </div>
 
       </div>

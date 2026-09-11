@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BookOpen, Question as HelpCircle, Database, SquaresFour as LayoutDashboard, Receipt, Users, Package, Bank as Landmark, ChartLine as LineChart, MagicWand as Sparkles, WarningCircle as AlertCircle, ShoppingBag, Briefcase, FileText, Compass, CaretRight as ChevronRight, TrendUp as TrendingUp, Percent, Stack as Layers, Certificate as Award, BookmarkSimple as BookMarked, Globe, Microphone, Lightbulb, ShieldCheck, Rocket, LinkSimple, Brain, Scales, LockKey, User, Wrench, ClipboardText, UsersThree, FileImage, CurrencyCircleDollar, Megaphone, Buildings } from "@phosphor-icons/react";
+import { BookOpen, Question as HelpCircle, Database, SquaresFour as LayoutDashboard, Receipt, Users, Package, Bank as Landmark, ChartLine as LineChart, MagicWand as Sparkles, WarningCircle as AlertCircle, ShoppingBag, Briefcase, FileText, Compass, CaretRight as ChevronRight, TrendUp as TrendingUp, Percent, Stack as Layers, Certificate as Award, BookmarkSimple as BookMarked, Globe, Microphone, Lightbulb, ShieldCheck, Rocket, LinkSimple, Brain, Scales, LockKey, User, Wrench, ClipboardText, UsersThree, CurrencyCircleDollar, Megaphone, Buildings } from "@phosphor-icons/react";
 import { useFeatureFlags } from "../lib/featureFlags";
 
 type ChapterId = "overview" | "scorecard" | "billing" | "inventory" | "sovereign" | "ai" | "playbooks" | "personal" | "tools" | "growth";
@@ -599,7 +599,7 @@ export default function AppGuide() {
                   Advanced Billing Tools
                 </h3>
                 <p className="text-xs text-slate-400 mt-1">
-                  Purchase orders, team access, document templates, and live exchange rates — for SMEs outgrowing the basics.
+                  Purchase orders, team access, and live exchange rates, each on its own screen — for SMEs outgrowing the basics.
                 </p>
               </div>
 
@@ -611,7 +611,7 @@ export default function AppGuide() {
                       Purchase Orders
                     </h5>
                     <p className="text-slate-500 text-[11px] font-light">
-                      Raise a formal purchase order to a supplier before stock arrives, then reconcile it against the delivered items and its final bill.
+                      Raise a formal purchase order to a supplier before stock arrives, then reconcile it against the delivered items and its final bill. Find it in the sidebar / More menu.
                     </p>
                   </div>
                   <div className="p-4 border border-slate-150 rounded-2xl space-y-2">
@@ -621,15 +621,6 @@ export default function AppGuide() {
                     </h5>
                     <p className="text-slate-500 text-[11px] font-light">
                       Invite staff with scoped roles — cashier, bookkeeper, manager — so your team can help run the books without seeing everything you see.
-                    </p>
-                  </div>
-                  <div className="p-4 border border-slate-150 rounded-2xl space-y-2">
-                    <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
-                      <FileImage className="w-4 h-4 text-emerald-600" />
-                      Document Templates
-                    </h5>
-                    <p className="text-slate-500 text-[11px] font-light">
-                      Customize the layout, colors, and fields on your invoices, receipts, and estimates so they match your brand every time.
                     </p>
                   </div>
                   <div className="p-4 border border-slate-150 rounded-2xl space-y-2">

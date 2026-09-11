@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, Suspense, lazy } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Buildings as Building2, Stack as Layers2, Coins, Users, Target, Warehouse, Brain as BrainCircuit, MagicWand as Sparkles, CurrencyDollar as DollarSign, DeviceMobile as Smartphone, CheckCircle, TrendUp as TrendingUp, WarningCircle as AlertCircle, Database, ShieldCheck, SignOut as LogOut, UserCheck, ChartLine as LineChart, BookOpen, ArrowsClockwise, Lock, GearSix, Plus, X, Globe, ArrowRight, User, UsersThree, ChartBar, LockKey, CaretDown, CaretUp } from "@phosphor-icons/react";
+import { Buildings as Building2, Stack as Layers2, Coins, Users, Target, Warehouse, Brain as BrainCircuit, MagicWand as Sparkles, CurrencyDollar as DollarSign, DeviceMobile as Smartphone, CheckCircle, TrendUp as TrendingUp, WarningCircle as AlertCircle, Database, ShieldCheck, SignOut as LogOut, UserCheck, ChartLine as LineChart, BookOpen, ArrowsClockwise, Lock, GearSix, Plus, X, Globe, ArrowRight, User, UsersThree, ChartBar, LockKey, CaretDown, CaretUp, Package, CurrencyCircleDollar } from "@phosphor-icons/react";
 import { Business, Customer, Transaction, Invoice, Receipt, Quotation, Investment, Asset, Goal, Debt, InventoryItem, Partner, Shareholder, UserRole, AuditLog } from "./types";
 import BusinessDashboard from "./components/BusinessDashboard";
 
@@ -40,6 +40,9 @@ import NotFoundPage from "./components/NotFoundPage";
 // meaningful to actually be shown.
 const CustomerCRM = lazy(() => import("./components/CustomerCRM"));
 const InventoryManager = lazy(() => import("./components/InventoryManager"));
+const PurchaseOrderManager = lazy(() => import("./components/PurchaseOrderManager"));
+const TeamManager = lazy(() => import("./components/TeamManager"));
+const ExchangeRateSettings = lazy(() => import("./components/ExchangeRateSettings"));
 
 // Supabase imports
 import { supabase } from "./lib/supabaseClient";
@@ -356,7 +359,18 @@ export default function App() {
     return () => {
       cancelled = true;
     };
-  }, [user, syncRetryCount]);
+    // Deliberately keyed on user?.id (a stable primitive), not the `user`
+    // object itself: Supabase hands onAuthStateChange a brand-new User
+    // object on effectively every event, including ones that don't change
+    // who's signed in (tab focus, token auto-refresh ticks, ...). Depending
+    // on the object caused this effect to refire continuously - each refire
+    // called api.sync.fetchAll() and re-mounted the whole dashboard, which
+    // is what was hammering /api/sync, /api/config/*, /api/announcements,
+    // /api/surveys, and /api/notifications into a 429 rate-limit storm
+    // (the exact same root cause as the AdminApp.tsx admin-access loop
+    // fixed earlier - just never applied here).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, syncRetryCount]);
 
   // 1b. Load guest data from localStorage when in guest mode
   useEffect(() => {
@@ -1770,6 +1784,49 @@ export default function App() {
             </button>
             )}
 
+            {/* Purchase Orders / Team / Exchange Rates: each its own screen now (moved out of the Billing builder's cramped sub-tab strip). Off by default in Phase 1, code preserved. Toggle via admin portal. */}
+            {isEnabled("purchase_orders") && (
+            <button
+              id="tab-purchaseOrders-btn"
+              onClick={() => changeTab("purchaseOrders")}
+              className={`px-4 py-2.5 rounded-xl font-bold font-sans transition-all flex items-center gap-2 cursor-pointer shrink-0 md:w-full md:justify-start ${
+ activeTab === "purchaseOrders"
+ ? "bg-brand-navy text-white shadow-sm shadow-brand-navy/15"
+ : "text-slate-600 hover:bg-slate-100"
+ }`}
+            >
+              <Package className="w-4 h-4 shrink-0" /> Purchase Orders
+            </button>
+            )}
+
+            {isEnabled("team_memberships_invite_ui") && (
+            <button
+              id="tab-team-btn"
+              onClick={() => changeTab("team")}
+              className={`px-4 py-2.5 rounded-xl font-bold font-sans transition-all flex items-center gap-2 cursor-pointer shrink-0 md:w-full md:justify-start ${
+ activeTab === "team"
+ ? "bg-brand-navy text-white shadow-sm shadow-brand-navy/15"
+ : "text-slate-600 hover:bg-slate-100"
+ }`}
+            >
+              <UsersThree className="w-4 h-4 shrink-0" /> Team
+            </button>
+            )}
+
+            {isEnabled("exchange_rate_live_switching") && (
+            <button
+              id="tab-exchangeRates-btn"
+              onClick={() => changeTab("exchangeRates")}
+              className={`px-4 py-2.5 rounded-xl font-bold font-sans transition-all flex items-center gap-2 cursor-pointer shrink-0 md:w-full md:justify-start ${
+ activeTab === "exchangeRates"
+ ? "bg-brand-navy text-white shadow-sm shadow-brand-navy/15"
+ : "text-slate-600 hover:bg-slate-100"
+ }`}
+            >
+              <CurrencyCircleDollar className="w-4 h-4 shrink-0" /> Exchange Rates
+            </button>
+            )}
+
             <button
               id="tab-reports-btn"
               onClick={() => changeTab("reports")}
@@ -2741,6 +2798,25 @@ export default function App() {
                       onDeleteInventoryItem={handleDeleteInventoryItem}
                       onStockAdjustment={handleStockAdjustment}
                     />
+                  </Suspense>
+                )}
+
+                {/* Off by default in Phase 1, code preserved for the admin portal to turn on later. Each of these three used to be a cramped sub-tab inside the Billing builder; they're now their own top-level screens. */}
+                {isEnabled("purchase_orders") && activeTab === "purchaseOrders" && (
+                  <Suspense fallback={<SkeletonTable rows={5} cols={4} />}>
+                    <PurchaseOrderManager businessId={currentBusiness.id} businessCurrency={currentBusiness.currency} />
+                  </Suspense>
+                )}
+
+                {isEnabled("team_memberships_invite_ui") && activeTab === "team" && (
+                  <Suspense fallback={<SkeletonTable rows={4} cols={3} />}>
+                    <TeamManager businessId={currentBusiness.id} />
+                  </Suspense>
+                )}
+
+                {isEnabled("exchange_rate_live_switching") && activeTab === "exchangeRates" && (
+                  <Suspense fallback={<SkeletonForm />}>
+                    <ExchangeRateSettings businessId={currentBusiness.id} businessCurrency={currentBusiness.currency} />
                   </Suspense>
                 )}
 
