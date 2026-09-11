@@ -1,10 +1,40 @@
-import React, { useState } from "react";
-import { BookOpen, Question as HelpCircle, Database, SquaresFour as LayoutDashboard, Receipt, Users, Package, Bank as Landmark, ChartLine as LineChart, MagicWand as Sparkles, WarningCircle as AlertCircle, ShoppingBag, Briefcase, FileText, Compass, CaretRight as ChevronRight, TrendUp as TrendingUp, Percent, Stack as Layers, Certificate as Award, BookmarkSimple as BookMarked, Globe, Microphone, Lightbulb, ShieldCheck, Rocket, LinkSimple, Brain, Scales, LockKey } from "@phosphor-icons/react";
+import React, { useEffect, useState } from "react";
+import { BookOpen, Question as HelpCircle, Database, SquaresFour as LayoutDashboard, Receipt, Users, Package, Bank as Landmark, ChartLine as LineChart, MagicWand as Sparkles, WarningCircle as AlertCircle, ShoppingBag, Briefcase, FileText, Compass, CaretRight as ChevronRight, TrendUp as TrendingUp, Percent, Stack as Layers, Certificate as Award, BookmarkSimple as BookMarked, Globe, Microphone, Lightbulb, ShieldCheck, Rocket, LinkSimple, Brain, Scales, LockKey, User, Wrench, ClipboardText, UsersThree, FileImage, CurrencyCircleDollar, Megaphone, Buildings } from "@phosphor-icons/react";
+import { useFeatureFlags } from "../lib/featureFlags";
+
+type ChapterId = "overview" | "scorecard" | "billing" | "inventory" | "sovereign" | "ai" | "playbooks" | "personal" | "tools" | "growth";
+
+// Each chapter's `flag` ties it to the same feature flag that gates the
+// feature itself (see src/lib/featureFlags.ts) - flip it on in the admin
+// portal and this chapter appears here automatically, no separate step.
+// `flag: null` means always visible (core Phase 1, not behind any flag).
+const CHAPTERS: { id: ChapterId; label: string; desc: string; icon: any; flag: string | null }[] = [
+  { id: "overview", label: "Guide Overview", desc: "Philosophies & Setup", icon: Compass, flag: null },
+  { id: "scorecard", label: "Cash Scorecards", desc: "Gross Margin & Ledgers", icon: LayoutDashboard, flag: null },
+  { id: "billing", label: "Invoices & Receipts", desc: "Billing & Share links", icon: Receipt, flag: null },
+  { id: "inventory", label: "Smart Warehouse", desc: "Stocks & Auto-deduction", icon: Package, flag: "inventory_management" },
+  { id: "sovereign", label: "Sovereign Reserves", desc: "T-Bill Ladder & Yields", icon: Landmark, flag: "net_worth_investments" },
+  { id: "personal", label: "Personal Workspace", desc: "Your Own Money, Separately", icon: User, flag: "personal_workspace" },
+  { id: "tools", label: "Advanced Billing Tools", desc: "Purchase Orders, Team, Templates", icon: Wrench, flag: null },
+  { id: "growth", label: "Growth & Multi-Business", desc: "Ad Hub & Second Ventures", icon: TrendingUp, flag: null },
+  { id: "ai", label: "CFO AI & Advisors", desc: "Advisory & Simulators", icon: Sparkles, flag: null },
+  { id: "playbooks", label: "SME Playbooks", desc: "Tactical Retailer & Freelancer", icon: BookMarked, flag: null }
+];
 
 export default function AppGuide() {
-  const [activeChapter, setActiveChapter] = useState<
-    "overview" | "scorecard" | "billing" | "inventory" | "sovereign" | "ai" | "playbooks"
-  >("overview");
+  const { isEnabled } = useFeatureFlags();
+  const [activeChapter, setActiveChapter] = useState<ChapterId>("overview");
+  const visibleChapters = CHAPTERS.filter((c) => c.flag === null || isEnabled(c.flag));
+
+  // If a chapter's flag gets turned off from the admin portal while it's the
+  // active one (or on first load if it was never visible), fall back to the
+  // guide overview instead of showing a blank/stale pane.
+  useEffect(() => {
+    if (!visibleChapters.some((c) => c.id === activeChapter)) {
+      setActiveChapter("overview");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeChapter, visibleChapters.map((c) => c.id).join(",")]);
 
   // State for interactive widgets
   const [ladderCapital, setLadderCapital] = useState<number>(20000);
@@ -53,15 +83,7 @@ export default function AppGuide() {
           </span>
           
           <nav className="space-y-1 pt-2">
-            {[
-              { id: "overview", label: "Guide Overview", desc: "Philosophies & Setup", icon: Compass },
-              { id: "scorecard", label: "Cash Scorecards", desc: "Gross Margin & Ledgers", icon: LayoutDashboard },
-              { id: "billing", label: "Invoices & Receipts", desc: "Billing & Share links", icon: Receipt },
-              { id: "inventory", label: "Smart Warehouse", desc: "Stocks & Auto-deduction", icon: Package },
-              { id: "sovereign", label: "Sovereign Reserves", desc: "T-Bill Ladder & Yields", icon: Landmark },
-              { id: "ai", label: "CFO AI & Advisors", desc: "Advisory & Simulators", icon: Sparkles },
-              { id: "playbooks", label: "SME Playbooks", desc: "Tactical Retailer & Freelancer", icon: BookMarked }
-            ].map((chapter) => {
+            {visibleChapters.map((chapter) => {
               const active = activeChapter === chapter.id;
               const ChapterIcon = chapter.icon;
               return (
@@ -309,7 +331,7 @@ export default function AppGuide() {
           )}
 
           {/* CHAPTER 4: SMART WAREHOUSE */}
-          {activeChapter === "inventory" && (
+          {activeChapter === "inventory" && isEnabled("inventory_management") && (
             <div className="space-y-6 animate-fade-in">
               <div className="border-b border-slate-150 pb-4">
                 <span className="text-[10px] font-mono font-bold text-emerald-600 uppercase tracking-widest block mb-1">
@@ -404,7 +426,7 @@ export default function AppGuide() {
           )}
 
           {/* CHAPTER 5: SOVEREIGN RESERVES & T-BILLS */}
-          {activeChapter === "sovereign" && (
+          {activeChapter === "sovereign" && isEnabled("net_worth_investments") && (
             <div className="space-y-6 animate-fade-in">
               <div className="border-b border-slate-150 pb-4">
                 <span className="text-[10px] font-mono font-bold text-emerald-600 uppercase tracking-widest block mb-1">
@@ -521,12 +543,156 @@ export default function AppGuide() {
             </div>
           )}
 
-          {/* CHAPTER 6: AI CFO ADVISORS */}
-          {activeChapter === "ai" && (
+          {/* CHAPTER 6: PERSONAL WORKSPACE */}
+          {activeChapter === "personal" && isEnabled("personal_workspace") && (
             <div className="space-y-6 animate-fade-in">
               <div className="border-b border-slate-150 pb-4">
                 <span className="text-[10px] font-mono font-bold text-emerald-600 uppercase tracking-widest block mb-1">
                   Chapter VI
+                </span>
+                <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                  <User className="w-5 h-5 text-emerald-600" />
+                  Personal Workspace: Your Own Money, Separately
+                </h3>
+                <p className="text-xs text-slate-400 mt-1">
+                  A private ledger for household income and spending, kept entirely apart from your business books.
+                </p>
+              </div>
+
+              <div className="space-y-4 text-xs leading-relaxed">
+                <p className="text-slate-650 font-light">
+                  Mixing personal and business cash is one of the fastest ways an SME loses track of its real profitability. The <strong className="font-semibold text-slate-900">Personal Workspace</strong> gives you a second, fully separate ledger — your salary, rent, groceries, and personal savings — that never touches your business Scorecard.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 bg-slate-50 border border-slate-150 rounded-2xl space-y-2">
+                    <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
+                      <Buildings className="w-4 h-4 text-emerald-600" />
+                      One-Tap Switching
+                    </h5>
+                    <p className="text-slate-500 text-[11px] font-light">
+                      Toggle between your business view and your personal workspace from the sidebar switcher. Each keeps its own transactions, categories, and totals.
+                    </p>
+                  </div>
+                  <div className="p-4 bg-slate-50 border border-slate-150 rounded-2xl space-y-2">
+                    <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
+                      <CurrencyCircleDollar className="w-4 h-4 text-indigo-600" />
+                      Clean Owner Salary Draws
+                    </h5>
+                    <p className="text-slate-500 text-[11px] font-light">
+                      Log an owner's draw as a business expense, then record the same amount as personal income — so both ledgers stay honest about where the money actually went.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* CHAPTER 7: ADVANCED BILLING TOOLS */}
+          {activeChapter === "tools" && (
+            <div className="space-y-6 animate-fade-in">
+              <div className="border-b border-slate-150 pb-4">
+                <span className="text-[10px] font-mono font-bold text-emerald-600 uppercase tracking-widest block mb-1">
+                  Chapter VII
+                </span>
+                <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                  <Wrench className="w-5 h-5 text-emerald-600" />
+                  Advanced Billing Tools
+                </h3>
+                <p className="text-xs text-slate-400 mt-1">
+                  Purchase orders, team access, document templates, and live exchange rates — for SMEs outgrowing the basics.
+                </p>
+              </div>
+
+              <div className="space-y-4 text-xs leading-relaxed">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 border border-slate-150 rounded-2xl space-y-2">
+                    <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
+                      <ClipboardText className="w-4 h-4 text-emerald-600" />
+                      Purchase Orders
+                    </h5>
+                    <p className="text-slate-500 text-[11px] font-light">
+                      Raise a formal purchase order to a supplier before stock arrives, then reconcile it against the delivered items and its final bill.
+                    </p>
+                  </div>
+                  <div className="p-4 border border-slate-150 rounded-2xl space-y-2">
+                    <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
+                      <UsersThree className="w-4 h-4 text-indigo-600" />
+                      Team & Roles
+                    </h5>
+                    <p className="text-slate-500 text-[11px] font-light">
+                      Invite staff with scoped roles — cashier, bookkeeper, manager — so your team can help run the books without seeing everything you see.
+                    </p>
+                  </div>
+                  <div className="p-4 border border-slate-150 rounded-2xl space-y-2">
+                    <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
+                      <FileImage className="w-4 h-4 text-emerald-600" />
+                      Document Templates
+                    </h5>
+                    <p className="text-slate-500 text-[11px] font-light">
+                      Customize the layout, colors, and fields on your invoices, receipts, and estimates so they match your brand every time.
+                    </p>
+                  </div>
+                  <div className="p-4 border border-slate-150 rounded-2xl space-y-2">
+                    <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
+                      <Globe className="w-4 h-4 text-indigo-600" />
+                      Live Exchange Rates
+                    </h5>
+                    <p className="text-slate-500 text-[11px] font-light">
+                      Bill in a foreign currency and let Aziiki convert it at a live rate, so multi-currency deals reconcile correctly against your home-currency ledger.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* CHAPTER 8: GROWTH & MULTI-BUSINESS */}
+          {activeChapter === "growth" && (
+            <div className="space-y-6 animate-fade-in">
+              <div className="border-b border-slate-150 pb-4">
+                <span className="text-[10px] font-mono font-bold text-emerald-600 uppercase tracking-widest block mb-1">
+                  Chapter VIII
+                </span>
+                <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-emerald-600" />
+                  Growth & Multi-Business
+                </h3>
+                <p className="text-xs text-slate-400 mt-1">
+                  Running a second venture, or turning your customer base into an audience worth reaching.
+                </p>
+              </div>
+
+              <div className="space-y-4 text-xs leading-relaxed">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 bg-slate-50 border border-slate-150 rounded-2xl space-y-2">
+                    <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
+                      <Buildings className="w-4 h-4 text-emerald-600" />
+                      Multiple Businesses, One Login
+                    </h5>
+                    <p className="text-slate-500 text-[11px] font-light">
+                      Add a second business from the "+New" switcher in the sidebar. Each business keeps its own ledger, customers, and inventory — fully isolated from the others.
+                    </p>
+                  </div>
+                  <div className="p-4 bg-slate-50 border border-slate-150 rounded-2xl space-y-2">
+                    <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
+                      <Megaphone className="w-4 h-4 text-indigo-600" />
+                      Ad Monetization Hub
+                    </h5>
+                    <p className="text-slate-500 text-[11px] font-light">
+                      Once you have a healthy customer list, the Ad Hub helps you package it into simple promotional campaigns and offers you can send to your own audience.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* CHAPTER 9: AI CFO ADVISORS */}
+          {activeChapter === "ai" && (
+            <div className="space-y-6 animate-fade-in">
+              <div className="border-b border-slate-150 pb-4">
+                <span className="text-[10px] font-mono font-bold text-emerald-600 uppercase tracking-widest block mb-1">
+                  Chapter IX
                 </span>
                 <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-emerald-600" />
@@ -574,12 +740,12 @@ export default function AppGuide() {
             </div>
           )}
 
-          {/* CHAPTER 7: PLAYBOOKS */}
+          {/* CHAPTER 10: PLAYBOOKS */}
           {activeChapter === "playbooks" && (
             <div className="space-y-6 animate-fade-in">
               <div className="border-b border-slate-150 pb-4">
                 <span className="text-[10px] font-mono font-bold text-emerald-600 uppercase tracking-widest block mb-1">
-                  Chapter VII
+                  Chapter X
                 </span>
                 <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
                   <BookMarked className="w-5 h-5 text-emerald-600" />

@@ -181,9 +181,15 @@ export default function FeatureFlagsPanel() {
                   }`}
                 >
                   <span
-                    className={`absolute top-0.5 w-4.5 h-4.5 bg-white rounded-full shadow transition-transform ${
-                      flag.enabledDefault ? "translate-x-[19px]" : "translate-x-0.5"
-                    }`}
+                    // Inline transform, not a Tailwind translate-x-* class: the
+                    // arbitrary-value class here was silently not compiling to
+                    // any actual `transform` CSS (confirmed via
+                    // getComputedStyle - it read "none" in both states), so
+                    // the thumb never visually moved even though the track
+                    // color and aria-checked were both correct. An inline
+                    // style can't fail to compile the same way.
+                    className="absolute top-0.5 w-4.5 h-4.5 bg-white rounded-full shadow transition-transform duration-150"
+                    style={{ transform: flag.enabledDefault ? "translateX(19px)" : "translateX(2px)" }}
                   />
                 </button>
                 <button

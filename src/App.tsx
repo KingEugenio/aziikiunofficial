@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, Suspense, lazy } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Buildings as Building2, Stack as Layers2, Coins, Users, Target, Warehouse, Brain as BrainCircuit, MagicWand as Sparkles, CurrencyDollar as DollarSign, DeviceMobile as Smartphone, CheckCircle, TrendUp as TrendingUp, WarningCircle as AlertCircle, Database, ShieldCheck, SignOut as LogOut, UserCheck, ChartLine as LineChart, BookOpen, ArrowsClockwise, Lock, GearSix, Plus, X, Globe, ArrowRight, User, UsersThree, ChartBar, LockKey, Sparkle } from "@phosphor-icons/react";
+import { Buildings as Building2, Stack as Layers2, Coins, Users, Target, Warehouse, Brain as BrainCircuit, MagicWand as Sparkles, CurrencyDollar as DollarSign, DeviceMobile as Smartphone, CheckCircle, TrendUp as TrendingUp, WarningCircle as AlertCircle, Database, ShieldCheck, SignOut as LogOut, UserCheck, ChartLine as LineChart, BookOpen, ArrowsClockwise, Lock, GearSix, Plus, X, Globe, ArrowRight, User, UsersThree, ChartBar, LockKey, CaretDown, CaretUp } from "@phosphor-icons/react";
 import { Business, Customer, Transaction, Invoice, Receipt, Quotation, Investment, Asset, Goal, Debt, InventoryItem, Partner, Shareholder, UserRole, AuditLog } from "./types";
 import BusinessDashboard from "./components/BusinessDashboard";
 
@@ -121,6 +121,14 @@ export default function App() {
     if (tab === "guide") trackFeatureUsage("guideViews");
   };
   const [showMobileBanner, setShowMobileBanner] = useState<boolean>(true);
+  // Mobile only: the sidebar is `sticky top-0` (see <aside> below) so it
+  // stays pinned while the page scrolls, rather than a true side column
+  // like it is on desktop - past a certain content height that meant the
+  // business-switcher + account widget permanently ate a big chunk of a
+  // phone screen, with page content scrolling in underneath it. Collapsing
+  // it down to just the logo bar (still tappable to expand again) fixes
+  // that without touching the desktop layout at all.
+  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
   const [dismissedTravelBannerFor, setDismissedTravelBannerFor] = useState<string | null>(null);
 
   // Business Profile Editing & Registration States
@@ -1579,14 +1587,28 @@ export default function App() {
         <div className="flex flex-col gap-4 text-left">
           <div className="flex items-center gap-3">
             <BrandLogo size={36} className="shadow-md rounded-xl" />
-            <div>
+            <div className="flex-1 min-w-0">
               <h1 className="text-lg font-black tracking-tighter flex items-center gap-1.5 font-sans text-slate-900">
                 Aziiki
               </h1>
               <p className="text-[10px] text-slate-500 mt-0.5 font-sans font-medium">Your Business. Organized.</p>
             </div>
+            {/* Mobile only - collapses the profile switcher + account widget
+                below so they stop permanently occupying screen space while
+                scrolling (see sidebarCollapsed above). Desktop's sidebar is
+                a true side column, not an overlay, so it has no such button. */}
+            <button
+              type="button"
+              onClick={() => setSidebarCollapsed((v) => !v)}
+              aria-label={sidebarCollapsed ? "Expand profile panel" : "Collapse profile panel"}
+              aria-expanded={!sidebarCollapsed}
+              className="md:hidden shrink-0 w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center cursor-pointer"
+            >
+              {sidebarCollapsed ? <CaretDown className="w-4 h-4" /> : <CaretUp className="w-4 h-4" />}
+            </button>
           </div>
 
+          <div className={`${sidebarCollapsed ? "hidden md:flex" : "flex"} flex-col gap-4`}>
           <div className="h-px w-full bg-slate-200"></div>
 
           {/* Active Business select dropdown switcher */}
@@ -1663,6 +1685,7 @@ export default function App() {
               </button>
               )}
             </div>
+          </div>
           </div>
         </div>
 
@@ -1801,7 +1824,7 @@ export default function App() {
         </div>
 
         {/* User Container Footer Section */}
-        <div className="flex md:flex-col items-center md:items-stretch gap-2.5 mt-auto pt-3 border-t border-slate-100">
+        <div className={`${sidebarCollapsed ? "hidden md:flex" : "flex"} md:flex-col items-center md:items-stretch gap-2.5 mt-auto pt-3 border-t border-slate-100`}>
           
           {/* User Account Central State Indicator */}
           <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-2xl p-2.5 w-full transition-colors duration-200 text-left">
@@ -1887,8 +1910,8 @@ export default function App() {
         {/* Aziiki Launch Edition Welcome Banner */}
         <div className="mb-6 bg-brand-teal border border-brand-teal rounded-2xl p-4 text-white shadow-md flex flex-col md:flex-row items-center justify-between gap-4 animate-fade-in" id="launch-edition-promotion-banner">
           <div className="flex items-center gap-3">
-            <div className="bg-white/15 text-white w-10 h-10 rounded-xl flex items-center justify-center shrink-0">
-              <Sparkle className="w-5 h-5" weight="fill" />
+            <div className="bg-white/15 w-10 h-10 rounded-xl flex items-center justify-center shrink-0 p-1.5">
+              <BrandLogo size={28} className="rounded-lg" />
             </div>
             <div className="space-y-0.5 text-left">
               <div className="flex flex-wrap items-center gap-2">
