@@ -353,13 +353,14 @@ export default function AuthPortal({ onAuthSuccess, onEnterGuest, recoveryMode, 
           <div className="my-8 space-y-6 relative">
             <div className="space-y-1.5">
               <span className="text-[10px] bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 px-2 py-0.5 rounded-full font-mono font-bold tracking-widest uppercase">
-                Data Protected
+                Free During Launch Edition
               </span>
-              <h3 className="text-base font-bold text-slate-100 tracking-tight leading-snug">One Account. Real Data Protection.</h3>
+              <h3 className="text-base font-bold text-slate-100 tracking-tight leading-snug">Arziki Means Prosperity. That's Not an Accident.</h3>
               <p className="text-xs text-slate-400 leading-relaxed font-light">
-                Your credentials are securely encrypted, and every record you save is protected by strict
-                access controls in a real database - not a shared document. Sign in from your phone, tablet, or
-                browser and pick up exactly where you left off.
+                Aziiki takes its name from arziki - the Hausa word for prosperity, spoken and understood
+                across West Africa and beyond. It turns the daily hustle of running a business into numbers
+                you can trust: real-time cash flow, invoices that get you paid faster, and an AI Advisor that
+                tells you what your numbers actually mean - in plain language, in your own currency.
               </p>
             </div>
 
@@ -396,7 +397,7 @@ export default function AuthPortal({ onAuthSuccess, onEnterGuest, recoveryMode, 
                 overreach this page shouldn't make. */}
             <div className="flex items-center gap-1.5 text-xs text-slate-400 pt-1">
               <Monitor className="w-4 h-4 text-emerald-400" />
-              <span>Works on any phone, tablet, or desktop browser</span>
+              <span>Works offline too - log a sale with no signal, it syncs the moment you're back</span>
             </div>
           </div>
         </div>
@@ -457,13 +458,13 @@ export default function AuthPortal({ onAuthSuccess, onEnterGuest, recoveryMode, 
                 : mode === "reset-request"
                 ? "Reset your password"
                 : isSignUp
-                ? "Set up your secure SME workspace"
+                ? "Build Your Business Workspace"
                 : "Welcome back"}
             </h1>
             <p className="text-xs text-slate-500 mt-1 font-sans">
               {isSignUp && mode === "password"
-                ? "We'll email you a verification link before your workspace unlocks."
-                : "Every login runs through a dedicated authentication service - no passwords are ever handled by this app's own code."}
+                ? "Check your inbox to activate your workspace - then you're in."
+                : "Your income, invoices, and AI Advisor are exactly where you left them."}
             </p>
           </div>
 
