@@ -56,12 +56,20 @@ function loadEnv(): Env {
     const issues = parsed.error.issues
       .map((issue) => `  - ${issue.path.join(".")}: ${issue.message}`)
       .join("\n");
+    const message = `Refusing to start: invalid or missing environment configuration.\n${issues}\n\nCopy .env.example to .env and fill in every value (or set them in your hosting platform's env var settings) before starting the server.`;
     // Intentionally fatal: never fall back to an insecure default secret.
-    // eslint-disable-next-line no-console
-    console.error(
-      `\n[FATAL] Refusing to start: invalid or missing environment configuration.\n${issues}\n\nCopy .env.example to .env and fill in every value before starting the server.\n`
-    );
-    process.exit(1);
+    // Throwing (not process.exit()) matters here because this module loads
+    // in TWO very different environments - server.ts, a long-running
+    // process where exiting immediately is exactly right, AND
+    // api/index.ts, a Vercel serverless function where process.exit()
+    // forcibly kills the underlying function container instead of
+    // producing a normal, loggable error response. A thrown Error lets
+    // each entry point decide what "refusing to start" means for it:
+    // server.ts catches this once at boot and exits deliberately; Vercel's
+    // runtime catches it per-invocation and returns a clean 500 with the
+    // message in the function logs, instead of the process dying in a way
+    // that can surface as an opaque 404/502 with no diagnosable cause.
+    throw new Error(`[FATAL] ${message}`);
   }
   return parsed.data;
 }
