@@ -15,6 +15,7 @@ import SurveyPrompt from "./components/SurveyPrompt";
 import MobileNavBar from "./components/MobileNavBar";
 import Footer from "./components/Footer";
 import OfflineStatusBanner from "./components/OfflineStatusBanner";
+import MfaOnboardingNudge from "./components/MfaOnboardingNudge";
 import { ONBOARDING_COMPLETE_KEY } from "./components/onboarding/onboardingStorage";
 import { useFeatureFlags } from "./lib/featureFlags";
 
@@ -2241,6 +2242,9 @@ export default function App() {
             session to fetch these from either. */}
         {!isGuest && <AnnouncementBanner screen={activeTab} />}
         {!isGuest && <SurveyPrompt />}
+        {!isGuest && user && isEnabled("mfa_onboarding_prompt") && (
+          <MfaOnboardingNudge userId={user.id} onGoToSettings={() => changeTab("settings")} />
+        )}
 
         {showBrandConfig && (
           <div className="mb-6 bg-white border-2 border-slate-200/95 rounded-2xl p-5 shadow-lg border-emerald-500/20 text-left animate-fade-in text-xs max-w-2xl mx-auto">

@@ -12,6 +12,8 @@ import {
   Notebook,
   SignOut as LogOut,
   ShieldWarning,
+  List as MenuIcon,
+  X as CloseIcon,
 } from "@phosphor-icons/react";
 import { supabase } from "../lib/supabaseClient";
 import { api } from "../lib/api";
@@ -37,7 +39,7 @@ const NAV: { id: Tab; label: string; icon: React.ComponentType<{ className?: str
   { id: "announcements", label: "Announcements", icon: Megaphone },
   { id: "surveys", label: "Surveys", icon: ClipboardText },
   { id: "payments", label: "Payments", icon: CreditCard },
-  { id: "branding", label: "Branding & Files", icon: ImageIcon },
+  { id: "branding", label: "Branding Kits", icon: ImageIcon },
   { id: "content", label: "Site Content", icon: Notebook },
   { id: "guides", label: "Guides", icon: BookOpen },
   { id: "admins", label: "Admins", icon: UsersThree },
@@ -57,6 +59,7 @@ export default function AdminApp() {
   const [adminStatus, setAdminStatus] = useState<AdminStatus>("checking");
   const [activeTab, setActiveTab] = useState<Tab | null>(null);
   const [sections, setSections] = useState<string[]>([]);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -220,34 +223,48 @@ export default function AdminApp() {
       {/* Main content */}
       <div className="flex-1 min-w-0 flex flex-col">
         <header className="bg-white border-b border-slate-200 px-4 sm:px-8 py-4 flex items-center justify-between md:justify-start gap-3">
-          <div className="flex items-center gap-2 md:hidden">
+          <button
+            onClick={() => setMobileMenuOpen((v) => !v)}
+            className="flex items-center gap-2 md:hidden cursor-pointer"
+            aria-expanded={mobileMenuOpen}
+            aria-label="Admin sections menu"
+          >
             <BrandLogo className="w-6 h-6" />
-            <span className="text-xs font-black text-slate-900">Aziiki Admin</span>
-          </div>
+            <span className="text-xs font-black text-slate-900">{activeNav.label}</span>
+            {mobileMenuOpen ? <CloseIcon className="w-4 h-4 text-slate-400" /> : <MenuIcon className="w-4 h-4 text-slate-400" />}
+          </button>
           <h1 className="hidden md:block text-sm font-black text-slate-900">{activeNav.label}</h1>
           <button onClick={handleSignOut} className="md:hidden text-slate-400 cursor-pointer">
             <LogOut className="w-4 h-4" />
           </button>
         </header>
 
-        {/* Mobile nav (no sidebar below md) */}
-        <nav className="md:hidden flex gap-1.5 overflow-x-auto px-4 py-2.5 bg-white border-b border-slate-200">
-          {visibleNav.map((item) => {
-            const NavIcon = item.icon;
-            const active = activeTab === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => setActiveTab(item.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold whitespace-nowrap cursor-pointer ${
-                  active ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-500"
-                }`}
-              >
-                <NavIcon className="w-3.5 h-3.5 shrink-0" /> {item.label}
-              </button>
-            );
-          })}
-        </nav>
+        {/* Mobile nav (no sidebar below md) - a slide-down menu rather than a
+            horizontal scroller, so every section (Dashboard, Feature Flags,
+            Announcements, Surveys, Payments, Branding Kits, Site Content,
+            Guides, Admins) is reachable in one tap without swiping to find it. */}
+        {mobileMenuOpen && (
+          <nav className="md:hidden flex flex-col bg-white border-b border-slate-200 shadow-sm animate-fade-in">
+            {visibleNav.map((item) => {
+              const NavIcon = item.icon;
+              const active = activeTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    setActiveTab(item.id);
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`flex items-center gap-2.5 px-4 py-3 text-xs font-bold cursor-pointer border-b border-slate-100 last:border-b-0 ${
+                    active ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-50"
+                  }`}
+                >
+                  <NavIcon className="w-4 h-4 shrink-0" /> {item.label}
+                </button>
+              );
+            })}
+          </nav>
+        )}
 
         <main className="flex-1 p-4 sm:p-8 max-w-4xl w-full">
           <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6">

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Briefcase, Plus, TrendUp as TrendingUp, Pulse as Activity, CaretRight as ChevronRight, Trash as Trash2, Target, Coins, Scales as Scale, Warning as AlertTriangle, CalendarDots as CalendarDays, Percent, MagicWand as Sparkles, ArrowsClockwise as RefreshCw, Globe, MagnifyingGlass as Search, TrendDown as TrendingDown, Wrench, FileText, Clock, ShieldCheck, Calculator, Stack as Layers, Question as HelpCircle, SealCheck as FileCheck, CheckCircle, BookOpen, Lightbulb, ChartBar, HandCoins } from "@phosphor-icons/react";
 import { Investment, Goal, Debt, Business, Asset } from "../types";
 import { SUPPORTED_CURRENCY_CODES, getCurrencySymbol } from "../lib/currency";
+import { useFeatureFlags } from "../lib/featureFlags";
 
 interface CountryMarketInfo {
   countryName: string;
@@ -156,12 +157,24 @@ export default function NetWorthInvestments({
   onContributeToGoal,
   currentBusiness
 }: NetWorthInvestmentsProps) {
+  const { isEnabled } = useFeatureFlags();
+
   // Navigation tabs: "assets" | "investments" | "networth" | "goals"
   const [activeTab, setActiveTab] = useState<"assets" | "investments" | "networth" | "goals">("assets");
 
   const changeSubTab = (tab: "assets" | "investments" | "networth" | "goals") => {
     setActiveTab(tab);
   };
+
+  // If the Business Goals tab's flag gets turned off from the admin portal
+  // while it's the active tab, fall back to Assets instead of showing a
+  // blank pane - same pattern as AppGuide's chapter fallback.
+  useEffect(() => {
+    if (activeTab === "goals" && !isEnabled("goals_tracking")) {
+      setActiveTab("assets");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, isEnabled("goals_tracking")]);
   
   // Resolve active market details by currency code
   const activeCurrency = currentBusiness?.currency || "GHS";
@@ -666,17 +679,19 @@ export default function NetWorthInvestments({
             Wealth & Net Worth
           </button>
           
-          <button
-            onClick={() => changeSubTab("goals")}
-            className={`px-3.5 py-2 text-xs font-bold rounded-xl transition-colors cursor-pointer flex items-center gap-2 ${
- activeTab === "goals" 
- ? "bg-emerald-600 text-white shadow-sm" 
+          {isEnabled("goals_tracking") && (
+            <button
+              onClick={() => changeSubTab("goals")}
+              className={`px-3.5 py-2 text-xs font-bold rounded-xl transition-colors cursor-pointer flex items-center gap-2 ${
+ activeTab === "goals"
+ ? "bg-emerald-600 text-white shadow-sm"
  : "text-slate-500 hover:text-slate-800"
  }`}
-          >
-            <Target className="w-3.5 h-3.5" />
-            Business Goals
-          </button>
+            >
+              <Target className="w-3.5 h-3.5" />
+              Business Goals
+            </button>
+          )}
         </div>
 
         {/* Display Banner metrics */}
@@ -2478,7 +2493,7 @@ export default function NetWorthInvestments({
         <div className="lg:col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-6 text-left animate-fade-in">
           
           {/* Balance Sheet Ledger Presentation */}
-          <div className="lg:col-span-7 bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-6">
+          <div className={`${isEnabled("debts_tracking") ? "lg:col-span-7" : "lg:col-span-12"} bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-6`}>
             <div>
               <span className="text-[9px] bg-emerald-100 text-emerald-800 font-mono tracking-widest uppercase font-bold px-2.5 py-0.5 rounded-md border border-emerald-200">
                 Analytical Statement
@@ -2568,6 +2583,7 @@ export default function NetWorthInvestments({
           </div>
 
           {/* RIGHT: Debts liability manager */}
+          {isEnabled("debts_tracking") && (
           <div className="lg:col-span-5 bg-white border border-slate-200 rounded-3xl p-5 space-y-4 shadow-sm">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
@@ -2705,12 +2721,13 @@ export default function NetWorthInvestments({
               </div>
             )}
           </div>
+          )}
 
         </div>
       )}
 
       {/* TAB 4: BUSINESS SAVINGS GOALS */}
-      {activeTab === "goals" && (
+      {activeTab === "goals" && isEnabled("goals_tracking") && (
         <div className="lg:col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-6 text-left font-sans animate-fade-in">
           
           {/* Configure Goals Left Panel */}

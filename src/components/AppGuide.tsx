@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BookOpen, Question as HelpCircle, Database, SquaresFour as LayoutDashboard, Receipt, Users, Package, Bank as Landmark, ChartLine as LineChart, MagicWand as Sparkles, WarningCircle as AlertCircle, ShoppingBag, Briefcase, FileText, Compass, CaretRight as ChevronRight, TrendUp as TrendingUp, Percent, Stack as Layers, Certificate as Award, BookmarkSimple as BookMarked, Globe, Microphone, Lightbulb, ShieldCheck, Rocket, LinkSimple, Brain, Scales, LockKey, User, Wrench, ClipboardText, UsersThree, CurrencyCircleDollar, Megaphone, Buildings, ArrowUp } from "@phosphor-icons/react";
+import { BookOpen, Question as HelpCircle, Database, SquaresFour as LayoutDashboard, Receipt, Users, Package, Bank as Landmark, ChartLine as LineChart, MagicWand as Sparkles, WarningCircle as AlertCircle, ShoppingBag, Briefcase, FileText, Compass, CaretRight as ChevronRight, TrendUp as TrendingUp, Percent, Stack as Layers, Certificate as Award, BookmarkSimple as BookMarked, Globe, Microphone, Lightbulb, ShieldCheck, Rocket, LinkSimple, Brain, Scales, LockKey, User, Wrench, ClipboardText, UsersThree, CurrencyCircleDollar, Megaphone, Buildings, ArrowUp, SealCheck as FileCheck } from "@phosphor-icons/react";
 import { useFeatureFlags } from "../lib/featureFlags";
 
 type ChapterId = "overview" | "scorecard" | "billing" | "crm" | "inventory" | "sovereign" | "reports" | "ai" | "playbooks" | "personal" | "tools" | "growth";
@@ -9,8 +9,12 @@ type ChapterId = "overview" | "scorecard" | "billing" | "crm" | "inventory" | "s
 // or off in the admin portal's Feature Flags, and this chapter's
 // information appears or disappears here automatically, no separate step.
 // `flag: null` means always visible (a meta/overview chapter that doesn't
-// map to one single toggleable button).
-const CHAPTERS: { id: ChapterId; label: string; desc: string; icon: any; flag: string | null }[] = [
+// map to one single toggleable button). A chapter whose content is a grab
+// bag of several independently-flagged features (tools, growth) takes an
+// array instead - the chapter itself stays visible if ANY of its cards
+// would show, and each card inside is separately gated so the chapter
+// never appears fully empty.
+const CHAPTERS: { id: ChapterId; label: string; desc: string; icon: any; flag: string | string[] | null }[] = [
   { id: "overview", label: "Guide Overview", desc: "Philosophies & Setup", icon: Compass, flag: null },
   { id: "scorecard", label: "Cash Scorecards", desc: "Gross Margin & Ledgers", icon: LayoutDashboard, flag: "core_dashboard" },
   { id: "billing", label: "Invoices & Receipts", desc: "Billing & Share links", icon: Receipt, flag: "core_billing" },
@@ -18,17 +22,38 @@ const CHAPTERS: { id: ChapterId; label: string; desc: string; icon: any; flag: s
   { id: "inventory", label: "Smart Warehouse", desc: "Stocks & Auto-deduction", icon: Package, flag: "inventory_management" },
   { id: "sovereign", label: "Sovereign Reserves", desc: "T-Bill Ladder & Yields", icon: Landmark, flag: "net_worth_investments" },
   { id: "personal", label: "Personal Workspace", desc: "Your Own Money, Separately", icon: User, flag: "personal_workspace" },
-  { id: "tools", label: "Advanced Billing Tools", desc: "Purchase Orders, Team, Templates", icon: Wrench, flag: null },
-  { id: "growth", label: "Growth & Multi-Business", desc: "Ad Hub & Second Ventures", icon: TrendingUp, flag: null },
+  {
+    id: "tools",
+    label: "Advanced Billing Tools",
+    desc: "Purchase Orders, Team, Templates",
+    icon: Wrench,
+    flag: [
+      "purchase_orders",
+      "team_memberships_invite_ui",
+      "exchange_rate_live_switching",
+      "signature_capture",
+      "business_partners_shareholders",
+      "brand_kit_advanced_fields",
+      "core_settings",
+      "core_help_support",
+    ],
+  },
+  { id: "growth", label: "Growth & Multi-Business", desc: "Ad Hub & Second Ventures", icon: TrendingUp, flag: ["multi_business_profiles", "ad_monetization_hub"] },
   { id: "reports", label: "Reports & Wisdom", desc: "P&L and Cash-Flow Views", icon: LineChart, flag: "core_reports" },
   { id: "ai", label: "CFO AI & Advisors", desc: "Advisory & Simulators", icon: Sparkles, flag: "core_ai_advisor" },
   { id: "playbooks", label: "SME Playbooks", desc: "Tactical Retailer & Freelancer", icon: BookMarked, flag: null }
 ];
 
+function isChapterVisible(flag: string | string[] | null, isEnabled: (key: string) => boolean): boolean {
+  if (flag === null) return true;
+  if (Array.isArray(flag)) return flag.some(isEnabled);
+  return isEnabled(flag);
+}
+
 export default function AppGuide() {
   const { isEnabled } = useFeatureFlags();
   const [activeChapter, setActiveChapter] = useState<ChapterId>("overview");
-  const visibleChapters = CHAPTERS.filter((c) => c.flag === null || isEnabled(c.flag));
+  const visibleChapters = CHAPTERS.filter((c) => isChapterVisible(c.flag, isEnabled));
 
   // If a chapter's flag gets turned off from the admin portal while it's the
   // active one (or on first load if it was never visible), fall back to the
@@ -688,6 +713,7 @@ export default function AppGuide() {
 
               <div className="space-y-4 text-xs leading-relaxed">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {isEnabled("purchase_orders") && (
                   <div className="p-4 border border-slate-150 rounded-2xl space-y-2">
                     <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
                       <ClipboardText className="w-4 h-4 text-emerald-600" />
@@ -697,6 +723,8 @@ export default function AppGuide() {
                       Raise a formal purchase order to a supplier before stock arrives, then reconcile it against the delivered items and its final bill. Find it in the sidebar / More menu.
                     </p>
                   </div>
+                  )}
+                  {isEnabled("team_memberships_invite_ui") && (
                   <div className="p-4 border border-slate-150 rounded-2xl space-y-2">
                     <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
                       <UsersThree className="w-4 h-4 text-indigo-600" />
@@ -706,6 +734,8 @@ export default function AppGuide() {
                       Invite staff with scoped roles — cashier, bookkeeper, manager — so your team can help run the books without seeing everything you see.
                     </p>
                   </div>
+                  )}
+                  {isEnabled("exchange_rate_live_switching") && (
                   <div className="p-4 border border-slate-150 rounded-2xl space-y-2">
                     <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
                       <Globe className="w-4 h-4 text-indigo-600" />
@@ -715,6 +745,62 @@ export default function AppGuide() {
                       Bill in a foreign currency and let Aziiki convert it at a live rate, so multi-currency deals reconcile correctly against your home-currency ledger.
                     </p>
                   </div>
+                  )}
+                  {isEnabled("signature_capture") && (
+                  <div className="p-4 border border-slate-150 rounded-2xl space-y-2">
+                    <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
+                      <FileCheck className="w-4 h-4 text-emerald-600" />
+                      Digital Signatures
+                    </h5>
+                    <p className="text-slate-500 text-[11px] font-light">
+                      Draw or upload a signature once, then drop it onto any invoice, receipt or quotation before sending — no printing and scanning needed.
+                    </p>
+                  </div>
+                  )}
+                  {isEnabled("business_partners_shareholders") && (
+                  <div className="p-4 border border-slate-150 rounded-2xl space-y-2">
+                    <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
+                      <UsersThree className="w-4 h-4 text-emerald-600" />
+                      Partners & Shareholders
+                    </h5>
+                    <p className="text-slate-500 text-[11px] font-light">
+                      Record co-owners and their equity split for a Partnership or Company profile, so ownership stays documented alongside the books.
+                    </p>
+                  </div>
+                  )}
+                  {isEnabled("brand_kit_advanced_fields") && (
+                  <div className="p-4 border border-slate-150 rounded-2xl space-y-2">
+                    <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
+                      <Sparkles className="w-4 h-4 text-indigo-600" />
+                      Advanced Brand Kit
+                    </h5>
+                    <p className="text-slate-500 text-[11px] font-light">
+                      Beyond a logo and colour, set extra brand fields (tagline, secondary contact details) that carry through to every document template.
+                    </p>
+                  </div>
+                  )}
+                  {isEnabled("core_settings") && (
+                  <div className="p-4 border border-slate-150 rounded-2xl space-y-2">
+                    <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
+                      <Wrench className="w-4 h-4 text-emerald-600" />
+                      Settings & Account
+                    </h5>
+                    <p className="text-slate-500 text-[11px] font-light">
+                      Change your password, turn on two-factor authentication, manage email preferences, or delete your account — all from one screen.
+                    </p>
+                  </div>
+                  )}
+                  {isEnabled("core_help_support") && (
+                  <div className="p-4 border border-slate-150 rounded-2xl space-y-2">
+                    <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
+                      <HelpCircle className="w-4 h-4 text-indigo-600" />
+                      Help & Support
+                    </h5>
+                    <p className="text-slate-500 text-[11px] font-light">
+                      The Help Center, contact support, FAQ, and the app's legal pages, all reachable in one place when something's unclear.
+                    </p>
+                  </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -738,6 +824,7 @@ export default function AppGuide() {
 
               <div className="space-y-4 text-xs leading-relaxed">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {isEnabled("multi_business_profiles") && (
                   <div className="p-4 bg-slate-50 border border-slate-150 rounded-2xl space-y-2">
                     <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
                       <Buildings className="w-4 h-4 text-emerald-600" />
@@ -747,6 +834,8 @@ export default function AppGuide() {
                       Add a second business from the "+New" switcher in the sidebar. Each business keeps its own ledger, customers, and inventory — fully isolated from the others.
                     </p>
                   </div>
+                  )}
+                  {isEnabled("ad_monetization_hub") && (
                   <div className="p-4 bg-slate-50 border border-slate-150 rounded-2xl space-y-2">
                     <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
                       <Megaphone className="w-4 h-4 text-indigo-600" />
@@ -756,6 +845,7 @@ export default function AppGuide() {
                       Once you have a healthy customer list, the Ad Hub helps you package it into simple promotional campaigns and offers you can send to your own audience.
                     </p>
                   </div>
+                  )}
                 </div>
               </div>
             </div>
