@@ -11,6 +11,7 @@ import helmet from "helmet";
 import "express-async-errors";
 
 import { env } from "./env";
+import { initSentry, setupSentryErrorHandler } from "./sentry";
 import { apiLimiter, paystackWebhookLimiter } from "./rateLimiters";
 import { requireAuth } from "./middleware/requireAuth";
 import { requireAdmin } from "./middleware/requireAdmin";
@@ -54,6 +55,10 @@ import { surveysRouter } from "./routes/surveys";
 import { adminRouter } from "./routes/admin";
 
 export function createApp(): express.Express {
+  // Called first, before any middleware/route is registered - no-ops
+  // entirely if SENTRY_DSN is unset (see sentry.ts).
+  initSentry();
+
   const app = express();
 
   app.set("trust proxy", 1); // required for correct req.ip behind Vercel/Render/any reverse proxy
@@ -146,6 +151,10 @@ export function createApp(): express.Express {
   // migration 0031). See src/admin/AdminApp.tsx for the portal itself.
   // ---------------------------------------------------------------------
   app.use("/api/admin", requireAuth, requireAdmin, adminRouter);
+
+  // Must run after every route but before the app's own final error
+  // handler below - see sentry.ts. No-ops entirely if SENTRY_DSN is unset.
+  setupSentryErrorHandler(app);
 
   // Final error-handling middleware (must be registered last, and must take
   // 4 arguments for Express to recognize it as an error handler).

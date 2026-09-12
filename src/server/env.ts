@@ -41,6 +41,11 @@ const envSchema = z.object({
   // Payment" button instead. Add your real secret key here before hosting;
   // it is never checked into source control.
   PAYSTACK_SECRET_KEY: z.string().optional(),
+
+  // Same feature-flagged pattern as the above: server-side error monitoring
+  // is optional. Missing this never blocks startup or changes behavior -
+  // Sentry simply never initializes, same as the client's VITE_SENTRY_DSN.
+  SENTRY_DSN: z.string().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

@@ -1,5 +1,6 @@
 import React from "react";
 import { WarningCircle as AlertCircle } from "@phosphor-icons/react";
+import { captureException } from "../lib/sentry";
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -37,10 +38,12 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   }
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
-    // Logged to the browser console (and, on a real deployment, whatever
-    // error-tracking service is wired up) so this is diagnosable rather
-    // than just "the app went blank" with no trace of why.
+    // Logged to the browser console always; also reported to Sentry when
+    // VITE_SENTRY_DSN is configured (see lib/sentry.ts) - either way this
+    // is diagnosable rather than just "the app went blank" with no trace
+    // of why.
     console.error("[ErrorBoundary] Caught a render error:", error, info.componentStack);
+    captureException(error, { componentStack: info.componentStack ?? undefined });
   }
 
   handleReset = () => {

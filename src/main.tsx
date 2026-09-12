@@ -6,7 +6,11 @@ import AdminApp from './admin/AdminApp.tsx';
 import { ErrorBoundary } from './components/ErrorBoundary.tsx';
 import { api } from './lib/api.ts';
 import { captureUtmParams } from './lib/utm.ts';
+import { initSentry } from './lib/sentry.ts';
 import './index.css';
+
+// No-ops entirely until VITE_SENTRY_DSN is set - see lib/sentry.ts.
+initSentry();
 
 // Capture utm_source/utm_medium/utm_campaign from the URL, if present, so a
 // signup completed later in the session can be attributed to the campaign
