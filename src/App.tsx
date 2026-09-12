@@ -208,21 +208,13 @@ export default function App() {
   const [launchBannerDismissed, setLaunchBannerDismissed] = useState<boolean>(
     () => localStorage.getItem("aziiki_launch_banner_dismissed") === "true"
   );
-  const [plans, setPlans] = useState<Array<{ tier: string; paystackLink: string | null; priceMinorUnits: number | null; currency: string }>>([]);
+  const [plans, setPlans] = useState<Array<{ tier: string; paystackLink: string | null; priceMinorUnits: number | null; currency: string; provider: string }>>([]);
   useEffect(() => {
     api.config
       .plans()
       .then(setPlans)
       .catch(() => setPlans([]));
   }, []);
-  // Shared by the desktop sidebar's plan badge and MobileNavBar's "More"
-  // sheet, so both surfaces link to the same upgrade destination.
-  const nextTier = tier === "basic" ? "standard" : tier === "standard" ? "pro" : null;
-  const nextPlan = nextTier ? plans.find((p) => p.tier === nextTier) : undefined;
-  const upgradeUrl =
-    nextPlan?.paystackLink && user?.email
-      ? `${nextPlan.paystackLink}${nextPlan.paystackLink.includes("?") ? "&" : "?"}email=${encodeURIComponent(user.email)}`
-      : nextPlan?.paystackLink;
 
   // Business Profile Editing & Registration States
   const [showBrandConfig, setShowBrandConfig] = useState<boolean>(false);
@@ -288,6 +280,22 @@ export default function App() {
     auditLogs: [],
   };
   const currentBusiness = businesses.find(b => b.id === currentBusinessId) || businesses[0] || EMPTY_BUSINESS_PLACEHOLDER;
+
+  // Shared by the desktop sidebar's plan badge and MobileNavBar's "More"
+  // sheet, so both surfaces link to the same upgrade destination. Regional
+  // pricing: prefer the plan row matching the active business's own
+  // currency (GHS, NGN, or whichever African currency an admin has priced),
+  // falling back to USD for a business whose currency has no matching row
+  // configured - "flat USD outside Africa" with no extra picker UI, since
+  // the business's currency is already real per-business data.
+  const nextTier = tier === "basic" ? "standard" : tier === "standard" ? "pro" : null;
+  const nextTierPlans = nextTier ? plans.filter((p) => p.tier === nextTier) : [];
+  const nextPlan =
+    nextTierPlans.find((p) => p.currency === currentBusiness.currency) ?? nextTierPlans.find((p) => p.currency === "USD");
+  const upgradeUrl =
+    nextPlan?.paystackLink && user?.email
+      ? `${nextPlan.paystackLink}${nextPlan.paystackLink.includes("?") ? "&" : "?"}email=${encodeURIComponent(user.email)}`
+      : nextPlan?.paystackLink;
 
   // Traveling-user detection (Phase D of the currency/localization redesign):
   // if the business has a saved home timezone and it doesn't match the

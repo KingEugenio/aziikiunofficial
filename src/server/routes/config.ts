@@ -150,7 +150,7 @@ configRouter.get("/plans", async (_req: Request, res: Response) => {
   const anonClient = getAnonClient();
   const { data, error } = await anonClient
     .from("subscription_plans")
-    .select("tier, paystack_link, price_minor_units, currency");
+    .select("tier, paystack_link, price_minor_units, currency, provider");
 
   if (error) {
     // Fail open to an empty list (same reasoning as /features and
@@ -166,6 +166,7 @@ configRouter.get("/plans", async (_req: Request, res: Response) => {
       paystackLink: row.paystack_link,
       priceMinorUnits: row.price_minor_units,
       currency: row.currency,
+      provider: row.provider,
     })),
   });
 });

@@ -1,26 +1,38 @@
 import React, { useEffect, useState } from "react";
-import { CreditCard, FloppyDisk as Save, UserGear } from "@phosphor-icons/react";
+import { CreditCard, FloppyDisk as Save, UserGear, Plus, Trash as Trash2 } from "@phosphor-icons/react";
 import { api } from "../lib/api";
 import { LoadingSwap } from "../components/LoadingSwap";
 import { SkeletonAdminBranding } from "../components/Skeleton";
 
 interface PlanRow {
   tier: string;
+  currency: string;
   paystackLink: string | null;
   priceMinorUnits: number | null;
-  currency: string;
+  provider: "paystack" | "stripe";
 }
 
 const TIER_LABEL: Record<string, string> = { standard: "Standard", pro: "Pro" };
 
-function PlanCard({ plan, onSaved }: { plan: PlanRow; onSaved: (row: PlanRow) => void }) {
+function CurrencyRow({
+  plan,
+  onSaved,
+  onRemoved,
+  removable,
+}: {
+  plan: PlanRow;
+  onSaved: (row: PlanRow) => void;
+  onRemoved: () => void;
+  removable: boolean;
+}) {
   const [link, setLink] = useState(plan.paystackLink ?? "");
   // Priced in the currency's main unit (e.g. GHS, not pesewas) for a human
   // to type - converted to/from minor units at the API boundary, matching
-  // how Paystack itself reports amounts.
+  // how Paystack/Stripe themselves report amounts.
   const [price, setPrice] = useState(plan.priceMinorUnits != null ? (plan.priceMinorUnits / 100).toString() : "");
-  const [currency, setCurrency] = useState(plan.currency);
+  const [provider, setProvider] = useState<"paystack" | "stripe">(plan.provider);
   const [isSaving, setIsSaving] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
@@ -31,12 +43,12 @@ function PlanCard({ plan, onSaved }: { plan: PlanRow; onSaved: (row: PlanRow) =>
     setIsSaving(true);
     try {
       const priceMinorUnits = price.trim() === "" ? null : Math.round(Number(price) * 100);
-      await api.admin.subscriptionPlans.save(plan.tier as "standard" | "pro", {
+      await api.admin.subscriptionPlans.save(plan.tier as "standard" | "pro", plan.currency, {
         paystackLink: link.trim() === "" ? null : link.trim(),
         priceMinorUnits,
-        currency: currency.trim().toUpperCase() || "GHS",
+        provider,
       });
-      onSaved({ tier: plan.tier, paystackLink: link.trim() || null, priceMinorUnits, currency: currency.trim().toUpperCase() || "GHS" });
+      onSaved({ ...plan, paystackLink: link.trim() || null, priceMinorUnits, provider });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
@@ -46,26 +58,52 @@ function PlanCard({ plan, onSaved }: { plan: PlanRow; onSaved: (row: PlanRow) =>
     }
   };
 
+  const handleRemove = async () => {
+    setIsRemoving(true);
+    try {
+      await api.admin.subscriptionPlans.remove(plan.tier as "standard" | "pro", plan.currency);
+      onRemoved();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Couldn't remove this currency.");
+      setIsRemoving(false);
+    }
+  };
+
   return (
     <form onSubmit={handleSave} className="border border-slate-200 rounded-2xl p-4 space-y-3">
-      <h3 className="text-xs font-bold text-slate-800">{TIER_LABEL[plan.tier] ?? plan.tier} plan</h3>
+      <div className="flex items-center justify-between">
+        <h4 className="text-xs font-bold text-slate-800 font-mono">{plan.currency}</h4>
+        {removable && (
+          <button
+            type="button"
+            onClick={handleRemove}
+            disabled={isRemoving}
+            className="text-slate-400 hover:text-rose-600 cursor-pointer disabled:opacity-50"
+            aria-label={`Remove ${plan.currency}`}
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
+        )}
+      </div>
       <div className="space-y-1">
-        <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Paystack Payment Page link</label>
+        <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">
+          {provider === "stripe" ? "Stripe Payment Link" : "Paystack Payment Page link"}
+        </label>
         <input
           type="url"
-          placeholder="https://paystack.com/pay/your-page-slug"
+          placeholder={provider === "stripe" ? "https://buy.stripe.com/..." : "https://paystack.com/pay/your-page-slug"}
           value={link}
           onChange={(e) => setLink(e.target.value)}
           className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
         />
         <p className="text-[10px] text-slate-400 leading-relaxed">
-          Create a Payment Page for this exact price in your Paystack dashboard, then paste its link here. Aziiki appends the
-          user's email to it automatically so the payment can be matched back to their account.
+          Create a payment link for this exact price with your provider, then paste it here. Aziiki appends the user's email
+          to it automatically so the payment can be matched back to their account.
         </p>
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
-          <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Price</label>
+          <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Price ({plan.currency})</label>
           <input
             type="number"
             step="0.01"
@@ -77,20 +115,21 @@ function PlanCard({ plan, onSaved }: { plan: PlanRow; onSaved: (row: PlanRow) =>
           />
         </div>
         <div className="space-y-1">
-          <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Currency</label>
-          <input
-            type="text"
-            maxLength={3}
-            placeholder="GHS"
-            value={currency}
-            onChange={(e) => setCurrency(e.target.value)}
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs uppercase focus:border-emerald-500"
-          />
+          <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Provider</label>
+          <select
+            value={provider}
+            onChange={(e) => setProvider(e.target.value as "paystack" | "stripe")}
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs"
+          >
+            <option value="paystack">Paystack</option>
+            <option value="stripe">Stripe</option>
+          </select>
         </div>
       </div>
       <p className="text-[10px] text-slate-400 leading-relaxed">
-        The price here must match the Payment Page's actual price exactly - it's how an incoming payment gets matched back to
-        this tier when Paystack calls the webhook, since a plain Payment Page link carries no reference of its own.
+        The price here must match the payment link's actual price exactly - it's how an incoming Paystack payment gets
+        matched back to this tier (Stripe links aren't auto-matched by webhook yet; upgrade those accounts manually below
+        until that's wired up).
       </p>
       {error && <p className="text-[10px] text-rose-600">{error}</p>}
       <button
@@ -101,6 +140,61 @@ function PlanCard({ plan, onSaved }: { plan: PlanRow; onSaved: (row: PlanRow) =>
         <Save className="w-3.5 h-3.5" /> {isSaving ? "Saving..." : saved ? "Saved" : "Save"}
       </button>
     </form>
+  );
+}
+
+function TierGroup({ tier, rows, onChange }: { tier: string; rows: PlanRow[]; onChange: (rows: PlanRow[]) => void }) {
+  const [newCurrency, setNewCurrency] = useState("");
+  const [addError, setAddError] = useState<string | null>(null);
+
+  const addCurrency = () => {
+    const code = newCurrency.trim().toUpperCase();
+    setAddError(null);
+    if (!/^[A-Z]{3}$/.test(code)) {
+      setAddError("Enter a 3-letter currency code, e.g. USD.");
+      return;
+    }
+    if (rows.some((r) => r.currency === code)) {
+      setAddError(`${code} is already configured for this tier.`);
+      return;
+    }
+    onChange([...rows, { tier, currency: code, paystackLink: null, priceMinorUnits: null, provider: code === "USD" ? "stripe" : "paystack" }]);
+    setNewCurrency("");
+  };
+
+  return (
+    <div className="border border-slate-200 rounded-2xl p-4 space-y-3">
+      <h3 className="text-xs font-bold text-slate-800">{TIER_LABEL[tier] ?? tier} plan</h3>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {rows.map((row) => (
+          <CurrencyRow
+            key={row.currency}
+            plan={row}
+            removable={rows.length > 1}
+            onSaved={(updated) => onChange(rows.map((r) => (r.currency === updated.currency ? updated : r)))}
+            onRemoved={() => onChange(rows.filter((r) => r.currency !== row.currency))}
+          />
+        ))}
+      </div>
+      <div className="flex flex-wrap items-center gap-2 pt-1">
+        <input
+          type="text"
+          maxLength={3}
+          placeholder="Add currency, e.g. USD"
+          value={newCurrency}
+          onChange={(e) => setNewCurrency(e.target.value)}
+          className="w-40 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs uppercase focus:border-emerald-500"
+        />
+        <button
+          type="button"
+          onClick={addCurrency}
+          className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold px-3 py-2 rounded-xl cursor-pointer"
+        >
+          <Plus className="w-3.5 h-3.5" /> Add currency
+        </button>
+        {addError && <p className="text-[10px] text-rose-600">{addError}</p>}
+      </div>
+    </div>
   );
 }
 
@@ -138,25 +232,27 @@ export default function PaymentsPanel() {
     }
   };
 
+  const byTier: Record<string, PlanRow[]> = { standard: [], pro: [] };
+  for (const row of plans) {
+    if (byTier[row.tier]) byTier[row.tier].push(row);
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-start gap-2">
         <CreditCard className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
         <p className="text-[11px] text-slate-500 leading-relaxed">
           Basic accounts get the Phase 1 core loop for free. Standard unlocks everything through Phase 2; Pro unlocks
-          everything. A successful payment on either Payment Page below upgrades that account automatically - no manual step
-          needed, via the same Paystack webhook already used for invoice payments.
+          everything. Price each tier per currency - a visitor sees the row matching their business's currency, falling back
+          to USD if theirs isn't configured. A successful Paystack payment upgrades the account automatically via webhook;
+          Stripe payments need a manual "Set plan" below until that's wired up too.
         </p>
       </div>
 
       <LoadingSwap isLoading={loading} skeleton={<SkeletonAdminBranding />}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {plans.map((plan) => (
-            <PlanCard
-              key={plan.tier}
-              plan={plan}
-              onSaved={(row) => setPlans((prev) => prev.map((p) => (p.tier === row.tier ? row : p)))}
-            />
+        <div className="space-y-4">
+          {(["standard", "pro"] as const).map((tier) => (
+            <TierGroup key={tier} tier={tier} rows={byTier[tier]} onChange={(rows) => setPlans((prev) => [...prev.filter((p) => p.tier !== tier), ...rows])} />
           ))}
         </div>
       </LoadingSwap>
@@ -165,7 +261,7 @@ export default function PaymentsPanel() {
         <h3 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
           <UserGear className="w-3.5 h-3.5" /> Manually set an account's plan
         </h3>
-        <p className="text-[11px] text-slate-500">For comping an account, or fixing a payment the webhook couldn't match automatically.</p>
+        <p className="text-[11px] text-slate-500">For comping an account, a Stripe payment, or fixing a payment the webhook couldn't match automatically.</p>
         <div className="flex flex-wrap items-center gap-2">
           <input
             type="email"

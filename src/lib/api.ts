@@ -194,7 +194,7 @@ export const api = {
     branding: () => request<{ logoUrl: string | null; faviconUrl: string | null }>("/config/branding"),
     plans: () =>
       request<{
-        data: Array<{ tier: string; paystackLink: string | null; priceMinorUnits: number | null; currency: string }>;
+        data: Array<{ tier: string; paystackLink: string | null; priceMinorUnits: number | null; currency: string; provider: string }>;
       }>("/config/plans").then((r) => r.data),
     siteSettings: () => request<{ data: Record<string, string> }>("/config/site-settings").then((r) => r.data),
     siteSettingsUpdatedAt: () =>
@@ -460,10 +460,23 @@ export const api = {
     subscriptionPlans: {
       list: () =>
         request<{
-          data: Array<{ tier: string; paystackLink: string | null; priceMinorUnits: number | null; currency: string; updatedAt: string }>;
+          data: Array<{
+            tier: string;
+            currency: string;
+            paystackLink: string | null;
+            priceMinorUnits: number | null;
+            provider: "paystack" | "stripe";
+            updatedAt: string;
+          }>;
         }>("/admin/subscription-plans").then((r) => r.data),
-      save: (tier: "standard" | "pro", payload: { paystackLink: string | null; priceMinorUnits: number | null; currency: string }) =>
-        request<{ data: unknown }>(`/admin/subscription-plans/${tier}`, { method: "PUT", body: JSON.stringify(payload) }),
+      save: (
+        tier: "standard" | "pro",
+        currency: string,
+        payload: { paystackLink: string | null; priceMinorUnits: number | null; provider: "paystack" | "stripe" }
+      ) =>
+        request<{ data: unknown }>(`/admin/subscription-plans/${tier}/${currency}`, { method: "PUT", body: JSON.stringify(payload) }),
+      remove: (tier: "standard" | "pro", currency: string) =>
+        request<void>(`/admin/subscription-plans/${tier}/${currency}`, { method: "DELETE" }),
       setUserTier: (email: string, tier: "basic" | "standard" | "pro") =>
         request<{ data: unknown }>(`/admin/subscription-plans/users/${encodeURIComponent(email)}/tier`, {
           method: "PUT",
