@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BookOpen, Question as HelpCircle, Database, SquaresFour as LayoutDashboard, Receipt, Users, Package, Bank as Landmark, ChartLine as LineChart, MagicWand as Sparkles, WarningCircle as AlertCircle, ShoppingBag, Briefcase, FileText, Compass, CaretRight as ChevronRight, TrendUp as TrendingUp, Percent, Stack as Layers, Certificate as Award, BookmarkSimple as BookMarked, Globe, Microphone, Lightbulb, ShieldCheck, Rocket, LinkSimple, Brain, Scales, LockKey, User, Wrench, ClipboardText, UsersThree, CurrencyCircleDollar, Megaphone, Buildings } from "@phosphor-icons/react";
+import { BookOpen, Question as HelpCircle, Database, SquaresFour as LayoutDashboard, Receipt, Users, Package, Bank as Landmark, ChartLine as LineChart, MagicWand as Sparkles, WarningCircle as AlertCircle, ShoppingBag, Briefcase, FileText, Compass, CaretRight as ChevronRight, TrendUp as TrendingUp, Percent, Stack as Layers, Certificate as Award, BookmarkSimple as BookMarked, Globe, Microphone, Lightbulb, ShieldCheck, Rocket, LinkSimple, Brain, Scales, LockKey, User, Wrench, ClipboardText, UsersThree, CurrencyCircleDollar, Megaphone, Buildings, ArrowUp } from "@phosphor-icons/react";
 import { useFeatureFlags } from "../lib/featureFlags";
 
 type ChapterId = "overview" | "scorecard" | "billing" | "crm" | "inventory" | "sovereign" | "reports" | "ai" | "playbooks" | "personal" | "tools" | "growth";
@@ -59,9 +59,40 @@ export default function AppGuide() {
   const grossMarginPercent = marginPrice > 0 ? (productProfit / marginPrice) * 100 : 0;
   const markupPercent = marginCost > 0 ? (productProfit / marginCost) * 100 : 0;
 
+  // Scroll progress bar + back-to-top button, since the Academy is the app's
+  // longest single-page scroll.
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      setScrollProgress(docHeight > 0 ? Math.min(100, (scrollTop / docHeight) * 100) : 0);
+      setShowBackToTop(scrollTop > 600);
+    };
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <div id="app-guide-academy" className="space-y-8 text-slate-800 font-sans pb-12 select-none animate-fade-in text-left">
-      
+      {/* Scroll progress bar */}
+      <div className="fixed top-0 left-0 right-0 h-1 z-[100] bg-transparent pointer-events-none">
+        <div className="h-full bg-brand-teal transition-[width] duration-150" style={{ width: `${scrollProgress}%` }} />
+      </div>
+
+      {showBackToTop && (
+        <button
+          type="button"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          aria-label="Back to top"
+          className="fixed bottom-24 md:bottom-8 right-5 z-[100] w-10 h-10 rounded-full bg-brand-navy text-white shadow-lg flex items-center justify-center cursor-pointer hover:bg-slate-800 transition-colors"
+        >
+          <ArrowUp className="w-4 h-4" />
+        </button>
+      )}
+
       {/* Top Hero Banner */}
       <div className="bg-brand-teal text-white rounded-3xl p-6 sm:p-8 shadow-md">
         <div className="max-w-3xl space-y-3">

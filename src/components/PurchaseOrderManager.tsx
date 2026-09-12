@@ -3,6 +3,7 @@ import { Plus, Trash as Trash2, Truck, Package, CheckCircle } from "@phosphor-ic
 import { api, ApiError } from "../lib/api";
 import { LoadingSwap } from "./LoadingSwap";
 import { SkeletonTable } from "./Skeleton";
+import ConfirmModal from "./ConfirmModal";
 import { SUPPORTED_CURRENCY_CODES, getCurrencySymbol } from "../lib/currency";
 
 interface PurchaseOrderItem {
@@ -184,12 +185,16 @@ export default function PurchaseOrderManager({ businessId, businessCurrency }: P
     }
   };
 
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+
   const handleDelete = async (id: string) => {
     try {
       await api.purchaseOrders.remove(id);
       setOrders((prev) => prev.filter((o) => o.id !== id));
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Failed to delete purchase order.");
+    } finally {
+      setPendingDeleteId(null);
     }
   };
 
@@ -411,7 +416,7 @@ export default function PurchaseOrderManager({ businessId, businessCurrency }: P
                 </div>
                 <button
                   type="button"
-                  onClick={() => handleDelete(order.id)}
+                  onClick={() => setPendingDeleteId(order.id)}
                   aria-label={`Delete purchase order ${order.poNumber}`}
                   className="w-6 h-6 bg-rose-50 text-rose-600 border border-rose-100 rounded-lg flex items-center justify-center cursor-pointer hover:bg-rose-100"
                 >
@@ -455,6 +460,16 @@ export default function PurchaseOrderManager({ businessId, businessCurrency }: P
         )}
       </div>
       </LoadingSwap>
+
+      {pendingDeleteId && (
+        <ConfirmModal
+          title="Delete this purchase order?"
+          message={`This permanently removes purchase order #${orders.find((o) => o.id === pendingDeleteId)?.poNumber ?? ""} and its line items. This can't be undone.`}
+          confirmLabel="Delete"
+          onConfirm={() => handleDelete(pendingDeleteId)}
+          onCancel={() => setPendingDeleteId(null)}
+        />
+      )}
     </div>
   );
 }

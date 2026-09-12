@@ -13,10 +13,15 @@ export const passwordField = z
   .regex(/[A-Za-z]/, "Password must contain at least one letter")
   .regex(/[0-9]/, "Password must contain at least one number");
 
+const utmField = z.string().trim().min(1).max(100).optional();
+
 export const signupSchema = z.object({
   email: emailField,
   password: passwordField,
   displayName: z.string().trim().min(1).max(120).optional(),
+  utmSource: utmField,
+  utmMedium: utmField,
+  utmCampaign: utmField,
 });
 
 export const loginSchema = z.object({

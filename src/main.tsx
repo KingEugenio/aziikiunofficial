@@ -5,7 +5,13 @@ import App from './App.tsx';
 import AdminApp from './admin/AdminApp.tsx';
 import { ErrorBoundary } from './components/ErrorBoundary.tsx';
 import { api } from './lib/api.ts';
+import { captureUtmParams } from './lib/utm.ts';
 import './index.css';
+
+// Capture utm_source/utm_medium/utm_campaign from the URL, if present, so a
+// signup completed later in the session can be attributed to the campaign
+// that brought the visitor in (see the socials setup work this ties into).
+captureUtmParams();
 
 // Swaps the browser-tab favicon for the admin-uploaded one (see /admin ->
 // Branding & Files), if one exists. Runs once at boot, outside React,

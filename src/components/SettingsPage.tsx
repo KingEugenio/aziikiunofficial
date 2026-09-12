@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Lock, ShieldCheck, EnvelopeSimple as Mail, WarningCircle as AlertCircle, CheckCircle, Trash as Trash2, QrCode } from "@phosphor-icons/react";
+import { Lock, ShieldCheck, EnvelopeSimple as Mail, WarningCircle as AlertCircle, CheckCircle, Trash as Trash2, QrCode, Eye, EyeSlash, Copy } from "@phosphor-icons/react";
 import { supabase } from "../lib/supabaseClient";
 import { api, ApiError } from "../lib/api";
 
@@ -20,6 +20,9 @@ export default function SettingsPage({ userEmail, onAccountDeleted }: SettingsPa
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSavingPassword, setIsSavingPassword] = useState(false);
   const [passwordMsg, setPasswordMsg] = useState<{ type: "error" | "success"; text: string } | null>(null);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [secretCopied, setSecretCopied] = useState(false);
 
   // MFA
   const [factors, setFactors] = useState<Array<{ id: string; status: string; friendly_name?: string }>>([]);
@@ -169,20 +172,40 @@ export default function SettingsPage({ userEmail, onAccountDeleted }: SettingsPa
 
         <form onSubmit={handleChangePassword} className="space-y-3 max-w-sm">
           <p className="text-xs font-bold text-slate-700">Change password</p>
-          <input
-            type="password"
-            placeholder="New password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
-          />
-          <input
-            type="password"
-            placeholder="Confirm new password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
-          />
+          <div className="relative">
+            <input
+              type={showNewPassword ? "text" : "password"}
+              placeholder="New password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 pr-9 outline-none text-xs focus:border-emerald-500"
+            />
+            <button
+              type="button"
+              onClick={() => setShowNewPassword((v) => !v)}
+              aria-label={showNewPassword ? "Hide password" : "Show password"}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+            >
+              {showNewPassword ? <EyeSlash className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            </button>
+          </div>
+          <div className="relative">
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              placeholder="Confirm new password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 pr-9 outline-none text-xs focus:border-emerald-500"
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword((v) => !v)}
+              aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+            >
+              {showConfirmPassword ? <EyeSlash className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+            </button>
+          </div>
           {passwordMsg && (
             <p className={`text-[11px] flex items-center gap-1 ${passwordMsg.type === "error" ? "text-rose-600" : "text-emerald-600"}`}>
               {passwordMsg.type === "error" ? <AlertCircle className="w-3.5 h-3.5" /> : <CheckCircle className="w-3.5 h-3.5" />}
@@ -220,7 +243,22 @@ export default function SettingsPage({ userEmail, onAccountDeleted }: SettingsPa
             <form onSubmit={handleConfirmEnroll} className="space-y-2.5">
               <p className="text-[11px] text-slate-500">Scan this QR code with your authenticator app, then enter the 6-digit code it shows.</p>
               <img src={enrolling.qrCode} alt="MFA QR code" className="w-32 h-32 border border-slate-200 rounded-xl" />
-              <p className="text-[9px] font-mono text-slate-400 break-all">Or enter manually: {enrolling.secret}</p>
+              <div className="flex items-center gap-1.5">
+                <p className="text-[9px] font-mono text-slate-400 break-all">Or enter manually: {enrolling.secret}</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(enrolling.secret).then(() => {
+                      setSecretCopied(true);
+                      setTimeout(() => setSecretCopied(false), 1500);
+                    });
+                  }}
+                  aria-label="Copy secret key"
+                  className="shrink-0 text-slate-400 hover:text-emerald-600 cursor-pointer"
+                >
+                  {secretCopied ? <CheckCircle className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                </button>
+              </div>
               <input
                 type="text"
                 inputMode="numeric"

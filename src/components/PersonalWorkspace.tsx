@@ -22,8 +22,9 @@ import {
   Investment, 
   Business, 
   PersonalAccount, 
-  PersonalBudget 
+  PersonalBudget
 } from "../types";
+import ConfirmModal from "./ConfirmModal";
 
 interface PersonalWorkspaceProps {
   currentBusiness: Business;
@@ -67,6 +68,12 @@ export default function PersonalWorkspace({
   // Navigation inside Personal Workspace
   // Options: "dashboard" | "transactions" | "accounts" | "savings" | "budgets" | "reports" | "coach"
   const [personalTab, setPersonalTab] = useState<string>("dashboard");
+
+  // One shared confirm-before-delete state for every destructive action in
+  // this component (transactions, accounts, goals, budgets, debts,
+  // investments) - none of these had any confirmation at all before.
+  const [pendingDelete, setPendingDelete] = useState<{ label: string; onConfirm: () => void } | null>(null);
+  const confirmDelete = (label: string, onConfirm: () => void) => setPendingDelete({ label, onConfirm });
 
   const changePersonalTab = (tab: string) => {
     setPersonalTab(tab);
@@ -1102,7 +1109,7 @@ export default function PersonalWorkspace({
                           <span className="text-[9px] text-slate-400 block mt-0.5">{t.date}</span>
                         </div>
                         <button
-                          onClick={() => onDeleteTransaction(t.id)}
+                          onClick={() => confirmDelete(`Delete "${t.description}"? This can't be undone.`, () => onDeleteTransaction(t.id))}
                           className="text-slate-350 hover:text-rose-600 p-1 rounded transition-colors cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -1198,7 +1205,7 @@ export default function PersonalWorkspace({
                       
                       {accounts.length > 1 && (
                         <button
-                          onClick={() => handleDeleteAccount(acc.id)}
+                          onClick={() => confirmDelete(`Delete the "${acc.name}" account? This can't be undone.`, () => handleDeleteAccount(acc.id))}
                           className="text-slate-500 hover:text-rose-500 p-1.5 rounded bg-white/5 transition-all cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -1327,7 +1334,7 @@ export default function PersonalWorkspace({
                           </div>
                           
                           <button
-                            onClick={() => onDeleteGoal(g.id)}
+                            onClick={() => confirmDelete(`Delete the "${g.name}" goal? This can't be undone.`, () => onDeleteGoal(g.id))}
                             aria-label={`Delete goal ${g.name}`}
                             className="text-slate-400 hover:text-rose-500 p-1 rounded hover:bg-slate-100 transition-colors cursor-pointer"
                           >
@@ -1483,7 +1490,7 @@ export default function PersonalWorkspace({
                             {currencySymbol}{spent.toLocaleString()} spent of {currencySymbol}{b.limitAmount.toLocaleString()}
                           </span>
                           <button
-                            onClick={() => handleDeleteBudget(b.category)}
+                            onClick={() => confirmDelete(`Delete the "${b.category}" budget? This can't be undone.`, () => handleDeleteBudget(b.category))}
                             aria-label={`Delete budget ${b.category}`}
                             className="text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
                           >
@@ -1621,7 +1628,7 @@ export default function PersonalWorkspace({
                         {workspaceDebts.map(d => (
                           <div key={d.id} className="p-2 bg-slate-50 rounded-xl border border-slate-150 text-[11px] relative">
                             <button
-                              onClick={() => onDeleteDebt(d.id)}
+                              onClick={() => confirmDelete(`Delete the debt owed to "${d.creditor}"? This can't be undone.`, () => onDeleteDebt(d.id))}
                               aria-label={`Delete debt ${d.creditor}`}
                               className="absolute top-1.5 right-1.5 text-[9px] font-black text-slate-400 hover:text-rose-500"
                             >
@@ -1661,7 +1668,7 @@ export default function PersonalWorkspace({
                         {workspaceInvestments.map(i => (
                           <div key={i.id} className="p-2 bg-slate-50 rounded-xl border border-slate-150 text-[11px] relative">
                             <button
-                              onClick={() => onDeleteInvestment(i.id)}
+                              onClick={() => confirmDelete(`Delete the "${i.name}" investment? This can't be undone.`, () => onDeleteInvestment(i.id))}
                               aria-label={`Delete investment ${i.name}`}
                               className="absolute top-1.5 right-1.5 text-[9px] font-black text-slate-400 hover:text-rose-500"
                             >
@@ -1936,6 +1943,18 @@ export default function PersonalWorkspace({
           </>
       </div>
 
+      {pendingDelete && (
+        <ConfirmModal
+          title="Confirm deletion"
+          message={pendingDelete.label}
+          confirmLabel="Delete"
+          onConfirm={() => {
+            pendingDelete.onConfirm();
+            setPendingDelete(null);
+          }}
+          onCancel={() => setPendingDelete(null)}
+        />
+      )}
     </div>
   );
 }

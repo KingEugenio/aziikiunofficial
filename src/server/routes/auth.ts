@@ -33,13 +33,19 @@ authRouter.post("/signup", signupLimiter, async (req: Request, res: Response) =>
     return;
   }
 
-  const { email, password, displayName } = parsed.data;
+  const { email, password, displayName, utmSource, utmMedium, utmCampaign } = parsed.data;
   const supabase = getAnonClient();
+
+  const metadata: Record<string, string> = {};
+  if (displayName) metadata.display_name = displayName;
+  if (utmSource) metadata.utm_source = utmSource;
+  if (utmMedium) metadata.utm_medium = utmMedium;
+  if (utmCampaign) metadata.utm_campaign = utmCampaign;
 
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: displayName ? { display_name: displayName } : undefined },
+    options: { data: Object.keys(metadata).length > 0 ? metadata : undefined },
   });
 
   if (error) {

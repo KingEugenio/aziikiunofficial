@@ -1709,6 +1709,16 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col md:flex-row font-sans selection:bg-brand-navy/15 transition-colors duration-200">
 
+      {/* Invisible until focused (Tab) - lets keyboard/screen-reader users
+          jump straight past the sidebar nav to the actual page content,
+          instead of tabbing through every nav item on every page load. */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[200] focus:bg-brand-navy focus:text-white focus:text-xs focus:font-bold focus:px-4 focus:py-2.5 focus:rounded-xl focus:shadow-lg"
+      >
+        Skip to content
+      </a>
+
       {/* Sticky Left Navigation Sidebar */}
       <aside className="w-full md:w-80 bg-white border-b md:border-b-0 md:border-r border-slate-200 sticky top-0 z-50 p-4 md:p-6 flex flex-col justify-between md:h-screen md:overflow-y-auto gap-4 shadow-sm transition-colors duration-200 md:shrink-0" id="sidebar-navigation">
         
@@ -2121,7 +2131,7 @@ export default function App() {
       </aside>
 
       {/* Main Workspace Frame container */}
-      <main className="flex-1 p-4 sm:p-6 pb-24 md:pb-6 max-w-7xl mx-auto w-full animate-fade-in">
+      <main id="main-content" tabIndex={-1} className="flex-1 p-4 sm:p-6 pb-24 md:pb-6 max-w-7xl mx-auto w-full animate-fade-in focus:outline-none">
         
         {/* Critical sync failure banner - shown whenever the workspace
             failed to load or create a business at all (see the catch

@@ -20,6 +20,7 @@ interface LegalTextPageProps {
  */
 export default function LegalTextPage({ title, settingKey, onBack }: LegalTextPageProps) {
   const [text, setText] = useState<string>("");
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -35,6 +36,18 @@ export default function LegalTextPage({ title, settingKey, onBack }: LegalTextPa
       })
       .finally(() => {
         if (!cancelled) setLoaded(true);
+      });
+    api.config
+      .siteSettingsUpdatedAt()
+      .then((data) => {
+        if (!cancelled && data[settingKey]) {
+          setLastUpdated(
+            new Date(data[settingKey]).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
+          );
+        }
+      })
+      .catch(() => {
+        // Fail open to no date shown - not worth blocking the page for.
       });
     return () => {
       cancelled = true;
@@ -54,7 +67,10 @@ export default function LegalTextPage({ title, settingKey, onBack }: LegalTextPa
         <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-sm space-y-8">
           <div className="flex items-center gap-3 pb-6 border-b border-slate-150">
             <BrandLogo size={40} />
-            <h1 className="text-xl font-black text-slate-900">{title}</h1>
+            <div>
+              <h1 className="text-xl font-black text-slate-900">{title}</h1>
+              {lastUpdated && <p className="text-xs text-slate-400 font-mono">Last updated: {lastUpdated}</p>}
+            </div>
           </div>
 
           <LoadingSwap

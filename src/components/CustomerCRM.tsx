@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { User, Phone, Envelope as Mail, Plus, Trash as Trash2, CaretRight as ChevronRight, MagnifyingGlass as Search, ChatCircle as MessageSquare, CheckCircle, WarningCircle as AlertCircle, FileCsv as FileSpreadsheet, Buildings as Building, CurrencyDollar as DollarSign, X } from "@phosphor-icons/react";
 import { Customer, Invoice, Transaction, Business } from "../types";
 import { SUPPORTED_CURRENCY_CODES } from "../lib/currency";
+import ConfirmModal from "./ConfirmModal";
 
 interface CustomerCRMProps {
   currentBusiness: Business;
@@ -204,9 +205,11 @@ export default function CustomerCRM({
     }
   };
 
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+
   const handleDeleteSelected = async () => {
     if (!selectedCustomer) return;
-    if (!window.confirm(`Delete ${selectedCustomer.name}? This can't be undone.`)) return;
+    setConfirmingDelete(false);
     setIsDeleting(true);
     try {
       await onDeleteCustomer(selectedCustomer.id);
@@ -571,7 +574,7 @@ export default function CustomerCRM({
                     </button>
 
                     <button
-                      onClick={handleDeleteSelected}
+                      onClick={() => setConfirmingDelete(true)}
                       disabled={isDeleting}
                       className="bg-rose-50 border border-rose-200 hover:bg-rose-100 text-rose-600 p-2 rounded-xl transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-wait"
                     >
@@ -655,6 +658,15 @@ export default function CustomerCRM({
         )}
       </div>
 
+      {confirmingDelete && selectedCustomer && (
+        <ConfirmModal
+          title="Delete this customer?"
+          message={`Delete ${selectedCustomer.name}? This can't be undone.`}
+          confirmLabel="Delete"
+          onConfirm={handleDeleteSelected}
+          onCancel={() => setConfirmingDelete(false)}
+        />
+      )}
     </div>
   );
 }

@@ -196,6 +196,27 @@ configRouter.get("/site-settings", async (_req: Request, res: Response) => {
 });
 
 /**
+ * Per-key last-edited timestamps for site_settings (migration 0047),
+ * public - lets an admin-editable legal page (LegalTextPage.tsx) show a
+ * real "Last updated" date instead of a hardcoded one that goes stale.
+ */
+configRouter.get("/site-settings/updated-at", async (_req: Request, res: Response) => {
+  const anonClient = getAnonClient();
+  const { data, error } = await anonClient.from("site_settings").select("key, updated_at");
+
+  if (error) {
+    res.json({ data: {} });
+    return;
+  }
+
+  const map: Record<string, string> = {};
+  for (const row of data ?? []) {
+    map[row.key] = row.updated_at;
+  }
+  res.json({ data: map });
+});
+
+/**
  * Active FAQ entries (migration 0047), public - shown on the Help &
  * Support page, reachable before login too.
  */

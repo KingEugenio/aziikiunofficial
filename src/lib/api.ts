@@ -97,7 +97,7 @@ function makeResource<T>(basePath: string) {
 
 export const api = {
   auth: {
-    signup: (payload: { email: string; password: string; displayName?: string }) =>
+    signup: (payload: { email: string; password: string; displayName?: string; utmSource?: string; utmMedium?: string; utmCampaign?: string }) =>
       request<{ message: string }>("/auth/signup", { method: "POST", body: JSON.stringify(payload) }),
     login: (payload: { email: string; password: string }) =>
       request<{ session: any; user: { id: string; email: string }; mfaRequired: boolean }>("/auth/login", {
@@ -197,6 +197,8 @@ export const api = {
         data: Array<{ tier: string; paystackLink: string | null; priceMinorUnits: number | null; currency: string }>;
       }>("/config/plans").then((r) => r.data),
     siteSettings: () => request<{ data: Record<string, string> }>("/config/site-settings").then((r) => r.data),
+    siteSettingsUpdatedAt: () =>
+      request<{ data: Record<string, string> }>("/config/site-settings/updated-at").then((r) => r.data),
     faq: () => request<{ data: Array<{ id: string; question: string; answer: string }> }>("/config/faq").then((r) => r.data),
   },
 

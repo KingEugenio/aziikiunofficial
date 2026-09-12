@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import BrandLogo from "./BrandLogo";
 import AnnouncementBanner from "./AnnouncementBanner";
+import DataNoticeBanner from "./DataNoticeBanner";
 import { supabase } from "../lib/supabaseClient";
 import { api, ApiError } from "../lib/api";
 import { ShieldCheck, Lock, Envelope as Mail, DeviceMobile as Smartphone, Monitor, Database, WarningCircle as AlertCircle, CheckCircle, CaretRight as ChevronRight, ArrowRight, Key as KeyRound, Eye, EyeSlash } from "@phosphor-icons/react";
 import { useFeatureFlags } from "../lib/featureFlags";
+import { getStoredUtmParams } from "../lib/utm";
 
 interface AuthPortalProps {
   onAuthSuccess: (info: { user: any; isNewUser: boolean; businessName?: string; currency?: string; seedDemoData?: boolean }) => void;
@@ -133,7 +135,7 @@ export default function AuthPortal({ onAuthSuccess, onEnterGuest, recoveryMode, 
     setIsLoading(true);
     try {
       if (isSignUp) {
-        await api.auth.signup({ email, password });
+        await api.auth.signup({ email, password, ...getStoredUtmParams() });
         setSuccessMsg("Account created! Check your inbox for a verification link before signing in.");
         setIsSignUp(false);
       } else {
@@ -781,6 +783,7 @@ export default function AuthPortal({ onAuthSuccess, onEnterGuest, recoveryMode, 
           )}
         </div>
       </div>
+      <DataNoticeBanner onShowPrivacyPolicy={onShowPrivacyPolicy} />
     </div>
   );
 }

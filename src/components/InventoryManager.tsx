@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Plus, Trash as Trash2, Warning as AlertTriangle, Package, Phone, User, Tag, Warehouse, CheckCircle, Truck, FileCsv as FileSpreadsheet, X } from "@phosphor-icons/react";
 import { InventoryItem, Business } from "../types";
+import ConfirmModal from "./ConfirmModal";
 
 interface InventoryManagerProps {
   currentBusiness: Business;
@@ -195,8 +196,10 @@ export default function InventoryManager({
     }
   };
 
+  const [pendingDeleteItem, setPendingDeleteItem] = useState<InventoryItem | null>(null);
+
   const handleDeleteItem = async (item: InventoryItem) => {
-    if (!window.confirm(`Delete ${item.name} from stock? This can't be undone.`)) return;
+    setPendingDeleteItem(null);
     setDeletingId(item.id);
     try {
       await onDeleteInventoryItem(item.id);
@@ -541,7 +544,7 @@ export default function InventoryManager({
                     </button>
 
                     <button
-                      onClick={() => handleDeleteItem(item)}
+                      onClick={() => setPendingDeleteItem(item)}
                       disabled={deletingId === item.id}
                       className="w-7 h-7 bg-rose-50 text-rose-600 border border-rose-100 rounded-lg flex items-center justify-center cursor-pointer transition-colors hover:bg-rose-100 disabled:opacity-50 disabled:cursor-wait"
                     >
@@ -559,6 +562,16 @@ export default function InventoryManager({
           )}
         </div>
       </div>
+
+      {pendingDeleteItem && (
+        <ConfirmModal
+          title="Remove this item from stock?"
+          message={`Delete ${pendingDeleteItem.name} from stock? This can't be undone.`}
+          confirmLabel="Delete"
+          onConfirm={() => handleDeleteItem(pendingDeleteItem)}
+          onCancel={() => setPendingDeleteItem(null)}
+        />
+      )}
     </div>
   );
 }
