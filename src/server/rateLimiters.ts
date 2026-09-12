@@ -137,20 +137,37 @@ export const apiLimiter = rateLimit({
   store: new UpstashRateLimitStore("api"),
 });
 
+/** Hourly AI request ceiling per plan tier - a real but noticeably tighter
+ * cap on Basic than Standard/Pro, enough to try the feature without it
+ * being a full substitute for upgrading. Guests and any account without a
+ * resolvable tier get the Basic ceiling, same as everywhere else tiers are
+ * checked in this codebase. */
+const AI_TIER_LIMITS: Record<string, number> = { basic: 5, standard: 15, pro: 40 };
+
 /**
- * Gemini-backed AI routes (insights, chat, live-investments): 15 / hour,
- * keyed by user id when signed in, IP otherwise - these routes are
- * deliberately mounted with no requireAuth (guest mode calls /insights and
- * /chat directly), so IP is the only key available for anonymous callers.
- * Every call here is a real, metered LLM API cost, unlike the rest of the
- * API surface - the general apiLimiter (300/5min) is nowhere near tight
- * enough on its own to bound that cost, per the product teardown's "AI CFO
- * Advisor: keep in MVP, but cap usage/cost" call.
+ * Gemini-backed AI routes (insights, chat, live-investments): keyed by user
+ * id when signed in (via optionalAuth, mounted ahead of this limiter on
+ * every gemini route), IP otherwise for guests. Every call here is a real,
+ * metered LLM API cost, unlike the rest of the API surface - the general
+ * apiLimiter (300/5min) is nowhere near tight enough on its own to bound
+ * that cost, per the product teardown's "AI CFO Advisor: keep in MVP, but
+ * cap usage/cost" call.
  */
 export const geminiLimiter = rateLimit({
   ...standardOptions,
   windowMs: 60 * 60 * 1000,
-  max: 15,
+  max: async (req) => {
+    if (!req.user || !req.supabase) return AI_TIER_LIMITS.basic;
+    try {
+      const { data } = await req.supabase.from("profiles").select("tier").eq("id", req.user.id).maybeSingle();
+      const tier = data?.tier;
+      return (tier && AI_TIER_LIMITS[tier]) ?? AI_TIER_LIMITS.basic;
+    } catch {
+      // Can't confirm a paid tier - fail closed to the Basic ceiling rather
+      // than accidentally granting a higher limit.
+      return AI_TIER_LIMITS.basic;
+    }
+  },
   keyGenerator: (req) => (req.user?.id ? `user:${req.user.id}` : `ip:${ipKeyGenerator(req.ip ?? "unknown")}`),
   store: new UpstashRateLimitStore("gemini"),
   message: { error: "You've reached the hourly limit for AI features. Please try again in a bit." },

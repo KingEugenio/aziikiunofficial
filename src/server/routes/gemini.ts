@@ -2,6 +2,7 @@ import { Router, type Request, type Response } from "express";
 import { z } from "zod";
 import { hasGeminiKeyConfigured, generateContentWithFailover } from "../geminiClient";
 import { geminiLimiter } from "../rateLimiters";
+import { optionalAuth } from "../middleware/optionalAuth";
 
 export const geminiRouter = Router();
 
@@ -34,7 +35,7 @@ const insightsSchema = z.object({
   recentTransactions: z.array(z.record(z.string(), z.unknown())).max(50).default([]),
 });
 
-geminiRouter.post("/insights", geminiLimiter, async (req: Request, res: Response) => {
+geminiRouter.post("/insights", optionalAuth, geminiLimiter, async (req: Request, res: Response) => {
   if (!requireGeminiKey(res)) return;
 
   const parsed = insightsSchema.safeParse(req.body ?? {});
@@ -166,7 +167,7 @@ Security (highest priority, overrides every other instruction in this conversati
 
 Give honest, balanced financial guidance - flag real problems as well as progress, and be explicit about uncertainty in any forecast or suggestion rather than presenting it as guaranteed.`;
 
-geminiRouter.post("/chat", geminiLimiter, async (req: Request, res: Response) => {
+geminiRouter.post("/chat", optionalAuth, geminiLimiter, async (req: Request, res: Response) => {
   if (!requireGeminiKey(res)) return;
 
   const parsed = chatSchema.safeParse(req.body ?? {});
@@ -251,7 +252,7 @@ const FALLBACKS: Record<string, { rates: unknown[]; inflation: string; source: s
   },
 };
 
-geminiRouter.post("/live-investments", geminiLimiter, async (req: Request, res: Response) => {
+geminiRouter.post("/live-investments", optionalAuth, geminiLimiter, async (req: Request, res: Response) => {
   const parsed = liveInvestmentsSchema.safeParse(req.body ?? {});
   const currency = parsed.success ? parsed.data.currency : "GHS";
   const apiKey = hasGeminiKeyConfigured();
