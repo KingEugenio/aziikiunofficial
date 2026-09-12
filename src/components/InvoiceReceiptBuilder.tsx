@@ -479,7 +479,7 @@ export default function InvoiceReceiptBuilder({
       setSelectedPresetLogo(null);
       triggerToast("Custom company logo loaded successfully into document headers!");
     } catch (err) {
-      triggerToast("Couldn't process that image. Please try a different file.");
+      triggerToast(err instanceof Error ? err.message : "Couldn't process that image. Please try a different file.");
     }
   };
 

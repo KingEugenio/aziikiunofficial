@@ -100,78 +100,8 @@ export default function AppGuide() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  return (
-    <div id="app-guide-academy" className="space-y-8 text-slate-800 font-sans pb-12 select-none animate-fade-in text-left">
-      {/* Scroll progress bar */}
-      <div className="fixed top-0 left-0 right-0 h-1 z-[100] bg-transparent pointer-events-none">
-        <div className="h-full bg-brand-teal transition-[width] duration-150" style={{ width: `${scrollProgress}%` }} />
-      </div>
-
-      {showBackToTop && (
-        <button
-          type="button"
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          aria-label="Back to top"
-          className="fixed bottom-24 md:bottom-8 right-5 z-[100] w-10 h-10 rounded-full bg-brand-navy text-white shadow-lg flex items-center justify-center cursor-pointer hover:bg-slate-800 transition-colors"
-        >
-          <ArrowUp className="w-4 h-4" />
-        </button>
-      )}
-
-      {/* Top Hero Banner */}
-      <div className="bg-brand-teal text-white rounded-3xl p-6 sm:p-8 shadow-md">
-        <div className="max-w-3xl space-y-3">
-          <span className="bg-white/20 text-white border border-white/30 text-[10px] font-mono tracking-widest uppercase font-black px-3 py-1 rounded-full inline-block">
-            Aziiki Academy & Manual
-          </span>
-          <h2 className="text-2xl sm:text-3xl font-black tracking-tight leading-tight text-white">
-            Master the Art of SME Financial Engineering
-          </h2>
-          <p className="text-xs sm:text-sm text-white leading-relaxed font-light max-w-2xl">
-            Welcome to the Academy. Move beyond simple data entry. Here, you will learn how to organize your cash channels, protect your trading margins, and get the most out of your CFO AI Advisor.
-          </p>
-        </div>
-      </div>
-
-      {/* Interactive Navigation Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        
-        {/* Left Side: Chapter Navigation Sidebar */}
-        <div className="lg:col-span-3 bg-white border border-slate-200 rounded-3xl p-4.5 space-y-2 shadow-sm shrink-0">
-          <span className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block px-2.5 pb-2 border-b border-slate-100">
-            Academy Syllabus
-          </span>
-          
-          <nav className="space-y-1 pt-2">
-            {visibleChapters.map((chapter) => {
-              const active = activeChapter === chapter.id;
-              const ChapterIcon = chapter.icon;
-              return (
-                <button
-                  key={chapter.id}
-                  onClick={() => setActiveChapter(chapter.id as any)}
-                  className={`w-full text-left p-3 rounded-2xl transition-all cursor-pointer flex flex-col gap-0.5 select-none ${
- active
- ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/10 font-bold"
- : "hover:bg-slate-50 text-slate-650"
- }`}
-                >
-                  <span className="text-xs flex items-center gap-1.5">
-                    <ChapterIcon className="w-3.5 h-3.5 shrink-0" />
-                    {chapter.label}
-                  </span>
-                  <span className={`text-[10px] font-light ${active ? "text-emerald-105 text-emerald-200" : "text-slate-450"}`}>
-                    {chapter.desc}
-                  </span>
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-
-        {/* Right Side: Active Chapter Screen */}
-        <div className="lg:col-span-9 bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
-          
+  const activeChapterContent = (
+    <>
           {/* CHAPTER 1: OVERVIEW */}
           {activeChapter === "overview" && (
             <div className="space-y-6 animate-fade-in">
@@ -1023,7 +953,88 @@ export default function AppGuide() {
             </div>
           )}
 
+    </>
+  );
+
+  return (
+    <div id="app-guide-academy" className="space-y-8 text-slate-800 font-sans pb-12 select-none animate-fade-in text-left">
+      {/* Scroll progress bar */}
+      <div className="fixed top-0 left-0 right-0 h-1 z-[100] bg-transparent pointer-events-none">
+        <div className="h-full bg-brand-teal transition-[width] duration-150" style={{ width: `${scrollProgress}%` }} />
+      </div>
+
+      {showBackToTop && (
+        <button
+          type="button"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          aria-label="Back to top"
+          className="fixed bottom-24 md:bottom-8 right-5 z-[100] w-10 h-10 rounded-full bg-brand-navy text-white shadow-lg flex items-center justify-center cursor-pointer hover:bg-slate-800 transition-colors"
+        >
+          <ArrowUp className="w-4 h-4" />
+        </button>
+      )}
+
+      {/* Top Hero Banner */}
+      <div className="bg-brand-teal text-white rounded-3xl p-6 sm:p-8 shadow-md">
+        <div className="max-w-3xl space-y-3">
+          <span className="bg-white/20 text-white border border-white/30 text-[10px] font-mono tracking-widest uppercase font-black px-3 py-1 rounded-full inline-block">
+            Aziiki Academy & Manual
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight leading-tight text-white">
+            Master the Art of SME Financial Engineering
+          </h2>
+          <p className="text-xs sm:text-sm text-white leading-relaxed font-light max-w-2xl">
+            Welcome to the Academy. Move beyond simple data entry. Here, you will learn how to organize your cash channels, protect your trading margins, and get the most out of your CFO AI Advisor.
+          </p>
         </div>
+      </div>
+
+      {/* Interactive Navigation Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        {/* Left Side: Chapter Navigation Sidebar */}
+        <div className="lg:col-span-3 bg-white border border-slate-200 rounded-3xl p-4.5 space-y-2 shadow-sm shrink-0">
+          <span className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block px-2.5 pb-2 border-b border-slate-100">
+            Academy Syllabus
+          </span>
+          
+          <nav className="space-y-1 pt-2">
+            {visibleChapters.map((chapter) => {
+              const active = activeChapter === chapter.id;
+              const ChapterIcon = chapter.icon;
+              return (
+                <React.Fragment key={chapter.id}>
+                  <button
+                    onClick={() => setActiveChapter(chapter.id as any)}
+                    className={`w-full text-left p-3 rounded-2xl transition-all cursor-pointer flex flex-col gap-0.5 select-none ${
+ active
+ ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/10 font-bold"
+ : "hover:bg-slate-50 text-slate-650"
+ }`}
+                  >
+                    <span className="text-xs flex items-center gap-1.5">
+                      <ChapterIcon className="w-3.5 h-3.5 shrink-0" />
+                      {chapter.label}
+                    </span>
+                    <span className={`text-[10px] font-light ${active ? "text-emerald-105 text-emerald-200" : "text-slate-450"}`}>
+                      {chapter.desc}
+                    </span>
+                  </button>
+                  {/* True accordion on mobile/tablet: the chapter's content
+                      expands directly beneath its own nav button instead of
+                      requiring a scroll past the whole nav list down to a
+                      separate content pane. Desktop (lg:) keeps the
+                      unchanged two-column layout via the hidden lg:block
+                      pane below - same activeChapterContent node either way. */}
+                  {active && <div className="lg:hidden bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm space-y-6 mb-1 animate-fade-in">{activeChapterContent}</div>}
+                </React.Fragment>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Right Side: Active Chapter Screen */}
+        <div className="hidden lg:block lg:col-span-9 bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">{activeChapterContent}</div>
       </div>
 
       {/* Footer support block */}

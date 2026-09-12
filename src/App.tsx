@@ -97,7 +97,6 @@ export default function App() {
   // re-run the effect.
   const [criticalSyncError, setCriticalSyncError] = useState<string | null>(null);
   const [syncRetryCount, setSyncRetryCount] = useState(0);
-  const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [needsPasswordRecovery, setNeedsPasswordRecovery] = useState<boolean>(false);
   // AZIIKI BASIC VERSION: surfaces a friendly message when a password-reset
   // or email-confirmation link is invalid/expired (Supabase redirects back
@@ -2060,21 +2059,6 @@ export default function App() {
                 <span className="text-[10px] font-bold text-slate-800 truncate max-w-[110px]" title={user ? (user.email ?? "Signed in") : "Guest Session"}>
                   {user ? (user.email ?? "Signed in") : "Guest Session"}
                 </span>
-                <div className="flex items-center gap-1 mt-0.5">
-                  {user ? (
-                    <>
-                      <span className={`w-1.5 h-1.5 rounded-full ${isSyncing ? "bg-amber-400 animate-pulse" : "bg-emerald-500"}`}></span>
-                      <span className="text-[9px] text-slate-550 font-mono">
-                        {isSyncing ? "Syncing" : "Cloud Saved"}
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-                      <span className="text-[9px] text-amber-600 font-mono font-bold">Offline</span>
-                    </>
-                  )}
-                </div>
               </div>
             </div>
 
@@ -2490,7 +2474,7 @@ export default function App() {
                                       setBrandFormError(null);
                                     } catch (err) {
                                       console.error("Failed to process uploaded logo:", err);
-                                      setBrandFormError("Couldn't process that image. Please try a different PNG file.");
+                                      setBrandFormError(err instanceof Error ? err.message : "Couldn't process that image. Please try a different PNG file.");
                                     }
                                   }
                                 }}

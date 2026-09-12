@@ -4,6 +4,7 @@ import { supabase } from "../lib/supabaseClient";
 import { api } from "../lib/api";
 import { LoadingSwap } from "../components/LoadingSwap";
 import { SkeletonAdminBranding } from "../components/Skeleton";
+import { MAX_LOGO_BYTES } from "../lib/imageCompress";
 
 interface AssetRow {
   id: string;
@@ -49,6 +50,11 @@ function SingleAssetSlot({
     setError(null);
     if (file.type !== "image/png") {
       setError(`Please upload a PNG file for your ${label.toLowerCase()}.`);
+      if (inputRef.current) inputRef.current.value = "";
+      return;
+    }
+    if (file.size > MAX_LOGO_BYTES) {
+      setError(`That file is too large - ${label} uploads are capped at ${Math.round(MAX_LOGO_BYTES / 1000)}KB. Compress it first and try again.`);
       if (inputRef.current) inputRef.current.value = "";
       return;
     }
