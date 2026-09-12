@@ -10,6 +10,7 @@ import {
   CaretDown,
 } from "@phosphor-icons/react";
 import { api } from "../lib/api";
+import { useSiteSettings } from "../lib/siteSettings";
 
 interface HelpSupportPageProps {
   onGoToGuide: () => void;
@@ -63,18 +64,11 @@ function FaqAccordion() {
 }
 
 export default function HelpSupportPage({ onGoToGuide, onShowPrivacyPolicy, onShowTermsOfService, onShowRefundPolicy }: HelpSupportPageProps) {
-  const [settings, setSettings] = useState<Record<string, string>>(FALLBACK_SETTINGS);
-
-  useEffect(() => {
-    api.config
-      .siteSettings()
-      .then((data) => {
-        setSettings((prev) => ({ ...prev, ...Object.fromEntries(Object.entries(data).filter(([, v]) => v.trim() !== "")) }));
-      })
-      .catch(() => {
-        // Fail open to the hardcoded fallback above.
-      });
-  }, []);
+  const { settings: fetchedSettings } = useSiteSettings();
+  const settings = {
+    ...FALLBACK_SETTINGS,
+    ...Object.fromEntries(Object.entries(fetchedSettings).filter(([, v]) => v.trim() !== "")),
+  };
 
   return (
     <div className="space-y-6 text-left animate-fade-in">

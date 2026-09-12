@@ -18,6 +18,7 @@ import OfflineStatusBanner from "./components/OfflineStatusBanner";
 import MfaOnboardingNudge from "./components/MfaOnboardingNudge";
 import { ONBOARDING_COMPLETE_KEY } from "./components/onboarding/onboardingStorage";
 import { useFeatureFlags } from "./lib/featureFlags";
+import { clearCachePrefix } from "./lib/sessionCache";
 
 // Code-split the heaviest views: each is only downloaded when the user
 // actually navigates to that tab, instead of bloating the initial bundle.
@@ -569,6 +570,11 @@ export default function App() {
     try {
       await api.auth.logout().catch(() => {});
       await supabase.auth.signOut();
+      // The cached /config/features response includes this account's own
+      // tier + per-user overrides - clear it so a different account
+      // signing in on the same tab never briefly sees the previous
+      // session's flags before its own fetch resolves.
+      clearCachePrefix("aziiki_cache_features");
       setUser(null);
       setIsGuest(false);
     } catch (err) {
@@ -588,7 +594,12 @@ export default function App() {
     setUser(authInfo.user);
     setIsGuest(false);
     localStorage.setItem("aziiki_is_guest", "false");
-    
+    // Whatever was cached under this key so far (an anonymous/guest
+    // fetch's result, most likely) is no longer this account's real
+    // flags/tier - clear it so the first post-login fetch is a real one,
+    // not skipped as "still fresh" by useCachedResource.
+    clearCachePrefix("aziiki_cache_features");
+
     if (authInfo.isNewUser) {
       const primaryColor = "#2563eb"; // Standard blue
       const newBiz: Business = {

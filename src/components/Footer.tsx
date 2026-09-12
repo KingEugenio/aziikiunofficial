@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { InstagramLogo, FacebookLogo, TiktokLogo } from "@phosphor-icons/react";
-import { api } from "../lib/api";
+import { useSiteSettings } from "../lib/siteSettings";
 
 interface FooterProps {
   onShowPrivacyPolicy: () => void;
@@ -19,21 +19,11 @@ const FALLBACK_LINKS = {
 };
 
 export default function Footer({ onShowPrivacyPolicy, onShowTermsOfService, onGoToHelp }: FooterProps) {
-  const [links, setLinks] = useState<Record<string, string>>(FALLBACK_LINKS);
-
-  useEffect(() => {
-    api.config
-      .siteSettings()
-      .then((data) => {
-        setLinks((prev) => ({
-          ...prev,
-          ...Object.fromEntries(Object.entries(data).filter(([, v]) => v.trim() !== "")),
-        }));
-      })
-      .catch(() => {
-        // Fail open to the hardcoded fallback links above.
-      });
-  }, []);
+  const { settings } = useSiteSettings();
+  const links = {
+    ...FALLBACK_LINKS,
+    ...Object.fromEntries(Object.entries(settings).filter(([, v]) => v.trim() !== "")),
+  };
 
   const socialLinks = [
     { key: "social_instagram", label: "Instagram", icon: InstagramLogo },

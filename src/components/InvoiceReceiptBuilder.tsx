@@ -11,6 +11,7 @@ import DocumentBlockRenderer from "./DocumentBlockRenderer";
 import SignatureCapture from "./SignatureCapture";
 import { CustomBlockLayout } from "../lib/documentBlocks";
 import { useFeatureFlags } from "../lib/featureFlags";
+import { useCachedResource } from "../lib/sessionCache";
 import { getInitials } from "../lib/businessLogo";
 
 interface InvoiceReceiptBuilderProps {
@@ -239,18 +240,14 @@ export default function InvoiceReceiptBuilder({
   const [paystackEnabled, setPaystackEnabled] = useState<boolean>(false);
   const [isRequestingPayment, setIsRequestingPayment] = useState<boolean>(false);
 
+  // Same cache key as useFeatureFlags() (featureFlags.ts) - shares its
+  // 15-minute stale-while-revalidate cache rather than issuing a second,
+  // independent request for the exact same /config/features response.
+  const { data: configFlags } = useCachedResource("aziiki_cache_features", () => api.config.features());
   useEffect(() => {
-    api.config
-      .features()
-      .then((flags) => {
-        setEmailSendingEnabled(flags.emailSendingEnabled);
-        setPaystackEnabled(flags.paystackEnabled);
-      })
-      .catch(() => {
-        setEmailSendingEnabled(false);
-        setPaystackEnabled(false);
-      });
-  }, []);
+    setEmailSendingEnabled(configFlags?.emailSendingEnabled ?? false);
+    setPaystackEnabled(configFlags?.paystackEnabled ?? false);
+  }, [configFlags]);
 
   // Payment attempts (Paystack) for this business, so the Past Invoices
   // Ledger can show a failed/pending payment even though the invoice's own

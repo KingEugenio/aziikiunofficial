@@ -7,6 +7,7 @@ import { ErrorBoundary } from './components/ErrorBoundary.tsx';
 import { api } from './lib/api.ts';
 import { captureUtmParams } from './lib/utm.ts';
 import { initSentry } from './lib/sentry.ts';
+import { primeCache } from './lib/sessionCache.ts';
 import './index.css';
 
 // No-ops entirely until VITE_SENTRY_DSN is set - see lib/sentry.ts.
@@ -23,11 +24,15 @@ captureUtmParams();
 // back to whatever's already in index.html on any failure.
 api.config
   .branding()
-  .then(({ faviconUrl }) => {
-    if (!faviconUrl) return;
+  .then((res) => {
+    // Primes useBranding()'s cache (same "aziiki_cache_branding" key) so
+    // BrandLogo.tsx's first mount, moments later, doesn't fire a second
+    // identical request for data this fetch already has in hand.
+    primeCache('aziiki_cache_branding', res);
+    if (!res.faviconUrl) return;
     const link = document.querySelector<HTMLLinkElement>("link[rel='icon']") ?? document.createElement('link');
     link.rel = 'icon';
-    link.href = faviconUrl;
+    link.href = res.faviconUrl;
     if (!link.parentNode) document.head.appendChild(link);
   })
   .catch(() => {

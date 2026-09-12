@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ArrowLeft } from "@phosphor-icons/react";
 import BrandLogo from "./BrandLogo";
 import { api } from "../lib/api";
+import { useSiteSettings } from "../lib/siteSettings";
 import { LoadingSwap } from "./LoadingSwap";
 import { Skeleton } from "./Skeleton";
 
@@ -19,24 +20,12 @@ interface LegalTextPageProps {
  * system.
  */
 export default function LegalTextPage({ title, settingKey, onBack }: LegalTextPageProps) {
-  const [text, setText] = useState<string>("");
+  const { settings, loaded } = useSiteSettings();
+  const text = settings[settingKey] ?? "";
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
-  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    api.config
-      .siteSettings()
-      .then((data) => {
-        if (!cancelled) setText(data[settingKey] ?? "");
-      })
-      .catch(() => {
-        // Fail open to an empty body - the page still renders, just with
-        // nothing to show yet.
-      })
-      .finally(() => {
-        if (!cancelled) setLoaded(true);
-      });
     api.config
       .siteSettingsUpdatedAt()
       .then((data) => {

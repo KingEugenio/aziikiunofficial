@@ -1,41 +1,19 @@
-import { useEffect, useState } from "react";
 import { api } from "./api";
+import { useCachedResource } from "./sessionCache";
 
 /**
  * Computed feature-flag set for the current caller (global defaults with
  * their own per-user overrides layered on top - see GET /api/config/features
- * and migration 0032). Fetched once per app load; a flag flip from the admin
- * portal takes effect on the user's next reload/tab switch, not live -
- * there's no push channel for it and none is needed for this use case.
+ * and migration 0032). Cached for 15 minutes (stale-while-revalidate, see
+ * sessionCache.ts) instead of re-fetched on every mount - a flag flip from
+ * the admin portal reaches an already-open session within that window
+ * rather than needing every component remount to pay for a fresh request.
  */
 export function useFeatureFlags() {
-  const [flags, setFlags] = useState<Record<string, boolean>>({});
-  const [tier, setTier] = useState<string>("basic");
-  const [loaded, setLoaded] = useState(false);
+  const { data, loaded } = useCachedResource("aziiki_cache_features", () => api.config.features());
 
-  useEffect(() => {
-    let cancelled = false;
-    api.config
-      .features()
-      .then((res) => {
-        if (!cancelled) {
-          setFlags(res.flags ?? {});
-          setTier(res.tier ?? "basic");
-        }
-      })
-      .catch(() => {
-        // Fail closed: an unreachable config endpoint means every
-        // Phase-2+ feature stays hidden rather than risk showing something
-        // half-configured.
-      })
-      .finally(() => {
-        if (!cancelled) setLoaded(true);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
+  const flags = data?.flags ?? {};
+  const tier = data?.tier ?? "basic";
   const isEnabled = (key: string) => flags[key] === true;
 
   return { flags, isEnabled, loaded, tier };
