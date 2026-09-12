@@ -50,19 +50,19 @@ export default function DocumentBlockRenderer({ layout, data, items, currencySym
       {layout.blocks.map((block) => (
         <div key={block.id} className="absolute" style={{ left: block.x, top: block.y, width: block.width, height: block.height }}>
           {block.type === "itemsTable" ? (
-            <div className="w-full h-full border border-slate-200 rounded-lg overflow-hidden bg-white">
-              <div className="bg-slate-50 border-b border-slate-200 px-3 py-2 text-[10px] font-bold text-slate-500 grid grid-cols-4">
+            <div className="w-full h-full border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden bg-white dark:bg-slate-800">
+              <div className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 px-3 py-2 text-[10px] font-bold text-slate-500 dark:text-slate-400 grid grid-cols-4">
                 <span>Description</span>
                 <span className="text-center">Qty</span>
                 <span className="text-right">Rate</span>
                 <span className="text-right">Total</span>
               </div>
-              <div className="divide-y divide-slate-100 overflow-y-auto" style={{ maxHeight: block.height - 32 }}>
+              <div className="divide-y divide-slate-100 dark:divide-slate-700 overflow-y-auto" style={{ maxHeight: block.height - 32 }}>
                 {items.length === 0 ? (
                   <div className="px-3 py-3 text-[10px] text-slate-400 italic">No line items yet</div>
                 ) : (
                   items.map((item, idx) => (
-                    <div key={idx} className="px-3 py-2 text-[11px] text-slate-700 grid grid-cols-4 items-center">
+                    <div key={idx} className="px-3 py-2 text-[11px] text-slate-700 dark:text-slate-300 grid grid-cols-4 items-center">
                       <span className="truncate font-medium">{item.description || "Untitled item"}</span>
                       <span className="text-center font-mono">{item.quantity}</span>
                       <span className="text-right font-mono">{currencySymbol}{item.rate.toLocaleString()}</span>

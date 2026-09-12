@@ -628,27 +628,27 @@ export default function NetWorthInvestments({
   const projection = calculatePortfolioProjection();
 
   return (
-    <div id="networth-investments-container" className="grid grid-cols-1 lg:grid-cols-12 gap-6 text-slate-800 font-sans">
+    <div id="networth-investments-container" className="grid grid-cols-1 lg:grid-cols-12 gap-6 text-slate-800 dark:text-slate-200 font-sans">
       
       {/* Alert Messaging Toast */}
       {alertMessage && (
-        <div className="lg:col-span-12 bg-emerald-50 border border-emerald-200 text-emerald-800 p-3.5 rounded-2xl flex items-center gap-3 animate-pulse shadow-sm text-xs font-semibold">
-          <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0" />
+        <div className="lg:col-span-12 bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-700 text-emerald-800 dark:text-emerald-300 p-3.5 rounded-2xl flex items-center gap-3 animate-pulse shadow-sm text-xs font-semibold">
+          <CheckCircle className="w-4 h-4 text-emerald-500 dark:text-emerald-400 shrink-0" />
           <span>{alertMessage.text}</span>
         </div>
       )}
 
       {/* Selector and core values banner */}
-      <div className="lg:col-span-12 flex flex-col xl:flex-row xl:items-center justify-between gap-4 border-b border-slate-200 pb-5">
+      <div className="lg:col-span-12 flex flex-col xl:flex-row xl:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-700 pb-5">
         
         {/* Navigation control tabs */}
-        <div className="flex flex-wrap gap-1.5 bg-slate-100 border border-slate-200/60 p-1 rounded-2xl w-fit">
+        <div className="flex flex-wrap gap-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60 p-1 rounded-2xl w-fit">
           <button
             onClick={() => changeSubTab("assets")}
             className={`px-3.5 py-2 text-xs font-bold rounded-xl transition-colors cursor-pointer flex items-center gap-2 ${
  activeTab === "assets" 
  ? "bg-emerald-600 text-white shadow-sm" 
- : "text-slate-500 hover:text-slate-800"
+ : "text-slate-500 dark:text-slate-400 hover:text-slate-800 hover:dark:text-slate-200"
  }`}
           >
             <Layers className="w-3.5 h-3.5" />
@@ -660,7 +660,7 @@ export default function NetWorthInvestments({
             className={`px-3.5 py-2 text-xs font-bold rounded-xl transition-colors cursor-pointer flex items-center gap-2 ${
  activeTab === "investments" 
  ? "bg-emerald-600 text-white shadow-sm" 
- : "text-slate-500 hover:text-slate-800"
+ : "text-slate-500 dark:text-slate-400 hover:text-slate-800 hover:dark:text-slate-200"
  }`}
           >
             <Briefcase className="w-3.5 h-3.5" />
@@ -672,7 +672,7 @@ export default function NetWorthInvestments({
             className={`px-3.5 py-2 text-xs font-bold rounded-xl transition-colors cursor-pointer flex items-center gap-2 ${
  activeTab === "networth" 
  ? "bg-emerald-600 text-white shadow-sm" 
- : "text-slate-500 hover:text-slate-800"
+ : "text-slate-500 dark:text-slate-400 hover:text-slate-800 hover:dark:text-slate-200"
  }`}
           >
             <Scale className="w-3.5 h-3.5" />
@@ -685,7 +685,7 @@ export default function NetWorthInvestments({
               className={`px-3.5 py-2 text-xs font-bold rounded-xl transition-colors cursor-pointer flex items-center gap-2 ${
  activeTab === "goals"
  ? "bg-emerald-600 text-white shadow-sm"
- : "text-slate-500 hover:text-slate-800"
+ : "text-slate-500 dark:text-slate-400 hover:text-slate-800 hover:dark:text-slate-200"
  }`}
             >
               <Target className="w-3.5 h-3.5" />
@@ -695,31 +695,31 @@ export default function NetWorthInvestments({
         </div>
 
         {/* Display Banner metrics */}
-        <div className="flex flex-wrap items-center gap-6 text-xs text-slate-500 bg-white border border-slate-200 p-3 rounded-2xl shadow-sm">
+        <div className="flex flex-wrap items-center gap-6 text-xs text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-3 rounded-2xl shadow-sm">
           <div>
             <span className="text-[9px] font-mono uppercase tracking-widest block font-bold text-slate-400">Available Cash</span>
-            <strong className="text-sm font-black text-emerald-600 font-mono block mt-0.5">
+            <strong className="text-sm font-black text-emerald-600 dark:text-emerald-400 font-mono block mt-0.5">
               {currencySymbol}{totalCash.toLocaleString()}
             </strong>
           </div>
           <ChevronRight className="w-4 h-4 text-slate-300 hidden md:block" />
           <div>
             <span className="text-[9px] font-mono uppercase tracking-widest block font-bold text-slate-400">Net Book Assets</span>
-            <strong className="text-sm font-black text-slate-800 font-mono block mt-0.5">
+            <strong className="text-sm font-black text-slate-800 dark:text-slate-200 font-mono block mt-0.5">
               {currencySymbol}{totalAssetsBookValue.toLocaleString()}
             </strong>
           </div>
           <ChevronRight className="w-4 h-4 text-slate-300 hidden md:block" />
           <div>
             <span className="text-[9px] font-mono uppercase tracking-widest block font-bold text-slate-400">Investments</span>
-            <strong className="text-sm font-black text-slate-800 font-mono block mt-0.5">
+            <strong className="text-sm font-black text-slate-800 dark:text-slate-200 font-mono block mt-0.5">
               {currencySymbol}{totalInvestmentCurrentValue.toLocaleString()}
             </strong>
           </div>
           <ChevronRight className="w-4 h-4 text-slate-300 hidden md:block" />
           <div>
             <span className="text-[9px] font-mono uppercase tracking-widest block font-bold text-slate-400">Computed Net Worth</span>
-            <strong className="text-sm font-black text-emerald-600 font-mono block mt-0.5">
+            <strong className="text-sm font-black text-emerald-600 dark:text-emerald-400 font-mono block mt-0.5">
               {currencySymbol}{netWorthValue.toLocaleString()}
             </strong>
           </div>
@@ -732,28 +732,28 @@ export default function NetWorthInvestments({
             <div className="lg:col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-6 text-left animate-fade-in">
           
           {/* Information Notice explaining Asset Accounting */}
-          <div className="lg:col-span-12 bg-blue-50 border border-blue-200 text-blue-900 p-4 rounded-3xl flex items-start gap-3.5 text-xs">
-            <div className="bg-blue-100 text-blue-800 w-10 h-10 rounded-2xl flex items-center justify-center shrink-0">
+          <div className="lg:col-span-12 bg-blue-50 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-700 text-blue-900 dark:text-blue-300 p-4 rounded-3xl flex items-start gap-3.5 text-xs">
+            <div className="bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 w-10 h-10 rounded-2xl flex items-center justify-center shrink-0">
               <Layers className="w-5 h-5" />
             </div>
             <div className="space-y-1">
               <h4 className="font-extrabold tracking-tight">Non-Custodial Asset Registry desk</h4>
-              <p className="leading-relaxed text-[11px] font-light text-slate-600">
+              <p className="leading-relaxed text-[11px] font-light text-slate-600 dark:text-slate-300">
                 This ledger register tracks tangible capital equipment, machinery, and workspace assets you already own or are actively planning. Aziiki calculated metrics are purely for internal planning, analytical estimates, and balance sheet valuation. Aziiki does not store physical assets or execute purchase funds directly.
               </p>
             </div>
           </div>
 
           {/* LEFT: Add Asset Form Desk */}
-          <div className="lg:col-span-4 bg-white border border-slate-200 rounded-3xl p-5 space-y-4 shadow-sm">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                <FileCheck className="w-4 h-4 text-emerald-600" />
+          <div className="lg:col-span-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 space-y-4 shadow-sm">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
+              <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider flex items-center gap-2">
+                <FileCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 Asset Registration
               </h3>
               <button
                 onClick={() => setIsAddingAsset(!isAddingAsset)}
-                className="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 cursor-pointer"
+                className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 hover:dark:text-emerald-400 flex items-center gap-1 cursor-pointer"
               >
                 {isAddingAsset ? "Cancel" : <><Plus className="w-4 h-4" /> Add Asset</>}
               </button>
@@ -764,14 +764,14 @@ export default function NetWorthInvestments({
                 {/* Ownership Status Toggle */}
                 <div className="space-y-1">
                   <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Asset Ownership Status</label>
-                  <div className="grid grid-cols-2 gap-2 bg-slate-100 p-1 rounded-xl">
+                  <div className="grid grid-cols-2 gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
                     <button
                       type="button"
                       onClick={() => setAssetOwnershipStatus("owned")}
                       className={`py-1.5 rounded-lg font-bold text-[10px] transition-all cursor-pointer ${
  assetOwnershipStatus === "owned"
  ? "bg-emerald-600 text-white shadow-sm"
- : "text-slate-400 hover:text-slate-800"
+ : "text-slate-400 hover:text-slate-800 hover:dark:text-slate-200"
  }`}
                     >
                       Already Owned
@@ -781,8 +781,8 @@ export default function NetWorthInvestments({
                       onClick={() => setAssetOwnershipStatus("planned")}
                       className={`py-1.5 rounded-lg font-bold text-[10px] transition-all cursor-pointer ${
  assetOwnershipStatus === "planned"
- ? "bg-indigo-650 text-white shadow-sm"
- : "text-slate-400 hover:text-slate-800"
+ ? "bg-indigo-600 text-white shadow-sm"
+ : "text-slate-400 hover:text-slate-800 hover:dark:text-slate-200"
  }`}
                     >
                       Planned (Intend to Buy)
@@ -798,7 +798,7 @@ export default function NetWorthInvestments({
                     placeholder={assetOwnershipStatus === "planned" ? "e.g. Planned Canon EOS R5 Camera" : "e.g. Brother Industrial Sewing Machine"}
                     value={assetName}
                     onChange={(e) => setAssetName(e.target.value)}
-                    className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans"
+                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans"
                   />
                 </div>
 
@@ -808,7 +808,7 @@ export default function NetWorthInvestments({
                     <select
                       value={assetCategory}
                       onChange={(e: any) => setAssetCategory(e.target.value)}
-                      className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-2.5 py-2 outline-none font-sans"
+                      className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-2 outline-none font-sans"
                     >
                       <option value="Machinery">Machinery</option>
                       <option value="Equipment">Studio Equipment</option>
@@ -828,7 +828,7 @@ export default function NetWorthInvestments({
                       required
                       value={assetPurchaseDate}
                       onChange={(e) => setAssetPurchaseDate(e.target.value)}
-                      className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-2 py-1.5 outline-none font-sans"
+                      className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl px-2 py-1.5 outline-none font-sans"
                     />
                   </div>
                 </div>
@@ -848,7 +848,7 @@ export default function NetWorthInvestments({
                         setAssetPurchasePrice(val);
                         setAssetCurrentValue(val);
                       }}
-                      className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans"
+                      className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans"
                     />
                   </div>
 
@@ -861,14 +861,14 @@ export default function NetWorthInvestments({
                         required
                         value={assetCurrentValue}
                         onChange={(e) => setAssetCurrentValue(Number(e.target.value))}
-                        className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans"
+                        className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans"
                       />
                     </div>
                   ) : (
                     <div className="space-y-1">
                       <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Priority Level</label>
                       <select
-                        className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-2.5 py-2 outline-none font-sans"
+                        className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-2 outline-none font-sans"
                         defaultValue="Medium"
                       >
                         <option value="High">High Priority</option>
@@ -881,7 +881,7 @@ export default function NetWorthInvestments({
 
                 {assetOwnershipStatus === "owned" ? (
                   <>
-                    <div className="border-t border-slate-100 pt-3 space-y-3">
+                    <div className="border-t border-slate-100 dark:border-slate-700 pt-3 space-y-3">
                       <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Depreciation Settings (Analytical)</h4>
                       
                       <div className="grid grid-cols-3 gap-2">
@@ -890,7 +890,7 @@ export default function NetWorthInvestments({
                           <select
                             value={assetDepreciationMethod}
                             onChange={(e: any) => setAssetDepreciationMethod(e.target.value)}
-                            className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-2 py-1.5 outline-none font-sans"
+                            className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl px-2 py-1.5 outline-none font-sans"
                           >
                             <option value="Straight Line">Straight Line</option>
                             <option value="Double Declining">Double Declining</option>
@@ -907,7 +907,7 @@ export default function NetWorthInvestments({
                             value={assetUsefulLife}
                             onChange={(e) => setAssetUsefulLife(Number(e.target.value))}
                             disabled={assetDepreciationMethod === "None"}
-                            className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-3 py-1.5 outline-none font-sans disabled:opacity-50"
+                            className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 outline-none font-sans disabled:opacity-50"
                           />
                         </div>
                       </div>
@@ -920,31 +920,31 @@ export default function NetWorthInvestments({
                           value={assetSalvageValue}
                           onChange={(e) => setAssetSalvageValue(Number(e.target.value))}
                           disabled={assetDepreciationMethod === "None"}
-                          className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans disabled:opacity-50"
+                          className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans disabled:opacity-50"
                         />
                       </div>
                     </div>
 
-                    <div className="border-t border-slate-100 pt-3 space-y-3">
+                    <div className="border-t border-slate-100 dark:border-slate-700 pt-3 space-y-3">
                       <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-sans">Maintenance & Documents Notes</h4>
                       
                       <div className="grid grid-cols-2 gap-2">
                         <div className="space-y-1">
-                          <label className="text-[9px] font-mono text-slate-450 uppercase tracking-widest block">Last Service Date</label>
+                          <label className="text-[9px] font-mono text-slate-400 uppercase tracking-widest block">Last Service Date</label>
                           <input
                             type="date"
                             value={assetMaintenanceLast}
                             onChange={(e) => setAssetMaintenanceLast(e.target.value)}
-                            className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl p-1 outline-none font-sans"
+                            className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl p-1 outline-none font-sans"
                           />
                         </div>
                         <div className="space-y-1">
-                          <label className="text-[9px] font-mono text-slate-450 uppercase tracking-widest block">Next Scheduled Service</label>
+                          <label className="text-[9px] font-mono text-slate-400 uppercase tracking-widest block">Next Scheduled Service</label>
                           <input
                             type="date"
                             value={assetMaintenanceNext}
                             onChange={(e) => setAssetMaintenanceNext(e.target.value)}
-                            className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl p-1 outline-none font-sans"
+                            className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl p-1 outline-none font-sans"
                           />
                         </div>
                       </div>
@@ -952,9 +952,9 @@ export default function NetWorthInvestments({
                   </>
                 ) : null}
 
-                <div className="border-t border-slate-100 pt-3 space-y-3">
+                <div className="border-t border-slate-100 dark:border-slate-700 pt-3 space-y-3">
                   <div className="space-y-1">
-                    <label className="text-[9px] font-mono text-slate-450 uppercase tracking-widest block">
+                    <label className="text-[9px] font-mono text-slate-400 uppercase tracking-widest block">
                       {assetOwnershipStatus === "planned" ? "Ownership, Supplier or Quote Notes" : "Serials, Warranty or Document Registry Details"}
                     </label>
                     <input
@@ -962,18 +962,18 @@ export default function NetWorthInvestments({
                       placeholder={assetOwnershipStatus === "planned" ? "e.g. Quoted by Photostore Accra, 12 month valid quote" : "e.g. Serial #SNG-9988-G, 1 year warrantee"}
                       value={assetDocsNotes}
                       onChange={(e) => setAssetDocsNotes(e.target.value)}
-                      className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans"
+                      className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[9px] font-mono text-slate-450 uppercase tracking-widest block">General Specifications & Notes</label>
+                    <label className="text-[9px] font-mono text-slate-400 uppercase tracking-widest block">General Specifications & Notes</label>
                     <textarea
                       rows={2}
                       placeholder={assetOwnershipStatus === "planned" ? "e.g. Crucial for expanding portrait package capacity. Expected ROI high." : "e.g. Primary production machinery. Keep lubricated weekly."}
                       value={assetNotes}
                       onChange={(e) => setAssetNotes(e.target.value)}
-                      className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans"
+                      className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans"
                     />
                   </div>
                 </div>
@@ -987,9 +987,9 @@ export default function NetWorthInvestments({
               </form>
             ) : (
               <div className="space-y-4">
-                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-150 text-[11px] leading-relaxed text-slate-500">
-                  <p className="font-semibold text-slate-800 mb-1 flex items-center gap-1.5">
-                    <Wrench className="w-3.5 h-3.5 text-emerald-500" />
+                <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-700 text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">
+                  <p className="font-semibold text-slate-800 dark:text-slate-200 mb-1 flex items-center gap-1.5">
+                    <Wrench className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
                     Asset Maintenance & Lifecycles
                   </p>
                   Registering your operational hardware assets allows you to:
@@ -1000,26 +1000,26 @@ export default function NetWorthInvestments({
                   </ul>
                 </div>
 
-                <div className="p-4 bg-emerald-50/50 border border-emerald-100 rounded-2xl text-[11px] text-slate-600 space-y-2">
-                  <strong className="block text-slate-900 font-extrabold">Active Asset Book Profile</strong>
+                <div className="p-4 bg-emerald-50/50 dark:bg-emerald-900/50 border border-emerald-100 dark:border-emerald-700 rounded-2xl text-[11px] text-slate-600 dark:text-slate-300 space-y-2">
+                  <strong className="block text-slate-900 dark:text-slate-100 font-extrabold">Active Asset Book Profile</strong>
                   <div className="flex justify-between font-mono">
                     <span>Aggregate Purchase Cost:</span>
-                    <span className="font-bold text-slate-900">{currencySymbol}{totalAssetsOriginalPrice.toLocaleString()}</span>
+                    <span className="font-bold text-slate-900 dark:text-slate-100">{currencySymbol}{totalAssetsOriginalPrice.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between font-mono">
                     <span>Accrued Depreciation:</span>
-                    <span className="font-bold text-rose-650">-{currencySymbol}{(totalAssetsOriginalPrice - totalAssetsBookValue).toLocaleString()}</span>
+                    <span className="font-bold text-rose-600 dark:text-rose-400">-{currencySymbol}{(totalAssetsOriginalPrice - totalAssetsBookValue).toLocaleString()}</span>
                   </div>
-                  <hr className="border-slate-200/50" />
+                  <hr className="border-slate-200/50 dark:border-slate-700/50" />
                   <div className="flex justify-between font-mono font-bold text-xs">
-                    <span className="text-emerald-700">Net Ledger Book Value:</span>
-                    <span className="text-emerald-700">{currencySymbol}{totalAssetsBookValue.toLocaleString()}</span>
+                    <span className="text-emerald-700 dark:text-emerald-400">Net Ledger Book Value:</span>
+                    <span className="text-emerald-700 dark:text-emerald-400">{currencySymbol}{totalAssetsBookValue.toLocaleString()}</span>
                   </div>
                 </div>
 
                 <button
                   onClick={() => setIsAddingAsset(true)}
-                  className="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-extrabold py-3 rounded-xl border border-emerald-200/40 transition-colors cursor-pointer text-center block text-xs tracking-wider uppercase"
+                  className="w-full bg-emerald-50 dark:bg-emerald-900/40 hover:bg-emerald-100 hover:dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 font-extrabold py-3 rounded-xl border border-emerald-200/40 dark:border-emerald-700/40 transition-colors cursor-pointer text-center block text-xs tracking-wider uppercase"
                 >
                   Register New Workspace Asset
                 </button>
@@ -1029,13 +1029,13 @@ export default function NetWorthInvestments({
 
           {/* RIGHT: Active Assets Registry Table & Detailed Cards */}
           <div className="lg:col-span-8 space-y-6">
-            <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
-              <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest mb-4 flex items-center justify-between border-b border-slate-100 pb-3">
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-sm">
+              <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest mb-4 flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
                 <span className="flex items-center gap-2">
-                  <Activity className="w-4.5 h-4.5 text-emerald-500" />
+                  <Activity className="w-4.5 h-4.5 text-emerald-500 dark:text-emerald-400" />
                   Owned Tangible Assets Registry ({filteredAssets.length})
                 </span>
-                <span className="font-mono text-[10px] text-slate-500">Book Value: {currencySymbol}{totalAssetsBookValue.toLocaleString()}</span>
+                <span className="font-mono text-[10px] text-slate-500 dark:text-slate-400">Book Value: {currencySymbol}{totalAssetsBookValue.toLocaleString()}</span>
               </h4>
 
               {filteredAssets.length === 0 ? (
@@ -1053,23 +1053,23 @@ export default function NetWorthInvestments({
                     return (
                       <div 
                         key={asset.id} 
-                        className={`bg-slate-50 border rounded-2xl p-4.5 space-y-3 hover:border-slate-350 transition-all flex flex-col justify-between relative overflow-hidden ${
- selectedAssetId === asset.id ? "ring-2 ring-emerald-500 border-transparent" : "border-slate-200"
- } ${isPlanned ? "border-indigo-250 shadow-sm shadow-indigo-100/50 animate-fade-in" : ""}`}
+                        className={`bg-slate-50 dark:bg-slate-900 border rounded-2xl p-4.5 space-y-3 hover:border-slate-300 hover:dark:border-slate-600 transition-all flex flex-col justify-between relative overflow-hidden ${
+ selectedAssetId === asset.id ? "ring-2 ring-emerald-500 border-transparent" : "border-slate-200 dark:border-slate-700"
+ } ${isPlanned ? "border-indigo-200 dark:border-indigo-700 shadow-sm shadow-indigo-100/50 animate-fade-in" : ""}`}
                       >
                         {/* Header class badge */}
                         <div className="flex justify-between items-start gap-4">
                           <div>
                             {isPlanned ? (
-                              <span className="text-[9px] font-mono font-bold text-indigo-700 uppercase bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-full inline-block mb-1">
+                              <span className="text-[9px] font-mono font-bold text-indigo-700 dark:text-indigo-400 uppercase bg-indigo-50 dark:bg-indigo-900/40 border border-indigo-100 dark:border-indigo-700 px-2 py-0.5 rounded-full inline-block mb-1">
                                 ⏳ Planned Acquisition ({asset.category})
                               </span>
                             ) : (
-                              <span className="text-[9px] font-mono font-bold text-emerald-700 uppercase bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full inline-block mb-1">
+                              <span className="text-[9px] font-mono font-bold text-emerald-700 dark:text-emerald-400 uppercase bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-100 dark:border-emerald-700 px-2 py-0.5 rounded-full inline-block mb-1">
                                 {asset.category}
                               </span>
                             )}
-                            <h4 className="font-extrabold text-xs text-slate-900 leading-snug">{asset.name}</h4>
+                            <h4 className="font-extrabold text-xs text-slate-900 dark:text-slate-100 leading-snug">{asset.name}</h4>
                           </div>
 
                           <div className="flex items-center gap-1">
@@ -1077,7 +1077,7 @@ export default function NetWorthInvestments({
                               onClick={() => {
                                 if (onDeleteAsset) onDeleteAsset(asset.id);
                               }}
-                              className="p-1 hover:bg-slate-200 text-slate-400 hover:text-rose-600 rounded-lg transition-colors cursor-pointer"
+                              className="p-1 hover:bg-slate-200 hover:dark:bg-slate-700 text-slate-400 hover:text-rose-600 hover:dark:text-rose-400 rounded-lg transition-colors cursor-pointer"
                               title="Delete Asset Record" aria-label="Delete Asset Record"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -1088,29 +1088,29 @@ export default function NetWorthInvestments({
                         {isPlanned ? (
                           <>
                             {/* Planned stats */}
-                            <div className="grid grid-cols-2 gap-2 py-2 border-y border-slate-150 font-mono text-[10px] text-left">
+                            <div className="grid grid-cols-2 gap-2 py-2 border-y border-slate-100 dark:border-slate-700 font-mono text-[10px] text-left">
                               <div>
                                 <span className="text-[9px] text-slate-400 block font-sans">Target Price</span>
-                                <strong className="text-indigo-650 block font-extrabold">{currencySymbol}{asset.purchasePrice.toLocaleString()}</strong>
+                                <strong className="text-indigo-600 dark:text-indigo-400 block font-extrabold">{currencySymbol}{asset.purchasePrice.toLocaleString()}</strong>
                               </div>
                               <div>
                                 <span className="text-[9px] text-slate-400 block font-sans">Expected Buy Date</span>
-                                <strong className="text-slate-900 block font-extrabold">{asset.purchaseDate}</strong>
+                                <strong className="text-slate-900 dark:text-slate-100 block font-extrabold">{asset.purchaseDate}</strong>
                               </div>
                             </div>
 
                             {/* Action block to purchase/activate planned asset */}
                             {purchasingAssetId === asset.id ? (
-                              <div className="bg-white p-3 rounded-xl border border-indigo-150 space-y-2.5 text-left text-[11px] animate-fade-in">
-                                <h5 className="font-bold text-slate-850 flex items-center gap-1.5">
-                                  <FileCheck className="w-4 h-4 text-emerald-600" />
+                              <div className="bg-white dark:bg-slate-800 p-3 rounded-xl border border-indigo-100 dark:border-indigo-700 space-y-2.5 text-left text-[11px] animate-fade-in">
+                                <h5 className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                                  <FileCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                                   Confirm Actual Purchase
                                 </h5>
                                 <div className="space-y-1">
                                   <label className="text-[9px] font-mono text-slate-400 uppercase">Actual Price Paid ({currencySymbol})</label>
                                   <input 
                                     type="number"
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 outline-none font-mono"
+                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 outline-none font-mono"
                                     value={actualPurchasePrice}
                                     onChange={(e) => setActualPurchasePrice(Number(e.target.value))}
                                   />
@@ -1120,7 +1120,7 @@ export default function NetWorthInvestments({
                                   <input 
                                     type="text"
                                     placeholder="e.g. Serial #CM-998, purchased with 1 year warrantee from dealer"
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 outline-none text-[10px]"
+                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 outline-none text-[10px]"
                                     value={purchaseReceiptNotes}
                                     onChange={(e) => setPurchaseReceiptNotes(e.target.value)}
                                   />
@@ -1129,7 +1129,7 @@ export default function NetWorthInvestments({
                                   <button
                                     type="button"
                                     onClick={() => setPurchasingAssetId(null)}
-                                    className="px-2.5 py-1 text-slate-400 hover:text-slate-600 text-[10px] cursor-pointer"
+                                    className="px-2.5 py-1 text-slate-400 hover:text-slate-600 hover:dark:text-slate-300 text-[10px] cursor-pointer"
                                   >
                                     Cancel
                                   </button>
@@ -1146,10 +1146,10 @@ export default function NetWorthInvestments({
                                 </div>
                               </div>
                             ) : (
-                              <div className="bg-indigo-55/40 p-3 rounded-xl border border-indigo-100/60 text-[10px] flex items-center justify-between gap-3">
+                              <div className="bg-indigo-50/40 dark:bg-indigo-900/40 p-3 rounded-xl border border-indigo-100/60 dark:border-indigo-700/60 text-[10px] flex items-center justify-between gap-3">
                                 <div className="text-left">
                                   <span className="text-[9px] text-slate-400 font-mono block">PLANNING STATUS</span>
-                                  <span className="font-bold text-indigo-700 flex items-center gap-1">
+                                  <span className="font-bold text-indigo-700 dark:text-indigo-400 flex items-center gap-1">
                                     <Clock className="w-3.5 h-3.5" />
                                     Acquisition Planned
                                   </span>
@@ -1161,7 +1161,7 @@ export default function NetWorthInvestments({
                                     setActualPurchasePrice(asset.purchasePrice);
                                     setPurchaseReceiptNotes(asset.documentsNotes || "");
                                   }}
-                                  className="px-3 py-1.5 bg-indigo-650 hover:bg-indigo-700 text-white rounded-lg font-bold flex items-center gap-1 transition-colors cursor-pointer text-[10px] shadow-sm shadow-indigo-600/15"
+                                  className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold flex items-center gap-1 transition-colors cursor-pointer text-[10px] shadow-sm shadow-indigo-600/15"
                                 >
                                   <CheckCircle className="w-3 h-3 text-white" />
                                   Log Purchase
@@ -1172,26 +1172,26 @@ export default function NetWorthInvestments({
                         ) : (
                           <>
                             {/* Depreciation stats comparison */}
-                            <div className="grid grid-cols-3 gap-2 py-2 border-y border-slate-150 font-mono text-[10px] text-left">
+                            <div className="grid grid-cols-3 gap-2 py-2 border-y border-slate-100 dark:border-slate-700 font-mono text-[10px] text-left">
                               <div>
                                 <span className="text-[9px] text-slate-400 block font-sans">Purchase Cost</span>
-                                <strong className="text-slate-900 block font-extrabold">{currencySymbol}{asset.purchasePrice.toLocaleString()}</strong>
+                                <strong className="text-slate-900 dark:text-slate-100 block font-extrabold">{currencySymbol}{asset.purchasePrice.toLocaleString()}</strong>
                               </div>
                               <div>
                                 <span className="text-[9px] text-slate-400 block font-sans">Accum. Dep.</span>
-                                <strong className="text-rose-650 block">-{currencySymbol}{dep.accumulatedDepreciation.toLocaleString()}</strong>
+                                <strong className="text-rose-600 dark:text-rose-400 block">-{currencySymbol}{dep.accumulatedDepreciation.toLocaleString()}</strong>
                               </div>
                               <div>
-                                <span className="text-[9px] text-emerald-600 block font-sans">Book Value</span>
-                                <strong className="text-emerald-600 block font-extrabold">{currencySymbol}{dep.bookValue.toLocaleString()}</strong>
+                                <span className="text-[9px] text-emerald-600 dark:text-emerald-400 block font-sans">Book Value</span>
+                                <strong className="text-emerald-600 dark:text-emerald-400 block font-extrabold">{currencySymbol}{dep.bookValue.toLocaleString()}</strong>
                               </div>
                             </div>
 
                             {/* Depreciation Details / Useful Life */}
-                            <div className="text-[10px] text-slate-500 flex flex-col gap-1">
+                            <div className="text-[10px] text-slate-500 dark:text-slate-400 flex flex-col gap-1">
                               <div className="flex justify-between items-center">
-                                <span>Acquired: <strong className="text-slate-750">{asset.purchaseDate}</strong></span>
-                                <span>Useful Life: <strong className="text-slate-750">{asset.usefulLifeYears} Yrs</strong></span>
+                                <span>Acquired: <strong className="text-slate-700 dark:text-slate-300">{asset.purchaseDate}</strong></span>
+                                <span>Useful Life: <strong className="text-slate-700 dark:text-slate-300">{asset.usefulLifeYears} Yrs</strong></span>
                               </div>
                               <div className="flex justify-between items-center text-[9px] text-slate-400 font-mono">
                                 <span>Method: {asset.depreciationMethod}</span>
@@ -1200,21 +1200,21 @@ export default function NetWorthInvestments({
                             </div>
 
                             {/* Maintenance scheduling indicator */}
-                            <div className="bg-white p-3 rounded-xl border border-slate-200/50 text-[10px] flex items-center justify-between gap-3">
+                            <div className="bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200/50 dark:border-slate-700/50 text-[10px] flex items-center justify-between gap-3">
                               <div className="space-y-0.5 text-left">
                                 <span className="text-[9px] text-slate-400 font-mono block">MAINTENANCE STATUS</span>
                                 <span className={`font-bold flex items-center gap-1 ${
  isOverdue 
- ? "text-rose-600" 
+ ? "text-rose-600 dark:text-rose-400" 
  : asset.maintenanceStatus === "Needs Service" 
- ? "text-amber-500" 
- : "text-emerald-600"
+ ? "text-amber-500 dark:text-amber-400" 
+ : "text-emerald-600 dark:text-emerald-400"
  }`}>
                                   <Clock className="w-3.5 h-3.5 shrink-0" />
                                   {isOverdue ? "Overdue Service" : asset.maintenanceStatus === "Needs Service" ? "Needs Service" : "Good"}
                                 </span>
                                 {asset.maintenanceNextDate && (
-                                  <span className="text-[9px] text-slate-450 block font-mono">Next: {asset.maintenanceNextDate}</span>
+                                  <span className="text-[9px] text-slate-400 block font-mono">Next: {asset.maintenanceNextDate}</span>
                                 )}
                               </div>
 
@@ -1222,9 +1222,9 @@ export default function NetWorthInvestments({
                                 <button
                                   type="button"
                                   onClick={() => handlePerformService(asset.id)}
-                                  className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-bold flex items-center gap-1 transition-colors cursor-pointer shrink-0"
+                                  className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 hover:dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-bold flex items-center gap-1 transition-colors cursor-pointer shrink-0"
                                 >
-                                  <Wrench className="w-3 h-3 text-emerald-500" />
+                                  <Wrench className="w-3 h-3 text-emerald-500 dark:text-emerald-400" />
                                   Service
                                 </button>
                                 
@@ -1245,30 +1245,30 @@ export default function NetWorthInvestments({
 
                         {/* Expanded Details Panel */}
                         {selectedAssetId === asset.id && (
-                          <div className="bg-slate-100 p-3 rounded-xl border border-slate-200 text-[11px] space-y-2.5 text-slate-700 animate-fade-in text-left">
+                          <div className="bg-slate-100 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-[11px] space-y-2.5 text-slate-700 dark:text-slate-300 animate-fade-in text-left">
                             <div className="flex justify-between items-center">
-                              <h5 className="font-extrabold text-slate-900">Full Asset Specifications</h5>
+                              <h5 className="font-extrabold text-slate-900 dark:text-slate-100">Full Asset Specifications</h5>
                               <button
                                 type="button"
                                 onClick={() => {
                                   setUpdatingEstimatedValueAssetId(asset.id);
                                   setTempAssetValue(asset.currentValue);
                                 }}
-                                className="text-[10px] text-emerald-600 hover:underline font-bold"
+                                className="text-[10px] text-emerald-600 dark:text-emerald-400 hover:underline font-bold"
                               >
                                 Edit Market Valuation
                               </button>
                             </div>
 
                             {updatingEstimatedValueAssetId === asset.id ? (
-                              <div className="space-y-1.5 p-2 bg-white border border-slate-200 rounded-lg">
+                              <div className="space-y-1.5 p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg">
                                 <label className="text-[9px] font-mono uppercase font-bold tracking-wider">Manual Market Estimation</label>
                                 <div className="flex gap-2">
                                   <input 
                                     type="number"
                                     value={tempAssetValue}
                                     onChange={(e) => setTempAssetValue(Number(e.target.value))}
-                                    className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-lg p-1 text-xs outline-none"
+                                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-lg p-1 text-xs outline-none"
                                   />
                                   <button
                                     onClick={() => handleSaveAssetValueUpdate(asset.id)}
@@ -1280,7 +1280,7 @@ export default function NetWorthInvestments({
                               </div>
                             ) : null}
 
-                            <div className="space-y-1 text-slate-600 leading-normal font-light">
+                            <div className="space-y-1 text-slate-600 dark:text-slate-300 leading-normal font-light">
                               {asset.documentsNotes && (
                                 <p className="flex items-start gap-1.5">
                                   <FileText className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
@@ -1299,7 +1299,7 @@ export default function NetWorthInvestments({
                                   <span><strong>General Notes:</strong> {asset.notes}</span>
                                 </p>
                               )}
-                              <p className="font-mono text-[9px] text-slate-400 border-t border-slate-200/50 pt-1.5">
+                              <p className="font-mono text-[9px] text-slate-400 border-t border-slate-200/50 dark:border-slate-700/50 pt-1.5">
                                 Cumulative Age Owned: {dep.yearsOwned} Years
                               </p>
                             </div>
@@ -1314,18 +1314,18 @@ export default function NetWorthInvestments({
             </div>
             
             {/* Asset Planning and Reinvestment Goals Section */}
-            <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm text-left">
-              <div className="flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-sm text-left">
+              <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-700 pb-3 mb-4">
                 <div>
-                  <h3 className="text-sm font-black text-slate-900">Asset Reinvestment & Expansion Planning</h3>
-                  <p className="text-[11px] text-slate-500 font-light mt-0.5">Safeguard cash flow by aligning future equipment needs with active capital savings targets.</p>
+                  <h3 className="text-sm font-black text-slate-900 dark:text-slate-100">Asset Reinvestment & Expansion Planning</h3>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 font-light mt-0.5">Safeguard cash flow by aligning future equipment needs with active capital savings targets.</p>
                 </div>
                 <button
                   onClick={() => {
                     setActiveTab("goals");
                     setIsAddingGoal(true);
                   }}
-                  className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold px-3 py-1.5 border border-emerald-200/40 text-[10px] uppercase tracking-wider rounded-xl cursor-pointer"
+                  className="bg-emerald-50 dark:bg-emerald-900/40 hover:bg-emerald-100 hover:dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 font-bold px-3 py-1.5 border border-emerald-200/40 dark:border-emerald-700/40 text-[10px] uppercase tracking-wider rounded-xl cursor-pointer"
                 >
                   Configure Savings Goal
                 </button>
@@ -1341,25 +1341,25 @@ export default function NetWorthInvestments({
                   {filteredGoals.filter(g => g.type === "Equipment").map(goal => {
                     const percent = Math.min(100, Math.round((goal.currentAmount / goal.targetAmount) * 100));
                     return (
-                      <div key={goal.id} className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+                      <div key={goal.id} className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 space-y-3">
                         <div className="flex justify-between items-center text-xs">
                           <div>
-                            <span className="text-[9px] font-mono font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                            <span className="text-[9px] font-mono font-bold text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/40 border border-indigo-100 dark:border-indigo-700 px-2 py-0.5 rounded-full uppercase tracking-wider">
                               Operational Goal
                             </span>
-                            <h5 className="font-extrabold text-slate-900 mt-1.5">{goal.name}</h5>
+                            <h5 className="font-extrabold text-slate-900 dark:text-slate-100 mt-1.5">{goal.name}</h5>
                           </div>
                           <div className="text-right font-mono text-[11px]">
                             <span className="text-slate-400 block font-sans text-[9px] uppercase font-bold tracking-widest">Savings Target</span>
-                            <strong className="text-slate-800 font-extrabold">{currencySymbol}{goal.targetAmount.toLocaleString()}</strong>
+                            <strong className="text-slate-800 dark:text-slate-200 font-extrabold">{currencySymbol}{goal.targetAmount.toLocaleString()}</strong>
                           </div>
                         </div>
 
                         <div className="space-y-1">
-                          <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden flex">
+                          <div className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden flex">
                             <div className="bg-indigo-600 h-full rounded-full" style={{ width: `${percent}%` }}></div>
                           </div>
-                          <div className="flex justify-between items-center text-[10px] text-slate-450 mt-1">
+                          <div className="flex justify-between items-center text-[10px] text-slate-400 mt-1">
                             <span>Saved: <strong>{currencySymbol}{goal.currentAmount.toLocaleString()}</strong> ({percent}%)</span>
                             <span className="font-mono">Deadline: {goal.deadline}</span>
                           </div>
@@ -1379,26 +1379,26 @@ export default function NetWorthInvestments({
         <div className="lg:col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-6 text-left animate-fade-in">
           
           {/* Important Regulatory Warning Banner */}
-          <div className="lg:col-span-12 bg-amber-50 border border-amber-200 text-amber-900 p-4.5 rounded-3xl flex items-start gap-3.5 text-xs">
-            <div className="bg-amber-100 text-amber-800 w-11 h-11 rounded-2xl flex items-center justify-center shrink-0">
-              <ShieldCheck className="w-6 h-6 text-amber-500" />
+          <div className="lg:col-span-12 bg-amber-50 dark:bg-amber-900/40 border border-amber-200 dark:border-amber-700 text-amber-900 dark:text-amber-300 p-4.5 rounded-3xl flex items-start gap-3.5 text-xs">
+            <div className="bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 w-11 h-11 rounded-2xl flex items-center justify-center shrink-0">
+              <ShieldCheck className="w-6 h-6 text-amber-500 dark:text-amber-400" />
             </div>
             <div className="space-y-1.5 leading-relaxed">
-              <h4 className="font-black uppercase tracking-wider text-[11px] text-amber-850">Important Non-Custodial & Informational Notice</h4>
-              <p className="text-[11px] font-light text-slate-600">
+              <h4 className="font-black uppercase tracking-wider text-[11px] text-amber-800 dark:text-amber-300">Important Non-Custodial & Informational Notice</h4>
+              <p className="text-[11px] font-light text-slate-600 dark:text-slate-300">
                 Aziiki is <strong>not</strong> a financial institution, bank, investment advisor, or digital wallet. Aziiki **does not** accept deposits, hold funds, or execute capital trades on behalf of users. The SME Investment Desk operates purely as an analytical tracker and planning portfolio workspace. All investments represent manual bookkeeping records; your actual capital remains secure within your primary bank, treasury, or sovereign cooperative.
               </p>
             </div>
           </div>
 
           {/* Sub-Navigation Tabs */}
-          <div className="lg:col-span-12 flex flex-wrap gap-2 border-b border-slate-150 pb-2">
+          <div className="lg:col-span-12 flex flex-wrap gap-2 border-b border-slate-100 dark:border-slate-700 pb-2">
             <button
               onClick={() => setInvestmentsSubTab("positions")}
               className={`px-4 py-2 text-xs font-black rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5 ${
  investmentsSubTab === "positions"
  ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/10"
- : "bg-slate-100 text-slate-650 hover:bg-slate-200"
+ : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 hover:dark:bg-slate-700"
  }`}
             >
               <Briefcase className="w-3.5 h-3.5 shrink-0" /> Active Positions & Indices
@@ -1408,7 +1408,7 @@ export default function NetWorthInvestments({
               className={`px-4 py-2 text-xs font-black rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5 ${
  investmentsSubTab === "calculator"
  ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/10"
- : "bg-slate-100 text-slate-650 hover:bg-slate-200"
+ : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 hover:dark:bg-slate-700"
  }`}
             >
               <Calculator className="w-3.5 h-3.5 shrink-0" /> Yield Calculator & Estimator
@@ -1418,7 +1418,7 @@ export default function NetWorthInvestments({
               className={`px-4 py-2 text-xs font-black rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5 ${
  investmentsSubTab === "comparison"
  ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/10"
- : "bg-slate-100 text-slate-650 hover:bg-slate-200"
+ : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 hover:dark:bg-slate-700"
  }`}
             >
               <Scale className="w-3.5 h-3.5 shrink-0" /> Yield Comparison Simulator
@@ -1428,7 +1428,7 @@ export default function NetWorthInvestments({
               className={`px-4 py-2 text-xs font-black rounded-xl transition-all cursor-pointer inline-flex items-center gap-1.5 ${
  investmentsSubTab === "ai"
  ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/10"
- : "bg-slate-100 text-slate-650 hover:bg-slate-200"
+ : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 hover:dark:bg-slate-700"
  }`}
             >
               <Sparkles className="w-3.5 h-3.5 shrink-0" /> AI Advisory & Insights
@@ -1439,15 +1439,15 @@ export default function NetWorthInvestments({
           {investmentsSubTab === "positions" && (
             <>
               {/* LEFT: Add Investment Form & Allocations */}
-              <div className="lg:col-span-4 bg-white border border-slate-200 rounded-3xl p-5 space-y-5 shadow-sm">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                    <Briefcase className="w-4 h-4 text-emerald-600" />
+              <div className="lg:col-span-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 space-y-5 shadow-sm">
+                <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
+                  <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider flex items-center gap-2">
+                    <Briefcase className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                     Portfolio Setup
                   </h3>
                   <button
                     onClick={() => setIsAddingInv(!isAddingInv)}
-                    className="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 cursor-pointer font-sans"
+                    className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 hover:dark:text-emerald-400 flex items-center gap-1 cursor-pointer font-sans"
                   >
                     {isAddingInv ? "Cancel" : <><Plus className="w-4 h-4" /> Add Record</>}
                   </button>
@@ -1456,11 +1456,11 @@ export default function NetWorthInvestments({
                 {isAddingInv ? (
                   <form onSubmit={handleSaveInvestment} className="space-y-3.5 text-xs">
                     <div className="space-y-1">
-                      <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Investment Asset Type</label>
+                      <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Investment Asset Type</label>
                       <select
                         value={invType}
                         onChange={(e: any) => setInvType(e.target.value)}
-                        className="w-full bg-slate-50 text-slate-900 rounded-xl px-2.5 py-2 border border-slate-200 mt-1 outline-none font-sans"
+                        className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-xl px-2.5 py-2 border border-slate-200 dark:border-slate-700 mt-1 outline-none font-sans"
                       >
                         <option value="Treasury Bill">{market.treasuryBillLabel}</option>
                         <option value="Stock">{market.stockExchangeLabel}</option>
@@ -1475,32 +1475,32 @@ export default function NetWorthInvestments({
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Investment Name / Scheme</label>
+                      <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Investment Name / Scheme</label>
                       <input
                         type="text"
                         required
                         placeholder="e.g. 91-Day Sovereign T-Bill"
                         value={invName}
                         onChange={(e) => setInvName(e.target.value)}
-                        className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans"
+                        className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans"
                       />
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Issuer / Institution</label>
+                      <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Issuer / Institution</label>
                       <input
                         type="text"
                         required
                         placeholder="e.g. Ghana Commercial Bank (GCB)"
                         value={invIns}
                         onChange={(e) => setInvIns(e.target.value)}
-                        className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans"
+                        className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans"
                       />
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Initial Capital Invested</label>
+                        <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Initial Capital Invested</label>
                         <input
                           type="number"
                           required
@@ -1511,55 +1511,55 @@ export default function NetWorthInvestments({
                             setInvAmountInvested(val);
                             setInvValue(val); // Initialize current value with cost
                           }}
-                          className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl p-2 outline-none font-sans"
+                          className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl p-2 outline-none font-sans"
                         />
                       </div>
 
                       <div className="space-y-1">
-                        <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Current Estimated Value</label>
+                        <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Current Estimated Value</label>
                         <input
                           type="number"
                           required
                           min="1"
                           value={invValue}
                           onChange={(e) => setInvValue(Number(e.target.value))}
-                          className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl p-2 outline-none font-sans"
+                          className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl p-2 outline-none font-sans"
                         />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Expected Return (% p.a)</label>
+                        <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Expected Return (% p.a)</label>
                         <input
                           type="number"
                           step="0.01"
                           required
                           value={invExpectedRate}
                           onChange={(e) => setInvExpectedRate(Number(e.target.value))}
-                          className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl p-2 outline-none font-sans"
+                          className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl p-2 outline-none font-sans"
                         />
                       </div>
 
                       <div className="space-y-1">
-                        <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Maturity Settlement Date</label>
+                        <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Maturity Settlement Date</label>
                         <input
                           type="date"
                           value={invMaturity}
                           onChange={(e) => setInvMaturity(e.target.value)}
-                          className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl p-1.5 outline-none font-sans"
+                          className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl p-1.5 outline-none font-sans"
                         />
                       </div>
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Strategy Notes / Allocation Reason</label>
+                      <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Strategy Notes / Allocation Reason</label>
                       <textarea
                         rows={2}
                         placeholder="e.g. Sovereign backing to preserve operational runway reserves."
                         value={invNotes}
                         onChange={(e) => setInvNotes(e.target.value)}
-                        className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans"
+                        className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans"
                       />
                     </div>
 
@@ -1573,9 +1573,9 @@ export default function NetWorthInvestments({
                 ) : (
                   <div className="space-y-5">
                     {/* Visual Asset Allocation weights tracker */}
-                    <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4.5 space-y-4">
+                    <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-4.5 space-y-4">
                       <div>
-                        <h4 className="text-[10px] font-extrabold text-slate-450 uppercase tracking-wider">Asset Class Allocation</h4>
+                        <h4 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Asset Class Allocation</h4>
                         <p className="text-[11px] text-slate-400 font-light mt-0.5">Distribution of tracking portfolio by asset class weights.</p>
                       </div>
 
@@ -1586,7 +1586,7 @@ export default function NetWorthInvestments({
                       ) : (
                         <div className="space-y-3 text-xs leading-relaxed">
                           {/* Weighted allocation bar */}
-                          <div className="w-full h-3.5 bg-slate-200 rounded-full overflow-hidden flex border border-slate-300/40">
+                          <div className="w-full h-3.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden flex border border-slate-300/40 dark:border-slate-600/40">
                             {weights.map((w, idx) => {
                               const colors = ["bg-emerald-500", "bg-indigo-500", "bg-[color:var(--color-brand-navy)]", "bg-amber-500", "bg-sky-500", "bg-rose-500"];
                               const c = colors[idx % colors.length];
@@ -1609,8 +1609,8 @@ export default function NetWorthInvestments({
                               return (
                                 <div key={w.type} className="flex items-center gap-1.5 font-sans">
                                   <span className={`w-2.5 h-2.5 rounded-full ${c} shrink-0`}></span>
-                                  <span className="text-slate-650 truncate max-w-[80%]">{w.type}</span>
-                                  <strong className="text-slate-900 font-mono ml-auto shrink-0">{w.percentage}%</strong>
+                                  <span className="text-slate-600 dark:text-slate-300 truncate max-w-[80%]">{w.type}</span>
+                                  <strong className="text-slate-900 dark:text-slate-100 font-mono ml-auto shrink-0">{w.percentage}%</strong>
                                 </div>
                               );
                             })}
@@ -1620,10 +1620,10 @@ export default function NetWorthInvestments({
                     </div>
 
                     {/* Compound Growth Estimator (Educational/Planning Slider) */}
-                    <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4.5 space-y-3.5">
+                    <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-4.5 space-y-3.5">
                       <div>
-                        <h4 className="text-[10px] font-extrabold text-slate-450 uppercase tracking-wider flex items-center gap-1.5">
-                          <Calculator className="w-3.5 h-3.5 text-indigo-500" />
+                        <h4 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                          <Calculator className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
                           Educational Growth Estimator
                         </h4>
                         <p className="text-[11px] text-slate-400 font-light mt-0.5">Project potential future growth on your tracked assets using compound interest mechanics.</p>
@@ -1637,13 +1637,13 @@ export default function NetWorthInvestments({
                         <div className="space-y-3.5 text-xs">
                           <div className="flex justify-between font-mono text-[11px]">
                             <span>Weighted Expected Rate:</span>
-                            <strong className="text-emerald-600">{projection.rate}% p.a</strong>
+                            <strong className="text-emerald-600 dark:text-emerald-400">{projection.rate}% p.a</strong>
                           </div>
 
                           <div className="space-y-1">
                             <div className="flex justify-between text-[10px] text-slate-400 font-mono">
                               <span>Horizon Period:</span>
-                              <span className="font-bold text-indigo-600">{projectionYears} Years</span>
+                              <span className="font-bold text-indigo-600 dark:text-indigo-400">{projectionYears} Years</span>
                             </div>
                             <input
                               type="range"
@@ -1651,16 +1651,16 @@ export default function NetWorthInvestments({
                               max="20"
                               value={projectionYears}
                               onChange={(e) => setProjectionYears(Number(e.target.value))}
-                              className="w-full accent-emerald-600 h-1.5 bg-slate-200 rounded-lg cursor-pointer"
+                              className="w-full accent-emerald-600 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg cursor-pointer"
                             />
                           </div>
 
-                          <div className="border-t border-slate-200/60 pt-3 space-y-1 leading-normal font-sans">
+                          <div className="border-t border-slate-200/60 dark:border-slate-700/60 pt-3 space-y-1 leading-normal font-sans">
                             <span className="text-[9px] text-slate-400 uppercase tracking-wider block font-bold">Estimated Projected Valuation</span>
-                            <strong className="text-sm font-black text-slate-900 font-mono block">
+                            <strong className="text-sm font-black text-slate-900 dark:text-slate-100 font-mono block">
                               {currencySymbol}{projection.value.toLocaleString()}
                             </strong>
-                            <span className="text-[10px] text-emerald-600 font-light block">
+                            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-light block">
                               Potential accrued capital value: +{currencySymbol}{projection.interestGained.toLocaleString()}
                             </span>
                           </div>
@@ -1670,7 +1670,7 @@ export default function NetWorthInvestments({
 
                     <button
                       onClick={() => setIsAddingInv(true)}
-                      className="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-extrabold py-3 rounded-xl border border-emerald-200/40 transition-colors cursor-pointer text-center block text-xs tracking-wider uppercase"
+                      className="w-full bg-emerald-50 dark:bg-emerald-900/40 hover:bg-emerald-100 hover:dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 font-extrabold py-3 rounded-xl border border-emerald-200/40 dark:border-emerald-700/40 transition-colors cursor-pointer text-center block text-xs tracking-wider uppercase"
                     >
                       Log Investment Position
                     </button>
@@ -1680,16 +1680,16 @@ export default function NetWorthInvestments({
 
               {/* RIGHT: Active Investment Holding Table & Tracker List */}
               <div className="lg:col-span-8 space-y-6">
-                <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 mb-4 gap-2">
+                <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-sm">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3 mb-4 gap-2">
                     <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                      <Activity className="w-4.5 h-4.5 text-emerald-500 animate-pulse" />
+                      <Activity className="w-4.5 h-4.5 text-emerald-500 dark:text-emerald-400 animate-pulse" />
                       Active Yield Investment Positions ({filteredInvestments.length})
                     </h4>
                     {filteredInvestments.length > 0 && (
-                      <div className="flex items-center gap-4 text-[10px] text-slate-500 font-mono">
+                      <div className="flex items-center gap-4 text-[10px] text-slate-500 dark:text-slate-400 font-mono">
                         <span>Capital Invested: {currencySymbol}{totalInvestmentsCost.toLocaleString()}</span>
-                        <span>ROI: <strong className={portfolioROIValue >= 0 ? "text-emerald-600" : "text-rose-600"}>
+                        <span>ROI: <strong className={portfolioROIValue >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}>
                           {portfolioROIValue >= 0 ? "+" : ""}{currencySymbol}{portfolioROIValue.toLocaleString()} ({portfolioROIPercent.toFixed(1)}%)
                         </strong></span>
                       </div>
@@ -1708,15 +1708,15 @@ export default function NetWorthInvestments({
                         const roi = cost > 0 ? (gainLoss / cost) * 100 : 0;
                         
                         return (
-                          <div key={inv.id} className="bg-slate-50 border border-slate-200 rounded-2xl p-4.5 flex flex-col justify-between hover:border-slate-350 transition-all relative overflow-hidden text-left">
+                          <div key={inv.id} className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-4.5 flex flex-col justify-between hover:border-slate-300 hover:dark:border-slate-600 transition-all relative overflow-hidden text-left">
                             
                             {/* Type Tag */}
                             <div className="flex justify-between items-start gap-4 mb-2">
                               <div>
-                                <span className="text-[9px] font-mono font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-full inline-block mb-1 uppercase tracking-wider">
+                                <span className="text-[9px] font-mono font-bold text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/40 border border-indigo-100 dark:border-indigo-700 px-2 py-0.5 rounded-full inline-block mb-1 uppercase tracking-wider">
                                   {inv.type}
                                 </span>
-                                <h4 className="text-xs font-bold text-slate-900 mt-0.5 leading-snug">{inv.name}</h4>
+                                <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 mt-0.5 leading-snug">{inv.name}</h4>
                                 <span className="text-[9px] text-slate-400 block font-mono mt-0.5">Issuer: {inv.institution}</span>
                               </div>
 
@@ -1724,7 +1724,7 @@ export default function NetWorthInvestments({
                                 onClick={() => {
                                   if (onDeleteInvestment) onDeleteInvestment(inv.id);
                                 }}
-                                className="text-slate-400 hover:text-rose-600 p-1 hover:bg-slate-200 rounded-lg transition-colors cursor-pointer"
+                                className="text-slate-400 hover:text-rose-600 hover:dark:text-rose-400 p-1 hover:bg-slate-200 hover:dark:bg-slate-700 rounded-lg transition-colors cursor-pointer"
                                 title="Delete Investment Record" aria-label="Delete Investment Record"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -1732,14 +1732,14 @@ export default function NetWorthInvestments({
                             </div>
 
                             {/* Financial Parameters */}
-                            <div className="border-t border-slate-200/60 pt-3 mt-3 space-y-2.5 font-mono text-[10px] text-slate-500">
+                            <div className="border-t border-slate-200/60 dark:border-slate-700/60 pt-3 mt-3 space-y-2.5 font-mono text-[10px] text-slate-500 dark:text-slate-400">
                               <div className="flex justify-between">
                                 <span>Initial Capital cost:</span>
-                                <strong className="text-slate-800">{currencySymbol}{cost.toLocaleString()}</strong>
+                                <strong className="text-slate-800 dark:text-slate-200">{currencySymbol}{cost.toLocaleString()}</strong>
                               </div>
                               <div className="flex justify-between">
                                 <span>Expected Yield:</span>
-                                <span className="text-emerald-600 font-bold flex items-center gap-0.5">
+                                <span className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-0.5">
                                   <Percent className="w-2.5 h-2.5" /> {inv.expectedReturnRate}% p.a
                                 </span>
                               </div>
@@ -1751,14 +1751,14 @@ export default function NetWorthInvestments({
                               )}
 
                               {/* ROI Indicators */}
-                              <div className="bg-white p-2.5 rounded-xl border border-slate-150 text-[11px] flex justify-between items-center font-sans">
+                              <div className="bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-slate-100 dark:border-slate-700 text-[11px] flex justify-between items-center font-sans">
                                 <div>
                                   <span className="text-[9px] text-slate-400 block font-mono uppercase tracking-widest font-bold">Estimated value</span>
-                                  <strong className="text-slate-900 font-mono font-bold">{currencySymbol}{inv.value.toLocaleString()}</strong>
+                                  <strong className="text-slate-900 dark:text-slate-100 font-mono font-bold">{currencySymbol}{inv.value.toLocaleString()}</strong>
                                 </div>
                                 <div className="text-right">
-                                  <span className="text-[9px] text-slate-450 block font-sans">Return (ROI)</span>
-                                  <strong className={`font-mono text-xs font-bold ${gainLoss >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+                                  <span className="text-[9px] text-slate-400 block font-sans">Return (ROI)</span>
+                                  <strong className={`font-mono text-xs font-bold ${gainLoss >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
                                     {gainLoss >= 0 ? "+" : ""}{currencySymbol}{gainLoss.toLocaleString()} ({roi.toFixed(1)}%)
                                   </strong>
                                 </div>
@@ -1767,7 +1767,7 @@ export default function NetWorthInvestments({
 
                             {/* Notes */}
                             {inv.notes && (
-                              <p className="mt-2 text-[10px] italic text-slate-500 font-light border-t border-slate-150/40 pt-1.5 leading-snug flex items-start gap-1">
+                              <p className="mt-2 text-[10px] italic text-slate-500 dark:text-slate-400 font-light border-t border-slate-100/40 dark:border-slate-700/40 pt-1.5 leading-snug flex items-start gap-1">
                                 <Lightbulb className="w-3 h-3 shrink-0 mt-px" />
                                 <span>{inv.notes}</span>
                               </p>
@@ -1780,7 +1780,7 @@ export default function NetWorthInvestments({
                 </div>
 
                 {/* AI-Powered Live Market Sourcing Card */}
-                <div className="bg-slate-905 bg-slate-900 text-white rounded-3xl p-6 border border-slate-800 shadow-xl relative overflow-hidden flex flex-col gap-5 text-left font-sans">
+                <div className="bg-slate-900 bg-slate-900 text-white rounded-3xl p-6 border border-slate-800 shadow-xl relative overflow-hidden flex flex-col gap-5 text-left font-sans">
                   <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/5 rounded-full blur-3xl -z-10 pointer-events-none"></div>
                   
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
@@ -1805,7 +1805,7 @@ export default function NetWorthInvestments({
                       type="button"
                       disabled={isFetchingLive}
                       onClick={handleSourceLiveRates}
-                      className="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-500 text-white font-bold px-4 py-2.5 rounded-xl cursor-pointer transition-all border border-emerald-500/20 text-xs shrink-0 self-start sm:self-auto shadow-lg shadow-emerald-500/10 select-none font-sans font-medium"
+                      className="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-500 disabled:dark:text-slate-400 text-white font-bold px-4 py-2.5 rounded-xl cursor-pointer transition-all border border-emerald-500/20 text-xs shrink-0 self-start sm:self-auto shadow-lg shadow-emerald-500/10 select-none font-sans font-medium"
                     >
                       {isFetchingLive ? (
                         <>
@@ -1814,7 +1814,7 @@ export default function NetWorthInvestments({
                         </>
                       ) : (
                         <>
-                          <Sparkles className="w-4 h-4 text-emerald-250" />
+                          <Sparkles className="w-4 h-4 text-emerald-200" />
                           Source Live Indices ({currencySymbol})
                         </>
                       )}
@@ -1838,30 +1838,30 @@ export default function NetWorthInvestments({
                   {isFetchingLive && (
                     <div className="space-y-4 animate-pulse text-xs font-sans">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="bg-slate-950/20 p-3.5 border border-slate-850 rounded-xl space-y-2">
+                        <div className="bg-slate-950/20 p-3.5 border border-slate-800 rounded-xl space-y-2">
                           <div className="h-2 bg-slate-800 rounded w-1/3"></div>
                           <div className="h-4 bg-slate-800 rounded w-2/3"></div>
                         </div>
-                        <div className="bg-slate-950/20 p-3.5 border border-slate-850 rounded-xl space-y-2">
+                        <div className="bg-slate-950/20 p-3.5 border border-slate-800 rounded-xl space-y-2">
                           <div className="h-2 bg-slate-800 rounded w-1/3"></div>
                           <div className="h-4 bg-slate-800 rounded w-1/4"></div>
                         </div>
-                        <div className="bg-slate-950/20 p-3.5 border border-slate-850 rounded-xl space-y-2">
+                        <div className="bg-slate-950/20 p-3.5 border border-slate-800 rounded-xl space-y-2">
                           <div className="h-2 bg-slate-800 rounded w-1/3"></div>
                           <div className="h-4 bg-slate-800 rounded w-1/2"></div>
                         </div>
                       </div>
 
                       {/* Sourced Rates Table Skeleton */}
-                      <div className="bg-slate-950/15 border border-slate-850 rounded-xl overflow-hidden">
-                        <div className="grid grid-cols-12 bg-slate-950/40 p-2.5 border-b border-slate-850">
+                      <div className="bg-slate-950/15 border border-slate-800 rounded-xl overflow-hidden">
+                        <div className="grid grid-cols-12 bg-slate-950/40 p-2.5 border-b border-slate-800">
                           <div className="col-span-5"><div className="h-2 bg-slate-800 rounded w-1/2"></div></div>
                           <div className="col-span-2"><div className="h-2 bg-slate-800 rounded w-1/3 mx-auto"></div></div>
                           <div className="col-span-2"><div className="h-2 bg-slate-800 rounded w-1/3 mx-auto"></div></div>
                           <div className="col-span-3 text-right"><div className="h-2 bg-slate-800 rounded w-1/3 ml-auto"></div></div>
                         </div>
                         
-                        <div className="divide-y divide-slate-850">
+                        <div className="divide-y divide-slate-800">
                           {[1, 2, 3].map((item) => (
                             <div key={item} className="grid grid-cols-12 p-3.5 items-center">
                               <div className="col-span-5"><div className="h-3 bg-slate-800 rounded w-2/3"></div></div>
@@ -1878,33 +1878,33 @@ export default function NetWorthInvestments({
                   {liveData && !isFetchingLive && (
                     <div className="space-y-4 animate-fade-in text-xs font-sans">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="bg-slate-950/45 p-3.5 border border-slate-850 rounded-xl leading-relaxed text-left">
+                        <div className="bg-slate-950/45 p-3.5 border border-slate-800 rounded-xl leading-relaxed text-left">
                           <span className="text-[9px] font-mono text-slate-400 uppercase tracking-widest font-bold">Research Source Gateway</span>
                           <strong className="text-slate-100 font-extrabold text-xs block mt-1">{liveData.sourceName || "Central Bank Spectrum"}</strong>
                         </div>
-                        <div className="bg-slate-950/45 p-3.5 border border-slate-850 rounded-xl leading-relaxed text-left">
+                        <div className="bg-slate-950/45 p-3.5 border border-slate-800 rounded-xl leading-relaxed text-left">
                           <span className="text-[9px] font-mono text-slate-400 uppercase tracking-widest font-bold">Locally Sourced Inflation Rate</span>
                           <strong className="text-rose-400 font-extrabold text-sm font-mono block mt-1">{liveData.localInflation || "N/A"}</strong>
                         </div>
-                        <div className="bg-slate-950/45 p-3.5 border border-slate-850 rounded-xl leading-relaxed text-left">
+                        <div className="bg-slate-950/45 p-3.5 border border-slate-800 rounded-xl leading-relaxed text-left">
                           <span className="text-[9px] font-mono text-slate-400 uppercase tracking-widest font-bold">Indices Refresh Range</span>
                           <strong className="text-slate-100 font-extrabold text-xs block mt-1">Sourced Real-Time ({liveData.lastChecked || "Live"})</strong>
                         </div>
                       </div>
 
                       {/* Sourced Rates Table */}
-                      <div className="bg-slate-950/30 border border-slate-850 rounded-xl overflow-hidden">
-                        <div className="grid grid-cols-12 bg-slate-950/60 p-2.5 font-mono text-[9px] text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-850">
+                      <div className="bg-slate-950/30 border border-slate-800 rounded-xl overflow-hidden">
+                        <div className="grid grid-cols-12 bg-slate-950/60 p-2.5 font-mono text-[9px] text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-800">
                           <div className="col-span-5 text-left">Sovereign / Escrow Asset Class</div>
                           <div className="col-span-2 text-center">Live Yield (APY)</div>
                           <div className="col-span-2 text-center">Trend</div>
                           <div className="col-span-3 text-right">Risk/Institution Spectrum</div>
                         </div>
                         
-                        <div className="divide-y divide-slate-850">
+                        <div className="divide-y divide-slate-800">
                           {liveData.rates?.map((rateObj: any, idx: number) => {
                             return (
-                              <div key={idx} className="grid grid-cols-12 p-3 items-center hover:bg-white/[0.02] transition-colors">
+                              <div key={idx} className="grid grid-cols-12 p-3 items-center hover:bg-white hover:dark:bg-slate-800/[0.02] transition-colors">
                                 <div className="col-span-5 font-bold text-slate-200 text-left">{rateObj.asset}</div>
                                 <div className="col-span-2 text-center font-mono font-black text-emerald-400 text-[13px]">{rateObj.rate}</div>
                                 <div className="col-span-2 text-center flex justify-center">
@@ -1924,7 +1924,7 @@ export default function NetWorthInvestments({
                                 </div>
                                 <div className="col-span-3 text-right font-mono text-[10px] text-slate-400 leading-relaxed">
                                   <span className="block font-bold text-slate-300">{rateObj.source}</span>
-                                  <span className="text-[9px] text-slate-500 italic font-sans block mt-0.5">{rateObj.safety}</span>
+                                  <span className="text-[9px] text-slate-500 dark:text-slate-400 italic font-sans block mt-0.5">{rateObj.safety}</span>
                                 </div>
                               </div>
                             );
@@ -1938,7 +1938,7 @@ export default function NetWorthInvestments({
                           <Lightbulb className="w-4 h-4" />
                         </div>
                         <div className="space-y-1 text-left">
-                          <h5 className="text-[10px] font-mono uppercase tracking-widest font-black text-emerald-250">
+                          <h5 className="text-[10px] font-mono uppercase tracking-widest font-black text-emerald-200">
                             SME Portfolio Allocation Tactics
                           </h5>
                           <p className="text-[11px] leading-relaxed text-slate-300 font-sans">
@@ -1957,10 +1957,10 @@ export default function NetWorthInvestments({
           {investmentsSubTab === "calculator" && (
             <div className="lg:col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fade-in">
               {/* LEFT: Calculator Controls */}
-              <div className="lg:col-span-5 bg-white border border-slate-200 rounded-3xl p-5 space-y-5 shadow-sm">
+              <div className="lg:col-span-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 space-y-5 shadow-sm">
                 <div>
-                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                    <Calculator className="w-4 h-4 text-emerald-600" />
+                  <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider flex items-center gap-2">
+                    <Calculator className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                     Calculator Controls
                   </h3>
                   <p className="text-[11px] text-slate-400 font-light mt-0.5">Adjust inputs to simulate prospective interest rate yields over custom maturity windows.</p>
@@ -1970,8 +1970,8 @@ export default function NetWorthInvestments({
                   {/* Principal */}
                   <div className="space-y-1.5">
                     <div className="flex justify-between items-center text-[11px]">
-                      <span className="font-mono font-bold text-slate-500 uppercase">Simulated Capital</span>
-                      <span className="font-mono font-extrabold text-emerald-650 text-xs">{currencySymbol}{simulatedPrincipal.toLocaleString()}</span>
+                      <span className="font-mono font-bold text-slate-500 dark:text-slate-400 uppercase">Simulated Capital</span>
+                      <span className="font-mono font-extrabold text-emerald-600 dark:text-emerald-400 text-xs">{currencySymbol}{simulatedPrincipal.toLocaleString()}</span>
                     </div>
                     <input
                       type="range"
@@ -1980,7 +1980,7 @@ export default function NetWorthInvestments({
                       step="500"
                       value={simulatedPrincipal}
                       onChange={(e) => setSimulatedPrincipal(Number(e.target.value))}
-                      className="w-full accent-emerald-600 h-1.5 bg-slate-100 rounded-lg cursor-pointer"
+                      className="w-full accent-emerald-600 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg cursor-pointer"
                     />
                     <div className="flex gap-2 items-center">
                       <span className="text-[10px] text-slate-400 font-mono shrink-0">{currencySymbol}500</span>
@@ -1988,7 +1988,7 @@ export default function NetWorthInvestments({
                         type="number"
                         value={simulatedPrincipal}
                         onChange={(e) => setSimulatedPrincipal(Math.max(0, Number(e.target.value)))}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2 py-0.5 font-mono text-[11px] text-right outline-none text-slate-900"
+                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-0.5 font-mono text-[11px] text-right outline-none text-slate-900 dark:text-slate-100"
                       />
                       <span className="text-[10px] text-slate-400 font-mono shrink-0">{currencySymbol}500k+</span>
                     </div>
@@ -1997,8 +1997,8 @@ export default function NetWorthInvestments({
                   {/* Annual Rate */}
                   <div className="space-y-1.5">
                     <div className="flex justify-between items-center text-[11px]">
-                      <span className="font-mono font-bold text-slate-500 uppercase">Expected Rate (% p.a.)</span>
-                      <span className="font-mono font-extrabold text-indigo-600 text-xs">{simulatedRate}%</span>
+                      <span className="font-mono font-bold text-slate-500 dark:text-slate-400 uppercase">Expected Rate (% p.a.)</span>
+                      <span className="font-mono font-extrabold text-indigo-600 dark:text-indigo-400 text-xs">{simulatedRate}%</span>
                     </div>
                     <input
                       type="range"
@@ -2007,7 +2007,7 @@ export default function NetWorthInvestments({
                       step="0.1"
                       value={simulatedRate}
                       onChange={(e) => setSimulatedRate(Number(e.target.value))}
-                      className="w-full accent-emerald-600 h-1.5 bg-slate-100 rounded-lg cursor-pointer"
+                      className="w-full accent-emerald-600 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg cursor-pointer"
                     />
                     <div className="flex gap-2 items-center">
                       <span className="text-[10px] text-slate-400 font-mono shrink-0">1%</span>
@@ -2016,7 +2016,7 @@ export default function NetWorthInvestments({
                         step="0.1"
                         value={simulatedRate}
                         onChange={(e) => setSimulatedRate(Math.max(0, Number(e.target.value)))}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2 py-0.5 font-mono text-[11px] text-right outline-none text-slate-900"
+                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-0.5 font-mono text-[11px] text-right outline-none text-slate-900 dark:text-slate-100"
                       />
                       <span className="text-[10px] text-slate-400 font-mono shrink-0">40%</span>
                     </div>
@@ -2025,8 +2025,8 @@ export default function NetWorthInvestments({
                   {/* Duration */}
                   <div className="space-y-1.5">
                     <div className="flex justify-between items-center text-[11px]">
-                      <span className="font-mono font-bold text-slate-500 uppercase">Investment Duration</span>
-                      <span className="font-mono font-extrabold text-amber-600 text-xs">{simulatedDuration} Months</span>
+                      <span className="font-mono font-bold text-slate-500 dark:text-slate-400 uppercase">Investment Duration</span>
+                      <span className="font-mono font-extrabold text-amber-600 dark:text-amber-400 text-xs">{simulatedDuration} Months</span>
                     </div>
                     <input
                       type="range"
@@ -2035,7 +2035,7 @@ export default function NetWorthInvestments({
                       step="1"
                       value={simulatedDuration}
                       onChange={(e) => setSimulatedDuration(Number(e.target.value))}
-                      className="w-full accent-emerald-600 h-1.5 bg-slate-100 rounded-lg cursor-pointer"
+                      className="w-full accent-emerald-600 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-lg cursor-pointer"
                     />
                     <div className="flex gap-2 items-center">
                       <span className="text-[10px] text-slate-400 font-mono shrink-0">1 Mo</span>
@@ -2043,7 +2043,7 @@ export default function NetWorthInvestments({
                         type="number"
                         value={simulatedDuration}
                         onChange={(e) => setSimulatedDuration(Math.max(1, Number(e.target.value)))}
-                        className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2 py-0.5 font-mono text-[11px] text-right outline-none text-slate-900"
+                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-0.5 font-mono text-[11px] text-right outline-none text-slate-900 dark:text-slate-100"
                       />
                       <span className="text-[10px] text-slate-400 font-mono shrink-0">5 Yrs</span>
                     </div>
@@ -2051,7 +2051,7 @@ export default function NetWorthInvestments({
 
                   {/* Compounding Method */}
                   <div className="space-y-1.5">
-                    <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Compounding Mechanics</label>
+                    <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Compounding Mechanics</label>
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         type="button"
@@ -2059,7 +2059,7 @@ export default function NetWorthInvestments({
                         className={`py-2 rounded-xl text-[10px] font-bold cursor-pointer transition-colors border ${
  simulatedCompounding === "Simple"
  ? "bg-slate-900 text-white border-transparent"
- : "bg-slate-50 text-slate-650 border-slate-200 hover:bg-slate-100"
+ : "bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:dark:bg-slate-800"
  }`}
                       >
                         Simple Interest
@@ -2070,7 +2070,7 @@ export default function NetWorthInvestments({
                         className={`py-2 rounded-xl text-[10px] font-bold cursor-pointer transition-colors border ${
  simulatedCompounding === "Compound"
  ? "bg-slate-900 text-white border-transparent"
- : "bg-slate-50 text-slate-650 border-slate-200 hover:bg-slate-100"
+ : "bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:dark:bg-slate-800"
  }`}
                       >
                         Compound (Quarterly)
@@ -2081,7 +2081,7 @@ export default function NetWorthInvestments({
               </div>
 
               {/* RIGHT: Calculated Outcomes card & projections table */}
-              <div className="lg:col-span-7 bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-6">
+              <div className="lg:col-span-7 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-sm space-y-6">
                 {(() => {
                   const rateFrac = simulatedRate / 100;
                   const timeYears = simulatedDuration / 12;
@@ -2095,43 +2095,43 @@ export default function NetWorthInvestments({
 
                   return (
                     <>
-                      <div className="border-b border-slate-100 pb-3">
-                        <h4 className="text-xs font-extrabold text-slate-450 uppercase tracking-widest">
+                      <div className="border-b border-slate-100 dark:border-slate-700 pb-3">
+                        <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest">
                           Simulated Yield Projection
                         </h4>
-                        <p className="text-[11px] text-slate-500 font-light mt-0.5">Calculated projections based on standard sovereign and corporate treasury yield formulas.</p>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 font-light mt-0.5">Calculated projections based on standard sovereign and corporate treasury yield formulas.</p>
                       </div>
 
                       {/* Main aggregate metrics bento */}
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div className="bg-slate-50 p-4 border border-slate-150 rounded-2xl text-left">
+                        <div className="bg-slate-50 dark:bg-slate-900 p-4 border border-slate-100 dark:border-slate-700 rounded-2xl text-left">
                           <span className="text-[9px] font-mono text-slate-400 block uppercase font-bold">Principal</span>
-                          <strong className="text-xs font-extrabold text-slate-850 font-mono block mt-1">{currencySymbol}{simulatedPrincipal.toLocaleString()}</strong>
+                          <strong className="text-xs font-extrabold text-slate-800 dark:text-slate-200 font-mono block mt-1">{currencySymbol}{simulatedPrincipal.toLocaleString()}</strong>
                         </div>
-                        <div className="bg-slate-50 p-4 border border-slate-150 rounded-2xl text-left">
+                        <div className="bg-slate-50 dark:bg-slate-900 p-4 border border-slate-100 dark:border-slate-700 rounded-2xl text-left">
                           <span className="text-[9px] font-mono text-slate-400 block uppercase font-bold">APY Rate</span>
-                          <strong className="text-xs font-extrabold text-slate-850 font-mono block mt-1">{simulatedRate}% p.a</strong>
+                          <strong className="text-xs font-extrabold text-slate-800 dark:text-slate-200 font-mono block mt-1">{simulatedRate}% p.a</strong>
                         </div>
-                        <div className="bg-slate-50 p-4 border border-slate-150 rounded-2xl text-left">
+                        <div className="bg-slate-50 dark:bg-slate-900 p-4 border border-slate-100 dark:border-slate-700 rounded-2xl text-left">
                           <span className="text-[9px] font-mono text-slate-400 block uppercase font-bold">Interest Earned</span>
-                          <strong className="text-xs font-extrabold text-emerald-600 block font-mono mt-1">+{currencySymbol}{Math.round(interestGained).toLocaleString()}</strong>
+                          <strong className="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 block font-mono mt-1">+{currencySymbol}{Math.round(interestGained).toLocaleString()}</strong>
                         </div>
-                        <div className="bg-slate-50 p-4 border border-slate-150 rounded-2xl text-left">
+                        <div className="bg-slate-50 dark:bg-slate-900 p-4 border border-slate-100 dark:border-slate-700 rounded-2xl text-left">
                           <span className="text-[9px] font-mono text-slate-400 block uppercase font-bold">Maturity Value</span>
-                          <strong className="text-xs font-extrabold text-indigo-600 block font-mono mt-1">{currencySymbol}{Math.round(matVal).toLocaleString()}</strong>
+                          <strong className="text-xs font-extrabold text-indigo-600 dark:text-indigo-400 block font-mono mt-1">{currencySymbol}{Math.round(matVal).toLocaleString()}</strong>
                         </div>
                       </div>
 
                       {/* Line-item Growth projection ladder */}
                       <div className="space-y-2.5">
-                        <h5 className="text-[10px] font-mono uppercase font-bold text-slate-450 tracking-wider text-left">Progressive Growth Ladder</h5>
-                        <div className="border border-slate-150 rounded-2xl overflow-hidden text-xs">
-                          <div className="grid grid-cols-3 bg-slate-50 p-2.5 font-mono text-[9px] text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-150 text-left">
+                        <h5 className="text-[10px] font-mono uppercase font-bold text-slate-400 tracking-wider text-left">Progressive Growth Ladder</h5>
+                        <div className="border border-slate-100 dark:border-slate-700 rounded-2xl overflow-hidden text-xs">
+                          <div className="grid grid-cols-3 bg-slate-50 dark:bg-slate-900 p-2.5 font-mono text-[9px] text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-100 dark:border-slate-700 text-left">
                             <div>Milestone Month</div>
                             <div className="text-center">Interest Accumulation</div>
                             <div className="text-right">Estimated Ledger Balance</div>
                           </div>
-                          <div className="divide-y divide-slate-100 max-h-56 overflow-y-auto">
+                          <div className="divide-y divide-slate-100 dark:divide-slate-700 max-h-56 overflow-y-auto">
                             {[0.25, 0.5, 0.75, 1.0].map((frac, idx) => {
                               const milestoneMonth = Math.max(1, Math.round(simulatedDuration * frac));
                               const milestoneTimeYears = milestoneMonth / 12;
@@ -2142,10 +2142,10 @@ export default function NetWorthInvestments({
                                 milestoneInterest = simulatedPrincipal * (Math.pow(1 + rateFrac / 4, 4 * milestoneTimeYears) - 1);
                               }
                               return (
-                                <div key={idx} className="grid grid-cols-3 p-3 items-center hover:bg-slate-50 transition-colors text-left">
-                                  <div className="font-bold text-slate-750">Month {milestoneMonth} ({Math.round(frac * 100)}%)</div>
-                                  <div className="text-center font-mono text-emerald-650 font-bold">+{currencySymbol}{Math.round(milestoneInterest).toLocaleString()}</div>
-                                  <div className="text-right font-mono font-bold text-slate-900">{currencySymbol}{Math.round(simulatedPrincipal + milestoneInterest).toLocaleString()}</div>
+                                <div key={idx} className="grid grid-cols-3 p-3 items-center hover:bg-slate-50 hover:dark:bg-slate-900 transition-colors text-left">
+                                  <div className="font-bold text-slate-700 dark:text-slate-300">Month {milestoneMonth} ({Math.round(frac * 100)}%)</div>
+                                  <div className="text-center font-mono text-emerald-600 dark:text-emerald-400 font-bold">+{currencySymbol}{Math.round(milestoneInterest).toLocaleString()}</div>
+                                  <div className="text-right font-mono font-bold text-slate-900 dark:text-slate-100">{currencySymbol}{Math.round(simulatedPrincipal + milestoneInterest).toLocaleString()}</div>
                                 </div>
                               );
                             })}
@@ -2154,10 +2154,10 @@ export default function NetWorthInvestments({
                       </div>
 
                       {/* Integration Quick Action: Populate Tracker */}
-                      <div className="bg-indigo-55 bg-indigo-50/50 p-4 rounded-2xl border border-indigo-100/65 flex items-center justify-between gap-4 text-xs text-left">
+                      <div className="bg-indigo-50 dark:bg-indigo-900/40 bg-indigo-50/50 dark:bg-indigo-900/50 p-4 rounded-2xl border border-indigo-100/65 dark:border-indigo-700/65 flex items-center justify-between gap-4 text-xs text-left">
                         <div className="space-y-0.5 leading-normal">
-                          <strong className="text-indigo-950 font-bold block">Integrate simulated position</strong>
-                          <span className="text-[11px] text-slate-500 font-light block">Pre-populate the portfolio registration tool with these calculations to save permanently.</span>
+                          <strong className="text-indigo-950 dark:text-indigo-300 font-bold block">Integrate simulated position</strong>
+                          <span className="text-[11px] text-slate-500 dark:text-slate-400 font-light block">Pre-populate the portfolio registration tool with these calculations to save permanently.</span>
                         </div>
                         <button
                           type="button"
@@ -2171,7 +2171,7 @@ export default function NetWorthInvestments({
                             setInvestmentsSubTab("positions");
                             setIsAddingInv(true);
                           }}
-                          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all cursor-pointer shadow-md shadow-indigo-650/15 text-xs shrink-0"
+                          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all cursor-pointer shadow-md shadow-indigo-600/15 text-xs shrink-0"
                         >
                           Send to Portfolio
                         </button>
@@ -2186,21 +2186,21 @@ export default function NetWorthInvestments({
           {/* VIEW 3: YIELD COMPARISON SIMULATOR */}
           {investmentsSubTab === "comparison" && (
             <div className="lg:col-span-12 space-y-6 animate-fade-in">
-              <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-5">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100 pb-4">
+              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-sm space-y-5">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100 dark:border-slate-700 pb-4">
                   <div>
-                    <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
-                      <Scale className="w-5 h-5 text-emerald-600" />
+                    <h3 className="text-sm font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                      <Scale className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                       Yield Comparison Simulator
                     </h3>
-                    <p className="text-[11px] text-slate-500 font-light mt-0.5">Model the expected performance of different financial instruments in Ghana side-by-side.</p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 font-light mt-0.5">Model the expected performance of different financial instruments in Ghana side-by-side.</p>
                   </div>
                   
                   {/* Slider Control */}
-                  <div className="w-full md:w-80 space-y-1 bg-slate-50 p-3 rounded-2xl border border-slate-150">
+                  <div className="w-full md:w-80 space-y-1 bg-slate-50 dark:bg-slate-900 p-3 rounded-2xl border border-slate-100 dark:border-slate-700">
                     <div className="flex justify-between text-[10px] font-mono text-slate-400">
                       <span>COMPARISON CAPITAL:</span>
-                      <strong className="text-indigo-650">{currencySymbol}{comparisonCapital.toLocaleString()}</strong>
+                      <strong className="text-indigo-600 dark:text-indigo-400">{currencySymbol}{comparisonCapital.toLocaleString()}</strong>
                     </div>
                     <input
                       type="range"
@@ -2209,7 +2209,7 @@ export default function NetWorthInvestments({
                       step="1000"
                       value={comparisonCapital}
                       onChange={(e) => setComparisonCapital(Number(e.target.value))}
-                      className="w-full accent-indigo-600 h-1.5 bg-slate-200 rounded-lg cursor-pointer"
+                      className="w-full accent-indigo-600 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg cursor-pointer"
                     />
                   </div>
                 </div>
@@ -2221,7 +2221,7 @@ export default function NetWorthInvestments({
                       name: "Ghana Sovereign Treasury Bills (T-Bills)",
                       rate: 22.5,
                       risk: "Very Low (State Backed)",
-                      riskColor: "text-emerald-600 bg-emerald-50 border-emerald-100",
+                      riskColor: "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/40 border-emerald-100 dark:border-emerald-700",
                       liquidity: "High (91/182/364 Day Ladders)",
                       details: "Exempt from local withholding taxes. Backed fully by the state sovereign budget."
                     },
@@ -2229,7 +2229,7 @@ export default function NetWorthInvestments({
                       name: "High-Yield Commercial Fixed Deposits",
                       rate: 18.5,
                       risk: "Low-Medium (Sovereign Bank Default Risk)",
-                      riskColor: "text-blue-600 bg-blue-50 border-blue-100",
+                      riskColor: "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/40 border-blue-100 dark:border-blue-700",
                       liquidity: "Medium (Fixed Lockup Maturity)",
                       details: "Sourced through A-rated tier-1 Ghanaian commercial banking associations."
                     },
@@ -2237,7 +2237,7 @@ export default function NetWorthInvestments({
                       name: "Balanced Mutual Funds / Treasury Trusts",
                       rate: 16.0,
                       risk: "Medium (Market NAV Fluctuations)",
-                      riskColor: "text-amber-600 bg-amber-50 border-amber-100",
+                      riskColor: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/40 border-amber-100 dark:border-amber-700",
                       liquidity: "Very High (Instant liquid withdrawals)",
                       details: "Diversified capital spectrum. Low minimum entry threshold, ideal for emergency cash pools."
                     },
@@ -2253,7 +2253,7 @@ export default function NetWorthInvestments({
                       name: "Sovereign Infrastructure Bonds",
                       rate: 12.0,
                       risk: "Low (State backed long-term security)",
-                      riskColor: "text-teal-600 bg-teal-50 border-teal-100",
+                      riskColor: "text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/40 border-teal-100 dark:border-teal-700",
                       liquidity: "Low (Secondary Market Sale required)",
                       details: "Long term sovereign capital funding roads, school projects, or corporate escrow."
                     },
@@ -2261,27 +2261,27 @@ export default function NetWorthInvestments({
                       name: "SME Micro-Equity / Venture Funding",
                       rate: 35.0,
                       risk: "High (Startup capital failure risk)",
-                      riskColor: "text-rose-600 bg-rose-50 border-rose-100",
+                      riskColor: "text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/40 border-rose-100 dark:border-rose-700",
                       liquidity: "Very Low (Illiquid private share equity)",
                       details: "Venture investment into vetted local agricultural cooperatives or logistics."
                     }
                   ].map((opt, idx) => {
                     const interest12m = comparisonCapital * (opt.rate / 100);
                     return (
-                      <div key={idx} className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4.5 flex flex-col justify-between space-y-4">
+                      <div key={idx} className="bg-slate-50 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-700/60 rounded-2xl p-4.5 flex flex-col justify-between space-y-4">
                         <div className="space-y-1.5 text-left">
-                          <h4 className="text-xs font-extrabold text-slate-900 leading-snug">{opt.name}</h4>
-                          <p className="text-[10px] text-slate-500 font-light leading-normal">{opt.details}</p>
+                          <h4 className="text-xs font-extrabold text-slate-900 dark:text-slate-100 leading-snug">{opt.name}</h4>
+                          <p className="text-[10px] text-slate-500 dark:text-slate-400 font-light leading-normal">{opt.details}</p>
                         </div>
 
-                        <div className="border-t border-b border-slate-200/50 py-3 space-y-2 font-mono text-[10px] text-slate-500 text-left">
+                        <div className="border-t border-b border-slate-200/50 dark:border-slate-700/50 py-3 space-y-2 font-mono text-[10px] text-slate-500 dark:text-slate-400 text-left">
                           <div className="flex justify-between items-center">
                             <span>Expected Rate:</span>
-                            <span className="text-emerald-650 font-extrabold text-[11px]">{opt.rate}% p.a</span>
+                            <span className="text-emerald-600 dark:text-emerald-400 font-extrabold text-[11px]">{opt.rate}% p.a</span>
                           </div>
                           <div className="flex justify-between items-center">
                             <span>Expected 1-Yr Profit:</span>
-                            <strong className="text-slate-900 font-extrabold text-[11px]">{currencySymbol}{Math.round(interest12m).toLocaleString()}</strong>
+                            <strong className="text-slate-900 dark:text-slate-100 font-extrabold text-[11px]">{currencySymbol}{Math.round(interest12m).toLocaleString()}</strong>
                           </div>
                           <div className="flex justify-between items-center">
                             <span>Sovereign Risk Level:</span>
@@ -2295,7 +2295,7 @@ export default function NetWorthInvestments({
 
                         <div className="space-y-2">
                           {/* Visual APY meter */}
-                          <div className="w-full h-1 bg-slate-200 rounded-full overflow-hidden">
+                          <div className="w-full h-1 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                             <div className="bg-emerald-500 h-full" style={{ width: `${(opt.rate / 40) * 100}%` }}></div>
                           </div>
 
@@ -2318,7 +2318,7 @@ export default function NetWorthInvestments({
                               setInvestmentsSubTab("positions");
                               setIsAddingInv(true);
                             }}
-                            className="w-full bg-white hover:bg-slate-100 text-slate-700 border border-slate-250 py-1.5 rounded-xl font-bold text-[10px] cursor-pointer transition-colors"
+                            className="w-full bg-white dark:bg-slate-800 hover:bg-slate-100 hover:dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 py-1.5 rounded-xl font-bold text-[10px] cursor-pointer transition-colors"
                           >
                             Add Position to Tracker
                           </button>
@@ -2334,21 +2334,21 @@ export default function NetWorthInvestments({
           {/* VIEW 4: AI PORTFOLIO ADVISORY & INSIGHTS */}
           {investmentsSubTab === "ai" && (
             <div className="lg:col-span-12 space-y-6 animate-fade-in">
-              <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-6">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100 pb-4">
+              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-sm space-y-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100 dark:border-slate-700 pb-4">
                   <div>
-                    <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
-                      <Sparkles className="w-5 h-5 text-emerald-600 animate-pulse" />
+                    <h3 className="text-sm font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                      <Sparkles className="w-5 h-5 text-emerald-600 dark:text-emerald-400 animate-pulse" />
                       AI Wealth & Advisory Desk
                     </h3>
-                    <p className="text-[11px] text-slate-500 font-light mt-0.5">Generate high-fidelity non-custodial asset diversification diagnostics backed by Google Gemini.</p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 font-light mt-0.5">Generate high-fidelity non-custodial asset diversification diagnostics backed by Google Gemini.</p>
                   </div>
 
                   <button
                     type="button"
                     disabled={isGeneratingAiAudit}
                     onClick={handleGenerateAiAudit}
-                    className="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-500 text-white font-black px-5 py-3 rounded-xl cursor-pointer transition-all border border-emerald-500/10 text-xs shrink-0 shadow-lg shadow-emerald-500/10"
+                    className="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-500 disabled:dark:text-slate-400 text-white font-black px-5 py-3 rounded-xl cursor-pointer transition-all border border-emerald-500/10 text-xs shrink-0 shadow-lg shadow-emerald-500/10"
                   >
                     {isGeneratingAiAudit ? (
                       <>
@@ -2357,7 +2357,7 @@ export default function NetWorthInvestments({
                       </>
                     ) : (
                       <>
-                        <Sparkles className="w-4 h-4 text-emerald-255" />
+                        <Sparkles className="w-4 h-4 text-emerald-300" />
                         Compile AI Portfolio Audit
                       </>
                     )}
@@ -2367,35 +2367,35 @@ export default function NetWorthInvestments({
                  {isGeneratingAiAudit && (
                   <div className="space-y-6 text-xs animate-pulse font-sans">
                     {/* Health Summary Card Skeleton */}
-                    <div className="bg-slate-50 border border-slate-200/40 p-4.5 rounded-2xl flex items-start gap-3">
-                      <div className="bg-slate-200 w-9 h-9 rounded-xl shrink-0"></div>
+                    <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200/40 dark:border-slate-700/40 p-4.5 rounded-2xl flex items-start gap-3">
+                      <div className="bg-slate-200 dark:bg-slate-700 w-9 h-9 rounded-xl shrink-0"></div>
                       <div className="space-y-2 flex-1 pt-1 text-left">
-                        <div className="h-3 bg-slate-200 rounded w-1/4"></div>
-                        <div className="h-3 bg-slate-200 rounded w-3/4"></div>
+                        <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/4"></div>
+                        <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
                       </div>
                     </div>
 
                     {/* Bento Metrics Checklist Skeleton */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {[1, 2, 3].map((idx) => (
-                        <div key={idx} className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 space-y-3">
+                        <div key={idx} className="bg-slate-50 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-700/60 rounded-2xl p-4 space-y-3">
                           <div className="flex justify-between items-start">
-                            <div className="h-2.5 bg-slate-200 rounded w-1/3"></div>
-                            <div className="h-4 bg-slate-200 rounded w-12"></div>
+                            <div className="h-2.5 bg-slate-200 dark:bg-slate-700 rounded w-1/3"></div>
+                            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-12"></div>
                           </div>
-                          <div className="h-2.5 bg-slate-200 rounded w-5/6"></div>
-                          <div className="h-2.5 bg-slate-200 rounded w-2/3"></div>
+                          <div className="h-2.5 bg-slate-200 dark:bg-slate-700 rounded w-5/6"></div>
+                          <div className="h-2.5 bg-slate-200 dark:bg-slate-700 rounded w-2/3"></div>
                         </div>
                       ))}
                     </div>
 
                     {/* Detailed AI Reply Skeleton */}
-                    <div className="bg-slate-50 border border-slate-150 p-5 rounded-2xl space-y-3">
-                      <div className="h-3 bg-slate-250 rounded w-1/6"></div>
+                    <div className="bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 p-5 rounded-2xl space-y-3">
+                      <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/6"></div>
                       <div className="space-y-2.5">
-                        <div className="h-3 bg-slate-200 rounded w-full"></div>
-                        <div className="h-3 bg-slate-200 rounded w-11/12"></div>
-                        <div className="h-3 bg-slate-200 rounded w-4/5"></div>
+                        <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
+                        <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-11/12"></div>
+                        <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-4/5"></div>
                       </div>
                     </div>
                   </div>
@@ -2414,13 +2414,13 @@ export default function NetWorthInvestments({
                 {aiAuditData && !isGeneratingAiAudit && (
                   <div className="space-y-6 text-xs animate-fade-in font-sans">
                     {/* Health Summary Card */}
-                    <div className="bg-emerald-50/40 border border-emerald-200/40 p-4.5 rounded-2xl flex items-start gap-3">
-                      <div className="bg-emerald-600/10 text-emerald-600 w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
+                    <div className="bg-emerald-50/40 dark:bg-emerald-900/40 border border-emerald-200/40 dark:border-emerald-700/40 p-4.5 rounded-2xl flex items-start gap-3">
+                      <div className="bg-emerald-600/10 text-emerald-600 dark:text-emerald-400 w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
                         <Lightbulb className="w-4.5 h-4.5" />
                       </div>
                       <div className="space-y-1 text-left">
-                        <strong className="text-emerald-900 font-black block text-[11px] uppercase tracking-wider">Strategic Executive Assessment</strong>
-                        <p className="text-[11px] text-slate-650 leading-relaxed font-sans">{aiAuditData.healthSummary}</p>
+                        <strong className="text-emerald-900 dark:text-emerald-300 font-black block text-[11px] uppercase tracking-wider">Strategic Executive Assessment</strong>
+                        <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed font-sans">{aiAuditData.healthSummary}</p>
                       </div>
                     </div>
 
@@ -2430,44 +2430,44 @@ export default function NetWorthInvestments({
                         const isPos = m.indicator === "positive";
                         const isWarn = m.indicator === "warning" || m.indicator === "neutral";
                         return (
-                          <div key={idx} className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 space-y-2.5 text-left leading-relaxed">
+                          <div key={idx} className="bg-slate-50 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-700/60 rounded-2xl p-4 space-y-2.5 text-left leading-relaxed">
                             <div className="flex justify-between items-start">
                               <span className="text-[9px] font-mono text-slate-400 uppercase tracking-widest font-black block">{m.title}</span>
                               <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold border ${
- isPos ? "text-emerald-600 bg-emerald-50 border-emerald-100" :
- isWarn ? "text-amber-600 bg-amber-50 border-amber-100" :
- "text-rose-600 bg-rose-50 border-rose-100"
+ isPos ? "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/40 border-emerald-100 dark:border-emerald-700" :
+ isWarn ? "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/40 border-amber-100 dark:border-amber-700" :
+ "text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/40 border-rose-100 dark:border-rose-700"
  }`}>{m.value}</span>
                             </div>
-                            <p className="text-[11px] text-slate-500 font-light font-sans">{m.description}</p>
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-light font-sans">{m.description}</p>
                           </div>
                         );
                       })}
                     </div>
 
                     {/* Detailed AI Reply */}
-                    <div className="bg-slate-50 border border-slate-150 p-5 rounded-2xl space-y-3 text-left">
-                      <h4 className="text-[10px] font-mono uppercase font-black text-slate-450 tracking-wider">Personalized Financial Director Critique</h4>
-                      <div className="text-[11px] text-slate-650 leading-relaxed font-sans space-y-3 whitespace-pre-line">
+                    <div className="bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 p-5 rounded-2xl space-y-3 text-left">
+                      <h4 className="text-[10px] font-mono uppercase font-black text-slate-400 tracking-wider">Personalized Financial Director Critique</h4>
+                      <div className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed font-sans space-y-3 whitespace-pre-line">
                         {aiAuditData.aiReply}
                       </div>
                     </div>
 
                     {/* Local Market Tactical Recommendations */}
                     <div className="space-y-3">
-                      <h4 className="text-[10px] font-mono uppercase font-black text-slate-450 tracking-wider text-left">SME Reinvestment Hacks</h4>
+                      <h4 className="text-[10px] font-mono uppercase font-black text-slate-400 tracking-wider text-left">SME Reinvestment Hacks</h4>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {aiAuditData.localMarketHacks?.map((hack: string, idx: number) => {
                           const title = hack.split(":")[0];
                           const desc = hack.split(":")[1] || "";
                           return (
-                            <div key={idx} className="bg-indigo-50/20 border border-indigo-100/50 p-4 rounded-2xl flex gap-3 text-left">
-                              <span className="bg-indigo-100 text-indigo-700 w-6 h-6 rounded-lg flex items-center justify-center shrink-0 font-bold text-[10px] mt-0.5">
+                            <div key={idx} className="bg-indigo-50/20 dark:bg-indigo-900/20 border border-indigo-100/50 dark:border-indigo-700/50 p-4 rounded-2xl flex gap-3 text-left">
+                              <span className="bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-400 w-6 h-6 rounded-lg flex items-center justify-center shrink-0 font-bold text-[10px] mt-0.5">
                                 {idx + 1}
                               </span>
                               <div className="space-y-1">
-                                <strong className="font-extrabold text-slate-900 block text-[11px]">{title}</strong>
-                                {desc && <p className="text-[10px] text-slate-500 font-sans leading-normal">{desc.trim()}</p>}
+                                <strong className="font-extrabold text-slate-900 dark:text-slate-100 block text-[11px]">{title}</strong>
+                                {desc && <p className="text-[10px] text-slate-500 dark:text-slate-400 font-sans leading-normal">{desc.trim()}</p>}
                               </div>
                             </div>
                           );
@@ -2476,7 +2476,7 @@ export default function NetWorthInvestments({
                     </div>
 
                     {/* Advisory Educational Disclaimer */}
-                    <p className="text-[9px] text-slate-400 italic text-center max-w-xl mx-auto leading-relaxed border-t border-slate-100 pt-4">
+                    <p className="text-[9px] text-slate-400 italic text-center max-w-xl mx-auto leading-relaxed border-t border-slate-100 dark:border-slate-700 pt-4">
                       Disclaimer: AI Advisory and portfolio diagnostics are model-based simulations designed for passive financial education and strategic bookkeeping support. They do not constitute regulated banking advice, microfinance counseling, or securities solicitation. Consult a certified financial accountant before initiating asset transfers outside Aziiki.
                     </p>
                   </div>
@@ -2493,52 +2493,52 @@ export default function NetWorthInvestments({
         <div className="lg:col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-6 text-left animate-fade-in">
           
           {/* Balance Sheet Ledger Presentation */}
-          <div className={`${isEnabled("debts_tracking") ? "lg:col-span-7" : "lg:col-span-12"} bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-6`}>
+          <div className={`${isEnabled("debts_tracking") ? "lg:col-span-7" : "lg:col-span-12"} bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-sm space-y-6`}>
             <div>
-              <span className="text-[9px] bg-emerald-100 text-emerald-800 font-mono tracking-widest uppercase font-bold px-2.5 py-0.5 rounded-md border border-emerald-200">
+              <span className="text-[9px] bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 font-mono tracking-widest uppercase font-bold px-2.5 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-700">
                 Analytical Statement
               </span>
-              <h3 className="text-sm font-black text-slate-900 mt-1.5 flex items-center gap-2">
-                <Scale className="w-5 h-5 text-emerald-600" />
+              <h3 className="text-sm font-black text-slate-900 dark:text-slate-100 mt-1.5 flex items-center gap-2">
+                <Scale className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                 SME Unofficial Balance Sheet Model
               </h3>
-              <p className="text-[11px] text-slate-500 font-light mt-0.5">Summary of business asset values vs outstanding supplier/lender liabilities.</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 font-light mt-0.5">Summary of business asset values vs outstanding supplier/lender liabilities.</p>
             </div>
 
             {/* Asset side vs Liability side double column */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border border-slate-200/60 rounded-2xl p-4.5 bg-slate-50/50 text-xs">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border border-slate-200/60 dark:border-slate-700/60 rounded-2xl p-4.5 bg-slate-50/50 dark:bg-slate-900/50 text-xs">
               
               {/* Asset Section */}
               <div className="space-y-3">
-                <h4 className="font-extrabold uppercase tracking-wider text-[10px] text-emerald-700 border-b border-slate-200 pb-1.5 flex justify-between">
+                <h4 className="font-extrabold uppercase tracking-wider text-[10px] text-emerald-700 dark:text-emerald-400 border-b border-slate-200 dark:border-slate-700 pb-1.5 flex justify-between">
                   <span>Assets Registry</span>
                   <span className="font-mono">VALUATION</span>
                 </h4>
                 
                 <div className="space-y-2 leading-relaxed">
-                  <div className="flex justify-between items-center text-slate-650">
+                  <div className="flex justify-between items-center text-slate-600 dark:text-slate-300">
                     <span className="font-sans">Available Cash Balance</span>
-                    <strong className="font-mono text-slate-900 font-medium">{currencySymbol}{totalCash.toLocaleString()}</strong>
+                    <strong className="font-mono text-slate-900 dark:text-slate-100 font-medium">{currencySymbol}{totalCash.toLocaleString()}</strong>
                   </div>
-                  <div className="flex justify-between items-center text-slate-650">
+                  <div className="flex justify-between items-center text-slate-600 dark:text-slate-300">
                     <span className="font-sans">Owned Tangible Assets (Book)</span>
-                    <strong className="font-mono text-slate-900 font-medium">{currencySymbol}{totalAssetsBookValue.toLocaleString()}</strong>
+                    <strong className="font-mono text-slate-900 dark:text-slate-100 font-medium">{currencySymbol}{totalAssetsBookValue.toLocaleString()}</strong>
                   </div>
-                  <div className="flex justify-between items-center text-slate-650">
+                  <div className="flex justify-between items-center text-slate-600 dark:text-slate-300">
                     <span className="font-sans">Financial Reserve Placements</span>
-                    <strong className="font-mono text-slate-900 font-medium">{currencySymbol}{totalInvestmentCurrentValue.toLocaleString()}</strong>
+                    <strong className="font-mono text-slate-900 dark:text-slate-100 font-medium">{currencySymbol}{totalInvestmentCurrentValue.toLocaleString()}</strong>
                   </div>
                 </div>
 
-                <div className="border-t border-slate-200 pt-2 flex justify-between font-bold text-slate-900">
+                <div className="border-t border-slate-200 dark:border-slate-700 pt-2 flex justify-between font-bold text-slate-900 dark:text-slate-100">
                   <span>Total Business Assets</span>
-                  <strong className="font-mono text-emerald-600 font-black">{currencySymbol}{totalAssetsAggregate.toLocaleString()}</strong>
+                  <strong className="font-mono text-emerald-600 dark:text-emerald-400 font-black">{currencySymbol}{totalAssetsAggregate.toLocaleString()}</strong>
                 </div>
               </div>
 
               {/* Liabilities Section */}
               <div className="space-y-3">
-                <h4 className="font-extrabold uppercase tracking-wider text-[10px] text-rose-700 border-b border-slate-200 pb-1.5 flex justify-between">
+                <h4 className="font-extrabold uppercase tracking-wider text-[10px] text-rose-700 dark:text-rose-400 border-b border-slate-200 dark:border-slate-700 pb-1.5 flex justify-between">
                   <span>Liabilities Register</span>
                   <span className="font-mono">VALUATION</span>
                 </h4>
@@ -2548,17 +2548,17 @@ export default function NetWorthInvestments({
                     <p className="text-slate-400 italic text-[11px] py-2">No active outstanding supplier credit facilities logged.</p>
                   ) : (
                     debts.map(d => (
-                      <div key={d.id} className="flex justify-between items-center text-slate-650">
+                      <div key={d.id} className="flex justify-between items-center text-slate-600 dark:text-slate-300">
                         <span className="truncate max-w-[65%]">{d.creditor} ({d.type})</span>
-                        <strong className="font-mono text-rose-650 font-medium shrink-0">-{currencySymbol}{d.amount.toLocaleString()}</strong>
+                        <strong className="font-mono text-rose-600 dark:text-rose-400 font-medium shrink-0">-{currencySymbol}{d.amount.toLocaleString()}</strong>
                       </div>
                     ))
                   )}
                 </div>
 
-                <div className="border-t border-slate-200 pt-2 flex justify-between font-bold text-slate-900 mt-auto">
+                <div className="border-t border-slate-200 dark:border-slate-700 pt-2 flex justify-between font-bold text-slate-900 dark:text-slate-100 mt-auto">
                   <span>Total Liabilities</span>
-                  <strong className="font-mono text-rose-650 font-black">-{currencySymbol}{totalDebtValue.toLocaleString()}</strong>
+                  <strong className="font-mono text-rose-600 dark:text-rose-400 font-black">-{currencySymbol}{totalDebtValue.toLocaleString()}</strong>
                 </div>
               </div>
 
@@ -2567,15 +2567,15 @@ export default function NetWorthInvestments({
             {/* Total net worth aggregate results */}
             <div className="p-4 bg-emerald-600/5 border border-emerald-500/20 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="space-y-1">
-                <span className="text-[10px] text-emerald-700 uppercase tracking-wider font-extrabold block">True Business Equity Valuation</span>
-                <p className="text-[11px] text-slate-500 font-light leading-relaxed">
+                <span className="text-[10px] text-emerald-700 dark:text-emerald-400 uppercase tracking-wider font-extrabold block">True Business Equity Valuation</span>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-light leading-relaxed">
                   Computed by subtracting outstanding supplier credits and operational debt liabilities from total physical and liquid capital assets.
                 </p>
               </div>
 
               <div className="text-right shrink-0">
                 <span className="text-[9px] text-slate-400 uppercase font-mono tracking-wider block">Net Capital Position</span>
-                <strong className="text-xl sm:text-2xl font-black text-emerald-600 font-mono block">
+                <strong className="text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono block">
                   {currencySymbol}{netWorthValue.toLocaleString()}
                 </strong>
               </div>
@@ -2584,15 +2584,15 @@ export default function NetWorthInvestments({
 
           {/* RIGHT: Debts liability manager */}
           {isEnabled("debts_tracking") && (
-          <div className="lg:col-span-5 bg-white border border-slate-200 rounded-3xl p-5 space-y-4 shadow-sm">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                <AlertTriangle className="w-4.5 h-4.5 text-rose-500" />
+          <div className="lg:col-span-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 space-y-4 shadow-sm">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
+              <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider flex items-center gap-2">
+                <AlertTriangle className="w-4.5 h-4.5 text-rose-500 dark:text-rose-400" />
                 Short Term Debts Book
               </h3>
               <button
                 onClick={() => setIsAddingDebt(!isAddingDebt)}
-                className="text-xs font-bold text-rose-650 hover:text-rose-700 flex items-center gap-1 cursor-pointer font-sans"
+                className="text-xs font-bold text-rose-600 dark:text-rose-400 hover:text-rose-700 hover:dark:text-rose-400 flex items-center gap-1 cursor-pointer font-sans"
               >
                 {isAddingDebt ? "Cancel" : <><Plus className="w-4 h-4" /> Log Debt</>}
               </button>
@@ -2608,7 +2608,7 @@ export default function NetWorthInvestments({
                     placeholder="e.g. Alaba Fabric Wholesalers"
                     value={creditor}
                     onChange={(e) => setCreditor(e.target.value)}
-                    className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans"
+                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans"
                   />
                 </div>
 
@@ -2621,7 +2621,7 @@ export default function NetWorthInvestments({
                       min="1"
                       value={debtAmount}
                       onChange={(e) => setDebtAmount(Number(e.target.value))}
-                      className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl p-2 outline-none font-sans"
+                      className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl p-2 outline-none font-sans"
                     />
                   </div>
 
@@ -2630,7 +2630,7 @@ export default function NetWorthInvestments({
                     <select
                       value={debtType}
                       onChange={(e) => setDebtType(e.target.value)}
-                      className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-2 py-1.5 outline-none font-sans"
+                      className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl px-2 py-1.5 outline-none font-sans"
                     >
                       <option value="Supplier Credit">Supplier Credit</option>
                       <option value="Loan">Bank Loan</option>
@@ -2646,7 +2646,7 @@ export default function NetWorthInvestments({
                       type="number"
                       value={interestRate}
                       onChange={(e) => setInterestRate(Number(e.target.value))}
-                      className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl p-2 outline-none font-sans"
+                      className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl p-2 outline-none font-sans"
                     />
                   </div>
 
@@ -2656,7 +2656,7 @@ export default function NetWorthInvestments({
                       type="date"
                       value={debtDueDate}
                       onChange={(e) => setDebtDueDate(e.target.value)}
-                      className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl p-1.5 outline-none font-sans"
+                      className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl p-1.5 outline-none font-sans"
                     />
                   </div>
                 </div>
@@ -2666,7 +2666,7 @@ export default function NetWorthInvestments({
                   <select
                     value={debtCurrency}
                     onChange={(e) => setDebtCurrency(e.target.value)}
-                    className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-2 py-1.5 outline-none font-sans"
+                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl px-2 py-1.5 outline-none font-sans"
                   >
                     {SUPPORTED_CURRENCY_CODES.map((code) => (
                       <option key={code} value={code}>{code}</option>
@@ -2684,27 +2684,27 @@ export default function NetWorthInvestments({
             ) : (
               <div className="space-y-3 text-xs leading-relaxed">
                 {debts.map((d) => (
-                  <div key={d.id} className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex justify-between items-center text-xs">
+                  <div key={d.id} className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 flex justify-between items-center text-xs">
                     <div className="flex items-center gap-3">
-                      <div className="bg-rose-50 text-rose-600 p-2.5 rounded-xl border border-rose-100">
+                      <div className="bg-rose-50 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 p-2.5 rounded-xl border border-rose-100 dark:border-rose-700">
                         <AlertTriangle className="w-4 h-4" />
                       </div>
                       <div>
-                        <h5 className="font-extrabold text-slate-900">{d.creditor}</h5>
-                        <span className="text-[10px] font-mono text-slate-450 uppercase block mt-0.5">
+                        <h5 className="font-extrabold text-slate-900 dark:text-slate-100">{d.creditor}</h5>
+                        <span className="text-[10px] font-mono text-slate-400 uppercase block mt-0.5">
                           {d.type} — Due on: {d.dueDate}
                         </span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <strong className="text-rose-650 font-mono text-sm font-extrabold">
+                      <strong className="text-rose-600 dark:text-rose-400 font-mono text-sm font-extrabold">
                         {currencySymbol}{d.amount.toLocaleString()}
                       </strong>
                       <button
                         onClick={() => {
                           if (onDeleteDebt) onDeleteDebt(d.id);
                         }}
-                        className="text-slate-400 hover:text-rose-600 p-1 hover:bg-slate-100 rounded-lg cursor-pointer"
+                        className="text-slate-400 hover:text-rose-600 hover:dark:text-rose-400 p-1 hover:bg-slate-100 hover:dark:bg-slate-800 rounded-lg cursor-pointer"
                         title="Delete Debt Entry" aria-label="Delete Debt Entry"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -2731,15 +2731,15 @@ export default function NetWorthInvestments({
         <div className="lg:col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-6 text-left font-sans animate-fade-in">
           
           {/* Configure Goals Left Panel */}
-          <div className="lg:col-span-4 bg-white border border-slate-200 rounded-3xl p-5 space-y-4 shadow-sm">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                <Target className="w-4.5 h-4.5 text-indigo-500" />
+          <div className="lg:col-span-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 space-y-4 shadow-sm">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
+              <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider flex items-center gap-2">
+                <Target className="w-4.5 h-4.5 text-indigo-500 dark:text-indigo-400" />
                 Capital Benchmarks
               </h3>
               <button
                 onClick={() => setIsAddingGoal(!isAddingGoal)}
-                className="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 cursor-pointer font-sans"
+                className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 hover:dark:text-emerald-400 flex items-center gap-1 cursor-pointer font-sans"
               >
                 {isAddingGoal ? "Cancel" : <><Plus className="w-4 h-4" /> Create Goal</>}
               </button>
@@ -2748,11 +2748,11 @@ export default function NetWorthInvestments({
             {isAddingGoal ? (
               <form onSubmit={handleSaveGoal} className="space-y-3.5 text-xs">
                 <div className="space-y-1">
-                  <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Goal Classification Type</label>
+                  <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Goal Classification Type</label>
                   <select
                     value={goalType}
                     onChange={(e) => setGoalType(e.target.value)}
-                    className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-2.5 py-2 mt-1 outline-none font-sans"
+                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-2 mt-1 outline-none font-sans"
                   >
                     <option value="Equipment">Acquire Machinery / Camera Gear</option>
                     <option value="Savings">Corporate Reserves Fund</option>
@@ -2763,7 +2763,7 @@ export default function NetWorthInvestments({
 
                 <div className="space-y-1">
                   <div className="flex items-center justify-between">
-                    <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Goal Description</label>
+                    <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Goal Description</label>
                     <span className="text-[9px] font-mono text-slate-400">{goalName.length}/80</span>
                   </div>
                   <input
@@ -2773,52 +2773,52 @@ export default function NetWorthInvestments({
                     placeholder="e.g. Procure prime sewing equipment"
                     value={goalName}
                     onChange={(e) => setGoalName(e.target.value.slice(0, 80))}
-                    className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans"
+                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Target Value ({currencySymbol})</label>
+                    <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Target Value ({currencySymbol})</label>
                     <input
                       type="number"
                       required
                       min="1"
                       value={goalTarget}
                       onChange={(e) => setGoalTarget(Number(e.target.value))}
-                      className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl p-2 outline-none font-sans"
+                      className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl p-2 outline-none font-sans"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Initial Saved ({currencySymbol})</label>
+                    <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Initial Saved ({currencySymbol})</label>
                     <input
                       type="number"
                       required
                       min="0"
                       value={goalCurrent}
                       onChange={(e) => setGoalCurrent(Number(e.target.value))}
-                      className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl p-2 outline-none font-sans"
+                      className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl p-2 outline-none font-sans"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Target Deadline Date</label>
+                  <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Target Deadline Date</label>
                   <input
                     type="date"
                     value={goalDeadline}
                     onChange={(e) => setGoalDeadline(e.target.value)}
-                    className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl p-1.5 outline-none font-sans"
+                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl p-1.5 outline-none font-sans"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Target Currency</label>
+                  <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Target Currency</label>
                   <select
                     value={goalCurrency}
                     onChange={(e) => setGoalCurrency(e.target.value)}
-                    className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-2.5 py-2 outline-none font-sans"
+                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-2 outline-none font-sans"
                   >
                     {SUPPORTED_CURRENCY_CODES.map((code) => (
                       <option key={code} value={code}>{code}</option>
@@ -2834,16 +2834,16 @@ export default function NetWorthInvestments({
                 </button>
               </form>
             ) : (
-              <p className="text-[11px] text-slate-500 font-sans leading-relaxed">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 font-sans leading-relaxed">
                 Establish milestones for camera kits, vehicle acquisitions, or outlet expansions. Aziiki dynamically charts replacement timelines and guides you as cash reserves accummulate.
               </p>
             )}
           </div>
 
           {/* Render goals list dials Right Panel */}
-          <div className="lg:col-span-8 bg-white border border-slate-200 rounded-3xl p-6 space-y-6 shadow-sm">
-            <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest font-sans flex items-center gap-2 border-b border-slate-100 pb-3">
-              <Target className="w-4.5 h-4.5 text-emerald-600" />
+          <div className="lg:col-span-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 space-y-6 shadow-sm">
+            <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest font-sans flex items-center gap-2 border-b border-slate-100 dark:border-slate-700 pb-3">
+              <Target className="w-4.5 h-4.5 text-emerald-600 dark:text-emerald-400" />
               Capital Target Milestones ({filteredGoals.length})
             </h4>
 
@@ -2852,26 +2852,26 @@ export default function NetWorthInvestments({
                 const percent = Math.min(100, Math.round((goal.currentAmount / goal.targetAmount) * 100));
 
                 return (
-                  <div key={goal.id} className="bg-slate-50 border border-slate-200 rounded-2xl p-4.5 space-y-3 text-xs leading-relaxed text-left">
+                  <div key={goal.id} className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-4.5 space-y-3 text-xs leading-relaxed text-left">
                     <div className="flex justify-between items-center">
                       <div>
-                        <span className="text-[9px] font-mono font-bold text-emerald-700 uppercase bg-emerald-50 border border-emerald-100 px-2.5 py-0.5 rounded-full inline-block">
+                        <span className="text-[9px] font-mono font-bold text-emerald-700 dark:text-emerald-400 uppercase bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-100 dark:border-emerald-700 px-2.5 py-0.5 rounded-full inline-block">
                           {goal.type}
                         </span>
-                        <h5 className="font-extrabold text-slate-900 mt-1.5">{goal.name}</h5>
+                        <h5 className="font-extrabold text-slate-900 dark:text-slate-100 mt-1.5">{goal.name}</h5>
                       </div>
                       
                       <div className="flex items-center gap-4">
                         <div className="text-right">
                           <span className="text-[9px] text-slate-400 block font-mono">Target</span>
-                          <span className="text-slate-800 font-mono font-extrabold">{currencySymbol}{goal.targetAmount.toLocaleString()}</span>
+                          <span className="text-slate-800 dark:text-slate-200 font-mono font-extrabold">{currencySymbol}{goal.targetAmount.toLocaleString()}</span>
                         </div>
                         <button
                           onClick={() => {
                             if (onDeleteGoal) onDeleteGoal(goal.id);
                           }}
                           aria-label={`Delete goal ${goal.name}`}
-                          className="text-slate-400 hover:text-rose-650 p-1 hover:bg-slate-200 rounded-lg cursor-pointer"
+                          className="text-slate-400 hover:text-rose-600 hover:dark:text-rose-400 p-1 hover:bg-slate-200 hover:dark:bg-slate-700 rounded-lg cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -2880,13 +2880,13 @@ export default function NetWorthInvestments({
 
                     {/* Progress tracking meters */}
                     <div className="space-y-1 pt-1.5">
-                      <div className="w-full h-2.5 bg-white rounded-full overflow-hidden border border-slate-200 flex">
+                      <div className="w-full h-2.5 bg-white dark:bg-slate-800 rounded-full overflow-hidden border border-slate-200 dark:border-slate-700 flex">
                         <div 
                           className="bg-emerald-500 h-full rounded-full transition-all duration-500" 
                           style={{ width: `${percent}%` }}
                         ></div>
                       </div>
-                      <div className="flex justify-between items-center text-[10px] text-slate-450 mt-1">
+                      <div className="flex justify-between items-center text-[10px] text-slate-400 mt-1">
                         <span>Current Reserve: <strong>{currencySymbol}{goal.currentAmount.toLocaleString()}</strong> ({percent}%)</span>
                         <span className="font-mono flex items-center gap-1">
                           <CalendarDays className="w-3.5 h-3.5" /> Deadline: {goal.deadline}
@@ -2895,7 +2895,7 @@ export default function NetWorthInvestments({
                     </div>
 
                     {/* Goal Direct Contribution Module */}
-                    <div className="pt-3 border-t border-slate-200/50 mt-2 flex flex-col gap-2">
+                    <div className="pt-3 border-t border-slate-200/50 dark:border-slate-700/50 mt-2 flex flex-col gap-2">
                       <div className="flex justify-between items-center">
                         <span className="text-[10px] text-slate-400">Allocate reserve capital manually</span>
                         <button
@@ -2908,16 +2908,16 @@ export default function NetWorthInvestments({
                               setContributionCurrency(goal.currency || currentBusiness?.currency || "GHS");
                             }
                           }}
-                          className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-xl text-[10px] cursor-pointer transition-colors border border-emerald-200/30 inline-flex items-center gap-1"
+                          className="bg-emerald-50 dark:bg-emerald-900/40 hover:bg-emerald-100 hover:dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 font-bold px-2.5 py-1 rounded-xl text-[10px] cursor-pointer transition-colors border border-emerald-200/30 dark:border-emerald-700/30 inline-flex items-center gap-1"
                         >
                           <HandCoins className="w-3 h-3 shrink-0" /> Allocate Funds
                         </button>
                       </div>
 
                       {activeGoalFormId === goal.id && (
-                        <div className="bg-white border border-slate-200 rounded-xl p-3 space-y-2 animate-fade-in">
+                        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 space-y-2 animate-fade-in">
                           <div className="flex justify-between items-center">
-                            <label className="text-[9px] font-mono text-slate-450 uppercase font-bold">Transfer Capital</label>
+                            <label className="text-[9px] font-mono text-slate-400 uppercase font-bold">Transfer Capital</label>
                             <span className="text-[9px] font-mono text-slate-400">Available Cash: {currencySymbol}{totalCash.toLocaleString()}</span>
                           </div>
 
@@ -2928,12 +2928,12 @@ export default function NetWorthInvestments({
                               max={contributionCurrency === (currentBusiness?.currency || "GHS") ? totalCash : undefined}
                               value={contributionAmount}
                               onChange={(e) => setContributionAmount(Number(e.target.value))}
-                              className="w-full bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-2.5 py-1.5 outline-none font-mono text-xs"
+                              className="w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 outline-none font-mono text-xs"
                             />
                             <select
                               value={contributionCurrency}
                               onChange={(e) => setContributionCurrency(e.target.value)}
-                              className="bg-slate-50 text-slate-900 border border-slate-200 rounded-xl px-2 py-1.5 outline-none text-xs font-mono shrink-0"
+                              className="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-xl px-2 py-1.5 outline-none text-xs font-mono shrink-0"
                             >
                               {SUPPORTED_CURRENCY_CODES.map((code) => (
                                 <option key={code} value={code}>{code}</option>
@@ -2942,20 +2942,20 @@ export default function NetWorthInvestments({
                             <button
                               type="button"
                               onClick={() => handleContributeSubmit(goal.id)}
-                              className="bg-emerald-650 hover:bg-emerald-700 text-white font-bold px-4 py-1.5 rounded-xl text-xs cursor-pointer transition-all shrink-0 font-sans"
+                              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-1.5 rounded-xl text-xs cursor-pointer transition-all shrink-0 font-sans"
                             >
                               Transfer
                             </button>
                           </div>
 
                           {contributionCurrency !== (goal.currency || currentBusiness?.currency || "GHS") && (
-                            <p className="text-[9px] text-slate-450">
+                            <p className="text-[9px] text-slate-400">
                               Converted into this goal's {goal.currency || currentBusiness?.currency} target using your saved exchange rate.
                             </p>
                           )}
 
                           {contributionError && (
-                            <p className="text-[9px] font-mono text-rose-600 leading-tight flex items-start gap-1">
+                            <p className="text-[9px] font-mono text-rose-600 dark:text-rose-400 leading-tight flex items-start gap-1">
                               <AlertTriangle className="w-3 h-3 shrink-0 mt-px" />
                               <span>{contributionError}</span>
                             </p>

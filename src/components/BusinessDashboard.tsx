@@ -389,7 +389,7 @@ export default function BusinessDashboard({
   };
 
   return (
-    <div id="dashboard-tab-root" className="grid grid-cols-1 xl:grid-cols-12 gap-6 font-sans text-slate-800">
+    <div id="dashboard-tab-root" className="grid grid-cols-1 xl:grid-cols-12 gap-6 font-sans text-slate-800 dark:text-slate-200">
       
       {/* LEFT BLOCK: Key metric tiles & Cashflow visualization charts */}
       <div className="xl:col-span-8 flex flex-col gap-6">
@@ -398,17 +398,17 @@ export default function BusinessDashboard({
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           
           <div className="soft-card p-5 relative overflow-hidden">
-            <div className="absolute right-3 top-3 bg-emerald-50 text-emerald-600 p-2.5 rounded-xl border border-emerald-100 shadow-sm transition-transform duration-300 hover:rotate-12">
+            <div className="absolute right-3 top-3 bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 p-2.5 rounded-xl border border-emerald-100 dark:border-emerald-700 shadow-sm transition-transform duration-300 hover:rotate-12">
               <Coins className="w-5 h-5" />
             </div>
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block font-sans">
               {currentBusiness.businessType === "Sole Proprietor" ? "My Money Inflows" : "Total Revenue Ledger"}
             </span>
-            <strong className="text-2xl font-black font-sans text-slate-900 block mt-2 tracking-tight">
+            <strong className="text-2xl font-black font-sans text-slate-900 dark:text-slate-100 block mt-2 tracking-tight">
               {currencySymbol}{totalRevenue.toLocaleString()}
             </strong>
-            <span className="text-[10px] text-slate-500 font-sans flex items-center gap-1 mt-2.5 font-medium">
-              <span className="bg-emerald-50 text-emerald-700 p-0.5 rounded-md flex items-center justify-center">
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 font-sans flex items-center gap-1 mt-2.5 font-medium">
+              <span className="bg-emerald-50 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 p-0.5 rounded-md flex items-center justify-center">
                 <ArrowUpRight className="w-3.5 h-3.5" />
               </span>
               {currentBusiness.businessType === "Sole Proprietor" ? "all logged trade earnings" : "cumulative business inflows"}
@@ -416,17 +416,17 @@ export default function BusinessDashboard({
           </div>
 
           <div className="soft-card p-5 relative overflow-hidden">
-            <div className="absolute right-3 top-3 bg-rose-50 text-rose-600 p-2.5 rounded-xl border border-rose-100 shadow-sm transition-transform duration-300 hover:rotate-12">
+            <div className="absolute right-3 top-3 bg-rose-50 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 p-2.5 rounded-xl border border-rose-100 dark:border-rose-700 shadow-sm transition-transform duration-300 hover:rotate-12">
               <Calculator className="w-5 h-5" />
             </div>
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block font-sans">
               {currentBusiness.businessType === "Sole Proprietor" ? "My Expenses" : currentBusiness.businessType === "Partnership" ? "Joint Expenses" : "Corporate Expenses"}
             </span>
-            <strong className="text-2xl font-black font-sans text-slate-900 block mt-2 tracking-tight">
+            <strong className="text-2xl font-black font-sans text-slate-900 dark:text-slate-100 block mt-2 tracking-tight">
               {currencySymbol}{totalExpenses.toLocaleString()}
             </strong>
-            <span className="text-[10px] text-slate-500 font-sans flex items-center gap-1 mt-2.5 font-medium">
-              <span className="bg-rose-50 text-rose-700 p-0.5 rounded-md flex items-center justify-center">
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 font-sans flex items-center gap-1 mt-2.5 font-medium">
+              <span className="bg-rose-50 dark:bg-rose-900/40 text-rose-700 dark:text-rose-400 p-0.5 rounded-md flex items-center justify-center">
                 <ArrowDownRight className="w-3.5 h-3.5" />
               </span>
               {currentBusiness.businessType === "Sole Proprietor" ? "personal pocket outflows" : "operating cash leaks logged"}
@@ -434,17 +434,17 @@ export default function BusinessDashboard({
           </div>
 
           <div className="soft-card p-5 relative overflow-hidden">
-            <div className="absolute right-3 top-3 bg-teal-50 text-teal-600 p-2.5 rounded-xl border border-teal-100 shadow-sm transition-transform duration-300 hover:rotate-12">
+            <div className="absolute right-3 top-3 bg-teal-50 dark:bg-teal-900/40 text-teal-600 dark:text-teal-400 p-2.5 rounded-xl border border-teal-100 dark:border-teal-700 shadow-sm transition-transform duration-300 hover:rotate-12">
               <TrendingUp className="w-5 h-5" />
             </div>
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block font-sans">
               {currentBusiness.businessType === "Sole Proprietor" ? "My Personal Profit" : "Net Profit / Margin"}
             </span>
-            <strong className={`text-2xl font-black font-sans block mt-2 tracking-tight ${netProfit >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+            <strong className={`text-2xl font-black font-sans block mt-2 tracking-tight ${netProfit >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
               {currencySymbol}{netProfit.toLocaleString()}
             </strong>
-            <span className="text-[10px] text-slate-500 font-sans flex items-center gap-1 mt-2.5 font-medium">
-              <span className="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded-md font-bold font-mono text-[9px] mr-1">
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 font-sans flex items-center gap-1 mt-2.5 font-medium">
+              <span className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-1.5 py-0.5 rounded-md font-bold font-mono text-[9px] mr-1">
                 {marginPercentage}%
               </span>
               {currentBusiness.businessType === "Sole Proprietor" ? "net surplus margin" : "Profit margin percentage"}
@@ -454,19 +454,19 @@ export default function BusinessDashboard({
         </div>
 
         {/* Real-time cashflow chart visualizer (D3-inspired custom SVG layout) */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm shadow-emerald-500/5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4 mb-6">
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm shadow-emerald-500/5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-700 pb-4 mb-6">
             <div>
-              <h3 className="text-sm font-bold text-slate-900 font-sans flex items-center gap-2">
-                <Activity className="w-4 h-4 text-emerald-600" />
+              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 font-sans flex items-center gap-2">
+                <Activity className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 Ledger Cash Inflow / Outflow Trends
               </h3>
-              <p className="text-xs text-slate-500 font-sans mt-0.5">
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-sans mt-0.5">
                 Weekly visual cash balance flow chart.
               </p>
             </div>
 
-            <div className="flex gap-4 text-[10px] font-mono text-slate-500">
+            <div className="flex gap-4 text-[10px] font-mono text-slate-500 dark:text-slate-400">
               <span className="flex items-center gap-1.5 font-medium">
                 <span className="w-2.5 h-2.5 rounded bg-emerald-500 block pb-0"></span>
                 Inflows
@@ -479,8 +479,8 @@ export default function BusinessDashboard({
           </div>
 
           {/* SVG canvas renderer */}
-          <div className="h-48 w-full bg-slate-50 rounded-xl relative border border-slate-200/60 p-4">
-            <svg viewBox="0 0 500 150" className="w-full h-full text-emerald-500">
+          <div className="h-48 w-full bg-slate-50 dark:bg-slate-900 rounded-xl relative border border-slate-200/60 dark:border-slate-700/60 p-4">
+            <svg viewBox="0 0 500 150" className="w-full h-full text-emerald-500 dark:text-emerald-400">
               {/* Grid Lines */}
               <line x1="10" y1="20" x2="490" y2="20" stroke="#e2e8f0" strokeWidth="0.75" strokeDasharray="3" />
               <line x1="10" y1="75" x2="490" y2="75" stroke="#e2e8f0" strokeWidth="0.75" strokeDasharray="3" />
@@ -519,7 +519,7 @@ export default function BusinessDashboard({
             </svg>
 
             {activeTransactions.length <= 1 && (
-              <div className="absolute inset-0 flex items-center justify-center text-slate-500 font-sans text-xs italic bg-slate-50/95 p-4 rounded-xl text-center border border-dashed border-slate-200">
+              <div className="absolute inset-0 flex items-center justify-center text-slate-500 dark:text-slate-400 font-sans text-xs italic bg-slate-50/95 dark:bg-slate-900/95 p-4 rounded-xl text-center border border-dashed border-slate-200 dark:border-slate-700">
                 Log progressive ledger transactions using the rapid cashbook drawer to render your cashflow curves!
               </div>
             )}
@@ -527,14 +527,14 @@ export default function BusinessDashboard({
         </div>
 
         {/* Database & Reports Utility - Full Screen Only */}
-        <div className="hidden xl:flex bg-white border border-slate-200 rounded-2xl p-5 flex-col gap-4 shadow-sm shadow-emerald-500/5">
-          <div className="border-b border-slate-100 pb-3 flex items-center gap-2">
-            <Database className="w-4 h-4 text-emerald-600" />
+        <div className="hidden xl:flex bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 flex-col gap-4 shadow-sm shadow-emerald-500/5">
+          <div className="border-b border-slate-100 dark:border-slate-700 pb-3 flex items-center gap-2">
+            <Database className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <div>
-              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider font-sans">
+              <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider font-sans">
                 Exports & Database backups
               </h4>
-              <span className="text-[10px] text-slate-500 block text-left">Manage spreadsheet reports & backups</span>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 block text-left">Manage spreadsheet reports & backups</span>
             </div>
           </div>
 
@@ -544,9 +544,9 @@ export default function BusinessDashboard({
               <button
                 type="button"
                 onClick={handleExportCSV}
-                className="flex items-center justify-center gap-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold py-2 rounded-xl border border-slate-200 cursor-pointer transition-colors"
+                className="flex items-center justify-center gap-1.5 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 hover:dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold py-2 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer transition-colors"
               >
-                <Download className="w-3.5 h-3.5 text-emerald-600" />
+                <Download className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                 Excel CSV
               </button>
 
@@ -554,7 +554,7 @@ export default function BusinessDashboard({
               <button
                 type="button"
                 onClick={handleExportJSON}
-                className="flex items-center justify-center gap-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold py-2 rounded-xl border border-slate-200 cursor-pointer transition-colors"
+                className="flex items-center justify-center gap-1.5 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 hover:dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold py-2 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer transition-colors"
               >
                 <Download className="w-3.5 h-3.5 text-[color:var(--color-brand-teal)]" />
                 JSON Backup
@@ -562,14 +562,14 @@ export default function BusinessDashboard({
             </div>
 
             {/* RESTORE DATABASE BLOCK */}
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2">
+            <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 space-y-2">
               <span className="text-[9px] font-mono text-slate-400 uppercase tracking-wider font-bold block text-left">Restore sandbox backup</span>
-              <p className="text-[10px] text-slate-550 leading-relaxed text-left">
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed text-left">
                 Restore previously backed up JSON ledger records instantly into your offline safe space.
               </p>
               
-              <label className="flex items-center justify-center gap-1.5 bg-white hover:bg-slate-100 text-slate-700 font-bold py-1.5 px-3 rounded-lg border border-slate-200 cursor-pointer transition-colors text-[10px]">
-                <Upload className="w-3 h-3 text-emerald-600" />
+              <label className="flex items-center justify-center gap-1.5 bg-white dark:bg-slate-800 hover:bg-slate-100 hover:dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold py-1.5 px-3 rounded-lg border border-slate-200 dark:border-slate-700 cursor-pointer transition-colors text-[10px]">
+                <Upload className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                 Upload .json file
                 <input
                   type="file"
@@ -581,14 +581,14 @@ export default function BusinessDashboard({
             </div>
 
             {/* IMPORT FROM EXCEL/CSV BLOCK */}
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2">
+            <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 space-y-2">
               <span className="text-[9px] font-mono text-slate-400 uppercase tracking-wider font-bold block text-left">Import from Excel / CSV</span>
-              <p className="text-[10px] text-slate-550 leading-relaxed text-left">
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed text-left">
                 Upload a spreadsheet with Date, Type, Category, Amount, Description, and Payment Method columns to add them as transactions.
               </p>
 
-              <label className={`flex items-center justify-center gap-1.5 bg-white hover:bg-slate-100 text-slate-700 font-bold py-1.5 px-3 rounded-lg border border-slate-200 transition-colors text-[10px] ${isImportingSpreadsheet ? "opacity-50 cursor-wait" : "cursor-pointer"}`}>
-                <FileSpreadsheetIcon className="w-3 h-3 text-emerald-600" />
+              <label className={`flex items-center justify-center gap-1.5 bg-white dark:bg-slate-800 hover:bg-slate-100 hover:dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold py-1.5 px-3 rounded-lg border border-slate-200 dark:border-slate-700 transition-colors text-[10px] ${isImportingSpreadsheet ? "opacity-50 cursor-wait" : "cursor-pointer"}`}>
+                <FileSpreadsheetIcon className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                 {isImportingSpreadsheet ? "Importing..." : "Upload .xlsx, .xls or .csv"}
                 <input
                   type="file"
@@ -602,7 +602,7 @@ export default function BusinessDashboard({
 
             {/* Status notifications */}
             {dbStatus && (
-              <div className="p-2 text-center rounded-lg text-[10px] font-mono bg-emerald-50 text-emerald-800 border border-emerald-200 animate-pulse">
+              <div className="p-2 text-center rounded-lg text-[10px] font-mono bg-emerald-50 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700 animate-pulse">
                 {dbStatus}
               </div>
             )}
@@ -615,12 +615,12 @@ export default function BusinessDashboard({
       <div className="xl:col-span-4 flex flex-col gap-6">
         
         {/* Business score dial card */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 text-center space-y-4 shadow-sm shadow-emerald-500/5">
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 text-center space-y-4 shadow-sm shadow-emerald-500/5">
           <div>
             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest font-sans">
               Business Health Score
             </h4>
-            <p className="text-[11px] text-slate-500 font-sans mt-0.5">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-sans mt-0.5">
               Automated audit evaluation of stability vector thresholds.
             </p>
           </div>
@@ -654,25 +654,25 @@ export default function BusinessDashboard({
                 </svg>
 
                 <div className="absolute text-center">
-                  <strong className="text-2xl font-black font-mono text-slate-900 tracking-tighter">
+                  <strong className="text-2xl font-black font-mono text-slate-900 dark:text-slate-100 tracking-tighter">
                     {healthScore}
                   </strong>
-                  <span className="text-[10px] text-emerald-600 font-mono block tracking-widest">PTS</span>
+                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono block tracking-widest">PTS</span>
                 </div>
               </div>
 
               {/* Health feedback text */}
               <div className="pt-2">
-                <span className="font-sans font-bold text-xs text-slate-900 flex items-center justify-center gap-1.5">
+                <span className="font-sans font-bold text-xs text-slate-900 dark:text-slate-100 flex items-center justify-center gap-1.5">
                   {healthScore >= 75 ? (
-                    <><TrendingUp className="w-3.5 h-3.5 text-emerald-600" /> Pristine Solvency Position</>
+                    <><TrendingUp className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" /> Pristine Solvency Position</>
                   ) : healthScore >= 50 ? (
-                    <><Lightning className="w-3.5 h-3.5 text-amber-500" /> Variable Operational Health</>
+                    <><Lightning className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" /> Variable Operational Health</>
                   ) : (
-                    <><AlertCircle className="w-3.5 h-3.5 text-rose-600" /> High Liquidity Warnings</>
+                    <><AlertCircle className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" /> High Liquidity Warnings</>
                   )}
                 </span>
-                <p className="text-[11px] text-slate-500 max-w-xs mx-auto leading-relaxed mt-1 font-sans">
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 max-w-xs mx-auto leading-relaxed mt-1 font-sans">
                   Calculated based on profit margin targets, cash liquidity levels, and collection delays.
                 </p>
               </div>
@@ -692,10 +692,10 @@ export default function BusinessDashboard({
                 </div>
               </div>
               <div className="pt-2">
-                <span className="font-sans font-bold text-xs text-slate-900 flex items-center justify-center gap-1.5">
+                <span className="font-sans font-bold text-xs text-slate-900 dark:text-slate-100 flex items-center justify-center gap-1.5">
                   Not Enough Data Yet
                 </span>
-                <p className="text-[11px] text-slate-500 max-w-xs mx-auto leading-relaxed mt-1 font-sans">
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 max-w-xs mx-auto leading-relaxed mt-1 font-sans">
                   Log {5 - activeTransactions.length} more transaction{5 - activeTransactions.length === 1 ? "" : "s"} and your Health Score will appear here.
                 </p>
               </div>
@@ -704,20 +704,20 @@ export default function BusinessDashboard({
         </div>
 
         {/* Rapid Ledger Cashbook trigger panel */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col gap-4 shadow-sm shadow-emerald-500/5">
-          <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 flex flex-col gap-4 shadow-sm shadow-emerald-500/5">
+          <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-700 pb-3">
             <div>
-              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5 font-sans">
-                <Calculator className="w-4 h-4 text-emerald-600" />
+              <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider flex items-center gap-1.5 font-sans">
+                <Calculator className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 Ledger Book Drawer
               </h4>
-              <span className="text-[10px] text-slate-500 block">Record fast cash transactions</span>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Record fast cash transactions</span>
             </div>
 
             <button
               id="open-ledger-drawer-btn"
               onClick={() => setIsOpeningLogs(!isOpeningLogs)}
-              className="bg-emerald-50 border border-emerald-250 text-emerald-650 hover:bg-emerald-100 p-2 rounded-xl transition-all cursor-pointer"
+              className="bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-700 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 hover:dark:bg-emerald-900/40 p-2 rounded-xl transition-all cursor-pointer"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -726,12 +726,12 @@ export default function BusinessDashboard({
           {/* Ledger Add form drawer */}
           {isOpeningLogs && (
             <form onSubmit={handleSaveTransaction} className="space-y-3.5 animate-fade-in text-xs leading-relaxed">
-              <div className="grid grid-cols-2 gap-2 bg-slate-50 p-1 rounded-xl border border-slate-200">
+              <div className="grid grid-cols-2 gap-2 bg-slate-50 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
                 <button
                   type="button"
                   onClick={() => setType("income")}
                   className={`py-1.5 text-[10px] font-bold font-sans rounded-lg transition-colors cursor-pointer ${
-                    type === "income" ? "bg-emerald-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-700"
+                    type === "income" ? "bg-emerald-600 text-white shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 hover:dark:text-slate-300"
                   }`}
                 >
                   Inflow (Revenue)
@@ -740,7 +740,7 @@ export default function BusinessDashboard({
                   type="button"
                   onClick={() => setType("expense")}
                   className={`py-1.5 text-[10px] font-bold font-sans rounded-lg transition-colors cursor-pointer ${
-                    type === "expense" ? "bg-rose-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-700"
+                    type === "expense" ? "bg-rose-600 text-white shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 hover:dark:text-slate-300"
                   }`}
                 >
                   Outflow (Expense)
@@ -748,16 +748,16 @@ export default function BusinessDashboard({
               </div>
 
               {/* SMS Automatic Parser Sub-Block */}
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-2.5 space-y-2">
-                <div className="flex justify-between items-center text-[10px] text-slate-500 font-sans font-medium">
+              <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 space-y-2">
+                <div className="flex justify-between items-center text-[10px] text-slate-500 dark:text-slate-400 font-sans font-medium">
                   <span className="flex items-center gap-1">
-                    <Sparkles className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
+                    <Sparkles className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400 animate-pulse" />
                     MTN / M-Pesa SMS Auto-Fill
                   </span>
                   <button
                     type="button"
                     onClick={() => setShowSmsInput(!showSmsInput)}
-                    className="text-emerald-600 shadow-sm hover:underline font-bold"
+                    className="text-emerald-600 dark:text-emerald-400 shadow-sm hover:underline font-bold"
                   >
                     {showSmsInput ? "Hide paste box" : "Use SMS paste"}
                   </button>
@@ -770,7 +770,7 @@ export default function BusinessDashboard({
                       placeholder="Paste e.g., 'You have received GHS 1,500 from...' or M-PESA receipt alert..."
                       value={rawSmsText}
                       onChange={(e) => setRawSmsText(e.target.value)}
-                      className="w-full bg-white border border-slate-200 rounded-lg p-2 text-[11px] font-sans outline-none focus:border-emerald-500"
+                      className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2 text-[11px] font-sans outline-none focus:border-emerald-500"
                     />
                     <button
                       type="button"
@@ -785,8 +785,8 @@ export default function BusinessDashboard({
                 {smsParserMsg && (
                   <div className={`p-2 rounded-lg text-[10px] font-medium leading-relaxed font-sans ${
                     smsParserMsg.status === "success" 
-                      ? "bg-emerald-50 text-emerald-800 border border-emerald-100" 
-                      : "bg-rose-50 text-rose-800 border border-rose-100"
+                      ? "bg-emerald-50 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-700" 
+                      : "bg-rose-50 dark:bg-rose-900/40 text-rose-800 dark:text-rose-300 border border-rose-100 dark:border-rose-700"
                   }`}>
                     {smsParserMsg.text}
                   </div>
@@ -802,7 +802,7 @@ export default function BusinessDashboard({
                     required
                     value={amount}
                     onChange={(e) => setAmount(Number(e.target.value))}
-                    className="w-full bg-white text-slate-800 rounded-lg px-2.5 py-1.5 border border-slate-200 mt-1 outline-none font-mono focus:border-emerald-500"
+                    className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-lg px-2.5 py-1.5 border border-slate-200 dark:border-slate-700 mt-1 outline-none font-mono focus:border-emerald-500"
                   />
                 </div>
                 <div>
@@ -810,7 +810,7 @@ export default function BusinessDashboard({
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full bg-white text-slate-800 border border-slate-200 px-2 py-1.5 rounded-lg mt-1 outline-none font-sans focus:border-emerald-500"
+                    className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 px-2 py-1.5 rounded-lg mt-1 outline-none font-sans focus:border-emerald-500"
                   >
                     {type === "income" ? (
                       <>
@@ -837,7 +837,7 @@ export default function BusinessDashboard({
                   <select
                     value={paymentMethod}
                     onChange={(e) => setPaymentMethod(e.target.value as any)}
-                    className="w-full bg-white text-slate-800 border border-slate-200 px-2 py-1.5 rounded-lg mt-1 outline-none font-sans focus:border-emerald-500"
+                    className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 px-2 py-1.5 rounded-lg mt-1 outline-none font-sans focus:border-emerald-500"
                   >
                     <option value="Mobile Money">Mobile Money (MoMo)</option>
                     <option value="Cash">Cash Handover</option>
@@ -849,7 +849,7 @@ export default function BusinessDashboard({
                   <select
                     value={customerId}
                     onChange={(e) => setCustomerId(e.target.value)}
-                    className="w-full bg-white text-slate-800 border border-slate-200 px-2 py-1.5 rounded-lg mt-1 outline-none font-sans focus:border-emerald-500"
+                    className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 px-2 py-1.5 rounded-lg mt-1 outline-none font-sans focus:border-emerald-500"
                   >
                     <option value="">No customer link</option>
                     {customers.map(c => (
@@ -867,7 +867,7 @@ export default function BusinessDashboard({
                   placeholder="e.g. Received partial retainer for project work"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full bg-white text-slate-800 rounded-lg px-2.5 py-2 border border-slate-200 mt-1 outline-none font-sans focus:border-emerald-500"
+                  className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-lg px-2.5 py-2 border border-slate-200 dark:border-slate-700 mt-1 outline-none font-sans focus:border-emerald-500"
                 />
               </div>
 
@@ -885,26 +885,26 @@ export default function BusinessDashboard({
             <span className="text-[9px] font-mono text-slate-400 uppercase tracking-widest block font-bold mb-1">Recent Ledger logs</span>
             <div className="space-y-2 max-h-[180px] overflow-y-auto pr-1">
               {activeTransactions.slice(0, 5).map((t) => (
-                <div key={t.id} className="bg-slate-50 border border-slate-150 rounded-xl p-3 flex justify-between items-center text-xs">
+                <div key={t.id} className="bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-xl p-3 flex justify-between items-center text-xs">
                   <div className="flex items-center gap-2.5">
                     <div className={`p-1 rounded-lg ${
-                      t.type === "income" ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"
+                      t.type === "income" ? "bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400" : "bg-rose-50 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400"
                     }`}>
                       {t.type === "income" ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
                     </div>
                     <div>
-                      <h4 className="font-semibold text-slate-800 font-sans max-w-[140px] truncate">{t.description}</h4>
+                      <h4 className="font-semibold text-slate-800 dark:text-slate-200 font-sans max-w-[140px] truncate">{t.description}</h4>
                       <p className="text-[10px] text-slate-400 font-mono tracking-wider">{t.paymentMethod} — {t.date}</p>
                     </div>
                   </div>
                   
                   <div className="flex items-center gap-2.5">
-                    <strong className={`font-mono font-bold ${t.type === "income" ? "text-emerald-600" : "text-rose-600"}`}>
+                    <strong className={`font-mono font-bold ${t.type === "income" ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
                       {t.type === "income" ? "+" : "-"}{currencySymbol}{t.amount.toLocaleString()}
                     </strong>
                     <button
                       onClick={() => onDeleteTransaction(t.id)}
-                      className="text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
+                      className="text-slate-400 hover:text-rose-600 hover:dark:text-rose-400 transition-colors cursor-pointer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -912,7 +912,7 @@ export default function BusinessDashboard({
                 </div>
               ))}
               {activeTransactions.length === 0 && (
-                <div className="text-center py-6 text-slate-450 italic text-[11px] font-sans">
+                <div className="text-center py-6 text-slate-400 italic text-[11px] font-sans">
                   No registered active logs exist on this business cashbook. Click the "+" button above to add assets ledger records!
                 </div>
               )}
@@ -921,14 +921,14 @@ export default function BusinessDashboard({
         </div>
 
         {/* Database & Reports Utility - Mobile/Tablet only */}
-        <div className="xl:hidden flex bg-white border border-slate-200 rounded-2xl p-5 flex-col gap-4 shadow-sm shadow-emerald-500/5">
-          <div className="border-b border-slate-100 pb-3 flex items-center gap-2">
-            <Database className="w-4 h-4 text-emerald-600" />
+        <div className="xl:hidden flex bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 flex-col gap-4 shadow-sm shadow-emerald-500/5">
+          <div className="border-b border-slate-100 dark:border-slate-700 pb-3 flex items-center gap-2">
+            <Database className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <div>
-              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider font-sans">
+              <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider font-sans">
                 Exports & Database backups
               </h4>
-              <span className="text-[10px] text-slate-500 block text-left">Manage spreadsheet reports & backups</span>
+              <span className="text-[10px] text-slate-500 dark:text-slate-400 block text-left">Manage spreadsheet reports & backups</span>
             </div>
           </div>
 
@@ -938,9 +938,9 @@ export default function BusinessDashboard({
               <button
                 type="button"
                 onClick={handleExportCSV}
-                className="flex items-center justify-center gap-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold py-2 rounded-xl border border-slate-200 cursor-pointer transition-colors"
+                className="flex items-center justify-center gap-1.5 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 hover:dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold py-2 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer transition-colors"
               >
-                <Download className="w-3.5 h-3.5 text-emerald-600" />
+                <Download className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                 Excel CSV
               </button>
 
@@ -948,7 +948,7 @@ export default function BusinessDashboard({
               <button
                 type="button"
                 onClick={handleExportJSON}
-                className="flex items-center justify-center gap-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold py-2 rounded-xl border border-slate-200 cursor-pointer transition-colors"
+                className="flex items-center justify-center gap-1.5 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 hover:dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold py-2 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer transition-colors"
               >
                 <Download className="w-3.5 h-3.5 text-[color:var(--color-brand-teal)]" />
                 JSON Backup
@@ -956,14 +956,14 @@ export default function BusinessDashboard({
             </div>
 
             {/* RESTORE DATABASE BLOCK */}
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2">
+            <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 space-y-2">
               <span className="text-[9px] font-mono text-slate-400 uppercase tracking-wider font-bold block text-left">Restore sandbox backup</span>
-              <p className="text-[10px] text-slate-550 leading-relaxed text-left">
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed text-left">
                 Restore previously backed up JSON ledger records instantly into your offline safe space.
               </p>
               
-              <label className="flex items-center justify-center gap-1.5 bg-white hover:bg-slate-100 text-slate-700 font-bold py-1.5 px-3 rounded-lg border border-slate-200 cursor-pointer transition-colors text-[10px]">
-                <Upload className="w-3 h-3 text-emerald-600" />
+              <label className="flex items-center justify-center gap-1.5 bg-white dark:bg-slate-800 hover:bg-slate-100 hover:dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold py-1.5 px-3 rounded-lg border border-slate-200 dark:border-slate-700 cursor-pointer transition-colors text-[10px]">
+                <Upload className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                 Upload .json file
                 <input
                   type="file"
@@ -975,14 +975,14 @@ export default function BusinessDashboard({
             </div>
 
             {/* IMPORT FROM EXCEL/CSV BLOCK */}
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2">
+            <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 space-y-2">
               <span className="text-[9px] font-mono text-slate-400 uppercase tracking-wider font-bold block text-left">Import from Excel / CSV</span>
-              <p className="text-[10px] text-slate-550 leading-relaxed text-left">
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed text-left">
                 Upload a spreadsheet with Date, Type, Category, Amount, Description, and Payment Method columns to add them as transactions.
               </p>
 
-              <label className={`flex items-center justify-center gap-1.5 bg-white hover:bg-slate-100 text-slate-700 font-bold py-1.5 px-3 rounded-lg border border-slate-200 transition-colors text-[10px] ${isImportingSpreadsheet ? "opacity-50 cursor-wait" : "cursor-pointer"}`}>
-                <FileSpreadsheetIcon className="w-3 h-3 text-emerald-600" />
+              <label className={`flex items-center justify-center gap-1.5 bg-white dark:bg-slate-800 hover:bg-slate-100 hover:dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold py-1.5 px-3 rounded-lg border border-slate-200 dark:border-slate-700 transition-colors text-[10px] ${isImportingSpreadsheet ? "opacity-50 cursor-wait" : "cursor-pointer"}`}>
+                <FileSpreadsheetIcon className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                 {isImportingSpreadsheet ? "Importing..." : "Upload .xlsx, .xls or .csv"}
                 <input
                   type="file"
@@ -996,7 +996,7 @@ export default function BusinessDashboard({
 
             {/* Status notifications */}
             {dbStatus && (
-              <div className="p-2 text-center rounded-lg text-[10px] font-mono bg-emerald-50 text-emerald-800 border border-emerald-200 animate-pulse">
+              <div className="p-2 text-center rounded-lg text-[10px] font-mono bg-emerald-50 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700 animate-pulse">
                 {dbStatus}
               </div>
             )}

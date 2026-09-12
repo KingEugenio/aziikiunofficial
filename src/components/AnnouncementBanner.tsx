@@ -81,22 +81,22 @@ export default function AnnouncementBanner({ screen, authenticated = true, class
 
   return (
     <div
-      className={`bg-indigo-50 border border-indigo-200 rounded-2xl p-4 text-indigo-900 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in text-left ${className ?? "mb-6"}`}
+      className={`bg-indigo-50 dark:bg-indigo-900/40 border border-indigo-200 dark:border-indigo-700 rounded-2xl p-4 text-indigo-900 dark:text-indigo-300 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in text-left ${className ?? "mb-6"}`}
     >
       <div className="flex items-start gap-3">
-        <div className="bg-indigo-100 text-indigo-700 w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
+        <div className="bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-400 w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
           <Megaphone className="w-4.5 h-4.5" />
         </div>
         <div>
           <p className="text-xs font-extrabold">{latest.title}</p>
-          <p className="text-[11px] text-indigo-700 mt-0.5 leading-relaxed">{latest.message}</p>
+          <p className="text-[11px] text-indigo-700 dark:text-indigo-400 mt-0.5 leading-relaxed">{latest.message}</p>
         </div>
       </div>
       <button
         type="button"
         onClick={dismiss}
         disabled={isDismissing}
-        className="shrink-0 flex items-center gap-1 bg-white hover:bg-indigo-100 border border-indigo-200 text-indigo-800 font-bold text-[10px] px-3 py-2 rounded-xl transition-colors cursor-pointer disabled:opacity-50"
+        className="shrink-0 flex items-center gap-1 bg-white dark:bg-slate-800 hover:bg-indigo-100 hover:dark:bg-indigo-900/40 border border-indigo-200 dark:border-indigo-700 text-indigo-800 dark:text-indigo-300 font-bold text-[10px] px-3 py-2 rounded-xl transition-colors cursor-pointer disabled:opacity-50"
       >
         <X className="w-3.5 h-3.5" /> Dismiss
       </button>

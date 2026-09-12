@@ -35,7 +35,7 @@ export default function ProgressBar({ currentStep, totalSteps, onBack, onSkip, s
           <button
             type="button"
             onClick={onSkip}
-            className="text-[11px] font-bold text-slate-400 hover:text-slate-600 transition-colors cursor-pointer px-1 py-1"
+            className="text-[11px] font-bold text-slate-400 hover:text-slate-600 hover:dark:text-slate-300 transition-colors cursor-pointer px-1 py-1"
           >
             Skip
           </button>

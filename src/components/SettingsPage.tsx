@@ -160,31 +160,31 @@ export default function SettingsPage({ userEmail, onAccountDeleted }: SettingsPa
   return (
     <div className="space-y-8 text-left animate-fade-in">
       <div>
-        <h2 className="text-lg font-black text-slate-900">Settings</h2>
+        <h2 className="text-lg font-black text-slate-900 dark:text-slate-100">Settings</h2>
         <p className="text-xs text-slate-400 mt-1">Manage your account security and preferences.</p>
       </div>
 
       {/* Security */}
-      <section className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 space-y-5">
-        <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-          <Lock className="w-4 h-4 text-emerald-600" /> Security
+      <section className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 sm:p-6 space-y-5">
+        <h3 className="text-sm font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+          <Lock className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> Security
         </h3>
 
         <form onSubmit={handleChangePassword} className="space-y-3 max-w-sm">
-          <p className="text-xs font-bold text-slate-700">Change password</p>
+          <p className="text-xs font-bold text-slate-700 dark:text-slate-300">Change password</p>
           <div className="relative">
             <input
               type={showNewPassword ? "text" : "password"}
               placeholder="New password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 pr-9 outline-none text-xs focus:border-emerald-500"
+              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 pr-9 outline-none text-xs focus:border-emerald-500"
             />
             <button
               type="button"
               onClick={() => setShowNewPassword((v) => !v)}
               aria-label={showNewPassword ? "Hide password" : "Show password"}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 hover:dark:text-slate-300 cursor-pointer"
             >
               {showNewPassword ? <EyeSlash className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
             </button>
@@ -195,19 +195,19 @@ export default function SettingsPage({ userEmail, onAccountDeleted }: SettingsPa
               placeholder="Confirm new password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 pr-9 outline-none text-xs focus:border-emerald-500"
+              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 pr-9 outline-none text-xs focus:border-emerald-500"
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword((v) => !v)}
               aria-label={showConfirmPassword ? "Hide password" : "Show password"}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 hover:dark:text-slate-300 cursor-pointer"
             >
               {showConfirmPassword ? <EyeSlash className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
             </button>
           </div>
           {passwordMsg && (
-            <p className={`text-[11px] flex items-center gap-1 ${passwordMsg.type === "error" ? "text-rose-600" : "text-emerald-600"}`}>
+            <p className={`text-[11px] flex items-center gap-1 ${passwordMsg.type === "error" ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400"}`}>
               {passwordMsg.type === "error" ? <AlertCircle className="w-3.5 h-3.5" /> : <CheckCircle className="w-3.5 h-3.5" />}
               {passwordMsg.text}
             </p>
@@ -221,28 +221,28 @@ export default function SettingsPage({ userEmail, onAccountDeleted }: SettingsPa
           </button>
         </form>
 
-        <div className="border-t border-slate-100 pt-5 space-y-3 max-w-sm">
-          <p className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Two-Factor Authentication
+        <div className="border-t border-slate-100 dark:border-slate-700 pt-5 space-y-3 max-w-sm">
+          <p className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" /> Two-Factor Authentication
           </p>
           {mfaLoading ? (
             <p className="text-[11px] text-slate-400">Loading...</p>
           ) : activeFactor ? (
-            <div className="flex items-center justify-between bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2.5">
-              <span className="text-[11px] font-bold text-emerald-700">Enabled ({activeFactor.friendly_name || "Authenticator app"})</span>
+            <div className="flex items-center justify-between bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-700 rounded-xl px-3 py-2.5">
+              <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400">Enabled ({activeFactor.friendly_name || "Authenticator app"})</span>
               <button
                 type="button"
                 onClick={() => handleUnenroll(activeFactor.id)}
                 disabled={isMfaBusy}
-                className="text-[10px] font-bold text-rose-600 hover:underline cursor-pointer disabled:opacity-50"
+                className="text-[10px] font-bold text-rose-600 dark:text-rose-400 hover:underline cursor-pointer disabled:opacity-50"
               >
                 Disable
               </button>
             </div>
           ) : enrolling ? (
             <form onSubmit={handleConfirmEnroll} className="space-y-2.5">
-              <p className="text-[11px] text-slate-500">Scan this QR code with your authenticator app, then enter the 6-digit code it shows.</p>
-              <img src={enrolling.qrCode} alt="MFA QR code" className="w-32 h-32 border border-slate-200 rounded-xl" />
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Scan this QR code with your authenticator app, then enter the 6-digit code it shows.</p>
+              <img src={enrolling.qrCode} alt="MFA QR code" className="w-32 h-32 border border-slate-200 dark:border-slate-700 rounded-xl" />
               <div className="flex items-center gap-1.5">
                 <p className="text-[9px] font-mono text-slate-400 break-all">Or enter manually: {enrolling.secret}</p>
                 <button
@@ -254,9 +254,9 @@ export default function SettingsPage({ userEmail, onAccountDeleted }: SettingsPa
                     });
                   }}
                   aria-label="Copy secret key"
-                  className="shrink-0 text-slate-400 hover:text-emerald-600 cursor-pointer"
+                  className="shrink-0 text-slate-400 hover:text-emerald-600 hover:dark:text-emerald-400 cursor-pointer"
                 >
-                  {secretCopied ? <CheckCircle className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                  {secretCopied ? <CheckCircle className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                 </button>
               </div>
               <input
@@ -266,9 +266,9 @@ export default function SettingsPage({ userEmail, onAccountDeleted }: SettingsPa
                 placeholder="123456"
                 value={mfaCode}
                 onChange={(e) => setMfaCode(e.target.value)}
-                className="w-32 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs text-center font-mono focus:border-emerald-500"
+                className="w-32 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none text-xs text-center font-mono focus:border-emerald-500"
               />
-              {mfaError && <p className="text-[11px] text-rose-600">{mfaError}</p>}
+              {mfaError && <p className="text-[11px] text-rose-600 dark:text-rose-400">{mfaError}</p>}
               <div className="flex items-center gap-2">
                 <button
                   type="submit"
@@ -277,7 +277,7 @@ export default function SettingsPage({ userEmail, onAccountDeleted }: SettingsPa
                 >
                   Confirm
                 </button>
-                <button type="button" onClick={() => setEnrolling(null)} className="text-[11px] font-bold text-slate-500 hover:underline cursor-pointer">
+                <button type="button" onClick={() => setEnrolling(null)} className="text-[11px] font-bold text-slate-500 dark:text-slate-400 hover:underline cursor-pointer">
                   Cancel
                 </button>
               </div>
@@ -287,19 +287,19 @@ export default function SettingsPage({ userEmail, onAccountDeleted }: SettingsPa
               type="button"
               onClick={handleStartEnroll}
               disabled={isMfaBusy}
-              className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 hover:border-emerald-300 text-slate-700 text-[11px] font-bold px-3.5 py-2 rounded-xl cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-emerald-300 hover:dark:border-emerald-600 text-slate-700 dark:text-slate-300 text-[11px] font-bold px-3.5 py-2 rounded-xl cursor-pointer disabled:opacity-50"
             >
               <QrCode className="w-3.5 h-3.5" /> Enable with an authenticator app
             </button>
           )}
-          {mfaError && !enrolling && <p className="text-[11px] text-rose-600">{mfaError}</p>}
+          {mfaError && !enrolling && <p className="text-[11px] text-rose-600 dark:text-rose-400">{mfaError}</p>}
         </div>
       </section>
 
       {/* Email Preferences */}
-      <section className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 space-y-4">
-        <h3 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-          <Mail className="w-4 h-4 text-emerald-600" /> Email Preferences
+      <section className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 sm:p-6 space-y-4">
+        <h3 className="text-sm font-extrabold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+          <Mail className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> Email Preferences
         </h3>
         {prefsLoading ? (
           <p className="text-[11px] text-slate-400">Loading...</p>
@@ -312,7 +312,7 @@ export default function SettingsPage({ userEmail, onAccountDeleted }: SettingsPa
                 onChange={(e) => setMarketingEmails(e.target.checked)}
                 className="mt-0.5 w-4 h-4 accent-emerald-600 cursor-pointer"
               />
-              <span className="text-xs text-slate-700">
+              <span className="text-xs text-slate-700 dark:text-slate-300">
                 <span className="font-bold block">Promotional emails</span>
                 Receive product updates, tips, and occasional announcements.
               </span>
@@ -331,14 +331,14 @@ export default function SettingsPage({ userEmail, onAccountDeleted }: SettingsPa
       </section>
 
       {/* Danger Zone */}
-      <section className="bg-white border border-rose-200 rounded-3xl p-5 sm:p-6 space-y-4">
-        <h3 className="text-sm font-extrabold text-rose-700 flex items-center gap-2">
+      <section className="bg-white dark:bg-slate-800 border border-rose-200 dark:border-rose-700 rounded-3xl p-5 sm:p-6 space-y-4">
+        <h3 className="text-sm font-extrabold text-rose-700 dark:text-rose-400 flex items-center gap-2">
           <AlertCircle className="w-4 h-4" /> Danger Zone
         </h3>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-rose-150 rounded-2xl p-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-rose-100 dark:border-rose-700 rounded-2xl p-4">
           <div>
-            <p className="text-xs font-bold text-slate-900">Delete account</p>
-            <p className="text-[11px] text-slate-500 mt-0.5">Permanently deletes your account and all associated data ({userEmail}). This can't be undone.</p>
+            <p className="text-xs font-bold text-slate-900 dark:text-slate-100">Delete account</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Permanently deletes your account and all associated data ({userEmail}). This can't be undone.</p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <input
@@ -346,19 +346,19 @@ export default function SettingsPage({ userEmail, onAccountDeleted }: SettingsPa
               placeholder='Type "DELETE"'
               value={deleteConfirmText}
               onChange={(e) => setDeleteConfirmText(e.target.value)}
-              className="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 outline-none text-[11px] focus:border-rose-400 w-28"
+              className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 outline-none text-[11px] focus:border-rose-400 w-28"
             />
             <button
               type="button"
               onClick={handleDeleteAccount}
               disabled={deleteConfirmText !== "DELETE" || isDeleting}
-              className="flex items-center gap-1 bg-white border border-rose-300 text-rose-600 hover:bg-rose-50 text-[11px] font-bold px-3 py-2 rounded-xl cursor-pointer disabled:opacity-40"
+              className="flex items-center gap-1 bg-white dark:bg-slate-800 border border-rose-300 dark:border-rose-600 text-rose-600 dark:text-rose-400 hover:bg-rose-50 hover:dark:bg-rose-900/40 text-[11px] font-bold px-3 py-2 rounded-xl cursor-pointer disabled:opacity-40"
             >
               <Trash2 className="w-3.5 h-3.5" /> {isDeleting ? "Deleting..." : "Delete Account"}
             </button>
           </div>
         </div>
-        {deleteError && <p className="text-[11px] text-rose-600">{deleteError}</p>}
+        {deleteError && <p className="text-[11px] text-rose-600 dark:text-rose-400">{deleteError}</p>}
       </section>
     </div>
   );

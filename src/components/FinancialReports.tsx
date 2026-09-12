@@ -39,8 +39,8 @@ const INVESTMENT_BOOKS = [
     author: "George S. Clason",
     key: "babylon",
     bgColor: "bg-amber-500/10 border-amber-500/30",
-    textColor: "text-amber-800",
-    iconColor: "text-amber-600",
+    textColor: "text-amber-800 dark:text-amber-300",
+    iconColor: "text-amber-600 dark:text-amber-400",
     principles: [
       {
         title: "Start Thy Purse to Fattening",
@@ -77,8 +77,8 @@ const INVESTMENT_BOOKS = [
     author: "Benjamin Graham",
     key: "intelligent",
     bgColor: "bg-indigo-500/10 border-indigo-500/30",
-    textColor: "text-indigo-800",
-    iconColor: "text-indigo-600",
+    textColor: "text-indigo-800 dark:text-indigo-300",
+    iconColor: "text-indigo-600 dark:text-indigo-400",
     principles: [
       {
         title: "A Margin of Safety",
@@ -103,8 +103,8 @@ const INVESTMENT_BOOKS = [
     author: "Robert Kiyosaki",
     key: "richdad",
     bgColor: "bg-emerald-500/10 border-emerald-500/30",
-    textColor: "text-emerald-800",
-    iconColor: "text-emerald-600",
+    textColor: "text-emerald-800 dark:text-emerald-300",
+    iconColor: "text-emerald-600 dark:text-emerald-400",
     principles: [
       {
         title: "Assets Put Money IN Your Pocket",
@@ -643,24 +643,24 @@ export default function FinancialReports({
       <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
         <div className="md:col-span-6 text-left">
           <div className="flex items-center gap-2 mb-1.5">
-            <Calendar className="w-5 h-5 text-indigo-600" />
-            <h2 className="text-xl font-bold text-slate-900 font-sans tracking-tight">
+            <Calendar className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+            <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 font-sans tracking-tight">
               Reports & Ancient Financial Wisdom
             </h2>
           </div>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             Audit your performance indicators over custom cycles, pay yourself 10% first, and digest sovereign rules of money.
           </p>
         </div>
 
         {/* Interval Selector Tabs */}
-        <div className="md:col-span-6 bg-white border border-slate-200 p-1.5 rounded-2xl flex flex-wrap gap-1 shadow-sm md:justify-end">
+        <div className="md:col-span-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-1.5 rounded-2xl flex flex-wrap gap-1 shadow-sm md:justify-end">
           <button
             onClick={() => setPeriodType("daily")}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold font-sans transition-all cursor-pointer ${
  periodType === "daily"
  ? "bg-indigo-600 text-white"
- : "text-slate-600 hover:bg-slate-50"
+ : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 hover:dark:bg-slate-900"
  }`}
           >
             Daily
@@ -670,7 +670,7 @@ export default function FinancialReports({
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold font-sans transition-all cursor-pointer ${
  periodType === "weekly"
  ? "bg-indigo-600 text-white"
- : "text-slate-600 hover:bg-slate-50"
+ : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 hover:dark:bg-slate-900"
  }`}
           >
             Weekly
@@ -680,7 +680,7 @@ export default function FinancialReports({
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold font-sans transition-all cursor-pointer ${
  periodType === "monthly"
  ? "bg-indigo-600 text-white"
- : "text-slate-600 hover:bg-slate-50"
+ : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 hover:dark:bg-slate-900"
  }`}
           >
             Monthly
@@ -690,7 +690,7 @@ export default function FinancialReports({
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold font-sans transition-all cursor-pointer ${
  periodType === "quarterly"
  ? "bg-indigo-600 text-white"
- : "text-slate-600 hover:bg-slate-50"
+ : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 hover:dark:bg-slate-900"
  }`}
           >
             Quarterly
@@ -700,7 +700,7 @@ export default function FinancialReports({
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold font-sans transition-all cursor-pointer ${
  periodType === "annual"
  ? "bg-indigo-600 text-white"
- : "text-slate-600 hover:bg-slate-50"
+ : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 hover:dark:bg-slate-900"
  }`}
           >
             Annual
@@ -710,15 +710,15 @@ export default function FinancialReports({
 
       {/* CURRENCY VIEW TOGGLE - only meaningful once foreign-currency
           documents exist, but always shown so users discover it. */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-4 flex flex-col sm:flex-row flex-wrap items-center gap-3 text-left shadow-sm">
-        <span className="text-xs font-bold text-slate-700 uppercase tracking-wider font-sans block shrink-0">
+      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 flex flex-col sm:flex-row flex-wrap items-center gap-3 text-left shadow-sm">
+        <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider font-sans block shrink-0">
           View Amounts In:
         </span>
-        <div className="flex flex-wrap items-center gap-1.5 bg-slate-50 border border-slate-200 p-1 rounded-xl">
+        <div className="flex flex-wrap items-center gap-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-1 rounded-xl">
           <button
             onClick={() => setReportCurrencyMode("business")}
             className={`px-3 py-1.5 rounded-lg text-[11px] font-bold font-sans transition-all cursor-pointer ${
-              reportCurrencyMode === "business" ? "bg-indigo-600 text-white" : "text-slate-600 hover:bg-white"
+              reportCurrencyMode === "business" ? "bg-indigo-600 text-white" : "text-slate-600 dark:text-slate-300 hover:bg-white hover:dark:bg-slate-800"
             }`}
           >
             Business Currency ({currentBusiness.currency})
@@ -726,7 +726,7 @@ export default function FinancialReports({
           <button
             onClick={() => setReportCurrencyMode("original")}
             className={`px-3 py-1.5 rounded-lg text-[11px] font-bold font-sans transition-all cursor-pointer ${
-              reportCurrencyMode === "original" ? "bg-indigo-600 text-white" : "text-slate-600 hover:bg-white"
+              reportCurrencyMode === "original" ? "bg-indigo-600 text-white" : "text-slate-600 dark:text-slate-300 hover:bg-white hover:dark:bg-slate-800"
             }`}
           >
             Original Currency
@@ -734,7 +734,7 @@ export default function FinancialReports({
           <button
             onClick={() => setReportCurrencyMode("custom")}
             className={`px-3 py-1.5 rounded-lg text-[11px] font-bold font-sans transition-all cursor-pointer ${
-              reportCurrencyMode === "custom" ? "bg-indigo-600 text-white" : "text-slate-600 hover:bg-white"
+              reportCurrencyMode === "custom" ? "bg-indigo-600 text-white" : "text-slate-600 dark:text-slate-300 hover:bg-white hover:dark:bg-slate-800"
             }`}
           >
             Choose Currency
@@ -744,7 +744,7 @@ export default function FinancialReports({
           <select
             value={customDisplayCurrency}
             onChange={(e) => setCustomDisplayCurrency(e.target.value)}
-            className="bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-2.5 py-1.5 outline-none text-xs font-mono cursor-pointer"
+            className="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 outline-none text-xs font-mono cursor-pointer"
           >
             {SUPPORTED_CURRENCY_CODES.map((code) => (
               <option key={code} value={code}>{code}</option>
@@ -752,12 +752,12 @@ export default function FinancialReports({
           </select>
         )}
         {reportCurrencyMode === "custom" && customDisplayCurrency !== currentBusiness.currency && !savedRates[customDisplayCurrency] && (
-          <span className="text-[10px] text-amber-600 font-sans">
+          <span className="text-[10px] text-amber-600 dark:text-amber-400 font-sans">
             No saved rate for {customDisplayCurrency} yet - showing 1:1 with {currentBusiness.currency}. Add one in the "Exchange Rates" pane for an accurate conversion.
           </span>
         )}
         {reportCurrencyMode === "original" && currenciesPresent.length > 1 && (
-          <div className="w-full mt-1 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl p-2.5 text-[11px]">
+          <div className="w-full mt-1 bg-amber-50 dark:bg-amber-900/40 border border-amber-200 dark:border-amber-700 text-amber-800 dark:text-amber-300 rounded-xl p-2.5 text-[11px]">
             <span className="font-bold">Heads up:</span> transactions in this period span {currenciesPresent.length} currencies
             ({currenciesPresent.join(", ")}). Totals shown below add raw amounts across currencies, which isn't a real sum -
             switch to "Business Currency" for an accurate combined total.
@@ -766,8 +766,8 @@ export default function FinancialReports({
       </div>
 
       {/* FILTER DRAWER SELECTOR */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-4 flex flex-col sm:flex-row flex-wrap items-center gap-4 text-left shadow-sm">
-        <span className="text-xs font-bold text-slate-700 uppercase tracking-wider font-sans block">
+      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 flex flex-col sm:flex-row flex-wrap items-center gap-4 text-left shadow-sm">
+        <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider font-sans block">
           Select Reporting Scope:
         </span>
         
@@ -789,7 +789,7 @@ export default function FinancialReports({
                     setSelectedMonth(parts[1]);
                   }
                 }}
-                className="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 cursor-pointer focus:ring-1 focus:ring-indigo-500"
+                className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 cursor-pointer focus:ring-1 focus:ring-indigo-500"
               />
             </div>
           )}
@@ -801,7 +801,7 @@ export default function FinancialReports({
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                className="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 cursor-pointer focus:ring-1 focus:ring-indigo-500"
+                className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 cursor-pointer focus:ring-1 focus:ring-indigo-500"
               >
                 {yearsList.map(y => (
                   <option key={y} value={y}>{y}</option>
@@ -817,7 +817,7 @@ export default function FinancialReports({
               <select
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
-                className="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 cursor-pointer focus:ring-1 focus:ring-indigo-500"
+                className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 cursor-pointer focus:ring-1 focus:ring-indigo-500"
               >
                 {monthsList.map(m => (
                   <option key={m.val} value={m.val}>{m.label}</option>
@@ -833,7 +833,7 @@ export default function FinancialReports({
               <select
                 value={selectedQuarter}
                 onChange={(e) => setSelectedQuarter(e.target.value)}
-                className="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 cursor-pointer focus:ring-1 focus:ring-indigo-500"
+                className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 cursor-pointer focus:ring-1 focus:ring-indigo-500"
               >
                 {quartersList.map(q => (
                   <option key={q.val} value={q.val}>{q.label}</option>
@@ -843,7 +843,7 @@ export default function FinancialReports({
           )}
         </div>
 
-        <div className="sm:ml-auto flex items-center gap-1.5 text-indigo-600 text-xs font-bold font-mono">
+        <div className="sm:ml-auto flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 text-xs font-bold font-mono">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           {filteredTx.length} records processed
           {periodType === "daily" && ` for ${selectedDate}`}
@@ -857,76 +857,76 @@ export default function FinancialReports({
       {/* METRIC SUMMARIES */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Income Card */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow text-left">
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow text-left">
           <div className="flex justify-between items-center mb-3">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
               Inflow Revenue
             </span>
-            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
+            <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400">
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
-          <h3 className="text-2xl font-black text-slate-900 tracking-tight">
+          <h3 className="text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
             {currencySymbol}{totalIncome.toLocaleString()}
           </h3>
-          <p className="text-[10.5px] text-slate-500 mt-1">
+          <p className="text-[10.5px] text-slate-500 dark:text-slate-400 mt-1">
             Total ledger receipts captured for current period
           </p>
         </div>
 
         {/* Expenses Card */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow text-left">
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow text-left">
           <div className="flex justify-between items-center mb-3">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
               Outflow Costs
             </span>
-            <div className="p-2 rounded-xl bg-rose-50 text-rose-600">
+            <div className="p-2 rounded-xl bg-rose-50 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400">
               <TrendingDown className="w-4 h-4" />
             </div>
           </div>
-          <h3 className="text-2xl font-black text-slate-900 tracking-tight">
+          <h3 className="text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
             {currencySymbol}{totalExpense.toLocaleString()}
           </h3>
-          <p className="text-[10.5px] text-slate-500 mt-1">
+          <p className="text-[10.5px] text-slate-500 dark:text-slate-400 mt-1">
             Wages, fuel, materials and general overhead outlays
           </p>
         </div>
 
         {/* Net Profit card */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow text-left">
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow text-left">
           <div className="flex justify-between items-center mb-3">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
               Net Surplus / Loss
             </span>
-            <div className={`p-2 rounded-xl ${netProfit >= 0 ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"}`}>
+            <div className={`p-2 rounded-xl ${netProfit >= 0 ? "bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400" : "bg-red-50 dark:bg-red-900/40 text-red-600 dark:text-red-400"}`}>
               <Coins className="w-4 h-4" />
             </div>
           </div>
-          <h3 className={`text-2xl font-black tracking-tight ${netProfit >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+          <h3 className={`text-2xl font-black tracking-tight ${netProfit >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
             {netProfit >= 0 ? "" : "-"}{currencySymbol}{Math.abs(netProfit).toLocaleString()}
           </h3>
-          <p className="text-[10.5px] text-slate-500 mt-1 flex items-center gap-1">
+          <p className="text-[10.5px] text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1">
             Margin: 
-            <span className={`font-bold ${profitMargin >= 20 ? "text-emerald-600" : "text-slate-600"}`}>
+            <span className={`font-bold ${profitMargin >= 20 ? "text-emerald-600 dark:text-emerald-400" : "text-slate-600 dark:text-slate-300"}`}>
               {profitMargin.toFixed(1)}%
             </span>
           </p>
         </div>
 
         {/* Dynamic Pay Yourself first 10% Gold coins target card */}
-        <div className="bg-amber-50 border border-amber-350 rounded-2xl p-5 text-left shadow-sm">
+        <div className="bg-amber-50 dark:bg-amber-900/40 border border-amber-300 dark:border-amber-600 rounded-2xl p-5 text-left shadow-sm">
           <div className="flex justify-between items-center mb-3">
-            <span className="text-[10px] font-heavy text-amber-700 uppercase tracking-widest font-mono">
+            <span className="text-[10px] font-heavy text-amber-700 dark:text-amber-400 uppercase tracking-widest font-mono">
               10% Babylon Share
             </span>
-            <div className="p-2 rounded-xl bg-amber-500/20 text-amber-600">
+            <div className="p-2 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400">
               <Sparkles className="w-4 h-4 animate-spin-slow" />
             </div>
           </div>
-          <h3 className="text-2xl font-black text-amber-800 tracking-tight">
+          <h3 className="text-2xl font-black text-amber-800 dark:text-amber-300 tracking-tight">
             {currencySymbol}{goldenTenPercent.toLocaleString()}
           </h3>
-          <p className="text-[10.5px] text-amber-600 mt-1 font-sans">
+          <p className="text-[10.5px] text-amber-600 dark:text-amber-400 mt-1 font-sans">
             "Thy gold coins saved are thine own workers."
           </p>
         </div>
@@ -936,13 +936,13 @@ export default function FinancialReports({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         
         {/* Left Column: Financial Trend performance chart (Recharts) */}
-        <div className="lg:col-span-8 bg-white border border-slate-200 rounded-3xl p-5 shadow-sm text-left">
-          <div className="border-b border-slate-100 pb-3 mb-4 flex items-center justify-between">
+        <div className="lg:col-span-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 shadow-sm text-left">
+          <div className="border-b border-slate-100 dark:border-slate-700 pb-3 mb-4 flex items-center justify-between">
             <div>
-              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider font-sans">
+              <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider font-sans">
                 Financial Trend Outlook
               </h4>
-              <span className="text-[10px] text-slate-500">
+              <span className="text-[10px] text-slate-500 dark:text-slate-400">
                 Performance indicators across selected {periodType === "annual" ? "annual months" : periodType === "quarterly" ? "quarter months" : "trailing months"}
               </span>
             </div>
@@ -991,12 +991,12 @@ export default function FinancialReports({
         </div>
 
         {/* Right Column: Outlay categories representation pie */}
-        <div className="lg:col-span-4 bg-white border border-slate-200 rounded-3xl p-5 shadow-sm text-left flex flex-col justify-between">
+        <div className="lg:col-span-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 shadow-sm text-left flex flex-col justify-between">
           <div>
-            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider font-sans mb-1">
+            <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider font-sans mb-1">
               Outlay Cost Breakdown
             </h4>
-            <span className="text-[10px] text-slate-500 block">
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 block">
               Expense categories distribution for selected range
             </span>
           </div>
@@ -1034,7 +1034,7 @@ export default function FinancialReports({
             {totalExpense > 0 && (
               <div className="absolute flex flex-col items-center">
                 <span className="text-[9px] text-slate-400 font-bold uppercase font-mono">Total Spent</span>
-                <span className="text-xs font-bold text-slate-800">
+                <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
                   {currencySymbol}{totalExpense.toLocaleString()}
                 </span>
               </div>
@@ -1045,12 +1045,12 @@ export default function FinancialReports({
             {expenseCategories.filter(c => c.value > 0).map((cObj, idx) => {
               const p = totalExpense > 0 ? (cObj.value / totalExpense) * 100 : 0;
               return (
-                <div key={idx} className="flex justify-between items-center text-slate-700">
+                <div key={idx} className="flex justify-between items-center text-slate-700 dark:text-slate-300">
                   <div className="flex items-center gap-1.5 truncate">
                     <span className="w-2 h-2 rounded-full inline-block shrink-0" style={{ backgroundColor: COLORS[idx % COLORS.length] }}></span>
                     <span className="truncate max-w-[130px] font-sans font-bold">{cObj.name}</span>
                   </div>
-                  <span className="font-mono text-slate-500 shrink-0">
+                  <span className="font-mono text-slate-500 dark:text-slate-400 shrink-0">
                     {currencySymbol}{cObj.value.toLocaleString()} ({p.toFixed(0)}%)
                   </span>
                 </div>
@@ -1080,7 +1080,7 @@ export default function FinancialReports({
               </h3>
             </div>
 
-            <div className="bg-amber-905/30 border-l-4 border-amber-500 p-4 rounded-r-xl">
+            <div className="bg-amber-900/30 border-l-4 border-amber-500 p-4 rounded-r-xl">
               <blockquote className="italic text-sm text-amber-100 font-sans leading-relaxed">
                 "A part of all you earn is yours to keep. It should be not less than one-tenth no matter how little you earn. Pay yourself first before you pay for food, shoes, and luxury. Let thy gold represent a diligent slave that multiplies in thy treasure drawers."
               </blockquote>
@@ -1156,16 +1156,16 @@ export default function FinancialReports({
 
             <button
               type="submit"
-              className="w-full bg-amber-500 hover:bg-amber-400 text-amber-950 font-black text-xs uppercase py-2.5 rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-md shadow-amber-500/10 shrink-0"
+              className="w-full bg-amber-500 hover:bg-amber-400 text-amber-950 dark:text-amber-300 font-black text-xs uppercase py-2.5 rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-md shadow-amber-500/10 shrink-0"
             >
-              <Coins className="w-4 h-4 text-amber-950" />
+              <Coins className="w-4 h-4 text-amber-950 dark:text-amber-300" />
               Pay Myself First Now
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
 
             {/* Success micro response */}
             {paySuccessMsg && (
-              <div className="p-2 bg-amber-500 text-amber-950 font-bold border border-amber-300 text-center rounded-xl text-[11px] animate-bounce">
+              <div className="p-2 bg-amber-500 text-amber-950 dark:text-amber-300 font-bold border border-amber-300 dark:border-amber-600 text-center rounded-xl text-[11px] animate-bounce">
                 {paySuccessMsg}
               </div>
             )}
@@ -1173,20 +1173,20 @@ export default function FinancialReports({
         </div>
 
         {/* Dynamic sliding investment rules panel */}
-        <div className={`lg:col-span-5 bg-white border border-slate-200 rounded-3xl p-6 shadow-sm text-left flex flex-col justify-between transition-all duration-305 ${showWisdomPanel ? "min-h-[350px]" : "min-h-[140px]"}`}>
+        <div className={`lg:col-span-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-sm text-left flex flex-col justify-between transition-all duration-305 ${showWisdomPanel ? "min-h-[350px]" : "min-h-[140px]"}`}>
           
           <div className="space-y-4">
-            <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+            <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-700 pb-3">
               <div className="flex items-center gap-1.5">
-                <BookOpen className="w-5 h-5 text-indigo-600" />
-                <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider font-sans">
+                <BookOpen className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <h3 className="text-sm font-black text-slate-800 dark:text-slate-200 uppercase tracking-wider font-sans">
                   Sovereign Book Wisdom
                 </h3>
               </div>
               
               <button
                 onClick={() => setShowWisdomPanel(!showWisdomPanel)}
-                className="text-[11px] font-bold text-indigo-600 hover:underline px-3 py-1 bg-indigo-50 rounded-lg cursor-pointer"
+                className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline px-3 py-1 bg-indigo-50 dark:bg-indigo-900/40 rounded-lg cursor-pointer"
               >
                 {showWisdomPanel ? "Collapse ▴" : "Expand wisdom ▾"}
               </button>
@@ -1195,16 +1195,16 @@ export default function FinancialReports({
             {!showWisdomPanel ? (
               <div 
                 onClick={() => setShowWisdomPanel(true)}
-                className="p-3 bg-indigo-50/40 border border-indigo-100/60 rounded-2xl cursor-pointer hover:bg-indigo-50 transition-all flex items-center gap-3"
+                className="p-3 bg-indigo-50/40 dark:bg-indigo-900/40 border border-indigo-100/60 dark:border-indigo-700/60 rounded-2xl cursor-pointer hover:bg-indigo-50 hover:dark:bg-indigo-900/40 transition-all flex items-center gap-3"
               >
-                <div className="w-9 h-9 rounded-xl bg-indigo-100 flex items-center justify-center shrink-0 text-indigo-600">
+                <div className="w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center shrink-0 text-indigo-600 dark:text-indigo-400">
                   <BookOpen className="w-4.5 h-4.5" />
                 </div>
                 <div className="space-y-0.5">
-                  <p className="text-xs font-bold text-slate-800 font-sans">
+                  <p className="text-xs font-bold text-slate-800 dark:text-slate-200 font-sans">
                     Read financial guidelines from the experts
                   </p>
-                  <p className="text-[10px] text-slate-450 font-mono">
+                  <p className="text-[10px] text-slate-400 font-mono">
                     Includes {INVESTMENT_BOOKS.length} volumes: {INVESTMENT_BOOKS.map(b => b.title.split(" ")[0]).join(", ")}...
                   </p>
                 </div>
@@ -1213,21 +1213,21 @@ export default function FinancialReports({
               <>
                 {/* Pagination controls inside */}
                 <div className="flex justify-between items-center pt-1">
-                  <span className="text-[10px] font-heavy text-indigo-600 uppercase tracking-widest font-mono">
+                  <span className="text-[10px] font-heavy text-indigo-600 dark:text-indigo-400 uppercase tracking-widest font-mono">
                     Book #{wisdomBookIndex + 1} of {INVESTMENT_BOOKS.length} Summary
                   </span>
                   
                   <div className="flex items-center gap-1">
                     <button
                       onClick={handleWisdomBookPrev}
-                      className="p-1.5 hover:bg-slate-50 border border-slate-250 rounded-xl cursor-pointer text-slate-500"
+                      className="p-1.5 hover:bg-slate-50 hover:dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer text-slate-500 dark:text-slate-400"
                       title="Previous Book" aria-label="Previous Book"
                     >
                       <ChevronLeft className="w-4 h-4" />
                     </button>
                     <button
                       onClick={handleWisdomBookNext}
-                      className="p-1.5 hover:bg-slate-50 border border-slate-250 rounded-xl cursor-pointer text-slate-500"
+                      className="p-1.5 hover:bg-slate-50 hover:dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer text-slate-500 dark:text-slate-400"
                       title="Next Book" aria-label="Next Book"
                     >
                       <ChevronRight className="w-4 h-4" />
@@ -1236,7 +1236,7 @@ export default function FinancialReports({
                 </div>
 
                 <div className="space-y-1">
-                  <h4 className="text-base font-black text-slate-900 leading-snug">
+                  <h4 className="text-base font-black text-slate-900 dark:text-slate-100 leading-snug">
                     {currentBook.title}
                   </h4>
                   <p className="text-xs text-slate-400 font-mono italic">
@@ -1248,20 +1248,20 @@ export default function FinancialReports({
                 <div className={`p-4 border rounded-2xl ${currentBook.bgColor} transition-all duration-300 min-h-[160px] flex flex-col justify-between`}>
                   <div className="space-y-2">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-black text-indigo-600 font-mono">
+                      <span className="text-xs font-black text-indigo-600 dark:text-indigo-400 font-mono">
                         Rule #{wisdomPrincipleIndex + 1}:
                       </span>
                       <span className={`text-xs font-bold ${currentBook.textColor} font-sans`}>
                         {currentBook.principles[wisdomPrincipleIndex].title}
                       </span>
                     </div>
-                    <p className="text-[11.5px] text-slate-650 leading-relaxed">
+                    <p className="text-[11.5px] text-slate-600 dark:text-slate-300 leading-relaxed">
                       {currentBook.principles[wisdomPrincipleIndex].desc}
                     </p>
                   </div>
 
                   {/* Principle micro selector beads */}
-                  <div className="flex justify-between items-center mt-3 pt-2 border-t border-slate-200/20">
+                  <div className="flex justify-between items-center mt-3 pt-2 border-t border-slate-200/20 dark:border-slate-700/20">
                     <span className="text-[10px] text-slate-400 font-mono">
                       {wisdomPrincipleIndex + 1} of {currentBook.principles.length} core rules
                     </span>
@@ -1272,7 +1272,7 @@ export default function FinancialReports({
                           key={pIdx}
                           onClick={() => setWisdomPrincipleIndex(pIdx)}
                           className={`w-2 h-2 rounded-full transition-all cursor-pointer ${
- wisdomPrincipleIndex === pIdx ? "bg-indigo-600 w-4" : "bg-slate-350"
+ wisdomPrincipleIndex === pIdx ? "bg-indigo-600 w-4" : "bg-slate-300 dark:bg-slate-600"
  }`}
                         ></button>
                       ))}
@@ -1284,9 +1284,9 @@ export default function FinancialReports({
           </div>
 
           {showWisdomPanel && (
-            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3 flex items-center gap-2 mt-4 animate-fade-in">
-              <Lightbulb className="w-4 h-4 text-amber-500 shrink-0" />
-              <p className="text-[10px] text-slate-600 font-sans leading-relaxed">
+            <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-3 flex items-center gap-2 mt-4 animate-fade-in">
+              <Lightbulb className="w-4 h-4 text-amber-500 dark:text-amber-400 shrink-0" />
+              <p className="text-[10px] text-slate-600 dark:text-slate-300 font-sans leading-relaxed">
                 <strong>Study Guide:</strong> High interest premiums (like Sovereign GHS 91-Day Bills) yield up to 21% returns. Double check inflation metrics prior to deploying offline holdings.
               </p>
             </div>
@@ -1297,14 +1297,14 @@ export default function FinancialReports({
       </div>
 
       {/* ANALYSIS AND INTELLIGENT EXECUTIVE ALERTS (Sourced automatically) */}
-      <div className="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm text-left">
-        <div className="border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-indigo-600" />
+      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 shadow-sm text-left">
+        <div className="border-b border-slate-100 dark:border-slate-700 pb-3 mb-4 flex items-center gap-2">
+          <TrendingUp className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
           <div>
-            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider font-sans">
+            <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider font-sans">
               Smart CFO Advisory Engine
             </h3>
-            <span className="text-[10px] text-slate-550 block">Instant audit recommendations generated based on current records</span>
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Instant audit recommendations generated based on current records</span>
           </div>
         </div>
 
@@ -1314,30 +1314,30 @@ export default function FinancialReports({
               key={idx}
               className={`p-4 rounded-2xl border flex gap-3 ${
  r.type === "positive"
- ? "bg-emerald-50/40 border-emerald-250 text-slate-800"
+ ? "bg-emerald-50/40 dark:bg-emerald-900/40 border-emerald-200 dark:border-emerald-700 text-slate-800 dark:text-slate-200"
  : r.type === "warning"
- ? "bg-amber-50/40 border-amber-250 text-slate-800"
+ ? "bg-amber-50/40 dark:bg-amber-900/40 border-amber-200 dark:border-amber-700 text-slate-800 dark:text-slate-200"
  : r.type === "critical"
- ? "bg-red-50/40 border-red-250 text-slate-800"
- : "bg-slate-50 border-slate-250 text-slate-800"
+ ? "bg-red-50/40 dark:bg-red-900/40 border-red-200 dark:border-red-700 text-slate-800 dark:text-slate-200"
+ : "bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200"
  }`}
             >
               <div className="shrink-0 mt-0.5">
                 {r.type === "positive" ? (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 ) : r.type === "warning" ? (
-                  <AlertTriangle className="w-4 h-4 text-amber-500" />
+                  <AlertTriangle className="w-4 h-4 text-amber-500 dark:text-amber-400" />
                 ) : r.type === "critical" ? (
-                  <Flame className="w-4 h-4 text-red-650" />
+                  <Flame className="w-4 h-4 text-red-600 dark:text-red-400" />
                 ) : (
-                  <HelpCircle className="w-4 h-4 text-slate-500" />
+                  <HelpCircle className="w-4 h-4 text-slate-500 dark:text-slate-400" />
                 )}
               </div>
               <div className="space-y-1">
-                <h5 className="text-xs font-bold text-slate-900">
+                <h5 className="text-xs font-bold text-slate-900 dark:text-slate-100">
                   {r.title}
                 </h5>
-                <p className="text-[11px] text-slate-650 leading-relaxed">
+                <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
                   {r.body}
                 </p>
               </div>

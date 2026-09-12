@@ -62,7 +62,7 @@ function OverridesEditor({ flagKey }: { flagKey: string }) {
   };
 
   return (
-    <div className="mt-3 pt-3 border-t border-slate-100 space-y-3">
+    <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700 space-y-3">
       <form onSubmit={handleAdd} className="flex flex-wrap items-center gap-2">
         <input
           type="email"
@@ -70,12 +70,12 @@ function OverridesEditor({ flagKey }: { flagKey: string }) {
           placeholder="user@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="flex-1 min-w-[180px] bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-[11px] outline-none focus:border-emerald-500"
+          className="flex-1 min-w-[180px] bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-[11px] outline-none focus:border-emerald-500"
         />
         <select
           value={enabled ? "on" : "off"}
           onChange={(e) => setEnabled(e.target.value === "on")}
-          className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-[11px] outline-none"
+          className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5 text-[11px] outline-none"
         >
           <option value="on">Force ON</option>
           <option value="off">Force OFF</option>
@@ -88,7 +88,7 @@ function OverridesEditor({ flagKey }: { flagKey: string }) {
           <Plus className="w-3 h-3" /> Add
         </button>
       </form>
-      {error && <p className="text-[10px] text-rose-600">{error}</p>}
+      {error && <p className="text-[10px] text-rose-600 dark:text-rose-400">{error}</p>}
 
       {loading ? (
         <p className="text-[10px] text-slate-400">Loading overrides...</p>
@@ -97,16 +97,16 @@ function OverridesEditor({ flagKey }: { flagKey: string }) {
       ) : (
         <div className="space-y-1.5">
           {overrides.map((o) => (
-            <div key={o.userId} className="flex items-center justify-between bg-slate-50 rounded-lg px-2.5 py-1.5 text-[11px]">
-              <span className="text-slate-700">{o.email}</span>
+            <div key={o.userId} className="flex items-center justify-between bg-slate-50 dark:bg-slate-900 rounded-lg px-2.5 py-1.5 text-[11px]">
+              <span className="text-slate-700 dark:text-slate-300">{o.email}</span>
               <div className="flex items-center gap-2">
-                <span className={`font-bold ${o.enabled ? "text-emerald-600" : "text-rose-600"}`}>
+                <span className={`font-bold ${o.enabled ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
                   {o.enabled ? "Forced ON" : "Forced OFF"}
                 </span>
                 <button
                   onClick={() => handleRemove(o.userId)}
                   aria-label={`Remove override for ${o.email}`}
-                  className="text-slate-400 hover:text-rose-600 cursor-pointer"
+                  className="text-slate-400 hover:text-rose-600 hover:dark:text-rose-400 cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
@@ -147,28 +147,28 @@ export default function FeatureFlagsPanel() {
   return (
     <LoadingSwap isLoading={loading} skeleton={<SkeletonAdminFlags />}>
     <div className="space-y-3">
-      <p className="text-xs text-slate-500 leading-relaxed">
+      <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
         Every feature outside the Phase 1 MVP ships in the code, switched off by default. Flip one on for everyone, or expand it
         to turn it on for specific users first.
       </p>
       {flags.map((flag) => {
         const expanded = expandedKey === flag.key;
         return (
-          <div key={flag.key} className="border border-slate-200 rounded-2xl p-4">
+          <div key={flag.key} className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="text-xs font-bold text-slate-900">{flag.name}</h3>
-                  <span className="text-[9px] font-mono uppercase tracking-wider text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
+                  <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">{flag.name}</h3>
+                  <span className="text-[9px] font-mono uppercase tracking-wider text-slate-400 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">
                     Phase {flag.phase}
                   </span>
                   {flag.overrideCount > 0 && (
-                    <span className="text-[9px] font-mono uppercase tracking-wider text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">
+                    <span className="text-[9px] font-mono uppercase tracking-wider text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/40 px-1.5 py-0.5 rounded">
                       {flag.overrideCount} override{flag.overrideCount === 1 ? "" : "s"}
                     </span>
                   )}
                 </div>
-                <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">{flag.description}</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{flag.description}</p>
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <button
@@ -177,7 +177,7 @@ export default function FeatureFlagsPanel() {
                   aria-checked={flag.enabledDefault}
                   onClick={() => handleToggle(flag)}
                   className={`w-10 h-5.5 rounded-full transition-colors cursor-pointer relative ${
-                    flag.enabledDefault ? "bg-emerald-600" : "bg-slate-300"
+                    flag.enabledDefault ? "bg-emerald-600" : "bg-slate-300 dark:bg-slate-600"
                   }`}
                 >
                   <span
@@ -188,7 +188,7 @@ export default function FeatureFlagsPanel() {
                     // left edge), so translateX() alone pushed the thumb
                     // outside the 40px track instead of sliding inside it.
                     // Anchoring `left` directly removes that ambiguity.
-                    className="absolute top-0.5 w-4.5 h-4.5 bg-white rounded-full shadow transition-[left] duration-150"
+                    className="absolute top-0.5 w-4.5 h-4.5 bg-white dark:bg-slate-800 rounded-full shadow transition-[left] duration-150"
                     style={{ left: flag.enabledDefault ? 20 : 2 }}
                   />
                 </button>
@@ -196,7 +196,7 @@ export default function FeatureFlagsPanel() {
                   type="button"
                   onClick={() => setExpandedKey(expanded ? null : flag.key)}
                   aria-label={expanded ? "Collapse overrides" : "Manage per-user overrides"}
-                  className="text-slate-400 hover:text-slate-700 cursor-pointer p-1"
+                  className="text-slate-400 hover:text-slate-700 hover:dark:text-slate-300 cursor-pointer p-1"
                 >
                   {expanded ? <CaretUp className="w-3.5 h-3.5" /> : <CaretDown className="w-3.5 h-3.5" />}
                 </button>

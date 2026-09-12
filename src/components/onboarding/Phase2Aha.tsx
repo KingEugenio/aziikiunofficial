@@ -10,9 +10,9 @@ interface Phase2AhaProps {
 
 const TONE_CLASSES: Record<string, string> = {
   positive: "text-[color:var(--color-onboard-green)]",
-  negative: "text-rose-600",
+  negative: "text-rose-600 dark:text-rose-400",
   warning: "text-[color:var(--color-onboard-amber)]",
-  neutral: "text-slate-800",
+  neutral: "text-slate-800 dark:text-slate-200",
 };
 
 /**
@@ -33,20 +33,20 @@ export default function Phase2Aha({ answers, onContinue }: Phase2AhaProps) {
       <span className="inline-block text-[10px] font-mono font-bold uppercase tracking-widest text-[color:var(--color-onboard-teal)] bg-[color:var(--color-onboard-teal)]/10 px-2.5 py-1 rounded-full mb-3">
         {content.eyebrow}
       </span>
-      <h1 className="text-2xl sm:text-[26px] font-heading font-extrabold text-slate-900 mb-2 leading-tight">
+      <h1 className="text-2xl sm:text-[26px] font-heading font-extrabold text-slate-900 dark:text-slate-100 mb-2 leading-tight">
         {content.headline}
       </h1>
-      <p className="text-sm text-slate-500 mb-6 leading-relaxed">{content.subheadline}</p>
+      <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">{content.subheadline}</p>
 
-      <div className="bg-white border border-slate-200 rounded-3xl shadow-xl shadow-slate-900/5 overflow-hidden text-left">
-        <div className="bg-[color:var(--color-onboard-cream)] px-5 py-3 flex items-center justify-between border-b border-slate-200">
-          <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">
+      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl shadow-xl shadow-slate-900/5 overflow-hidden text-left">
+        <div className="bg-[color:var(--color-onboard-cream)] px-5 py-3 flex items-center justify-between border-b border-slate-200 dark:border-slate-700">
+          <span className="text-[10px] font-mono font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
             Sample data preview
           </span>
           <span className="w-2 h-2 rounded-full bg-[color:var(--color-onboard-green)] animate-pulse" />
         </div>
 
-        <div className="grid grid-cols-3 divide-x divide-slate-100 px-5 py-4">
+        <div className="grid grid-cols-3 divide-x divide-slate-100 dark:divide-slate-700 px-5 py-4">
           {content.stats.map((stat) => (
             <div key={stat.label} className="text-center px-1">
               <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wide mb-1 leading-tight">
@@ -59,15 +59,15 @@ export default function Phase2Aha({ answers, onContinue }: Phase2AhaProps) {
           ))}
         </div>
 
-        <div className="px-5 pb-4 pt-1 border-t border-slate-100">
+        <div className="px-5 pb-4 pt-1 border-t border-slate-100 dark:border-slate-700">
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 mt-3">
             {content.detailTitle}
           </p>
           <div className="space-y-1.5">
             {content.detailRows.map((row) => (
               <div key={row.left} className="flex items-center justify-between text-xs">
-                <span className="text-slate-600">{row.left}</span>
-                <span className={`font-mono font-bold ${row.emphasis ? "text-[color:var(--color-onboard-amber)]" : "text-slate-700"}`}>
+                <span className="text-slate-600 dark:text-slate-300">{row.left}</span>
+                <span className={`font-mono font-bold ${row.emphasis ? "text-[color:var(--color-onboard-amber)]" : "text-slate-700 dark:text-slate-300"}`}>
                   {row.right}
                 </span>
               </div>
@@ -76,7 +76,7 @@ export default function Phase2Aha({ answers, onContinue }: Phase2AhaProps) {
         </div>
       </div>
 
-      <p className="text-xs text-slate-500 italic mt-4 mb-6 leading-relaxed flex items-start gap-1.5">
+      <p className="text-xs text-slate-500 dark:text-slate-400 italic mt-4 mb-6 leading-relaxed flex items-start gap-1.5">
         <Lightbulb className="w-3.5 h-3.5 shrink-0 mt-0.5 text-[color:var(--color-onboard-amber)]" weight="fill" />
         <span>{content.tip}</span>
       </p>

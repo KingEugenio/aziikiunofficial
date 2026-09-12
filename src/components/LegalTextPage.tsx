@@ -44,20 +44,20 @@ export default function LegalTextPage({ title, settingKey, onBack }: LegalTextPa
   }, [settingKey]);
 
   return (
-    <div className="min-h-screen bg-slate-50 py-10 px-4 font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 py-10 px-4 font-sans">
       <div className="max-w-2xl mx-auto">
         <button
           onClick={onBack}
-          className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 mb-6 cursor-pointer transition-colors"
+          className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-slate-800 hover:dark:text-slate-200 mb-6 cursor-pointer transition-colors"
         >
           <ArrowLeft className="w-4 h-4" /> Back
         </button>
 
-        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-sm space-y-8">
-          <div className="flex items-center gap-3 pb-6 border-b border-slate-150">
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-10 shadow-sm space-y-8">
+          <div className="flex items-center gap-3 pb-6 border-b border-slate-100 dark:border-slate-700">
             <BrandLogo size={40} />
             <div>
-              <h1 className="text-xl font-black text-slate-900">{title}</h1>
+              <h1 className="text-xl font-black text-slate-900 dark:text-slate-100">{title}</h1>
               {lastUpdated && <p className="text-xs text-slate-400 font-mono">Last updated: {lastUpdated}</p>}
             </div>
           </div>
@@ -76,7 +76,7 @@ export default function LegalTextPage({ title, settingKey, onBack }: LegalTextPa
             {text.trim() === "" ? (
               <p className="text-sm text-slate-400 italic">This page hasn't been written yet.</p>
             ) : (
-              <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">{text}</p>
+              <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">{text}</p>
             )}
           </LoadingSwap>
         </div>

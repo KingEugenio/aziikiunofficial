@@ -75,22 +75,22 @@ export default function AziikiWealthCalculator({ currencySymbol }: AziikiWealthC
   const maxBalance = Math.max(...result.points.map((p) => p.balance), 1);
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-5" id="aziiki-wealth-calculator">
+    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 space-y-5" id="aziiki-wealth-calculator">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
+          <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400">
             <Calculator className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="text-sm font-black text-slate-900 font-sans">AZIIKI Wealth Calculator</h3>
-            <p className="text-[10px] text-slate-450 font-mono">Compound interest & savings growth projector</p>
+            <h3 className="text-sm font-black text-slate-900 dark:text-slate-100 font-sans">AZIIKI Wealth Calculator</h3>
+            <p className="text-[10px] text-slate-400 font-mono">Compound interest & savings growth projector</p>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div>
-          <label className="text-[9px] font-mono font-bold text-slate-450 uppercase block mb-1">Starting Amount</label>
+          <label className="text-[9px] font-mono font-bold text-slate-400 uppercase block mb-1">Starting Amount</label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-400">{currencySymbol}</span>
             <input
@@ -98,12 +98,12 @@ export default function AziikiWealthCalculator({ currencySymbol }: AziikiWealthC
               min={0}
               value={principal}
               onChange={(e) => setPrincipal(Math.max(0, Number(e.target.value)))}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-7 pr-2 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white font-mono"
+              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl pl-7 pr-2 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white focus:dark:bg-slate-800 font-mono"
             />
           </div>
         </div>
         <div>
-          <label className="text-[9px] font-mono font-bold text-slate-450 uppercase block mb-1">Monthly Top-Up</label>
+          <label className="text-[9px] font-mono font-bold text-slate-400 uppercase block mb-1">Monthly Top-Up</label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-400">{currencySymbol}</span>
             <input
@@ -111,12 +111,12 @@ export default function AziikiWealthCalculator({ currencySymbol }: AziikiWealthC
               min={0}
               value={monthlyContribution}
               onChange={(e) => setMonthlyContribution(Math.max(0, Number(e.target.value)))}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-7 pr-2 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white font-mono"
+              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl pl-7 pr-2 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white focus:dark:bg-slate-800 font-mono"
             />
           </div>
         </div>
         <div>
-          <label className="text-[9px] font-mono font-bold text-slate-450 uppercase block mb-1">Annual Return</label>
+          <label className="text-[9px] font-mono font-bold text-slate-400 uppercase block mb-1">Annual Return</label>
           <div className="relative">
             <input
               type="number"
@@ -125,13 +125,13 @@ export default function AziikiWealthCalculator({ currencySymbol }: AziikiWealthC
               step={0.1}
               value={annualRate}
               onChange={(e) => setAnnualRate(Math.max(0, Number(e.target.value)))}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-3 pr-7 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white font-mono"
+              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl pl-3 pr-7 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white focus:dark:bg-slate-800 font-mono"
             />
             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-400">%</span>
           </div>
         </div>
         <div>
-          <label className="text-[9px] font-mono font-bold text-slate-450 uppercase block mb-1">Duration</label>
+          <label className="text-[9px] font-mono font-bold text-slate-400 uppercase block mb-1">Duration</label>
           <div className="relative">
             <input
               type="number"
@@ -139,7 +139,7 @@ export default function AziikiWealthCalculator({ currencySymbol }: AziikiWealthC
               max={50}
               value={years}
               onChange={(e) => setYears(Math.max(1, Number(e.target.value)))}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-3 pr-14 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white font-mono"
+              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl pl-3 pr-14 py-2 text-xs outline-none focus:border-emerald-500 focus:bg-white focus:dark:bg-slate-800 font-mono"
             />
             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-400">years</span>
           </div>
@@ -147,15 +147,15 @@ export default function AziikiWealthCalculator({ currencySymbol }: AziikiWealthC
       </div>
 
       <div>
-        <label className="text-[9px] font-mono font-bold text-slate-450 uppercase block mb-1.5">Compounding Frequency</label>
-        <div className="grid grid-cols-4 gap-2 bg-slate-50 p-1 rounded-xl border border-slate-200">
+        <label className="text-[9px] font-mono font-bold text-slate-400 uppercase block mb-1.5">Compounding Frequency</label>
+        <div className="grid grid-cols-4 gap-2 bg-slate-50 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
           {(["daily", "monthly", "quarterly", "yearly"] as CompoundFrequency[]).map((f) => (
             <button
               key={f}
               type="button"
               onClick={() => setFrequency(f)}
               className={`py-1.5 text-[10px] font-bold font-sans rounded-lg transition-colors capitalize cursor-pointer ${
-                frequency === f ? "bg-emerald-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-700"
+                frequency === f ? "bg-emerald-600 text-white shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 hover:dark:text-slate-300"
               }`}
             >
               {f}
@@ -165,13 +165,13 @@ export default function AziikiWealthCalculator({ currencySymbol }: AziikiWealthC
       </div>
 
       <div className="grid grid-cols-3 gap-3 pt-1">
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-          <span className="text-[9px] font-mono font-bold text-slate-450 uppercase block">Total Invested</span>
-          <span className="text-sm font-black text-slate-800 font-sans">{fmt(result.totalContributed)}</span>
+        <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3">
+          <span className="text-[9px] font-mono font-bold text-slate-400 uppercase block">Total Invested</span>
+          <span className="text-sm font-black text-slate-800 dark:text-slate-200 font-sans">{fmt(result.totalContributed)}</span>
         </div>
-        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3">
-          <span className="text-[9px] font-mono font-bold text-emerald-700 uppercase block">Interest Earned</span>
-          <span className="text-sm font-black text-emerald-700 font-sans">{fmt(result.interestEarned)}</span>
+        <div className="bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-700 rounded-xl p-3">
+          <span className="text-[9px] font-mono font-bold text-emerald-700 dark:text-emerald-400 uppercase block">Interest Earned</span>
+          <span className="text-sm font-black text-emerald-700 dark:text-emerald-400 font-sans">{fmt(result.interestEarned)}</span>
         </div>
         <div className="bg-slate-900 rounded-xl p-3">
           <span className="text-[9px] font-mono font-bold text-slate-300 uppercase block">Future Value</span>
@@ -181,7 +181,7 @@ export default function AziikiWealthCalculator({ currencySymbol }: AziikiWealthC
 
       {/* Simple bar-based growth chart — no external chart library needed */}
       <div>
-        <div className="flex items-center gap-1.5 text-[9px] font-mono font-bold text-slate-450 uppercase mb-2">
+        <div className="flex items-center gap-1.5 text-[9px] font-mono font-bold text-slate-400 uppercase mb-2">
           <TrendingUp className="w-3 h-3" /> Growth Over Time
         </div>
         <div className="flex items-end gap-1 h-24">
@@ -200,9 +200,9 @@ export default function AziikiWealthCalculator({ currencySymbol }: AziikiWealthC
         </div>
       </div>
 
-      <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl p-3">
-        <Info className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
-        <p className="text-[10px] text-amber-800 leading-relaxed">
+      <div className="flex items-start gap-2 bg-amber-50 dark:bg-amber-900/40 border border-amber-200 dark:border-amber-700 rounded-xl p-3">
+        <Info className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+        <p className="text-[10px] text-amber-800 dark:text-amber-300 leading-relaxed">
           This is an educational projection based on the numbers you enter, not a guarantee or financial advice.
           Real returns vary and are never perfectly steady. Talk to a licensed financial advisor before making
           investment decisions.

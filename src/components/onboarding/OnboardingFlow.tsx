@@ -129,7 +129,7 @@ export default function OnboardingFlow({ onFinish }: OnboardingFlowProps) {
     <div className="min-h-screen bg-[color:var(--color-onboard-cream)] flex flex-col items-center justify-between p-5 sm:p-8 font-sans">
       <div className="w-full max-w-md mx-auto flex items-center justify-center gap-2 mb-6 mt-2">
         <BrandLogo size={28} className="shadow-sm rounded-lg" />
-        <span className="font-heading font-extrabold text-slate-900 text-sm tracking-tight">Aziiki</span>
+        <span className="font-heading font-extrabold text-slate-900 dark:text-slate-100 text-sm tracking-tight">Aziiki</span>
       </div>
 
       <div className="w-full mb-8">

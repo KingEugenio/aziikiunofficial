@@ -25,7 +25,7 @@ export function Skeleton({
       ? "shimmer-bg"
       : animate === "pulse"
       ? "skeleton-pulse animate-pulse"
-      : "bg-slate-200";
+      : "bg-slate-200 dark:bg-slate-700";
 
   const customStyle: React.CSSProperties = {
     width: width !== undefined ? width : "100%",
@@ -62,7 +62,7 @@ export function SkeletonDashboard() {
         {[1, 2, 3, 4].map((item) => (
           <div
             key={item}
-            className="bg-white border border-slate-200 rounded-2xl p-5 space-y-3 shadow-sm"
+            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 space-y-3 shadow-sm"
           >
             <div className="flex items-center justify-between">
               <Skeleton width="50%" height="0.875rem" />
@@ -79,7 +79,7 @@ export function SkeletonDashboard() {
 
       {/* Two-column layout: Main Chart & Side Info */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 space-y-4">
+        <div className="lg:col-span-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 space-y-4">
           <div className="flex items-center justify-between">
             <div className="space-y-1.5">
               <Skeleton width="120px" height="1rem" />
@@ -90,7 +90,7 @@ export function SkeletonDashboard() {
           <Skeleton height="250px" className="rounded-xl" />
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4">
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 space-y-4">
           <Skeleton width="100px" height="1rem" />
           <div className="space-y-3.5">
             {[1, 2, 3, 4].map((idx) => (
@@ -115,7 +115,7 @@ export function SkeletonDashboard() {
 // Composite Skeleton 2: Table / Spreadsheet Grid Loader
 export function SkeletonTable({ rows = 5, cols = 4 }: { rows?: number; cols?: number }) {
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden p-4 space-y-4 w-full text-left" id="skeleton-table">
+    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden p-4 space-y-4 w-full text-left" id="skeleton-table">
       {/* Top Filter and Search Skeleton */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <Skeleton width="250px" height="2.25rem" className="rounded-xl" />
@@ -126,9 +126,9 @@ export function SkeletonTable({ rows = 5, cols = 4 }: { rows?: number; cols?: nu
       </div>
 
       {/* Spreadsheet / Table */}
-      <div className="border border-slate-200 rounded-xl overflow-hidden">
+      <div className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
         {/* Header Row */}
-        <div className="grid grid-cols-12 bg-slate-50 p-3.5 border-b border-slate-200">
+        <div className="grid grid-cols-12 bg-slate-50 dark:bg-slate-900 p-3.5 border-b border-slate-200 dark:border-slate-700">
           {Array.from({ length: cols }).map((_, colIdx) => (
             <div
               key={colIdx}
@@ -146,7 +146,7 @@ export function SkeletonTable({ rows = 5, cols = 4 }: { rows?: number; cols?: nu
         </div>
 
         {/* Data Rows */}
-        <div className="divide-y divide-slate-100">
+        <div className="divide-y divide-slate-100 dark:divide-slate-700">
           {Array.from({ length: rows }).map((_, rowIdx) => (
             <div
               key={rowIdx}
@@ -207,7 +207,7 @@ export function SkeletonGrid({ count = 6 }: { count?: number }) {
       {Array.from({ length: count }).map((_, idx) => (
         <div
           key={idx}
-          className="bg-white border border-slate-200 rounded-3xl overflow-hidden p-5 space-y-4 shadow-sm"
+          className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl overflow-hidden p-5 space-y-4 shadow-sm"
           style={{ animationDelay: `${idx * 60}ms` }}
         >
           {/* Main Visual Box */}
@@ -227,7 +227,7 @@ export function SkeletonGrid({ count = 6 }: { count?: number }) {
           </div>
 
           {/* Bottom Bar */}
-          <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+          <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-700">
             <Skeleton width="40%" height="1.25rem" />
             <Skeleton width="80px" height="2rem" className="rounded-xl" />
           </div>
@@ -266,7 +266,7 @@ export function SkeletonDetail() {
             <Skeleton width="55%" height="1rem" />
           </div>
 
-          <div className="border-t border-b border-slate-150 py-4.5 space-y-3">
+          <div className="border-t border-b border-slate-100 dark:border-slate-700 py-4.5 space-y-3">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Skeleton width="40%" height="0.75rem" />
@@ -299,8 +299,8 @@ export function SkeletonDetail() {
 // Composite Skeleton 5: Form Elements
 export function SkeletonForm() {
   return (
-    <div className="space-y-5 bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 w-full text-left" id="skeleton-form">
-      <div className="space-y-2 pb-2 border-b border-slate-100">
+    <div className="space-y-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-8 w-full text-left" id="skeleton-form">
+      <div className="space-y-2 pb-2 border-b border-slate-100 dark:border-slate-700">
         <Skeleton width="40%" height="1.5rem" />
         <Skeleton width="65%" height="0.875rem" />
       </div>
@@ -319,7 +319,7 @@ export function SkeletonForm() {
         <Skeleton height="6rem" className="rounded-xl" />
       </div>
 
-      <div className="flex gap-3 pt-3 border-t border-slate-100 justify-end">
+      <div className="flex gap-3 pt-3 border-t border-slate-100 dark:border-slate-700 justify-end">
         <Skeleton width="90px" height="2.5rem" className="rounded-xl" />
         <Skeleton width="120px" height="2.5rem" className="rounded-xl" />
       </div>
@@ -334,7 +334,7 @@ export function SkeletonForm() {
 export function SkeletonCRM() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 w-full text-left" id="skeleton-crm">
-      <div className="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-4 space-y-4">
+      <div className="lg:col-span-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 space-y-4">
         <div className="flex items-center justify-between">
           <Skeleton width="55%" height="1.25rem" />
           <Skeleton width="70px" height="2rem" className="rounded-xl" />
@@ -352,8 +352,8 @@ export function SkeletonCRM() {
           ))}
         </div>
       </div>
-      <div className="lg:col-span-3 bg-white border border-slate-200 rounded-2xl p-6 space-y-6">
-        <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
+      <div className="lg:col-span-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 space-y-6">
+        <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-700">
           <Skeleton width="3.5rem" height="3.5rem" circle />
           <div className="space-y-1.5 flex-1">
             <Skeleton width="45%" height="1.1rem" />
@@ -390,7 +390,7 @@ export function SkeletonInventory() {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="bg-white border border-slate-200 rounded-2xl p-4 space-y-3" style={{ animationDelay: `${i * 50}ms` }}>
+          <div key={i} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 space-y-3" style={{ animationDelay: `${i * 50}ms` }}>
             <div className="flex items-start justify-between">
               <div className="space-y-1.5 flex-1">
                 <Skeleton width="75%" height="0.95rem" />
@@ -416,7 +416,7 @@ export function SkeletonInventory() {
 export function SkeletonBillingBuilder() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full text-left" id="skeleton-billing">
-      <div className="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-5 space-y-4">
+      <div className="lg:col-span-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 space-y-4">
         <div className="flex gap-2">
           <Skeleton width="33%" height="2.25rem" className="rounded-xl" />
           <Skeleton width="33%" height="2.25rem" className="rounded-xl" />
@@ -428,7 +428,7 @@ export function SkeletonBillingBuilder() {
           <Skeleton height="2.5rem" className="rounded-xl" />
           <Skeleton height="2.5rem" className="rounded-xl" />
         </div>
-        <div className="space-y-2 pt-2 border-t border-slate-100">
+        <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-700">
           <Skeleton width="40%" height="0.8rem" />
           <Skeleton height="3.5rem" className="rounded-xl" />
           <Skeleton height="3.5rem" className="rounded-xl" />
@@ -437,7 +437,7 @@ export function SkeletonBillingBuilder() {
       {/* Live preview panel - kept at roughly A4 proportions (1:1.414) to
           match the real #mockup-document-view sizing, see index.css. */}
       <div
-        className="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-6 space-y-5"
+        className="lg:col-span-7 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 space-y-5"
         style={{ aspectRatio: "210 / 297", maxHeight: "820px" }}
       >
         <div className="flex justify-between items-start">
@@ -445,7 +445,7 @@ export function SkeletonBillingBuilder() {
           <Skeleton width="30%" height="1rem" />
         </div>
         <Skeleton width="55%" height="0.875rem" />
-        <div className="space-y-2 pt-3 border-t border-slate-100">
+        <div className="space-y-2 pt-3 border-t border-slate-100 dark:border-slate-700">
           {Array.from({ length: 3 }).map((_, i) => (
             <Skeleton key={i} height="2.25rem" />
           ))}
@@ -466,13 +466,13 @@ export function SkeletonReportsCharts() {
     <div className="space-y-6 w-full text-left" id="skeleton-reports">
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="bg-white border border-slate-200 rounded-2xl p-4 space-y-2">
+          <div key={i} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 space-y-2">
             <Skeleton width="60%" height="0.75rem" />
             <Skeleton width="80%" height="1.5rem" />
           </div>
         ))}
       </div>
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4">
+      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 space-y-4">
         <Skeleton width="35%" height="1.1rem" />
         {/* Chart-shaped, not a plain rectangle: a baseline plus staggered
             bars reads immediately as "a chart is coming", which a flat
@@ -483,7 +483,7 @@ export function SkeletonReportsCharts() {
           ))}
         </div>
       </div>
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-3">
+      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 space-y-3">
         <Skeleton width="30%" height="1rem" />
         {Array.from({ length: 3 }).map((_, i) => (
           <Skeleton key={i} height="1rem" width={`${85 - i * 12}%`} />
@@ -501,9 +501,9 @@ export function SkeletonReportsCharts() {
 // grid shape instead.
 export function SkeletonAppShell() {
   return (
-    <div className="min-h-screen bg-slate-50 flex" id="skeleton-app-shell" role="status" aria-busy="true">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex" id="skeleton-app-shell" role="status" aria-busy="true">
       <span className="sr-only">Loading your workspace...</span>
-      <div className="hidden md:flex w-64 shrink-0 bg-white border-r border-slate-200 p-5 flex-col gap-6">
+      <div className="hidden md:flex w-64 shrink-0 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 p-5 flex-col gap-6">
         <div className="flex items-center gap-2.5">
           <Skeleton width="2.25rem" height="2.25rem" className="rounded-xl" />
           <Skeleton width="60%" height="1rem" />
@@ -542,16 +542,16 @@ export function SkeletonAdminDashboard() {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="bg-slate-100 rounded-2xl p-5 space-y-3" style={{ animationDelay: `${i * 60}ms` }}>
+          <div key={i} className="bg-slate-100 dark:bg-slate-800 rounded-2xl p-5 space-y-3" style={{ animationDelay: `${i * 60}ms` }}>
             <div className="flex items-start justify-between">
-              <Skeleton width="60%" height="0.7rem" className="bg-slate-200" />
-              <Skeleton width="2.25rem" height="2.25rem" className="rounded-xl bg-slate-200" />
+              <Skeleton width="60%" height="0.7rem" className="bg-slate-200 dark:bg-slate-700" />
+              <Skeleton width="2.25rem" height="2.25rem" className="rounded-xl bg-slate-200 dark:bg-slate-700" />
             </div>
-            <Skeleton width="35%" height="1.5rem" className="bg-slate-200" />
+            <Skeleton width="35%" height="1.5rem" className="bg-slate-200 dark:bg-slate-700" />
           </div>
         ))}
       </div>
-      <div className="border border-slate-200 rounded-2xl p-5 space-y-2.5">
+      <div className="border border-slate-200 dark:border-slate-700 rounded-2xl p-5 space-y-2.5">
         <Skeleton width="35%" height="0.9rem" />
         {Array.from({ length: 4 }).map((_, i) => (
           <Skeleton key={i} height="0.75rem" width={`${90 - i * 8}%`} />
@@ -568,7 +568,7 @@ export function SkeletonAdminFlags() {
     <div className="space-y-3 w-full text-left" id="skeleton-admin-flags">
       <Skeleton width="80%" height="0.8rem" />
       {Array.from({ length: 5 }).map((_, i) => (
-        <div key={i} className="border border-slate-200 rounded-2xl p-4 flex items-center justify-between gap-4" style={{ animationDelay: `${i * 50}ms` }}>
+        <div key={i} className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 flex items-center justify-between gap-4" style={{ animationDelay: `${i * 50}ms` }}>
           <div className="space-y-1.5 flex-1">
             <div className="flex items-center gap-2">
               <Skeleton width="35%" height="0.85rem" />
@@ -590,7 +590,7 @@ export function SkeletonAdminFlags() {
 export function SkeletonAdminComposer() {
   return (
     <div className="space-y-6 w-full text-left" id="skeleton-admin-composer">
-      <div className="border border-slate-200 rounded-2xl p-4 space-y-3">
+      <div className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 space-y-3">
         <Skeleton width="45%" height="0.9rem" />
         <Skeleton width="70%" height="0.75rem" />
         <Skeleton height="2.25rem" className="rounded-xl" />
@@ -600,7 +600,7 @@ export function SkeletonAdminComposer() {
       <div className="space-y-2">
         <Skeleton width="30%" height="0.85rem" />
         {Array.from({ length: 2 }).map((_, i) => (
-          <div key={i} className="border border-slate-200 rounded-2xl p-4 space-y-1.5" style={{ animationDelay: `${i * 60}ms` }}>
+          <div key={i} className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 space-y-1.5" style={{ animationDelay: `${i * 60}ms` }}>
             <Skeleton width="40%" height="0.85rem" />
             <Skeleton width="80%" height="0.7rem" />
           </div>
@@ -618,7 +618,7 @@ export function SkeletonAdminItemList({ count = 2 }: { count?: number }) {
   return (
     <div className="space-y-2 w-full text-left" id="skeleton-admin-item-list">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="border border-slate-200 rounded-2xl p-4 flex items-start justify-between gap-4" style={{ animationDelay: `${i * 60}ms` }}>
+        <div key={i} className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 flex items-start justify-between gap-4" style={{ animationDelay: `${i * 60}ms` }}>
           <div className="space-y-1.5 flex-1">
             <Skeleton width="40%" height="0.85rem" />
             <Skeleton width="80%" height="0.7rem" />
@@ -638,7 +638,7 @@ export function SkeletonAdminBranding() {
       <Skeleton width="90%" height="0.8rem" />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {Array.from({ length: 2 }).map((_, i) => (
-          <div key={i} className="border border-slate-200 rounded-2xl p-4 space-y-3" style={{ animationDelay: `${i * 60}ms` }}>
+          <div key={i} className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 space-y-3" style={{ animationDelay: `${i * 60}ms` }}>
             <div className="flex items-center gap-2">
               <Skeleton width="2rem" height="2rem" className="rounded-lg" />
               <Skeleton width="50%" height="0.8rem" />
@@ -647,7 +647,7 @@ export function SkeletonAdminBranding() {
           </div>
         ))}
       </div>
-      <div className="border border-slate-200 rounded-2xl p-4 space-y-2">
+      <div className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 space-y-2">
         <Skeleton width="25%" height="0.85rem" />
         <Skeleton width="60%" height="0.7rem" />
       </div>

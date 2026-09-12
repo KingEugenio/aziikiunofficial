@@ -76,13 +76,13 @@ export default function GuidesPanel() {
 
   return (
     <div className="space-y-6">
-      <p className="text-[11px] text-slate-500 leading-relaxed">
+      <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
         Setup steps and improvement ideas for running Aziiki - not shown to end users. Check items off as you handle them, or
         add your own.
       </p>
 
-      <form onSubmit={handleAdd} className="border border-slate-200 rounded-2xl p-4 space-y-3">
-        <h3 className="text-xs font-bold text-slate-800">Add an item</h3>
+      <form onSubmit={handleAdd} className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 space-y-3">
+        <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200">Add an item</h3>
         <input
           type="text"
           required
@@ -90,7 +90,7 @@ export default function GuidesPanel() {
           placeholder="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
+          className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
         />
         <textarea
           maxLength={2000}
@@ -98,9 +98,9 @@ export default function GuidesPanel() {
           placeholder="Details (optional)"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs resize-none focus:border-emerald-500"
+          className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none text-xs resize-none focus:border-emerald-500"
         />
-        {error && <p className="text-[10px] text-rose-600">{error}</p>}
+        {error && <p className="text-[10px] text-rose-600 dark:text-rose-400">{error}</p>}
         <button
           type="submit"
           disabled={isAdding}
@@ -113,20 +113,20 @@ export default function GuidesPanel() {
       <LoadingSwap isLoading={loading} skeleton={<SkeletonAdminItemList />}>
         <div className="space-y-4">
           <div className="space-y-2">
-            <h3 className="text-xs font-bold text-slate-800">To do ({pending.length})</h3>
+            <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200">To do ({pending.length})</h3>
             {pending.length === 0 ? (
               <p className="text-xs text-slate-400">Nothing outstanding.</p>
             ) : (
               pending.map((item) => (
-                <div key={item.id} className="border border-slate-200 rounded-2xl p-4 flex items-start gap-3">
-                  <button type="button" onClick={() => handleToggle(item)} className="text-slate-300 hover:text-emerald-600 cursor-pointer shrink-0 mt-0.5">
+                <div key={item.id} className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 flex items-start gap-3">
+                  <button type="button" onClick={() => handleToggle(item)} className="text-slate-300 hover:text-emerald-600 hover:dark:text-emerald-400 cursor-pointer shrink-0 mt-0.5">
                     <Circle className="w-4.5 h-4.5" />
                   </button>
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs font-bold text-slate-900">{item.title}</p>
-                    {item.description && <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">{item.description}</p>}
+                    <p className="text-xs font-bold text-slate-900 dark:text-slate-100">{item.title}</p>
+                    {item.description && <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">{item.description}</p>}
                   </div>
-                  <button type="button" onClick={() => handleDelete(item.id)} aria-label="Delete" className="text-slate-300 hover:text-rose-600 cursor-pointer shrink-0">
+                  <button type="button" onClick={() => handleDelete(item.id)} aria-label="Delete" className="text-slate-300 hover:text-rose-600 hover:dark:text-rose-400 cursor-pointer shrink-0">
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -138,15 +138,15 @@ export default function GuidesPanel() {
             <div className="space-y-2">
               <h3 className="text-xs font-bold text-slate-400">Done ({done.length})</h3>
               {done.map((item) => (
-                <div key={item.id} className="border border-slate-150 rounded-2xl p-4 flex items-start gap-3 opacity-60">
-                  <button type="button" onClick={() => handleToggle(item)} className="text-emerald-600 cursor-pointer shrink-0 mt-0.5">
+                <div key={item.id} className="border border-slate-100 dark:border-slate-700 rounded-2xl p-4 flex items-start gap-3 opacity-60">
+                  <button type="button" onClick={() => handleToggle(item)} className="text-emerald-600 dark:text-emerald-400 cursor-pointer shrink-0 mt-0.5">
                     <CheckCircle className="w-4.5 h-4.5" weight="fill" />
                   </button>
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs font-bold text-slate-700 line-through">{item.title}</p>
-                    {item.description && <p className="text-[11px] text-slate-450 mt-0.5 leading-relaxed">{item.description}</p>}
+                    <p className="text-xs font-bold text-slate-700 dark:text-slate-300 line-through">{item.title}</p>
+                    {item.description && <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">{item.description}</p>}
                   </div>
-                  <button type="button" onClick={() => handleDelete(item.id)} aria-label="Delete" className="text-slate-300 hover:text-rose-600 cursor-pointer shrink-0">
+                  <button type="button" onClick={() => handleDelete(item.id)} aria-label="Delete" className="text-slate-300 hover:text-rose-600 hover:dark:text-rose-400 cursor-pointer shrink-0">
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>

@@ -83,22 +83,22 @@ function SingleAssetSlot({
   };
 
   return (
-    <div className="border border-slate-200 rounded-2xl p-4 space-y-3">
+    <div className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 space-y-3">
       <div className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+        <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
           <Icon className="w-4 h-4" />
         </div>
         <div>
-          <h3 className="text-xs font-bold text-slate-800">{label}</h3>
+          <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200">{label}</h3>
           <p className="text-[10px] text-slate-400">{hint}</p>
         </div>
       </div>
 
       {current ? (
-        <div className="flex items-center gap-3 bg-slate-50 rounded-xl p-2.5">
-          <img src={current.url} alt={label} className="w-10 h-10 rounded-lg object-contain bg-white border border-slate-200" />
+        <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-900 rounded-xl p-2.5">
+          <img src={current.url} alt={label} className="w-10 h-10 rounded-lg object-contain bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700" />
           <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-bold text-slate-700 truncate">{current.fileName}</p>
+            <p className="text-[11px] font-bold text-slate-700 dark:text-slate-300 truncate">{current.fileName}</p>
             <p className="text-[9px] text-slate-400 font-mono">{formatSize(current.sizeBytes)}</p>
           </div>
         </div>
@@ -106,7 +106,7 @@ function SingleAssetSlot({
         <p className="text-[11px] text-slate-400 italic">No {label.toLowerCase()} uploaded yet - using the built-in default.</p>
       )}
 
-      {error && <p className="text-[10px] text-rose-600">{error}</p>}
+      {error && <p className="text-[10px] text-rose-600 dark:text-rose-400">{error}</p>}
 
       <input
         ref={inputRef}
@@ -186,7 +186,7 @@ export default function BrandingPanel() {
   return (
     <LoadingSwap isLoading={loading} skeleton={<SkeletonAdminBranding />}>
     <div className="space-y-6">
-      <p className="text-xs text-slate-500 leading-relaxed">
+      <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
         The logo and favicon here replace Aziiki's built-in defaults everywhere they're shown to visitors and signed-in users.
         Documents are just a shared file store for the team - contracts, policy PDFs, anything you want on hand.
       </p>
@@ -196,8 +196,8 @@ export default function BrandingPanel() {
         <SingleAssetSlot kind="favicon" label="Favicon" hint="Browser tab icon" icon={FaviconIcon} current={activeFavicon} onChanged={load} />
       </div>
 
-      <div className="border border-slate-200 rounded-2xl p-4 space-y-3">
-        <h3 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+      <div className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 space-y-3">
+        <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
           <FileArrowUp className="w-3.5 h-3.5" /> Documents
         </h3>
 
@@ -206,13 +206,13 @@ export default function BrandingPanel() {
         ) : (
           <div className="space-y-1.5">
             {documents.map((doc) => (
-              <div key={doc.id} className="flex items-center justify-between bg-slate-50 rounded-lg px-3 py-2 text-[11px]">
-                <a href={doc.url} target="_blank" rel="noreferrer" className="text-slate-700 font-bold hover:underline truncate">
+              <div key={doc.id} className="flex items-center justify-between bg-slate-50 dark:bg-slate-900 rounded-lg px-3 py-2 text-[11px]">
+                <a href={doc.url} target="_blank" rel="noreferrer" className="text-slate-700 dark:text-slate-300 font-bold hover:underline truncate">
                   {doc.fileName}
                 </a>
                 <div className="flex items-center gap-3 shrink-0 ml-2">
                   <span className="text-[9px] text-slate-400 font-mono">{formatSize(doc.sizeBytes)}</span>
-                  <button onClick={() => handleDelete(doc.id)} aria-label={`Delete ${doc.fileName}`} className="text-slate-400 hover:text-rose-600 cursor-pointer">
+                  <button onClick={() => handleDelete(doc.id)} aria-label={`Delete ${doc.fileName}`} className="text-slate-400 hover:text-rose-600 hover:dark:text-rose-400 cursor-pointer">
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -221,14 +221,14 @@ export default function BrandingPanel() {
           </div>
         )}
 
-        {docError && <p className="text-[10px] text-rose-600">{docError}</p>}
+        {docError && <p className="text-[10px] text-rose-600 dark:text-rose-400">{docError}</p>}
 
         <input ref={docInputRef} type="file" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleDocFile(f); }} />
         <button
           type="button"
           onClick={() => docInputRef.current?.click()}
           disabled={isUploadingDoc}
-          className="text-[11px] font-bold text-emerald-600 hover:underline cursor-pointer disabled:opacity-50 flex items-center gap-1"
+          className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer disabled:opacity-50 flex items-center gap-1"
         >
           <UploadSimple className="w-3 h-3" /> {isUploadingDoc ? "Uploading..." : "Upload a document"}
         </button>

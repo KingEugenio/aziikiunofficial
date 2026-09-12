@@ -16,6 +16,7 @@ import MobileNavBar from "./components/MobileNavBar";
 import Footer from "./components/Footer";
 import OfflineStatusBanner from "./components/OfflineStatusBanner";
 import MfaOnboardingNudge from "./components/MfaOnboardingNudge";
+import ThemeToggle from "./components/ThemeToggle";
 import { ONBOARDING_COMPLETE_KEY } from "./components/onboarding/onboardingStorage";
 import { useFeatureFlags } from "./lib/featureFlags";
 import { clearCachePrefix } from "./lib/sessionCache";
@@ -1646,12 +1647,12 @@ export default function App() {
   // again after their first session, so this fallback only ever shows
   // briefly on a first visit or a slow connection.
   const fullScreenFallback = (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 font-sans">
-      <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-xl max-w-sm w-full text-center space-y-4">
-        <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto animate-spin border border-emerald-200">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex flex-col items-center justify-center p-4 font-sans">
+      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-8 shadow-xl max-w-sm w-full text-center space-y-4">
+        <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center mx-auto animate-spin border border-emerald-200 dark:border-emerald-700">
           <ArrowsClockwise className="w-6 h-6" weight="bold" />
         </div>
-        <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest font-mono">Loading Aziiki</h3>
+        <h3 className="text-sm font-black text-slate-900 dark:text-slate-100 uppercase tracking-widest font-mono">Loading Aziiki</h3>
       </div>
     </div>
   );
@@ -1726,7 +1727,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col md:flex-row font-sans selection:bg-brand-navy/15 transition-colors duration-200">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 flex flex-col md:flex-row font-sans selection:bg-brand-navy/15 transition-colors duration-200">
 
       {/* Invisible until focused (Tab) - lets keyboard/screen-reader users
           jump straight past the sidebar nav to the actual page content,
@@ -1739,17 +1740,17 @@ export default function App() {
       </a>
 
       {/* Sticky Left Navigation Sidebar */}
-      <aside className="w-full md:w-80 bg-white border-b md:border-b-0 md:border-r border-slate-200 sticky top-0 z-50 p-4 md:p-6 flex flex-col justify-between md:h-screen md:overflow-y-auto gap-4 shadow-sm transition-colors duration-200 md:shrink-0" id="sidebar-navigation">
+      <aside className="w-full md:w-80 bg-white dark:bg-slate-800 border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-700 sticky top-0 z-50 p-4 md:p-6 flex flex-col justify-between md:h-screen md:overflow-y-auto gap-4 shadow-sm transition-colors duration-200 md:shrink-0" id="sidebar-navigation">
         
         {/* Logo and Switcher combo */}
         <div className="flex flex-col gap-4 text-left">
           <div className="flex items-center gap-3">
             <BrandLogo size={36} className="shadow-md rounded-xl" />
             <div className="flex-1 min-w-0">
-              <h1 className="text-lg font-black tracking-tighter flex items-center gap-1.5 font-sans text-slate-900">
+              <h1 className="text-lg font-black tracking-tighter flex items-center gap-1.5 font-sans text-slate-900 dark:text-slate-100">
                 Aziiki
               </h1>
-              <p className="text-[10px] text-slate-500 mt-0.5 font-sans font-medium">Your Business. Organized.</p>
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 font-sans font-medium">Your Business. Organized.</p>
             </div>
             {/* Mobile only - collapses the profile switcher + account widget
                 below so they stop permanently occupying screen space while
@@ -1760,14 +1761,14 @@ export default function App() {
               onClick={() => setSidebarCollapsed((v) => !v)}
               aria-label={sidebarCollapsed ? "Expand profile panel" : "Collapse profile panel"}
               aria-expanded={!sidebarCollapsed}
-              className="md:hidden shrink-0 w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center cursor-pointer"
+              className="md:hidden shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 hover:dark:bg-slate-700 text-slate-500 dark:text-slate-400 flex items-center justify-center cursor-pointer"
             >
               {sidebarCollapsed ? <CaretDown className="w-4 h-4" /> : <CaretUp className="w-4 h-4" />}
             </button>
           </div>
 
           <div className={`${sidebarCollapsed ? "hidden md:flex" : "flex"} flex-col gap-4`}>
-          <div className="h-px w-full bg-slate-200"></div>
+          <div className="h-px w-full bg-slate-200 dark:bg-slate-700"></div>
 
           {/* Active Business select dropdown switcher */}
           <div className="flex flex-col gap-2">
@@ -1780,7 +1781,7 @@ export default function App() {
                 <img
                   src={currentBusiness!.logo}
                   alt={`${currentBusiness!.name} logo`}
-                  className="w-8 h-8 rounded-lg object-contain bg-slate-50 border border-slate-200 shrink-0"
+                  className="w-8 h-8 rounded-lg object-contain bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shrink-0"
                 />
               )}
               <select
@@ -1791,7 +1792,7 @@ export default function App() {
                   setCurrentBusinessId(targetVal);
                   setIsAddingNewBiz(false);
                 }}
-                className="w-full bg-white border border-slate-200 text-slate-700 text-xs rounded-xl px-3 py-2 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 transition-all font-sans font-bold cursor-pointer"
+                className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs rounded-xl px-3 py-2 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 transition-all font-sans font-bold cursor-pointer"
               >
                 {businesses.map((b) => (
                   <option key={b.id} value={b.id} className="">
@@ -1820,7 +1821,7 @@ export default function App() {
                 className={`flex-1 p-2 border rounded-xl transition-all cursor-pointer text-[10.5px] font-bold font-sans flex items-center justify-center gap-1 ${
  showBrandConfig && !isAddingNewBiz
  ? "bg-slate-800 text-white border-slate-700 shadow-sm"
- : "bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200"
+ : "bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 hover:dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700"
  }`}
                 title="Change active enterprise details"
               >
@@ -1836,7 +1837,7 @@ export default function App() {
                   setShowBrandConfig(true);
                   setBrandFormError(null);
                 }}
-                className="p-2 px-3 border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl transition-all cursor-pointer text-[10.5px] font-bold font-sans flex items-center justify-center gap-1 shrink-0"
+                className="p-2 px-3 border border-emerald-200 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-900/40 hover:bg-emerald-100 hover:dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 rounded-xl transition-all cursor-pointer text-[10.5px] font-bold font-sans flex items-center justify-center gap-1 shrink-0"
                 title="Register another company profile"
               >
                 <span className="flex items-center gap-1"><Plus className="w-3 h-3" /> New</span>
@@ -1848,7 +1849,7 @@ export default function App() {
         </div>
 
         {/* Separator line for desktop */}
-        <div className="h-px w-full bg-slate-200 hidden md:block"></div>
+        <div className="h-px w-full bg-slate-200 dark:bg-slate-700 hidden md:block"></div>
 
         {/* Workspace Tab Navigators section */}
         <div className="flex flex-col gap-2 my-2 text-left shrink-0">
@@ -1870,7 +1871,7 @@ export default function App() {
               className={`px-4 py-2.5 rounded-xl font-bold font-sans transition-all flex items-center gap-2 cursor-pointer shrink-0 md:w-full md:justify-start ${
  activeTab === "dashboard"
  ? "bg-brand-navy text-white shadow-sm shadow-brand-navy/15"
- : "text-slate-600 hover:bg-slate-100"
+ : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 hover:dark:bg-slate-800"
  }`}
             >
               <Layers2 className="w-4 h-4 shrink-0" /> Scorecard
@@ -1884,7 +1885,7 @@ export default function App() {
               className={`px-4 py-2.5 rounded-xl font-bold font-sans transition-all flex items-center gap-2 cursor-pointer shrink-0 md:w-full md:justify-start ${
  activeTab === "billing"
  ? "bg-brand-navy text-white shadow-sm shadow-brand-navy/15"
- : "text-slate-600 hover:bg-slate-100"
+ : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 hover:dark:bg-slate-800"
  }`}
             >
               <Coins className="w-4 h-4 shrink-0" /> Billing & PDFs
@@ -1898,7 +1899,7 @@ export default function App() {
               className={`px-4 py-2.5 rounded-xl font-bold font-sans transition-all flex items-center gap-2 cursor-pointer shrink-0 md:w-full md:justify-start ${
  activeTab === "crm"
  ? "bg-brand-navy text-white shadow-sm shadow-brand-navy/15"
- : "text-slate-600 hover:bg-slate-100"
+ : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 hover:dark:bg-slate-800"
  }`}
             >
               <Users className="w-4 h-4 shrink-0" /> Customer CRM
@@ -1913,7 +1914,7 @@ export default function App() {
               className={`px-4 py-2.5 rounded-xl font-bold font-sans transition-all flex items-center gap-2 cursor-pointer shrink-0 md:w-full md:justify-start ${
  activeTab === "wealth"
  ? "bg-brand-navy text-white shadow-sm shadow-brand-navy/15"
- : "text-slate-600 hover:bg-slate-100"
+ : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 hover:dark:bg-slate-800"
  }`}
             >
               <Target className="w-4 h-4 shrink-0" /> Wealth & Goals
@@ -1928,7 +1929,7 @@ export default function App() {
               className={`px-4 py-2.5 rounded-xl font-bold font-sans transition-all flex items-center gap-2 cursor-pointer shrink-0 md:w-full md:justify-start ${
  activeTab === "stock"
  ? "bg-brand-navy text-white shadow-sm shadow-brand-navy/15"
- : "text-slate-600 hover:bg-slate-100"
+ : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 hover:dark:bg-slate-800"
  }`}
             >
               <Warehouse className="w-4 h-4 shrink-0" /> Warehouse Stock
@@ -1943,7 +1944,7 @@ export default function App() {
               className={`px-4 py-2.5 rounded-xl font-bold font-sans transition-all flex items-center gap-2 cursor-pointer shrink-0 md:w-full md:justify-start ${
  activeTab === "purchaseOrders"
  ? "bg-brand-navy text-white shadow-sm shadow-brand-navy/15"
- : "text-slate-600 hover:bg-slate-100"
+ : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 hover:dark:bg-slate-800"
  }`}
             >
               <Package className="w-4 h-4 shrink-0" /> Purchase Orders
@@ -1957,7 +1958,7 @@ export default function App() {
               className={`px-4 py-2.5 rounded-xl font-bold font-sans transition-all flex items-center gap-2 cursor-pointer shrink-0 md:w-full md:justify-start ${
  activeTab === "team"
  ? "bg-brand-navy text-white shadow-sm shadow-brand-navy/15"
- : "text-slate-600 hover:bg-slate-100"
+ : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 hover:dark:bg-slate-800"
  }`}
             >
               <UsersThree className="w-4 h-4 shrink-0" /> Team
@@ -1971,7 +1972,7 @@ export default function App() {
               className={`px-4 py-2.5 rounded-xl font-bold font-sans transition-all flex items-center gap-2 cursor-pointer shrink-0 md:w-full md:justify-start ${
  activeTab === "exchangeRates"
  ? "bg-brand-navy text-white shadow-sm shadow-brand-navy/15"
- : "text-slate-600 hover:bg-slate-100"
+ : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 hover:dark:bg-slate-800"
  }`}
             >
               <CurrencyCircleDollar className="w-4 h-4 shrink-0" /> Exchange Rates
@@ -1985,7 +1986,7 @@ export default function App() {
               className={`px-4 py-2.5 rounded-xl font-bold font-sans transition-all flex items-center gap-2 cursor-pointer shrink-0 md:w-full md:justify-start ${
  activeTab === "reports"
  ? "bg-brand-navy text-white shadow-sm shadow-brand-navy/15"
- : "text-slate-600 hover:bg-slate-100"
+ : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 hover:dark:bg-slate-800"
  }`}
             >
               <LineChart className="w-4 h-4 shrink-0" /> Reports & Wisdom
@@ -1999,7 +2000,7 @@ export default function App() {
               className={`px-4 py-2.5 rounded-xl font-bold font-sans transition-all flex items-center gap-2 cursor-pointer shrink-0 border md:w-full md:justify-start ${
  activeTab === "ai"
  ? "bg-brand-navy text-white border-brand-navy font-bold"
- : "text-brand-teal bg-teal-50/70 hover:bg-teal-100/60 border-teal-100"
+ : "text-brand-teal bg-teal-50/70 dark:bg-teal-900/70 hover:bg-teal-100/60 hover:dark:bg-teal-900/60 border-teal-100 dark:border-teal-700"
  }`}
             >
               <BrainCircuit className="w-4 h-4 shrink-0 animate-pulse text-brand-teal" /> CFO AI Advisor
@@ -2014,7 +2015,7 @@ export default function App() {
               className={`px-4 py-2.5 rounded-xl font-sans transition-all flex items-center gap-2 cursor-pointer shrink-0 border md:w-full md:justify-start ${
  activeTab === "monetize"
  ? "bg-brand-navy text-white border-brand-navy font-bold"
- : "text-slate-600 hover:bg-slate-100"
+ : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 hover:dark:bg-slate-800"
  }`}
             >
               <Sparkles className="w-4 h-4 shrink-0 text-brand-teal" /> Updates & Growth
@@ -2028,10 +2029,10 @@ export default function App() {
               className={`px-4 py-2.5 rounded-xl font-sans transition-all flex items-center gap-2 cursor-pointer shrink-0 border md:w-full md:justify-start ${
  activeTab === "guide"
  ? "bg-slate-800 text-white border-slate-700 font-bold"
- : "text-indigo-700 bg-indigo-50/60 hover:bg-indigo-100 border-indigo-150 font-bold"
+ : "text-indigo-700 dark:text-indigo-400 bg-indigo-50/60 dark:bg-indigo-900/60 hover:bg-indigo-100 hover:dark:bg-indigo-900/40 border-indigo-100 dark:border-indigo-700 font-bold"
  }`}
             >
-              <BookOpen className="w-4 h-4 shrink-0 text-indigo-600" /> App Guide & Academy
+              <BookOpen className="w-4 h-4 shrink-0 text-indigo-600 dark:text-indigo-400" /> App Guide & Academy
             </button>
             )}
 
@@ -2042,7 +2043,7 @@ export default function App() {
               className={`px-4 py-2.5 rounded-xl font-bold font-sans transition-all flex items-center gap-2 cursor-pointer shrink-0 md:w-full md:justify-start ${
  activeTab === "helpSupport"
  ? "bg-brand-navy text-white shadow-sm shadow-brand-navy/15"
- : "text-slate-600 hover:bg-slate-100"
+ : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 hover:dark:bg-slate-800"
  }`}
             >
               <HelpCircle className="w-4 h-4 shrink-0" /> Help & Support
@@ -2056,7 +2057,7 @@ export default function App() {
               className={`px-4 py-2.5 rounded-xl font-bold font-sans transition-all flex items-center gap-2 cursor-pointer shrink-0 md:w-full md:justify-start ${
  activeTab === "settings"
  ? "bg-brand-navy text-white shadow-sm shadow-brand-navy/15"
- : "text-slate-600 hover:bg-slate-100"
+ : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 hover:dark:bg-slate-800"
  }`}
             >
               <GearSix className="w-4 h-4 shrink-0" /> Settings
@@ -2066,16 +2067,24 @@ export default function App() {
         </div>
 
         {/* User Container Footer Section */}
-        <div className={`${sidebarCollapsed ? "hidden md:flex" : "flex"} md:flex-col items-center md:items-stretch gap-2.5 mt-auto pt-3 border-t border-slate-100`}>
-          
+        <div className={`${sidebarCollapsed ? "hidden md:flex" : "flex"} md:flex-col items-center md:items-stretch gap-2.5 mt-auto pt-3 border-t border-slate-100 dark:border-slate-700`}>
+
+          {/* Light/Dark toggle - hidden on mobile/tablet, same reasoning as
+              the sign-out button below: moved into MobileNavBar's "More"
+              sheet instead so it isn't competing for space here. */}
+          <ThemeToggle
+            showLabel
+            className="hidden md:flex w-full justify-center bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:dark:bg-slate-800 text-slate-500 dark:text-slate-400 py-2 gap-1.5 text-[10px] font-bold"
+          />
+
           {/* User Account Central State Indicator */}
-          <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-2xl p-2.5 w-full transition-colors duration-200 text-left">
+          <div className="flex items-center justify-between bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-2.5 w-full transition-colors duration-200 text-left">
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="w-8 h-8 rounded-xl bg-brand-teal text-white text-xs font-black flex items-center justify-center shadow-md shadow-brand-navy/10 uppercase shrink-0">
                 {user ? (user.email?.[0] ?? "U") : "G"}
               </div>
               <div className="flex flex-col text-left min-w-0">
-                <span className="text-[10px] font-bold text-slate-800 truncate max-w-[110px]" title={user ? (user.email ?? "Signed in") : "Guest Session"}>
+                <span className="text-[10px] font-bold text-slate-800 dark:text-slate-200 truncate max-w-[110px]" title={user ? (user.email ?? "Signed in") : "Guest Session"}>
                   {user ? (user.email ?? "Signed in") : "Guest Session"}
                 </span>
               </div>
@@ -2088,7 +2097,7 @@ export default function App() {
               <button
                 onClick={handleLogout}
                 title="Sign Out of SME Cloud"
-                className="hidden md:flex p-1.5 hover:bg-slate-200 text-slate-400 hover:text-rose-600 rounded-lg transition-colors cursor-pointer shrink-0"
+                className="hidden md:flex p-1.5 hover:bg-slate-200 hover:dark:bg-slate-700 text-slate-400 hover:text-rose-600 hover:dark:text-rose-400 rounded-lg transition-colors cursor-pointer shrink-0"
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -2098,7 +2107,7 @@ export default function App() {
                   setIsGuest(false);
                   setUser(null);
                 }}
-                className="text-[9px] font-bold text-emerald-600 hover:underline cursor-pointer bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200 shrink-0"
+                className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer bg-emerald-50 dark:bg-emerald-900/40 px-2 py-1 rounded-lg border border-emerald-200 dark:border-emerald-700 shrink-0"
               >
                 Sync
               </button>
@@ -2113,17 +2122,17 @@ export default function App() {
               step from the admin). Hidden on mobile/tablet - shown in
               MobileNavBar's "More" sheet instead, as the last item there. */}
           {user && (
-            <div className="hidden md:flex items-center justify-between bg-slate-50 border border-slate-200 rounded-2xl p-2.5 w-full text-left">
+            <div className="hidden md:flex items-center justify-between bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-2.5 w-full text-left">
               <div className="flex flex-col min-w-0">
-                <span className="text-[9px] font-mono text-slate-450 uppercase tracking-widest">Plan</span>
-                <span className="text-[11px] font-bold text-slate-800 capitalize">{tier}</span>
+                <span className="text-[9px] font-mono text-slate-400 uppercase tracking-widest">Plan</span>
+                <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 capitalize">{tier}</span>
               </div>
               {upgradeUrl && (
                 <a
                   href={upgradeUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[9px] font-bold text-emerald-600 hover:underline cursor-pointer bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200 shrink-0 capitalize"
+                  className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer bg-emerald-50 dark:bg-emerald-900/40 px-2 py-1 rounded-lg border border-emerald-200 dark:border-emerald-700 shrink-0 capitalize"
                 >
                   Upgrade to {nextTier}
                 </a>
@@ -2145,13 +2154,13 @@ export default function App() {
             brand changes) silently can't work at all while this is true -
             there's no business for any of it to attach to. */}
         {criticalSyncError && (
-          <div className="mb-6 bg-rose-50 border border-rose-200 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm">
+          <div className="mb-6 bg-rose-50 dark:bg-rose-900/40 border border-rose-200 dark:border-rose-700 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm">
             <div className="flex items-start gap-2.5">
-              <span className="text-rose-500 shrink-0 mt-0.5"><AlertCircle className="w-5 h-5" /></span>
+              <span className="text-rose-500 dark:text-rose-400 shrink-0 mt-0.5"><AlertCircle className="w-5 h-5" /></span>
               <div>
-                <p className="font-bold text-rose-800">Your workspace couldn't be loaded</p>
-                <p className="text-rose-600 text-xs mt-0.5">{criticalSyncError}</p>
-                <p className="text-rose-500 text-[11px] mt-1">Nothing can be saved (customers, stock, brand changes) until this is resolved.</p>
+                <p className="font-bold text-rose-800 dark:text-rose-300">Your workspace couldn't be loaded</p>
+                <p className="text-rose-600 dark:text-rose-400 text-xs mt-0.5">{criticalSyncError}</p>
+                <p className="text-rose-500 dark:text-rose-400 text-[11px] mt-1">Nothing can be saved (customers, stock, brand changes) until this is resolved.</p>
               </div>
             </div>
             <button
@@ -2167,12 +2176,12 @@ export default function App() {
         {!launchBannerDismissed && (
         <div className="mb-6 bg-brand-teal border border-brand-teal rounded-2xl p-4 text-white shadow-md flex flex-col md:flex-row items-center justify-between gap-4 animate-fade-in" id="launch-edition-promotion-banner">
           <div className="flex items-center gap-3">
-            <div className="bg-white/15 w-10 h-10 rounded-xl flex items-center justify-center shrink-0 p-1.5">
+            <div className="bg-white/15 dark:bg-slate-800/15 w-10 h-10 rounded-xl flex items-center justify-center shrink-0 p-1.5">
               <BrandLogo size={28} className="rounded-lg" />
             </div>
             <div className="space-y-0.5 text-left">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[9px] font-mono font-bold bg-white/20 text-white border border-white/30 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                <span className="text-[9px] font-mono font-bold bg-white/20 dark:bg-slate-800/20 text-white border border-white/30 px-2 py-0.5 rounded-full uppercase tracking-wider">
                   Launch Edition
                 </span>
                 <h4 className="text-xs sm:text-sm font-black tracking-tight text-white">
@@ -2187,7 +2196,7 @@ export default function App() {
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => changeTab("guide")}
-              className="bg-white hover:bg-slate-50 text-brand-teal font-extrabold text-[10px] px-3.5 py-2 rounded-xl transition-all cursor-pointer shadow-sm hover:shadow shrink-0 font-sans flex items-center gap-1"
+              className="bg-white dark:bg-slate-800 hover:bg-slate-50 hover:dark:bg-slate-900 text-brand-teal font-extrabold text-[10px] px-3.5 py-2 rounded-xl transition-all cursor-pointer shadow-sm hover:shadow shrink-0 font-sans flex items-center gap-1"
             >
               See How It Works <ArrowRight className="w-3 h-3" />
             </button>
@@ -2209,7 +2218,7 @@ export default function App() {
             timezone AND it differs from the browser's current one, and the
             user hasn't already dismissed it for this business this session. */}
         {travelNotice && dismissedTravelBannerFor !== currentBusiness.id && (
-          <div className="mb-6 bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl p-3.5 flex items-center justify-between gap-3 animate-fade-in text-xs" id="traveling-user-banner">
+          <div className="mb-6 bg-amber-50 dark:bg-amber-900/40 border border-amber-200 dark:border-amber-700 text-amber-800 dark:text-amber-300 rounded-2xl p-3.5 flex items-center justify-between gap-3 animate-fade-in text-xs" id="traveling-user-banner">
             <div className="flex items-center gap-2.5">
               <span className="shrink-0"><Globe className="w-4 h-4" /></span>
               <p>
@@ -2223,7 +2232,7 @@ export default function App() {
               type="button"
               onClick={() => setDismissedTravelBannerFor(currentBusiness.id)}
               aria-label="Dismiss traveling notice"
-              className="text-amber-600 hover:text-amber-800 font-bold shrink-0 cursor-pointer px-1"
+              className="text-amber-600 dark:text-amber-400 hover:text-amber-800 hover:dark:text-amber-300 font-bold shrink-0 cursor-pointer px-1"
             >
               <X className="w-4 h-4" />
             </button>
@@ -2250,15 +2259,15 @@ export default function App() {
         )}
 
         {showBrandConfig && (
-          <div className="mb-6 bg-white border-2 border-slate-200/95 rounded-2xl p-5 shadow-lg border-emerald-500/20 text-left animate-fade-in text-xs max-w-2xl mx-auto">
-            <div className="flex justify-between items-center mb-4 pb-2 border-b border-slate-100">
+          <div className="mb-6 bg-white dark:bg-slate-800 border-2 border-slate-200/95 dark:border-slate-700/95 rounded-2xl p-5 shadow-lg border-emerald-500/20 text-left animate-fade-in text-xs max-w-2xl mx-auto">
+            <div className="flex justify-between items-center mb-4 pb-2 border-b border-slate-100 dark:border-slate-700">
               <div className="flex items-center gap-2">
                 <span className="text-lg">{isAddingNewBiz ? <Plus className="w-4 h-4" /> : <GearSix className="w-4 h-4" />}</span>
                 <div>
-                  <h3 className="font-bold text-slate-900 font-sans text-sm">
+                  <h3 className="font-bold text-slate-900 dark:text-slate-100 font-sans text-sm">
                     {isAddingNewBiz ? "Register New Company Profile" : "Edit Active Enterprise Brand Details"}
                   </h3>
-                  <p className="text-[10px] text-slate-500 mt-0.5">
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">
                     {isAddingNewBiz 
                       ? "Create another separate localized workspace profile for your secondary trade activity." 
                       : "Modify the active example properties to match your real registered business information."}
@@ -2268,7 +2277,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setShowBrandConfig(false)}
-                className="text-slate-400 hover:text-slate-600 font-bold p-1 cursor-pointer"
+                className="text-slate-400 hover:text-slate-600 hover:dark:text-slate-300 font-bold p-1 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -2276,14 +2285,14 @@ export default function App() {
 
             <form onSubmit={isAddingNewBiz ? handleRegisterNewBrand : handleUpdateActiveBrand} className="space-y-4">
               {brandFormError && (
-                <div className="bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold rounded-xl p-3 flex items-start gap-2">
+                <div className="bg-rose-50 dark:bg-rose-900/40 border border-rose-200 dark:border-rose-700 text-rose-700 dark:text-rose-400 text-xs font-semibold rounded-xl p-3 flex items-start gap-2">
                   <span className="shrink-0"><AlertCircle className="w-4 h-4" /></span>
                   <span>{brandFormError}</span>
                 </div>
               )}
 
               {bizFormLocked && !isAddingNewBiz && (
-                <div className="bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-semibold rounded-xl p-3 flex items-start gap-2">
+                <div className="bg-amber-50 dark:bg-amber-900/40 border border-amber-200 dark:border-amber-700 text-amber-800 dark:text-amber-300 text-[11px] font-semibold rounded-xl p-3 flex items-start gap-2">
                   <span className="shrink-0"><Lock className="w-4 h-4" /></span>
                   <span>This profile is locked, so fields below can't be edited. Uncheck "Lock Business Profile Details" near the bottom to make changes.</span>
                 </div>
@@ -2291,13 +2300,13 @@ export default function App() {
               {/* Personal Workspace toggle: off by default in Phase 1 (commercial/SME only), code preserved. Toggle via admin portal -> personal_workspace. */}
               {isAddingNewBiz && isEnabled("personal_workspace") && (
                 <div>
-                  <label className="text-[9px] font-mono font-bold text-slate-450 uppercase block mb-1">Select Workspace Category</label>
-                  <div className="grid grid-cols-2 gap-2 bg-slate-50 p-1 rounded-xl border border-slate-200">
+                  <label className="text-[9px] font-mono font-bold text-slate-400 uppercase block mb-1">Select Workspace Category</label>
+                  <div className="grid grid-cols-2 gap-2 bg-slate-50 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
                     <button
                       type="button"
                       onClick={() => setIsPersonalForm(true)}
                       className={`py-1.5 text-[10px] font-bold font-sans rounded-lg transition-colors cursor-pointer ${
- isPersonalForm ? "bg-emerald-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-700 bg-transparent"
+ isPersonalForm ? "bg-emerald-600 text-white shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 hover:dark:text-slate-300 bg-transparent"
  }`}
                     >
                       <span className="inline-flex items-center gap-1"><User className="w-3 h-3" /> Personal Finances Workspace</span>
@@ -2306,13 +2315,13 @@ export default function App() {
                       type="button"
                       onClick={() => setIsPersonalForm(false)}
                       className={`py-1.5 text-[10px] font-bold font-sans rounded-lg transition-colors cursor-pointer ${
- !isPersonalForm ? "bg-emerald-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-700 bg-transparent"
+ !isPersonalForm ? "bg-emerald-600 text-white shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 hover:dark:text-slate-300 bg-transparent"
  }`}
                     >
                       <span className="inline-flex items-center gap-1"><Building2 className="w-3 h-3" /> Business SME Workspace</span>
                     </button>
                   </div>
-                  <p className="text-[9px] text-slate-500 mt-1 font-sans">
+                  <p className="text-[9px] text-slate-500 dark:text-slate-400 mt-1 font-sans">
                     {isPersonalForm ? "Permanently FREE personal wallet. Manage salaries, mobile money wallets, savings goals, and monthly budgets." : "Commercial SME Operating System. Includes Cashbook ledger, CRM, invoicing, dynamic receipts, and stock."}
                   </p>
                 </div>
@@ -2321,8 +2330,8 @@ export default function App() {
               {!isPersonalForm && (
                 <div className="grid grid-cols-1 gap-4">
                   <div>
-                    <label className="text-[9px] font-mono font-bold text-slate-450 uppercase block mb-1">Business Structure / Legal Identity</label>
-                    <div className="grid grid-cols-3 gap-2 bg-slate-50 p-1 rounded-xl border border-slate-200">
+                    <label className="text-[9px] font-mono font-bold text-slate-400 uppercase block mb-1">Business Structure / Legal Identity</label>
+                    <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
                       {(["Sole Proprietor", "Partnership", "Company"] as const).map((t) => (
                         <button
                           key={t}
@@ -2330,14 +2339,14 @@ export default function App() {
                           disabled={bizFormLocked && !isAddingNewBiz}
                           onClick={() => setBizFormType(t)}
                           className={`py-1.5 text-[10px] font-bold font-sans rounded-lg transition-colors cursor-pointer ${
- bizFormType === t ? "bg-emerald-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-700 bg-transparent"
+ bizFormType === t ? "bg-emerald-600 text-white shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 hover:dark:text-slate-300 bg-transparent"
  } disabled:opacity-50`}
                         >
                           {t}
                         </button>
                       ))}
                     </div>
-                    <p className="text-[9px] text-slate-500 mt-1 font-sans">
+                    <p className="text-[9px] text-slate-500 dark:text-slate-400 mt-1 font-sans">
                       {bizFormType === "Sole Proprietor" && "Single-owner structure (100% equity). Direct personal dashboard labels (\"My Money\", \"My Profit\")."}
                       {bizFormType === "Partnership" && "Joint-ownership partnership structure. Enables Capital ledger registers and auto-splits profit margins."}
                       {bizFormType === "Company" && "Incorporated structured corporate entity. Features Shareholder capital tables, role delegation controls, and audit trails."}
@@ -2348,7 +2357,7 @@ export default function App() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-[9px] font-mono font-bold text-slate-450 uppercase block mb-1">
+                  <label className="text-[9px] font-mono font-bold text-slate-400 uppercase block mb-1">
                     {isPersonalForm ? "Workspace / Display Name" : "Company / Brand Name"}
                   </label>
                   <input
@@ -2357,30 +2366,30 @@ export default function App() {
                     disabled={bizFormLocked && !isAddingNewBiz}
                     value={bizFormName}
                     onChange={(e) => setBizFormName(e.target.value)}
-                    className="w-full bg-slate-50 text-slate-800 border border-slate-250 rounded-xl px-3 py-2 outline-none font-sans font-medium focus:bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 transition-all disabled:opacity-60"
+                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans font-medium focus:bg-white focus:dark:bg-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 transition-all disabled:opacity-60"
                     placeholder={isPersonalForm ? "e.g. My Personal Wallet" : "e.g. BlueStar Logistics"}
                   />
                 </div>
                 {!isPersonalForm ? (
                   <div>
-                    <label className="text-[9px] font-mono font-bold text-slate-450 uppercase block mb-1">Industry Type / Branch Line</label>
+                    <label className="text-[9px] font-mono font-bold text-slate-400 uppercase block mb-1">Industry Type / Branch Line</label>
                     <input
                       type="text"
                       disabled={bizFormLocked && !isAddingNewBiz}
                       value={bizFormIndustry}
                       onChange={(e) => setBizFormIndustry(e.target.value)}
-                      className="w-full bg-slate-50 text-slate-800 border border-slate-250 rounded-xl px-3 py-2 outline-none font-sans focus:bg-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 transition-all disabled:opacity-60"
+                      className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans focus:bg-white focus:dark:bg-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 transition-all disabled:opacity-60"
                       placeholder="e.g. Courier & Freight Branch"
                     />
                   </div>
                 ) : (
                   <div>
-                    <label className="text-[9px] font-mono font-bold text-slate-450 uppercase block mb-1">Workspace Category</label>
+                    <label className="text-[9px] font-mono font-bold text-slate-400 uppercase block mb-1">Workspace Category</label>
                     <input
                       type="text"
                       disabled
                       value="Personal Finance"
-                      className="w-full bg-slate-100 text-slate-500 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans cursor-not-allowed"
+                      className="w-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans cursor-not-allowed"
                     />
                   </div>
                 )}
@@ -2388,12 +2397,12 @@ export default function App() {
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="text-[9px] font-mono font-bold text-slate-450 uppercase block mb-1">Local Base Currency</label>
+                  <label className="text-[9px] font-mono font-bold text-slate-400 uppercase block mb-1">Local Base Currency</label>
                   <select
                     disabled={bizFormLocked && !isAddingNewBiz}
                     value={bizFormCurrency}
                     onChange={(e) => setBizFormCurrency(e.target.value)}
-                    className="w-full bg-slate-50 text-slate-800 border border-slate-250 rounded-xl px-2.5 py-2 outline-none font-sans focus:bg-white focus:border-emerald-500 cursor-pointer transition-all font-medium text-xs disabled:opacity-60"
+                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-2 outline-none font-sans focus:bg-white focus:dark:bg-slate-800 focus:border-emerald-500 cursor-pointer transition-all font-medium text-xs disabled:opacity-60"
                   >
                     <option value="GHS">GHS (₵) Ghana Cedi</option>
                     <option value="NGN">NGN (₦) Nigerian Naira</option>
@@ -2406,7 +2415,7 @@ export default function App() {
                 {!isPersonalForm && (
                   <>
                     <div>
-                      <label className="text-[9px] font-mono font-bold text-slate-450 uppercase block mb-1">Sales VAT / Tax Rate %</label>
+                      <label className="text-[9px] font-mono font-bold text-slate-400 uppercase block mb-1">Sales VAT / Tax Rate %</label>
                       <input
                         type="number"
                         step="0.1"
@@ -2415,19 +2424,19 @@ export default function App() {
                         disabled={bizFormLocked && !isAddingNewBiz}
                         value={bizFormTaxRate}
                         onChange={(e) => setBizFormTaxRate(parseFloat(e.target.value) || 0)}
-                        className="w-full bg-slate-50 text-slate-800 border border-slate-250 rounded-xl px-3 py-2 outline-none font-sans font-mono focus:bg-white focus:border-emerald-500 transition-all disabled:opacity-60"
+                        className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans font-mono focus:bg-white focus:dark:bg-slate-800 focus:border-emerald-500 transition-all disabled:opacity-60"
                         placeholder="e.g. 15"
                       />
                     </div>
                     <div>
-                      <label className="text-[9px] font-mono font-bold text-slate-450 uppercase block mb-1">Brand Logo Icon</label>
+                      <label className="text-[9px] font-mono font-bold text-slate-400 uppercase block mb-1">Brand Logo Icon</label>
                       <div className="flex gap-1.5 items-center">
                         {bizFormLogo.startsWith("data:image/") || bizFormLogo.startsWith("http") ? (
                           <div className="relative shrink-0">
                             <img 
                               src={bizFormLogo} 
                               alt="Uploaded Logo" 
-                              className="w-8 h-8 rounded-lg object-contain bg-slate-50 border p-0.5"
+                              className="w-8 h-8 rounded-lg object-contain bg-slate-50 dark:bg-slate-900 border p-0.5"
                             />
                             {!(bizFormLocked && !isAddingNewBiz) && (
                               <button
@@ -2441,7 +2450,7 @@ export default function App() {
                             )}
                           </div>
                         ) : (
-                          <div className="w-8 h-8 bg-slate-150 border rounded-lg flex items-center justify-center text-base shrink-0">
+                          <div className="w-8 h-8 bg-slate-100 dark:bg-slate-800 border rounded-lg flex items-center justify-center text-base shrink-0">
                             {bizFormLogo}
                           </div>
                         )}
@@ -2454,7 +2463,7 @@ export default function App() {
                                 setBizFormLogo(e.target.value);
                               }
                             }}
-                            className="w-full bg-slate-50 text-slate-800 border border-slate-250 rounded-xl px-1 py-1.5 outline-none font-sans focus:bg-white focus:border-emerald-500 cursor-pointer transition-all text-[11px] disabled:opacity-60"
+                            className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-1 py-1.5 outline-none font-sans focus:bg-white focus:dark:bg-slate-800 focus:border-emerald-500 cursor-pointer transition-all text-[11px] disabled:opacity-60"
                           >
                             <option value="💼">Office/Standard</option>
                             <option value="📸">Creative/Camera</option>
@@ -2470,7 +2479,7 @@ export default function App() {
                           </select>
                           
                           {!(bizFormLocked && !isAddingNewBiz) && (
-                            <label className="block text-[8px] text-slate-500 font-sans cursor-pointer bg-slate-100 hover:bg-slate-200 border rounded px-1 py-0.5 mt-0.5 text-center font-bold">
+                            <label className="block text-[8px] text-slate-500 dark:text-slate-400 font-sans cursor-pointer bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 hover:dark:bg-slate-700 border rounded px-1 py-0.5 mt-0.5 text-center font-bold">
                               Upload Custom Logo File
                               <input
                                 type="file"
@@ -2511,12 +2520,12 @@ export default function App() {
               {!isPersonalForm && (
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-[9px] font-mono font-bold text-slate-450 uppercase block mb-1">Home Country</label>
+                    <label className="text-[9px] font-mono font-bold text-slate-400 uppercase block mb-1">Home Country</label>
                     <select
                       disabled={bizFormLocked && !isAddingNewBiz}
                       value={bizFormCountryCode}
                       onChange={(e) => setBizFormCountryCode(e.target.value)}
-                      className="w-full bg-slate-50 text-slate-800 border border-slate-250 rounded-xl px-2.5 py-2 outline-none font-sans focus:bg-white focus:border-emerald-500 cursor-pointer transition-all font-medium text-xs disabled:opacity-60"
+                      className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-2 outline-none font-sans focus:bg-white focus:dark:bg-slate-800 focus:border-emerald-500 cursor-pointer transition-all font-medium text-xs disabled:opacity-60"
                     >
                       <option value="">Not set</option>
                       {COUNTRIES.map((c) => (
@@ -2525,14 +2534,14 @@ export default function App() {
                     </select>
                   </div>
                   <div>
-                    <label className="text-[9px] font-mono font-bold text-slate-450 uppercase block mb-1">Home Timezone</label>
+                    <label className="text-[9px] font-mono font-bold text-slate-400 uppercase block mb-1">Home Timezone</label>
                     <input
                       type="text"
                       disabled={bizFormLocked && !isAddingNewBiz}
                       value={bizFormTimezone}
                       onChange={(e) => setBizFormTimezone(e.target.value)}
                       placeholder="e.g. Africa/Accra"
-                      className="w-full bg-slate-50 text-slate-800 border border-slate-250 rounded-xl px-3 py-2 outline-none font-sans focus:bg-white focus:border-emerald-500 transition-all font-mono text-xs disabled:opacity-60"
+                      className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans focus:bg-white focus:dark:bg-slate-800 focus:border-emerald-500 transition-all font-mono text-xs disabled:opacity-60"
                     />
                   </div>
                 </div>
@@ -2540,13 +2549,13 @@ export default function App() {
 
               {!isPersonalForm && (
                 <div>
-                  <label className="text-[9px] font-mono font-bold text-slate-450 uppercase block mb-1">Legal / Compliance Description</label>
+                  <label className="text-[9px] font-mono font-bold text-slate-400 uppercase block mb-1">Legal / Compliance Description</label>
                   <textarea
                     rows={2}
                     disabled={bizFormLocked && !isAddingNewBiz}
                     value={bizFormDesc}
                     onChange={(e) => setBizFormDesc(e.target.value)}
-                    className="w-full bg-slate-50 text-slate-800 border border-slate-250 rounded-xl px-3 py-2 outline-none font-sans focus:bg-white focus:border-emerald-500 transition-all resize-none text-[11px] disabled:opacity-60"
+                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans focus:bg-white focus:dark:bg-slate-800 focus:border-emerald-500 transition-all resize-none text-[11px] disabled:opacity-60"
                     placeholder="Compliant SME hub description as displayed on issued PDF receipts..."
                   />
                 </div>
@@ -2555,28 +2564,28 @@ export default function App() {
               {/* Partners/Shareholders registry: off by default in Phase 1, code preserved. Toggle via admin portal -> business_partners_shareholders. */}
               {/* Partnership Configuration Deck */}
               {isEnabled("business_partners_shareholders") && bizFormType === "Partnership" && (
-                <div className="border border-slate-200/80 bg-slate-50/50 rounded-2xl p-4 space-y-3">
-                  <h4 className="font-bold text-slate-900 text-xs font-sans flex items-center gap-1.5 border-b border-slate-200/60 pb-1.5">
+                <div className="border border-slate-200/80 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-900/50 rounded-2xl p-4 space-y-3">
+                  <h4 className="font-bold text-slate-900 dark:text-slate-100 text-xs font-sans flex items-center gap-1.5 border-b border-slate-200/60 dark:border-slate-700/60 pb-1.5">
                     <UsersThree className="w-3.5 h-3.5" /> Partnership Registry & Capital Splits
                   </h4>
                   
                   <div className="space-y-1.5">
                     {partners.length === 0 ? (
-                      <p className="text-[10px] text-slate-500 italic">No partners configured yet. Append records below.</p>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 italic">No partners configured yet. Append records below.</p>
                     ) : (
-                      <div className="divide-y divide-slate-100 bg-white border border-slate-200/60 rounded-xl p-2.5 max-h-40 overflow-y-auto">
+                      <div className="divide-y divide-slate-100 dark:divide-slate-700 bg-white dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60 rounded-xl p-2.5 max-h-40 overflow-y-auto">
                         {partners.map((p) => (
                           <div key={p.id} className="flex justify-between items-center py-1.5 text-[11px]">
                             <div>
-                              <strong className="text-slate-800 font-sans">{p.name}</strong>
-                              <span className="text-[10px] text-slate-500 ml-2 font-mono font-bold text-emerald-650">Stake: {p.ownershipPercentage}%</span>
+                              <strong className="text-slate-800 dark:text-slate-200 font-sans">{p.name}</strong>
+                              <span className="text-[10px] text-slate-500 dark:text-slate-400 ml-2 font-mono font-bold text-emerald-600 dark:text-emerald-400">Stake: {p.ownershipPercentage}%</span>
                             </div>
                             <div className="flex items-center gap-3">
-                              <span className="text-[10px] font-mono text-slate-500">Paid Capital: {bizFormCurrency} {p.capitalContribution.toLocaleString()}</span>
+                              <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400">Paid Capital: {bizFormCurrency} {p.capitalContribution.toLocaleString()}</span>
                               <button
                                 type="button"
                                 onClick={() => setPartners(partners.filter(item => item.id !== p.id))}
-                                className="text-slate-400 hover:text-rose-600 font-black px-1 text-xs cursor-pointer"
+                                className="text-slate-400 hover:text-rose-600 hover:dark:text-rose-400 font-black px-1 text-xs cursor-pointer"
                               >
                                 <X className="w-4 h-4" />
                               </button>
@@ -2586,15 +2595,15 @@ export default function App() {
                       </div>
                     )}
                     
-                    <div className="font-sans font-bold text-[10px] text-slate-600 flex justify-between px-1">
+                    <div className="font-sans font-bold text-[10px] text-slate-600 dark:text-slate-300 flex justify-between px-1">
                       <span>Combined Partners Registry Stake:</span>
-                      <span className={partners.reduce((sum, p) => sum + p.ownershipPercentage, 0) === 100 ? "text-emerald-600" : "text-amber-600 animate-pulse font-mono"}>
+                      <span className={partners.reduce((sum, p) => sum + p.ownershipPercentage, 0) === 100 ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400 animate-pulse font-mono"}>
                         {partners.reduce((sum, p) => sum + p.ownershipPercentage, 0)}% of 100%
                       </span>
                     </div>
                   </div>
 
-                  <div className="bg-white border border-slate-200 rounded-xl p-3 space-y-2">
+                  <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 space-y-2">
                     <span className="text-[9px] font-bold font-mono text-slate-400 block uppercase">Append partner stakeholder to register</span>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                       <div>
@@ -2603,7 +2612,7 @@ export default function App() {
                           placeholder="Partner Name"
                           value={newPartnerName}
                           onChange={(e) => setNewPartnerName(e.target.value)}
-                          className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-[11px] outline-none font-sans w-full focus:bg-white focus:border-emerald-500"
+                          className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5 text-[11px] outline-none font-sans w-full focus:bg-white focus:dark:bg-slate-800 focus:border-emerald-500"
                         />
                       </div>
                       <div>
@@ -2614,7 +2623,7 @@ export default function App() {
                           placeholder="Equity percentage %"
                           value={newPartnerOwnership || ""}
                           onChange={(e) => setNewPartnerOwnership(parseInt(e.target.value) || 0)}
-                          className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-[11px] outline-none font-mono w-full focus:bg-white focus:border-emerald-500"
+                          className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5 text-[11px] outline-none font-mono w-full focus:bg-white focus:dark:bg-slate-800 focus:border-emerald-500"
                         />
                       </div>
                       <div>
@@ -2623,7 +2632,7 @@ export default function App() {
                           placeholder="GHS Capital"
                           value={newPartnerCapital || ""}
                           onChange={(e) => setNewPartnerCapital(parseInt(e.target.value) || 0)}
-                          className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-[11px] outline-none font-mono w-full focus:bg-white focus:border-emerald-500"
+                          className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5 text-[11px] outline-none font-mono w-full focus:bg-white focus:dark:bg-slate-800 focus:border-emerald-500"
                         />
                       </div>
                     </div>
@@ -2658,30 +2667,30 @@ export default function App() {
               {/* Shareholders/Roles registry: off by default in Phase 1, code preserved. Toggle via admin portal -> business_partners_shareholders. */}
               {/* Company Configuration Deck */}
               {isEnabled("business_partners_shareholders") && bizFormType === "Company" && (
-                <div className="border border-slate-200/85 bg-slate-50/50 rounded-2xl p-4 space-y-4">
-                  <h4 className="font-bold text-slate-900 text-xs font-sans flex items-center gap-1.5 border-b border-slate-200/60 pb-1.5">
+                <div className="border border-slate-200/85 dark:border-slate-700/85 bg-slate-50/50 dark:bg-slate-900/50 rounded-2xl p-4 space-y-4">
+                  <h4 className="font-bold text-slate-900 dark:text-slate-100 text-xs font-sans flex items-center gap-1.5 border-b border-slate-200/60 dark:border-slate-700/60 pb-1.5">
                     <GearSix className="w-3.5 h-3.5" /> Corporate Governance & Team Delegations
                   </h4>
 
                   {/* Shareholders Registry */}
                   <div className="space-y-1.5">
-                    <span className="text-[10px] font-bold text-slate-700 flex items-center gap-1"><ChartBar className="w-3 h-3" /> Shareholders Ledger & Seed Capital</span>
+                    <span className="text-[10px] font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1"><ChartBar className="w-3 h-3" /> Shareholders Ledger & Seed Capital</span>
                     {shareholders.length === 0 ? (
                       <p className="text-[10px] text-slate-400 italic">No shareholders registered. Initialize authorization below.</p>
                     ) : (
-                      <div className="divide-y divide-slate-100 bg-white border border-slate-200/60 rounded-xl p-2.5 max-h-32 overflow-y-auto">
+                      <div className="divide-y divide-slate-100 dark:divide-slate-700 bg-white dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60 rounded-xl p-2.5 max-h-32 overflow-y-auto">
                         {shareholders.map((sh) => (
                           <div key={sh.id} className="flex justify-between items-center py-1.5 text-[11px]">
                             <div>
-                              <strong className="text-slate-800 font-sans">{sh.name}</strong>
-                              <span className="text-[10px] text-slate-500 ml-2 font-mono">Holding: {sh.sharesCount.toLocaleString()} common units</span>
+                              <strong className="text-slate-800 dark:text-slate-200 font-sans">{sh.name}</strong>
+                              <span className="text-[10px] text-slate-500 dark:text-slate-400 ml-2 font-mono">Holding: {sh.sharesCount.toLocaleString()} common units</span>
                             </div>
                             <div className="flex items-center gap-3">
-                              <span className="text-[10px] font-mono text-slate-500">Paid contribution: {bizFormCurrency} {sh.capitalContribution.toLocaleString()}</span>
+                              <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400">Paid contribution: {bizFormCurrency} {sh.capitalContribution.toLocaleString()}</span>
                               <button
                                 type="button"
                                 onClick={() => setShareholders(shareholders.filter(item => item.id !== sh.id))}
-                                className="text-slate-400 hover:text-rose-600 font-black px-1 cursor-pointer text-xs"
+                                className="text-slate-400 hover:text-rose-600 hover:dark:text-rose-400 font-black px-1 cursor-pointer text-xs"
                               >
                                 <X className="w-4 h-4" />
                               </button>
@@ -2691,22 +2700,22 @@ export default function App() {
                       </div>
                     )}
 
-                    <div className="bg-white border border-slate-200 rounded-xl p-2.5 space-y-2">
-                      <span className="text-[9px] font-bold font-mono text-slate-450 block uppercase">Enroll Shareholder Contribution</span>
+                    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 space-y-2">
+                      <span className="text-[9px] font-bold font-mono text-slate-400 block uppercase">Enroll Shareholder Contribution</span>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                         <input
                           type="text"
                           placeholder="Shareholder Name"
                           value={newShareholderName}
                           onChange={(e) => setNewShareholderName(e.target.value)}
-                          className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-[10px] outline-none font-sans w-full"
+                          className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-[10px] outline-none font-sans w-full"
                         />
                         <input
                           type="number"
                           placeholder="Shares Units (e.g. 2000)"
                           value={newShareholderShares || ""}
                           onChange={(e) => setNewShareholderShares(parseInt(e.target.value) || 0)}
-                          className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-[10px] outline-none font-mono w-full"
+                          className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-[10px] outline-none font-mono w-full"
                         />
                         <div className="flex gap-1.5">
                           <input
@@ -2714,7 +2723,7 @@ export default function App() {
                             placeholder="Capital contribution"
                             value={newShareholderCapital || ""}
                             onChange={(e) => setNewShareholderCapital(parseInt(e.target.value) || 0)}
-                            className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-[10px] outline-none font-mono w-full"
+                            className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-[10px] outline-none font-mono w-full"
                           />
                           <button
                             type="button"
@@ -2748,24 +2757,24 @@ export default function App() {
                       Off by default in Phase 1, code and any existing data
                       preserved. Toggle via admin portal -> team_memberships_invite_ui. */}
                   {isEnabled("team_memberships_invite_ui") && (
-                  <div className="space-y-1.5 pt-2 border-t border-slate-200/60">
-                    <span className="text-[10px] font-bold text-slate-700 flex items-center gap-1"><LockKey className="w-3 h-3" /> Role-Based Access Controls</span>
+                  <div className="space-y-1.5 pt-2 border-t border-slate-200/60 dark:border-slate-700/60">
+                    <span className="text-[10px] font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1"><LockKey className="w-3 h-3" /> Role-Based Access Controls</span>
                     {roles.length === 0 ? (
                       <p className="text-[10px] text-slate-400 italic">No custom user roles declared yet. Set permissions below.</p>
                     ) : (
-                      <div className="divide-y divide-slate-100 bg-white border border-slate-200/60 rounded-xl p-2.5 max-h-32 overflow-y-auto">
+                      <div className="divide-y divide-slate-100 dark:divide-slate-700 bg-white dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60 rounded-xl p-2.5 max-h-32 overflow-y-auto">
                         {roles.map((r) => (
                           <div key={r.id} className="flex justify-between items-center py-1 text-[11px]">
                             <div>
-                              <strong className="text-slate-800 font-sans">{r.name}</strong>
-                              <span className="text-[10px] text-slate-500 font-mono ml-2">({r.email})</span>
+                              <strong className="text-slate-800 dark:text-slate-200 font-sans">{r.name}</strong>
+                              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono ml-2">({r.email})</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 font-black rounded text-[9px] uppercase font-mono">{r.role}</span>
+                              <span className="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 font-black rounded text-[9px] uppercase font-mono">{r.role}</span>
                               <button
                                 type="button"
                                 onClick={() => setRoles(roles.filter(item => item.id !== r.id))}
-                                className="text-slate-400 hover:text-rose-600 font-black px-1 cursor-pointer text-xs"
+                                className="text-slate-400 hover:text-rose-600 hover:dark:text-rose-400 font-black px-1 cursor-pointer text-xs"
                               >
                                 <X className="w-4 h-4" />
                               </button>
@@ -2775,28 +2784,28 @@ export default function App() {
                       </div>
                     )}
 
-                    <div className="bg-white border border-slate-200 rounded-xl p-2.5 space-y-2">
-                      <span className="text-[9px] font-bold font-mono text-slate-450 block uppercase">Assign Staff Role Directory</span>
+                    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 space-y-2">
+                      <span className="text-[9px] font-bold font-mono text-slate-400 block uppercase">Assign Staff Role Directory</span>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                         <input
                           type="text"
                           placeholder="Full Name"
                           value={newRoleName}
                           onChange={(e) => setNewRoleName(e.target.value)}
-                          className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-[10px] outline-none font-sans w-full"
+                          className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-[10px] outline-none font-sans w-full"
                         />
                         <input
                           type="email"
                           placeholder="Email address"
                           value={newRoleEmail}
                           onChange={(e) => setNewRoleEmail(e.target.value)}
-                          className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-[10px] outline-none font-sans w-full"
+                          className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-[10px] outline-none font-sans w-full"
                         />
                         <div className="flex gap-1.5">
                           <select
                             value={newRoleType}
                             onChange={(e) => setNewRoleType(e.target.value as any)}
-                            className="bg-slate-50 border border-slate-200 rounded-lg px-1.5 py-1 text-[10px] outline-none font-sans w-full cursor-pointer"
+                            className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-1.5 py-1 text-[10px] outline-none font-sans w-full cursor-pointer"
                           >
                             <option value="Owner">Owner</option>
                             <option value="Admin">Admin</option>
@@ -2829,7 +2838,7 @@ export default function App() {
                   )}
 
                   {/* Approvals Workflow switch */}
-                  <div className="flex items-start gap-2 pt-2 border-t border-slate-200/60 leading-normal">
+                  <div className="flex items-start gap-2 pt-2 border-t border-slate-200/60 dark:border-slate-700/60 leading-normal">
                     <input
                       type="checkbox"
                       id="allowApprovalsSwitch"
@@ -2837,7 +2846,7 @@ export default function App() {
                       onChange={(e) => setAllowFinancialApprovals(e.target.checked)}
                       className="w-3.5 h-3.5 cursor-pointer accent-emerald-600 rounded mt-0.5 shrink-0"
                     />
-                    <label htmlFor="allowApprovalsSwitch" className="text-[10px] text-slate-600 font-sans cursor-pointer select-none">
+                    <label htmlFor="allowApprovalsSwitch" className="text-[10px] text-slate-600 dark:text-slate-300 font-sans cursor-pointer select-none">
                       Enable <strong>Dual-Signature Financial Approval Process</strong>.<br />
                       Staff adjustments above {bizFormCurrency} 500 will enter pending quarantine until an Admin/Owner approves.
                     </label>
@@ -2847,7 +2856,7 @@ export default function App() {
 
               {/* Brand Profile Locking Feature to prevent accidental changes */}
               {!isPersonalForm && (
-                <div className="flex items-center gap-2.5 p-3.5 bg-emerald-50/50 border border-emerald-200 rounded-xl leading-normal">
+                <div className="flex items-center gap-2.5 p-3.5 bg-emerald-50/50 dark:bg-emerald-900/50 border border-emerald-200 dark:border-emerald-700 rounded-xl leading-normal">
                   <input
                     type="checkbox"
                     id="lockBrandDetails"
@@ -2855,14 +2864,14 @@ export default function App() {
                     onChange={(e) => setBizFormLocked(e.target.checked)}
                     className="w-4 h-4 cursor-pointer accent-emerald-600 rounded shrink-0"
                   />
-                  <label htmlFor="lockBrandDetails" className="text-[11px] text-emerald-800 font-sans cursor-pointer select-none flex items-start gap-1.5">
+                  <label htmlFor="lockBrandDetails" className="text-[11px] text-emerald-800 dark:text-emerald-300 font-sans cursor-pointer select-none flex items-start gap-1.5">
                     <Lock className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                     <span><strong>Lock Business Profile Details</strong>. Lock this brand layout and details to prevent editing again. This applies to company name, currency, tax rate, and legal profiles across the entire app.</span>
                   </label>
                 </div>
               )}
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-700">
                 <button
                   type="button"
                   onClick={() => {
@@ -2871,7 +2880,7 @@ export default function App() {
                     setBrandFormError(null);
                   }}
                   disabled={isSavingBrand}
-                  className="px-4 py-2 text-[11px] font-semibold text-slate-500 hover:text-slate-800 border border-slate-200 bg-slate-50 hover:bg-slate-100 rounded-xl transition-all cursor-pointer disabled:opacity-50"
+                  className="px-4 py-2 text-[11px] font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 hover:dark:text-slate-200 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 hover:dark:bg-slate-800 rounded-xl transition-all cursor-pointer disabled:opacity-50"
                 >
                   Cancel
                 </button>

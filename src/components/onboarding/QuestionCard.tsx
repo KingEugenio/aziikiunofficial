@@ -24,13 +24,13 @@ export default function QuestionCard({ label, icon: OptionIcon, selected, onSele
       className={`w-full flex items-center gap-3 text-left px-4 py-3.5 rounded-2xl border-2 transition-colors cursor-pointer font-sans ${
         selected
           ? "border-[color:var(--color-onboard-teal)] bg-[color:var(--color-onboard-teal)]/10"
-          : "border-slate-200 bg-white hover:border-[color:var(--color-onboard-teal)]/40 hover:bg-[color:var(--color-onboard-cream)]"
+          : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-[color:var(--color-onboard-teal)]/40 hover:bg-[color:var(--color-onboard-cream)]"
       }`}
     >
       {OptionIcon && (
         <span
           className={`shrink-0 w-8 h-8 rounded-xl flex items-center justify-center ${
-            selected ? "bg-[color:var(--color-onboard-teal)]/15 text-[color:var(--color-onboard-teal)]" : "bg-slate-100 text-slate-500"
+            selected ? "bg-[color:var(--color-onboard-teal)]/15 text-[color:var(--color-onboard-teal)]" : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
           }`}
         >
           <OptionIcon className="w-4.5 h-4.5" weight="bold" />
@@ -38,7 +38,7 @@ export default function QuestionCard({ label, icon: OptionIcon, selected, onSele
       )}
       <span
         className={`text-sm font-semibold ${
-          selected ? "text-[color:var(--color-onboard-teal)]" : "text-slate-700"
+          selected ? "text-[color:var(--color-onboard-teal)]" : "text-slate-700 dark:text-slate-300"
         }`}
       >
         {label}

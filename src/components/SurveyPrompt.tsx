@@ -47,22 +47,22 @@ export default function SurveyPrompt() {
   };
 
   return (
-    <div className="mb-6 bg-white border border-slate-200 rounded-2xl p-5 shadow-sm animate-fade-in text-left space-y-3.5">
+    <div className="mb-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm animate-fade-in text-left space-y-3.5">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3">
-          <div className="bg-emerald-50 text-emerald-600 w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
+          <div className="bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
             <ClipboardText className="w-4.5 h-4.5" />
           </div>
           <div>
-            <p className="text-xs font-extrabold text-slate-800">{survey.title}</p>
-            {survey.description && <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">{survey.description}</p>}
+            <p className="text-xs font-extrabold text-slate-800 dark:text-slate-200">{survey.title}</p>
+            {survey.description && <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">{survey.description}</p>}
           </div>
         </div>
         <button
           type="button"
           onClick={() => setDismissedId(survey.id)}
           aria-label="Dismiss survey"
-          className="shrink-0 text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100 cursor-pointer"
+          className="shrink-0 text-slate-400 hover:text-slate-700 hover:dark:text-slate-300 p-1 rounded-lg hover:bg-slate-100 hover:dark:bg-slate-800 cursor-pointer"
         >
           <X className="w-3.5 h-3.5" />
         </button>
@@ -71,7 +71,7 @@ export default function SurveyPrompt() {
       <div className="space-y-3">
         {survey.questions.map((q) => (
           <div key={q.id} className="space-y-1.5">
-            <label className="text-[11px] font-bold text-slate-700 block">{q.prompt}</label>
+            <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300 block">{q.prompt}</label>
             {q.type === "choice" ? (
               <div className="flex flex-wrap gap-1.5">
                 {(q.options ?? []).map((opt) => (
@@ -82,7 +82,7 @@ export default function SurveyPrompt() {
                     className={`px-2.5 py-1 text-[10px] font-bold rounded-lg border cursor-pointer transition-colors ${
                       answers[q.id] === opt
                         ? "bg-emerald-600 text-white border-emerald-600"
-                        : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
+                        : "bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:dark:bg-slate-800"
                     }`}
                   >
                     {opt}
@@ -94,7 +94,7 @@ export default function SurveyPrompt() {
                 type="text"
                 value={answers[q.id] ?? ""}
                 onChange={(e) => setAnswers((prev) => ({ ...prev, [q.id]: e.target.value }))}
-                className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
+                className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
               />
             )}
           </div>

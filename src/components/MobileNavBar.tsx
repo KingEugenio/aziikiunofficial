@@ -18,6 +18,7 @@ import {
   SignOut as LogOut,
   X,
 } from "@phosphor-icons/react";
+import ThemeToggle from "./ThemeToggle";
 
 interface MobileNavBarProps {
   activeTab: string;
@@ -74,7 +75,7 @@ export default function MobileNavBar({ activeTab, onChangeTab, isEnabled, tier, 
   return (
     <>
       <nav
-        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-[0_-2px_12px_rgba(0,0,0,0.06)] flex items-stretch"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 shadow-[0_-2px_12px_rgba(0,0,0,0.06)] flex items-stretch"
         style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       >
         {visiblePrimaryTabs.map((tab) => {
@@ -108,12 +109,12 @@ export default function MobileNavBar({ activeTab, onChangeTab, isEnabled, tier, 
         <div className="md:hidden fixed inset-0 z-50 flex items-end" role="dialog" aria-modal="true" aria-label="More navigation">
           <div className="absolute inset-0 bg-slate-900/50" onClick={() => setShowMore(false)} />
           <div
-            className="relative w-full bg-white rounded-t-3xl p-4 pb-6 space-y-1.5 animate-fade-in"
+            className="relative w-full bg-white dark:bg-slate-800 rounded-t-3xl p-4 pb-6 space-y-1.5 animate-fade-in"
             style={{ paddingBottom: "calc(1.5rem + env(safe-area-inset-bottom, 0px))" }}
           >
             <div className="flex items-center justify-between mb-2 px-1">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">More</span>
-              <button onClick={() => setShowMore(false)} aria-label="Close" className="text-slate-400 hover:text-slate-700 cursor-pointer p-1">
+              <button onClick={() => setShowMore(false)} aria-label="Close" className="text-slate-400 hover:text-slate-700 hover:dark:text-slate-300 cursor-pointer p-1">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -125,7 +126,7 @@ export default function MobileNavBar({ activeTab, onChangeTab, isEnabled, tier, 
                   key={item.id}
                   onClick={() => handleSelect(item.id)}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm cursor-pointer transition-colors ${
-                    active ? "bg-brand-navy text-white" : "text-slate-700 hover:bg-slate-100"
+                    active ? "bg-brand-navy text-white" : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 hover:dark:bg-slate-800"
                   }`}
                 >
                   <ItemIcon className="w-4.5 h-4.5 shrink-0" /> {item.label}
@@ -137,27 +138,31 @@ export default function MobileNavBar({ activeTab, onChangeTab, isEnabled, tier, 
                 desktop sidebar shows both directly instead (always
                 visible there, so no need to bury them in a sheet). */}
             {tier && (
-              <div className="w-full flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50 mt-2">
+              <div className="w-full flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-900 mt-2">
                 <div className="flex flex-col">
-                  <span className="text-[9px] font-mono text-slate-450 uppercase tracking-widest">Plan</span>
-                  <span className="text-sm font-bold text-slate-800 capitalize">{tier}</span>
+                  <span className="text-[9px] font-mono text-slate-400 uppercase tracking-widest">Plan</span>
+                  <span className="text-sm font-bold text-slate-800 dark:text-slate-200 capitalize">{tier}</span>
                 </div>
                 {upgradeUrl && (
                   <a
                     href={upgradeUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 capitalize"
+                    className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/40 px-3 py-1.5 rounded-lg border border-emerald-200 dark:border-emerald-700 capitalize"
                   >
                     Upgrade to {nextTier}
                   </a>
                 )}
               </div>
             )}
+            <ThemeToggle
+              showLabel
+              className="w-full justify-start gap-3 px-4 py-3 rounded-2xl font-bold text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 hover:dark:bg-slate-900"
+            />
             {onLogout && (
               <button
                 onClick={onLogout}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm cursor-pointer text-rose-600 hover:bg-rose-50"
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm cursor-pointer text-rose-600 dark:text-rose-400 hover:bg-rose-50 hover:dark:bg-rose-900/40"
               >
                 <LogOut className="w-4.5 h-4.5 shrink-0" /> Log out
               </button>
