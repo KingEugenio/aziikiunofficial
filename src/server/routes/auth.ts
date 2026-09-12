@@ -112,7 +112,19 @@ authRouter.post("/login", loginLimiter, async (req: Request, res: Response) => {
 });
 
 authRouter.post("/logout", requireAuth, async (req: Request, res: Response) => {
-  await req.supabase!.auth.signOut();
+  // req.supabase!.auth.signOut() looked right but silently did nothing: that
+  // client is built by injecting the caller's token as a raw Authorization
+  // header (see getUserScopedClient), not via setSession() - so the SDK has
+  // no internal "current session" to actually revoke, and the call was a
+  // no-op. Confirmed live: the old access token kept working after logout
+  // returned 204. auth.admin.signOut(token) on the service-role client
+  // revokes that specific token's session directly regardless of any
+  // client-side session state, which is the actual fix.
+  const serviceClient = getServiceRoleClient();
+  const { error } = await serviceClient.auth.admin.signOut(req.accessToken!, "global");
+  if (error) {
+    console.error("[auth/logout] failed to revoke session:", error.message);
+  }
   await logSecurityEvent({ action: "AUTH_LOGOUT", userId: req.user!.id, email: req.user!.email, ip: req.ip });
   res.status(204).send();
 });
