@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Megaphone, PaperPlaneTilt as Send } from "@phosphor-icons/react";
+import { Megaphone, PaperPlaneTilt as Send, Trash as Trash2 } from "@phosphor-icons/react";
 import { api } from "../lib/api";
 import { LoadingSwap } from "../components/LoadingSwap";
 import { SkeletonAdminItemList } from "../components/Skeleton";
+import ConfirmModal from "../components/ConfirmModal";
 
 interface AnnouncementRow {
   id: string;
@@ -70,6 +71,7 @@ export default function AnnouncementsPanel() {
   const [targetActivity, setTargetActivity] = useState("all");
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<AnnouncementRow | null>(null);
 
   const load = () => {
     setLoading(true);
@@ -105,6 +107,16 @@ export default function AnnouncementsPanel() {
     setAnnouncements((prev) => prev.map((a) => (a.id === row.id ? { ...a, isActive: !a.isActive } : a)));
     try {
       await api.admin.announcements.setActive(row.id, !row.isActive);
+    } catch {
+      load();
+    }
+  };
+
+  const handleDelete = async (row: AnnouncementRow) => {
+    setPendingDelete(null);
+    setAnnouncements((prev) => prev.filter((a) => a.id !== row.id));
+    try {
+      await api.admin.announcements.remove(row.id);
     } catch {
       load();
     }
@@ -224,20 +236,40 @@ export default function AnnouncementsPanel() {
                   {new Date(a.createdAt).toLocaleString()} · Seen by {a.readCount}
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => handleToggleActive(a)}
-                className={`shrink-0 text-[10px] font-bold px-2.5 py-1.5 rounded-lg cursor-pointer ${
-                  a.isActive ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-slate-100 text-slate-500 border border-slate-200"
-                }`}
-              >
-                {a.isActive ? "Active" : "Inactive"}
-              </button>
+              <div className="shrink-0 flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => handleToggleActive(a)}
+                  className={`text-[10px] font-bold px-2.5 py-1.5 rounded-lg cursor-pointer ${
+                    a.isActive ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-slate-100 text-slate-500 border border-slate-200"
+                  }`}
+                >
+                  {a.isActive ? "Active" : "Inactive"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPendingDelete(a)}
+                  aria-label={`Delete ${a.title}`}
+                  className="text-slate-400 hover:text-rose-600 cursor-pointer p-1.5"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           ))
         )}
         </LoadingSwap>
       </div>
+
+      {pendingDelete && (
+        <ConfirmModal
+          title="Delete this announcement?"
+          message={`"${pendingDelete.title}" will be permanently removed, including its read/seen history. This can't be undone.`}
+          confirmLabel="Delete"
+          onConfirm={() => handleDelete(pendingDelete)}
+          onCancel={() => setPendingDelete(null)}
+        />
+      )}
     </div>
   );
 }

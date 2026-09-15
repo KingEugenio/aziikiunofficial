@@ -101,3 +101,20 @@ adminAnnouncementsRouter.patch("/:id", async (req: Request, res: Response) => {
 
   res.json({ data: fromRow(data) });
 });
+
+// Permanently remove an announcement (e.g. a duplicate, a typo'd draft, or
+// one that's no longer relevant) - deactivating only hides it from users'
+// feeds but still leaves it cluttering the admin list forever, which is
+// what prompted this. admin_announcement_reads rows for it are cleaned up
+// via the table's own foreign-key cascade (migration 0033).
+adminAnnouncementsRouter.delete("/:id", async (req: Request, res: Response) => {
+  const supabase = req.supabase!;
+  const { error } = await supabase.from("admin_announcements").delete().eq("id", req.params.id);
+
+  if (error) {
+    res.status(400).json({ error: error.message });
+    return;
+  }
+
+  res.status(204).send();
+});

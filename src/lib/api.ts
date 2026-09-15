@@ -391,6 +391,7 @@ export const api = {
         }),
       setActive: (id: string, isActive: boolean) =>
         request<{ data: unknown }>(`/admin/announcements/${id}`, { method: "PATCH", body: JSON.stringify({ isActive }) }),
+      remove: (id: string) => request<void>(`/admin/announcements/${id}`, { method: "DELETE" }),
     },
 
     surveys: {
