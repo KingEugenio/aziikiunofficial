@@ -25,6 +25,33 @@ interface CacheEntry<T> {
 
 const memory = new Map<string, CacheEntry<unknown>>();
 
+// clearCachePrefix() clearing the Map/sessionStorage doesn't, by itself,
+// do anything for a component that already mounted and fetched before the
+// clear happened - useCachedResource's own effect only ever runs once (its
+// dependency is the cache key, a constant string), so without this it
+// would keep rendering whatever it fetched at mount forever. This is what
+// actually caused the real-world bug: an admin sets a signed-in user's
+// tier to Pro; App.tsx doesn't unmount on login (it just re-renders with
+// the new user), so every already-mounted useFeatureFlags()/tier consumer
+// kept showing the stale pre-upgrade value even though the cache itself
+// had been correctly cleared. Each key has a small set of listener
+// callbacks (one per mounted useCachedResource instance using that key);
+// invalidateCacheKey notifies them all, and each listener bumps its own
+// refresh counter to force its effect to re-run.
+const listeners = new Map<string, Set<() => void>>();
+
+function notifyListeners(key: string): void {
+  listeners.get(key)?.forEach((fn) => fn());
+}
+
+function subscribe(key: string, listener: () => void): () => void {
+  if (!listeners.has(key)) listeners.set(key, new Set());
+  listeners.get(key)!.add(listener);
+  return () => {
+    listeners.get(key)?.delete(listener);
+  };
+}
+
 // Several components can mount in the same tick, before any of them has a
 // resolved cache entry to read yet (e.g. BrandLogo renders in the sidebar,
 // header, and auth screen all at once) - without this, each would fire its
@@ -76,18 +103,31 @@ export function primeCache<T>(key: string, value: T): void {
  * logout (and before a new login) so one account's cached config can never
  * leak into another session in the same browser tab. */
 export function clearCachePrefix(prefix: string): void {
+  const clearedKeys = new Set<string>();
   for (const k of Array.from(memory.keys())) {
-    if (k.startsWith(prefix)) memory.delete(k);
+    if (k.startsWith(prefix)) {
+      memory.delete(k);
+      clearedKeys.add(k);
+    }
   }
   try {
     for (let i = sessionStorage.length - 1; i >= 0; i--) {
       const k = sessionStorage.key(i);
-      if (k && k.startsWith(prefix)) sessionStorage.removeItem(k);
+      if (k && k.startsWith(prefix)) {
+        sessionStorage.removeItem(k);
+        clearedKeys.add(k);
+      }
     }
   } catch {
     // Nothing more to do - the in-memory layer is already cleared, which
     // covers the rest of this page load.
   }
+  // Also notify listeners for the bare prefix itself (e.g. "aziiki_cache_features"
+  // IS the full key, not just a prefix of something longer) - clearedKeys
+  // above only catches keys that were actually present in memory/storage at
+  // clear time, but a listener may have subscribed to this exact key.
+  clearedKeys.add(prefix);
+  for (const k of clearedKeys) notifyListeners(k);
 }
 
 /**
@@ -99,12 +139,25 @@ export function useCachedResource<T>(key: string, fetcher: () => Promise<T>): { 
   const cached = getEntry<T>(key);
   const [data, setData] = useState<T | null>(cached?.value ?? null);
   const [loaded, setLoaded] = useState(cached != null);
+  // Bumped by the subscription below whenever clearCachePrefix() targets
+  // this key, so the fetch effect re-runs even though `key` itself never
+  // changes - see the big comment above `listeners` for why this exists.
+  const [refreshGen, setRefreshGen] = useState(0);
+
+  useEffect(() => {
+    return subscribe(key, () => setRefreshGen((g) => g + 1));
+  }, [key]);
 
   useEffect(() => {
     let cancelled = false;
+    // A refresh triggered by invalidation (refreshGen > 0) must always hit
+    // the network - the whole point is that the cache was just cleared
+    // because it's known stale, so re-reading getEntry()'s "is it still
+    // fresh" check here would defeat the invalidation entirely.
+    const isInvalidationRefresh = refreshGen > 0;
     const entry = getEntry<T>(key);
-    const isFresh = entry != null && Date.now() - entry.fetchedAt < TTL_MS;
-    if (entry && !cancelled) {
+    const isFresh = !isInvalidationRefresh && entry != null && Date.now() - entry.fetchedAt < TTL_MS;
+    if (entry && !cancelled && !isInvalidationRefresh) {
       setData(entry.value);
       setLoaded(true);
     }
@@ -136,7 +189,7 @@ export function useCachedResource<T>(key: string, fetcher: () => Promise<T>): { 
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key]);
+  }, [key, refreshGen]);
 
   return { data, loaded };
 }
