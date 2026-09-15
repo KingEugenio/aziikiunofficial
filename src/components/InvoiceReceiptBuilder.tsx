@@ -14,6 +14,42 @@ import { useFeatureFlags } from "../lib/featureFlags";
 import { useCachedResource } from "../lib/sessionCache";
 import { getInitials } from "../lib/businessLogo";
 
+// Spells out a monetary amount for the "Amount in Words" line on the
+// Diagonal Ribbon receipt design (market-trader receipt books traditionally
+// write this out so it can't be altered after the fact) - only needs to
+// handle amounts up to the billions, which comfortably covers any real
+// invoice/receipt total.
+function numberToWords(amount: number): string {
+  const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+  const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+
+  function chunkToWords(n: number): string {
+    if (n === 0) return "";
+    if (n < 20) return ones[n];
+    if (n < 100) return `${tens[Math.floor(n / 10)]}${n % 10 ? " " + ones[n % 10] : ""}`;
+    return `${ones[Math.floor(n / 100)]} Hundred${n % 100 ? " " + chunkToWords(n % 100) : ""}`;
+  }
+
+  const whole = Math.floor(Math.abs(amount));
+  if (whole === 0) return "Zero";
+
+  const scales = ["", "Thousand", "Million", "Billion"];
+  const chunks: number[] = [];
+  let remaining = whole;
+  while (remaining > 0) {
+    chunks.push(remaining % 1000);
+    remaining = Math.floor(remaining / 1000);
+  }
+
+  const words = chunks
+    .map((chunk, idx) => (chunk ? `${chunkToWords(chunk)}${scales[idx] ? " " + scales[idx] : ""}` : ""))
+    .filter(Boolean)
+    .reverse()
+    .join(" ");
+
+  return words;
+}
+
 interface InvoiceReceiptBuilderProps {
   currentBusiness: Business;
   customers: Customer[];
@@ -139,29 +175,33 @@ const DESIGN_TEMPLATES = [
   },
   {
     id: 6,
-    name: "Executive Navy & Gold",
-    description: "Deep navy full-bleed header with a gold accent rule, boxed grand total, gold top/bottom border bars.",
-    category: "Corporate",
-    layout: "split" as const,
-    badgeBg: "bg-amber-50 text-amber-800 border border-amber-200",
-    tableHeaderBg: "bg-slate-900 text-white",
-    tableBorder: "border border-slate-200",
-    tableShadow: "shadow-sm",
+    name: "Terminal Ledger",
+    description: "Monospace terminal-ticket line list, dashed rules, boxed total in a code-block frame - a clean technical/startup register look.",
+    category: "Startup",
+    layout: "minimalList" as const,
+    monospace: true,
+    badgeBg: "bg-indigo-50 text-indigo-700 border border-indigo-200",
+    tableHeaderBg: "bg-indigo-50/60 border-t border-b border-dashed border-indigo-200 text-indigo-700",
+    tableBorder: "border border-dashed border-indigo-200",
+    tableShadow: "shadow-none",
     totalsStyle: "boxed" as const,
     hasLeftStrip: false,
-    logoAlign: "left" as const,
+    logoAlign: "right" as const,
   },
   {
     id: 7,
-    name: "Market Trader's Ledger",
-    description: "Classic printed-invoice-book look: a solid color header band, fill-in-the-blank customer/date lines, a numbered S/N item table, and Customer/Office Manager signature lines - built for market traders and small retail.",
+    name: "Diagonal Ribbon",
+    description: "A compact black-and-green diagonal ribbon badge, a gray customer/phone/date info bar, fill-in-the-blank Name/Address lines, and an Amount-in-Words + Terms & Signature footer - a bold market-trader receipt book.",
     category: "Retail",
-    layout: "book" as const,
-    badgeBg: "bg-amber-50 text-amber-800 border border-amber-200",
-    tableHeaderBg: "bg-slate-900 text-white",
-    tableBorder: "border border-slate-800",
+    layout: "ledger" as const,
+    miniRibbonBadge: true,
+    bookFields: true,
+    footerStyle: "amountInWords" as const,
+    badgeBg: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+    tableHeaderBg: "bg-slate-950 text-white",
+    tableBorder: "border-0",
     tableShadow: "shadow-none",
-    totalsStyle: "boxed" as const,
+    totalsStyle: "badge" as const,
     hasLeftStrip: false,
     logoAlign: "left" as const,
   },
@@ -181,16 +221,17 @@ const DESIGN_TEMPLATES = [
   },
   {
     id: 9,
-    name: "Diagonal Cut",
-    description: "A black-to-green diagonal ribbon cut across the top corner, alternating-shaded item rows, a big pill-shaped grand total.",
-    category: "Retail",
+    name: "Executive Navy & Gold",
+    description: "A slim full-width navy title bar over a white statement, a gold rule, a navy item table, a labeled TOTAL AMOUNT / TAX / AMOUNT DUE card with a gold tab, and an Account Name/Number footer instead of a signature panel - gold bars top and bottom.",
+    category: "Corporate",
     layout: "split" as const,
-    headerShape: "ribbon" as const,
-    badgeBg: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+    edgeBars: true,
+    badgeBg: "bg-amber-50 text-amber-800 border border-amber-200",
     tableHeaderBg: "bg-slate-900 text-white",
     tableBorder: "border border-slate-200",
     tableShadow: "shadow-sm",
-    totalsStyle: "badge" as const,
+    totalsStyle: "labeledCard" as const,
+    footerStyle: "accountDetails" as const,
     hasLeftStrip: false,
     logoAlign: "left" as const,
   }
@@ -1368,7 +1409,9 @@ export default function InvoiceReceiptBuilder({
                       }
                       setTemplateIndex(i);
                       // Apply default configuration values for specific templates to improve UX
-                      if (i === 3 || i === 2 || i === 7) {
+                      if (i === 6) {
+                        setSelectedFont("Courier");
+                      } else if (i === 3 || i === 2) {
                         setSelectedFont("Georgia");
                       } else {
                         setSelectedFont("Arial");
@@ -1376,15 +1419,15 @@ export default function InvoiceReceiptBuilder({
                       // A handful of templates have a signature color
                       // pairing from their reference design - applied as a
                       // starting point, still fully overridable below.
-                      if (i === 6) {
+                      if (i === 9) {
                         setAccentColor("#B8860B"); // gold
                         setSecondaryColor("#102A43"); // navy
-                      } else if (i === 9) {
+                      } else if (i === 7) {
                         setAccentColor("#22C55E"); // green
                         setSecondaryColor("#0F0F0F"); // near-black
-                      } else if (i === 7) {
-                        setAccentColor("#A0522D"); // brown
-                        setSecondaryColor("#78350F");
+                      } else if (i === 6) {
+                        setAccentColor("#4F46E5"); // indigo
+                        setSecondaryColor("#312E81");
                       } else if (i === 8) {
                         setAccentColor("#475569"); // slate-gray, neutral utility-receipt tone
                         setSecondaryColor("#1E293B");
@@ -2036,16 +2079,22 @@ export default function InvoiceReceiptBuilder({
         <div 
           id="mockup-document-view" 
           className="relative overflow-hidden flex flex-col justify-between select-all mx-auto w-full"
-          style={{ 
-            // Real A4 proportions (210mm x 297mm = 1:1.4142 ratio) as a
-            // MINIMUM height, not a hard cap - a short invoice/receipt
-            // fills exactly one visual "page" instead of looking like a
-            // squished half-page box, but a long line-item list is still
-            // free to grow taller rather than getting cut off or squeezed.
-            // This is a visual cue only; renderDocumentToPdf() and the
-            // @media print rule in index.css are what handle actual
-            // pagination once content genuinely exceeds one page.
-            aspectRatio: "210 / 297",
+          style={{
+            // A4-ish minimum height (roughly the 210:297mm ratio at this
+            // card's typical width) so a short invoice/receipt still fills
+            // one visual "page" instead of looking like a squished half-page
+            // box. Deliberately NOT paired with a CSS `aspectRatio` here -
+            // that property makes a block box's height a fixed, non-auto
+            // value once width is definite, which silently clips any content
+            // past that height (verified: overflow-hidden + aspectRatio
+            // clipped roughly half of a content-heavy template's content,
+            // including the totals/signature footer, on a narrow/mobile
+            // viewport - the box never grew past the ratio-derived height).
+            // With only minHeight set, the box's height stays auto and
+            // genuinely grows with content, so a longer line-item list is
+            // free to push it taller rather than getting cut off. This is
+            // what renderDocumentToPdf() (html2canvas) captures, so the
+            // exported PDF matches whatever is actually visible here.
             minHeight: "580px",
             fontFamily: selectedFont === "Arial" ? "Inter, sans-serif" : selectedFont === "Georgia" ? "Georgia, serif" : selectedFont === "Courier" ? "monospace" : "Outfit, sans-serif",
             backgroundColor: paperBackground === "White" ? "#ffffff" : paperBackground === "Ivory" ? "#FAF8F5" : paperBackground === "Sand" ? "#F5F1EA" : "#F3F4F6",
@@ -2099,13 +2148,21 @@ export default function InvoiceReceiptBuilder({
             <div className="absolute top-0 bottom-0 left-0 w-2.5 opacity-90 pointer-events-none" style={{ backgroundColor: accentColor }}></div>
           )}
 
+          {/* Top/bottom gold accent bars for Executive Navy & Gold */}
+          {(activeTemplate as any).edgeBars && (
+            <>
+              <div className="absolute top-0 left-0 right-0 h-2 pointer-events-none" style={{ backgroundColor: accentColor }}></div>
+              <div className="absolute bottom-0 left-0 right-0 h-2 pointer-events-none" style={{ backgroundColor: accentColor }}></div>
+            </>
+          )}
+
           {/* Template-specific design highlights */}
           {templateIndex === 4 && ( // Luxury Dark's gold accent border inside
             <div className="absolute inset-2 border-2 border-amber-500/20 pointer-events-none rounded-lg" />
           )}
 
           {/* Core Content Area */}
-          <div className="p-6 sm:p-8 space-y-6 relative z-10">
+          <div className={`p-6 sm:p-8 space-y-6 relative z-10 ${(activeTemplate as any).monospace ? "font-mono text-xs" : ""}`}>
 
             {/* Header alignments with Logo Placement and Layout styles.
                 "split" layout templates (Creative Agency, Luxury Dark,
@@ -2116,7 +2173,10 @@ export default function InvoiceReceiptBuilder({
             {activeTemplate.layout === "split" ? (
               <div
                 className="-mx-6 -mt-6 sm:-mx-8 sm:-mt-8 mb-6 px-6 sm:px-8 py-7 flex flex-col sm:flex-row justify-between items-start gap-5 relative overflow-hidden"
-                style={{ backgroundColor: templateIndex === 4 ? "#0f172a" : (activeTemplate as any).headerShape === "ribbon" ? secondaryColor : accentColor }}
+                style={{
+                  backgroundColor: templateIndex === 4 ? "#0f172a" : (activeTemplate as any).headerShape === "ribbon" ? secondaryColor : (activeTemplate as any).edgeBars ? secondaryColor : accentColor,
+                  borderBottom: (activeTemplate as any).edgeBars ? `3px solid ${accentColor}` : undefined,
+                }}
               >
                 {/* "Diagonal Cut" template's signature diagonal ribbon -
                     a second color block cut on an angle across the header
@@ -2224,9 +2284,20 @@ export default function InvoiceReceiptBuilder({
               <div className={`space-y-1.5 ${
                 headerLayout === "Centered" ? "text-center" : "text-right"
               }`}>
+                {(activeTemplate as any).miniRibbonBadge ? (
+                  <div className="relative inline-block">
+                    <span
+                      className="px-4 py-1 text-[10px] font-mono tracking-widest uppercase inline-block font-extrabold text-white"
+                      style={{ backgroundColor: "#0F0F0F", clipPath: "polygon(10% 0, 100% 0, 90% 100%, 0% 100%)" }}
+                    >
+                      {mode === "invoice" ? "INVOICE" : mode === "receipt" ? "RECEIPT" : "ESTIMATE"}
+                    </span>
+                  </div>
+                ) : (
                 <span className={`px-2.5 py-0.5 rounded text-[9px] font-mono tracking-widest uppercase inline-block font-extrabold ${activeTemplate.badgeBg}`}>
                   {mode === "invoice" ? "PROFESSIONAL INVOICE" : mode === "receipt" ? "PAYMENT RECORD" : "OFFICIAL ESTIMATE"}
                 </span>
+                )}
                 <p className="text-sm font-bold font-mono text-slate-900">
                   #{mode === "invoice" ? invoiceNumber : mode === "receipt" ? receiptNumber : quoteNumber}
                 </p>
@@ -2241,8 +2312,38 @@ export default function InvoiceReceiptBuilder({
             )}
 
             {/* Client address & Terms details */}
+            {(activeTemplate as any).bookFields ? (
+              <div className="space-y-3 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2.5">
+                  <p className="text-slate-700 flex items-baseline gap-1.5">
+                    <span className="text-slate-400 font-mono text-[9px] uppercase tracking-wider shrink-0">Name:</span>
+                    <span className="flex-1 border-b border-dotted border-slate-400 font-bold text-slate-900 pb-0.5 truncate">
+                      {(customerId === "custom" ? customClientName : customers.find(c => c.id === customerId)?.name) || " "}
+                    </span>
+                  </p>
+                  <p className="text-slate-700 flex items-baseline gap-1.5">
+                    <span className="text-slate-400 font-mono text-[9px] uppercase tracking-wider shrink-0">Address:</span>
+                    <span className="flex-1 border-b border-dotted border-slate-400 pb-0.5 truncate">{issuerContact || " "}</span>
+                  </p>
+                </div>
+                <div className="grid grid-cols-3 gap-px rounded-lg overflow-hidden border border-slate-200 bg-slate-100 text-center">
+                  <div className="bg-slate-50 px-2 py-2">
+                    <span className="text-[8px] font-mono text-slate-400 uppercase tracking-wider block">Order No.</span>
+                    <span className="text-[11px] font-bold font-mono text-slate-900">{mode === "invoice" ? invoiceNumber : mode === "receipt" ? receiptNumber : quoteNumber}</span>
+                  </div>
+                  <div className="bg-slate-50 px-2 py-2">
+                    <span className="text-[8px] font-mono text-slate-400 uppercase tracking-wider block">Phone</span>
+                    <span className="text-[11px] font-bold text-slate-900 truncate block">{(customerId === "custom" ? customClientPhone : customers.find(c => c.id === customerId)?.phone) || "-"}</span>
+                  </div>
+                  <div className="bg-slate-50 px-2 py-2">
+                    <span className="text-[8px] font-mono text-slate-400 uppercase tracking-wider block">Date</span>
+                    <span className="text-[11px] font-bold text-slate-900">{formatDateString(date)}</span>
+                  </div>
+                </div>
+              </div>
+            ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              
+
               {/* Customer Profile info */}
               <div className={`p-3 rounded-xl border ${
                 activeTemplate.tableBorder.includes("dashed") ? "border-dashed border-zinc-300" : activeTemplate.tableBorder.includes("dotted") ? "border-dotted border-teal-200" : "border-slate-100"
@@ -2300,6 +2401,7 @@ export default function InvoiceReceiptBuilder({
               </div>
 
             </div>
+            )}
 
             {/* Line items billing grid - structural, not just re-tinted:
                 "ledger" templates get a bordered table; "minimalList"
@@ -2332,24 +2434,25 @@ export default function InvoiceReceiptBuilder({
               <div className={`overflow-hidden rounded-xl ${activeTemplate.tableBorder} ${activeTemplate.tableShadow}`}>
                 <table className="min-w-full divide-y divide-slate-100 text-xs select-all">
                   <thead className={activeTemplate.tableHeaderBg} style={{ backgroundColor: templateIndex === 4 ? "#0f172a" : templateIndex === 2 ? accentColor : undefined, color: templateIndex === 2 ? "#ffffff" : undefined }}>
+                    {(activeTemplate as any).miniRibbonBadge ? (
+                      <tr className="uppercase tracking-wider font-mono text-[9px] text-white">
+                        <th className="px-4 py-3 text-left" style={{ backgroundColor: "#0F0F0F" }}>Statement Lines</th>
+                        <th className="px-4 py-3 text-center w-16" style={{ backgroundColor: accentColor }}>Qty</th>
+                        <th className="px-4 py-3 text-right w-24" style={{ backgroundColor: "#0F0F0F" }}>Rate</th>
+                        <th className="px-4 py-3 text-right w-28" style={{ backgroundColor: accentColor }}>Row Total</th>
+                      </tr>
+                    ) : (
                     <tr className="uppercase tracking-wider font-mono text-[9px]">
-                      {/* "book" family (Market/Event Ledger Book) numbers
-                          each row like a classic printed invoice pad -
-                          the rest of the table shares the same structure
-                          and real data as every other template. */}
-                      {activeTemplate.layout === "book" && <th className="px-3 py-3 text-center w-10">S/N</th>}
-                      <th className="px-4 py-3 text-left">{activeTemplate.layout === "book" ? "Item" : "Statement Lines"}</th>
+                      <th className="px-4 py-3 text-left">Statement Lines</th>
                       <th className="px-4 py-3 text-center w-16">Qty</th>
-                      <th className="px-4 py-3 text-right w-24">{activeTemplate.layout === "book" ? "Unit Price" : "Rate"}</th>
-                      <th className="px-4 py-3 text-right w-28">{activeTemplate.layout === "book" ? "Amount" : "Row Total"}</th>
+                      <th className="px-4 py-3 text-right w-24">Rate</th>
+                      <th className="px-4 py-3 text-right w-28">Row Total</th>
                     </tr>
+                    )}
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-slate-700 bg-white">
                     {items.map((item, idx) => (
                       <tr key={idx} className={idx % 2 === 0 ? "bg-white" : "bg-slate-50/20"}>
-                        {activeTemplate.layout === "book" && (
-                          <td className="px-3 py-3.5 text-center font-mono text-slate-400">{idx + 1}</td>
-                        )}
                         <td className="px-4 py-3.5 font-semibold text-slate-905">{item.description || "Consultancy Material Support"}</td>
                         <td className="px-4 py-3.5 text-center font-mono text-slate-600">{item.quantity}</td>
                         <td className="px-4 py-3.5 text-right font-mono text-slate-600">{fmt(item.rate)}</td>
@@ -2486,7 +2589,29 @@ export default function InvoiceReceiptBuilder({
                   {/* Grand Total treatment is the single most-looked-at
                       element on the document, so it carries the biggest
                       per-template visual signature (activeTemplate.totalsStyle). */}
-                  {activeTemplate.totalsStyle === "dark" ? (
+                  {activeTemplate.totalsStyle === "labeledCard" ? (
+                    <div className="mt-1">
+                      <div className="flex justify-end">
+                        <span className="px-2.5 py-0.5 text-[8px] font-mono font-extrabold uppercase tracking-widest text-white rounded-t" style={{ backgroundColor: accentColor }}>
+                          Statement
+                        </span>
+                      </div>
+                      <div className="bg-slate-900 text-white divide-y divide-white/10 rounded-lg rounded-tr-none overflow-hidden border border-slate-200">
+                        <div className="flex justify-between px-4 py-2 text-[10px]">
+                          <span className="uppercase tracking-widest text-slate-400 font-mono">Total Amount</span>
+                          <span className="font-mono font-bold">{fmt(getSubtotal())}</span>
+                        </div>
+                        <div className="flex justify-between px-4 py-2 text-[10px]">
+                          <span className="uppercase tracking-widest text-slate-400 font-mono">Tax</span>
+                          <span className="font-mono font-bold">{fmt(calculateInvoiceTotals(items, discount, taxRate).taxAmount)}</span>
+                        </div>
+                        <div className="flex justify-between items-center px-4 py-2.5">
+                          <span className="uppercase tracking-widest text-[10px] font-mono font-extrabold" style={{ color: accentColor }}>Amount Due</span>
+                          <span className="font-mono font-black text-sm">{fmt(getTotal())}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ) : activeTemplate.totalsStyle === "dark" ? (
                     <div className="flex justify-between items-center rounded-xl px-4 py-3 mt-1 text-sm font-black" style={{ backgroundColor: "#0f172a" }}>
                       <span className="text-slate-300 font-bold">Grand Total</span>
                       <span className="font-mono text-base" style={{ color: accentColor }}>{fmt(getTotal())}</span>
@@ -2526,9 +2651,56 @@ export default function InvoiceReceiptBuilder({
               </div>
             )}
 
+            {/* Amount-in-words + Terms & Signature footer, for the "Diagonal
+                Ribbon" market-trader receipt-book design - replaces the
+                stamp/QR verification panel below entirely. */}
+            {(activeTemplate as any).footerStyle === "amountInWords" ? (
+              <div className="border-t border-slate-100 pt-5 space-y-4">
+                <p className="text-[11px] text-slate-600">
+                  <span className="text-slate-400 font-mono text-[9px] uppercase tracking-wider block mb-1">Amount in Words</span>
+                  <span className="font-bold text-slate-900 border-b border-dotted border-slate-400 pb-0.5 inline-block">
+                    {(() => {
+                      const amt = mode === "receipt" ? receiptAmount : getTotal();
+                      const cents = Math.round((Math.abs(amt) - Math.floor(Math.abs(amt))) * 100);
+                      const currencyWord = currencySymbol === "GH₵" ? "Ghana Cedis" : currencySymbol === "₦" ? "Naira" : "Dollars";
+                      return `${numberToWords(amt)} ${currencyWord}${cents > 0 ? ` and ${numberToWords(cents)} ${currencySymbol === "GH₵" ? "Pesewas" : "Cents"}` : ""} Only`;
+                    })()}
+                  </span>
+                </p>
+                <p className="text-[10px] text-slate-500 leading-relaxed">
+                  <span className="font-bold text-slate-700">Terms &amp; Conditions:</span> Goods sold are not returnable. Please verify items before leaving the counter.
+                </p>
+                <div className="flex justify-end pt-2">
+                  <div className="text-center">
+                    <div className="w-36 border-b border-slate-400 mb-1"></div>
+                    <span className="text-[9px] text-slate-400 font-mono uppercase tracking-wider">Signature</span>
+                  </div>
+                </div>
+              </div>
+            ) : (activeTemplate as any).footerStyle === "accountDetails" ? (
+              <div className="border-t border-slate-100 pt-5 flex flex-col sm:flex-row justify-between items-center gap-6">
+                <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-[10px] font-mono">
+                  <div>
+                    <span className="text-slate-400 uppercase tracking-wider block">Account Name</span>
+                    <span className="font-bold text-slate-900">{issuerName}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 uppercase tracking-wider block">Account Number</span>
+                    <span className="font-bold text-slate-900">{bankDetails.split("•")[0]}</span>
+                  </div>
+                </div>
+                <div className="text-center border-t border-slate-200 pt-1.5 w-36">
+                  <span className="text-[12px] font-serif italic text-slate-700 flex items-center justify-center gap-1 max-w-full truncate tracking-wider font-semibold" style={{ fontFamily: "'Georgia', serif" }}>
+                    <Signature className="w-3.5 h-3.5 shrink-0 not-italic" /> {authorizedSignature}
+                  </span>
+                  <span className="text-[8px] font-mono text-slate-400 tracking-widest block uppercase mt-0.5">Authorized Officer</span>
+                </div>
+              </div>
+            ) : (
+            <>
             {/* Verification Widgets Panel (Stamp, Barcode, QR code, Signature) */}
             <div className="border-t border-slate-100 pt-5 flex flex-col sm:flex-row justify-between items-center gap-6">
-              
+
               {/* Barcode & QR Code representation */}
               <div className="flex items-center gap-4">
                 {/* SVG QR Code */}
@@ -2574,7 +2746,7 @@ export default function InvoiceReceiptBuilder({
                     <Signature className="w-3.5 h-3.5 shrink-0 not-italic" /> {authorizedSignature}
                   </span>
                   <span className="text-[8px] font-mono text-slate-400 tracking-widest block uppercase mt-0.5">
-                    {activeTemplate.layout === "book" ? "Office Manager" : "Authorized Officer"}
+                    Authorized Officer
                   </span>
                 </div>
 
@@ -2609,6 +2781,8 @@ export default function InvoiceReceiptBuilder({
               </div>
 
             </div>
+            </>
+            )}
 
           </div>
             </>
