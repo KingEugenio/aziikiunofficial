@@ -43,9 +43,9 @@ interface InvoiceReceiptBuilderProps {
 // curate a smaller set again — the underlying DESIGN_TEMPLATES data and
 // every template's rendering logic stay untouched either way.
 // ─────────────────────────────────────────────────────────────────────────
-const MVP_TEMPLATE_IDS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+const MVP_TEMPLATE_IDS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-// How many of the designs above a tier can actually use - Basic gets the
+// How many of the 10 designs above a tier can actually use - Basic gets the
 // one chosen at signup (defaults to the first design until that onboarding
 // choice exists), Standard gets 3, Pro gets every design. Unlock order
 // follows MVP_TEMPLATE_IDS itself (design #1, #2, #3, ...), the same
@@ -97,20 +97,6 @@ const DESIGN_TEMPLATES = [
   },
   {
     id: 3,
-    name: "Startup Style",
-    description: "Terminal-ticket line list in monospace, dashed rules, boxed total in a code-block frame.",
-    category: "Startup",
-    layout: "minimalList" as const,
-    badgeBg: "bg-zinc-100 text-zinc-950 border border-zinc-300",
-    tableHeaderBg: "bg-zinc-50 border-t border-b border-dashed border-zinc-300 text-zinc-600",
-    tableBorder: "border border-dashed border-zinc-300",
-    tableShadow: "shadow-none",
-    totalsStyle: "boxed" as const,
-    hasLeftStrip: false,
-    logoAlign: "right" as const,
-  },
-  {
-    id: 4,
     name: "Elegant Classic",
     description: "Serif high-society heading over a bordered ledger table, warm ivory shading, large underlined total.",
     category: "Classic",
@@ -124,21 +110,7 @@ const DESIGN_TEMPLATES = [
     logoAlign: "left" as const,
   },
   {
-    id: 5,
-    name: "African Business Style",
-    description: "Dot-matrix thermal-receipt coupon: centered stub, dotted line list, rounded pill total badge — built for high-volume market and retail trade.",
-    category: "African Business",
-    layout: "minimalList" as const,
-    badgeBg: "bg-teal-50 text-teal-800 border border-teal-200",
-    tableHeaderBg: "bg-teal-50 border-t border-b border-dotted border-teal-200 text-teal-700",
-    tableBorder: "border border-dotted border-teal-200",
-    tableShadow: "shadow-none",
-    totalsStyle: "badge" as const,
-    hasLeftStrip: false,
-    logoAlign: "center" as const,
-  },
-  {
-    id: 6,
+    id: 4,
     name: "Luxury Dark",
     description: "Full-bleed near-black header panel, gold rule accents, gold-on-navy total block.",
     category: "Luxury",
@@ -152,21 +124,7 @@ const DESIGN_TEMPLATES = [
     logoAlign: "left" as const,
   },
   {
-    id: 7,
-    name: "Modern Business",
-    description: "Bordered ledger table with chubby rounded corners, soft indigo tint, a big rounded total badge.",
-    category: "Modern",
-    layout: "ledger" as const,
-    badgeBg: "bg-indigo-50 text-indigo-700 border border-indigo-200",
-    tableHeaderBg: "bg-indigo-100/30 text-indigo-850",
-    tableBorder: "border border-indigo-100 rounded-2xl",
-    tableShadow: "shadow-lg shadow-indigo-500/5",
-    totalsStyle: "badge" as const,
-    hasLeftStrip: false,
-    logoAlign: "right" as const,
-  },
-  {
-    id: 8,
+    id: 5,
     name: "Photography Style",
     description: "Full-bleed color header panel with a large circular logo mark, playful bright rounded total badge.",
     category: "Photography",
@@ -180,21 +138,7 @@ const DESIGN_TEMPLATES = [
     logoAlign: "left" as const,
   },
   {
-    id: 9,
-    name: "Fashion Brand Style",
-    description: "Heavy structured ledger table with thick partitions and bold alignment — reads like a lookbook order sheet for textile and fashion houses.",
-    category: "Fashion",
-    layout: "ledger" as const,
-    badgeBg: "bg-slate-200 text-slate-800 border border-slate-350",
-    tableHeaderBg: "bg-slate-200/75 border-b-2 border-slate-400 text-slate-800",
-    tableBorder: "border-2 border-slate-300",
-    tableShadow: "shadow-none",
-    totalsStyle: "boxed" as const,
-    hasLeftStrip: false,
-    logoAlign: "left" as const,
-  },
-  {
-    id: 10,
+    id: 6,
     name: "Executive Navy & Gold",
     description: "Deep navy full-bleed header with a gold accent rule, boxed grand total, gold top/bottom border bars.",
     category: "Corporate",
@@ -208,23 +152,8 @@ const DESIGN_TEMPLATES = [
     logoAlign: "left" as const,
   },
   {
-    id: 11,
-    name: "Bold Diagonal",
-    description: "Black-to-green diagonal ribbon header, alternating-shaded line list, a big pill-shaped grand total.",
-    category: "Retail",
-    layout: "split" as const,
-    headerShape: "ribbon" as const,
-    badgeBg: "bg-emerald-50 text-emerald-700 border border-emerald-200",
-    tableHeaderBg: "bg-slate-900 text-white",
-    tableBorder: "border border-slate-200",
-    tableShadow: "shadow-sm",
-    totalsStyle: "badge" as const,
-    hasLeftStrip: false,
-    logoAlign: "left" as const,
-  },
-  {
-    id: 12,
-    name: "Market Ledger Book",
+    id: 7,
+    name: "Market Trader's Ledger",
     description: "Classic printed-invoice-book look: a solid color header band, fill-in-the-blank customer/date lines, a numbered S/N item table, and Customer/Office Manager signature lines - built for market traders and small retail.",
     category: "Retail",
     layout: "book" as const,
@@ -237,16 +166,31 @@ const DESIGN_TEMPLATES = [
     logoAlign: "left" as const,
   },
   {
-    id: 13,
-    name: "Event Planner Book",
-    description: "Same fill-in-the-blank ledger-book format as Market Ledger Book, in a softer palette suited to events, decor, and creative services.",
-    category: "Services",
-    layout: "book" as const,
-    badgeBg: "bg-indigo-50 text-indigo-700 border border-indigo-200",
-    tableHeaderBg: "bg-slate-900 text-white",
-    tableBorder: "border border-slate-800",
+    id: 8,
+    name: "Utility Receipt",
+    description: "Clean rounded card with a small boxed logo mark, a muted gray section-header band over the line items, and a bold final total row - built for a quick, no-fuss payment receipt.",
+    category: "Receipt",
+    layout: "card" as const,
+    badgeBg: "bg-slate-100 text-slate-600 border border-slate-200",
+    tableHeaderBg: "bg-slate-300/60 text-slate-600",
+    tableBorder: "border border-slate-200",
     tableShadow: "shadow-none",
-    totalsStyle: "boxed" as const,
+    totalsStyle: "underline" as const,
+    hasLeftStrip: false,
+    logoAlign: "left" as const,
+  },
+  {
+    id: 9,
+    name: "Diagonal Cut",
+    description: "A black-to-green diagonal ribbon cut across the top corner, alternating-shaded item rows, a big pill-shaped grand total.",
+    category: "Retail",
+    layout: "split" as const,
+    headerShape: "ribbon" as const,
+    badgeBg: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+    tableHeaderBg: "bg-slate-900 text-white",
+    tableBorder: "border border-slate-200",
+    tableShadow: "shadow-sm",
+    totalsStyle: "badge" as const,
     hasLeftStrip: false,
     logoAlign: "left" as const,
   }
@@ -1424,29 +1368,26 @@ export default function InvoiceReceiptBuilder({
                       }
                       setTemplateIndex(i);
                       // Apply default configuration values for specific templates to improve UX
-                      if (i === 3) {
-                        setSelectedFont("Courier");
-                        setBorderRadiusMode("None");
-                      } else if (i === 4 || i === 2 || i === 12 || i === 13) {
+                      if (i === 3 || i === 2 || i === 7) {
                         setSelectedFont("Georgia");
                       } else {
                         setSelectedFont("Arial");
                       }
-                      // New templates (10-13) each have a signature color
+                      // A handful of templates have a signature color
                       // pairing from their reference design - applied as a
                       // starting point, still fully overridable below.
-                      if (i === 10) {
+                      if (i === 6) {
                         setAccentColor("#B8860B"); // gold
                         setSecondaryColor("#102A43"); // navy
-                      } else if (i === 11) {
+                      } else if (i === 9) {
                         setAccentColor("#22C55E"); // green
                         setSecondaryColor("#0F0F0F"); // near-black
-                      } else if (i === 12) {
+                      } else if (i === 7) {
                         setAccentColor("#A0522D"); // brown
                         setSecondaryColor("#78350F");
-                      } else if (i === 13) {
-                        setAccentColor("#A21CAF"); // purple/magenta
-                        setSecondaryColor("#701A75");
+                      } else if (i === 8) {
+                        setAccentColor("#475569"); // slate-gray, neutral utility-receipt tone
+                        setSecondaryColor("#1E293B");
                       }
                       triggerToast(`Applied visual template layout: ${tpl.name}`);
                     }}
@@ -2159,13 +2100,13 @@ export default function InvoiceReceiptBuilder({
           )}
 
           {/* Template-specific design highlights */}
-          {templateIndex === 6 && ( // Sovereign Double gold accent border inside
+          {templateIndex === 4 && ( // Luxury Dark's gold accent border inside
             <div className="absolute inset-2 border-2 border-amber-500/20 pointer-events-none rounded-lg" />
           )}
 
           {/* Core Content Area */}
-          <div className={`p-6 sm:p-8 space-y-6 relative z-10 ${templateIndex === 3 || templateIndex === 5 ? "font-mono text-xs" : ""}`}>
-            
+          <div className="p-6 sm:p-8 space-y-6 relative z-10">
+
             {/* Header alignments with Logo Placement and Layout styles.
                 "split" layout templates (Creative Agency, Luxury Dark,
                 Photography) get a genuine full-bleed identity panel here
@@ -2175,9 +2116,9 @@ export default function InvoiceReceiptBuilder({
             {activeTemplate.layout === "split" ? (
               <div
                 className="-mx-6 -mt-6 sm:-mx-8 sm:-mt-8 mb-6 px-6 sm:px-8 py-7 flex flex-col sm:flex-row justify-between items-start gap-5 relative overflow-hidden"
-                style={{ backgroundColor: templateIndex === 6 ? "#0f172a" : (activeTemplate as any).headerShape === "ribbon" ? secondaryColor : accentColor }}
+                style={{ backgroundColor: templateIndex === 4 ? "#0f172a" : (activeTemplate as any).headerShape === "ribbon" ? secondaryColor : accentColor }}
               >
-                {/* "Bold Diagonal" template's signature diagonal ribbon -
+                {/* "Diagonal Cut" template's signature diagonal ribbon -
                     a second color block cut on an angle across the header
                     panel, matching its reference design's parallelogram
                     banner rather than a plain flat-color bar. */}
@@ -2362,10 +2303,9 @@ export default function InvoiceReceiptBuilder({
 
             {/* Line items billing grid - structural, not just re-tinted:
                 "ledger" templates get a bordered table; "minimalList"
-                templates (Minimal Professional, Startup, African Business)
-                get a clean hairline-ruled list with no table chrome at
-                all, which is the actual defining trait of that design
-                family, not a color swap. */}
+                (Minimal Professional) gets a clean hairline-ruled list with
+                no table chrome at all, which is the actual defining trait
+                of that design family, not a color swap. */}
             {(mode === "invoice" || mode === "quotation") ? (
               activeTemplate.layout === "minimalList" ? (
                 <div className={`divide-y ${activeTemplate.tableBorder.includes("dashed") ? "divide-dashed divide-zinc-300" : activeTemplate.tableBorder.includes("dotted") ? "divide-dotted divide-teal-200" : "divide-slate-150"}`}>
@@ -2391,7 +2331,7 @@ export default function InvoiceReceiptBuilder({
               ) : (
               <div className={`overflow-hidden rounded-xl ${activeTemplate.tableBorder} ${activeTemplate.tableShadow}`}>
                 <table className="min-w-full divide-y divide-slate-100 text-xs select-all">
-                  <thead className={activeTemplate.tableHeaderBg} style={{ backgroundColor: templateIndex === 6 ? "#0f172a" : templateIndex === 2 ? accentColor : undefined, color: templateIndex === 2 ? "#ffffff" : undefined }}>
+                  <thead className={activeTemplate.tableHeaderBg} style={{ backgroundColor: templateIndex === 4 ? "#0f172a" : templateIndex === 2 ? accentColor : undefined, color: templateIndex === 2 ? "#ffffff" : undefined }}>
                     <tr className="uppercase tracking-wider font-mono text-[9px]">
                       {/* "book" family (Market/Event Ledger Book) numbers
                           each row like a classic printed invoice pad -
@@ -2427,10 +2367,9 @@ export default function InvoiceReceiptBuilder({
                    a diagonal corner cut (solid color, via clip-path - no
                    gradient), and a classic fill-in-the-blank prose format
                    instead of a modern app-style card. Reserved for the
-                   minimalList template family (Minimal Professional,
-                   Startup, African Business) since this format reads as
-                   traditional market/trade paperwork, which suits those
-                   templates' character. */
+                   minimalList template family (currently just Minimal
+                   Professional) since this format reads as traditional
+                   market/trade paperwork, which suits that character. */
                 <div className="relative bg-white border border-slate-200 rounded-2xl overflow-hidden">
                   <div
                     className="absolute top-0 right-0 w-20 h-20"
