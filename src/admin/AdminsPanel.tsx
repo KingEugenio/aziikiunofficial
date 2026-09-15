@@ -14,7 +14,9 @@ interface AdminRow {
 const SECTION_OPTIONS: { value: string; label: string }[] = [
   { value: "dashboard", label: "Dashboard" },
   { value: "flags", label: "Feature Flags" },
+  { value: "users", label: "Users" },
   { value: "announcements", label: "Announcements" },
+  { value: "feedback", label: "Feedback" },
   { value: "surveys", label: "Surveys" },
   { value: "payments", label: "Payments" },
   { value: "branding", label: "Branding & Files" },

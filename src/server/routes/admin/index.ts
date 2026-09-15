@@ -10,10 +10,12 @@ import { adminGuideItemsRouter } from "./guideItems";
 import { adminAdminsRouter } from "./admins";
 import { adminSiteSettingsRouter } from "./siteSettings";
 import { adminFaqItemsRouter } from "./faqItems";
+import { adminFeedbackRouter } from "./feedback";
+import { adminUsersRouter } from "./users";
 
 export const adminRouter = Router();
 
-const ALL_SECTIONS = ["dashboard", "flags", "announcements", "surveys", "payments", "branding", "content", "guides", "admins"];
+const ALL_SECTIONS = ["dashboard", "flags", "announcements", "surveys", "payments", "branding", "content", "guides", "admins", "feedback", "users"];
 
 // Confirms admin access and returns just enough identity + permissions for
 // the portal's header/nav to filter itself - requireAdmin (mounted in
@@ -39,6 +41,8 @@ adminRouter.use("/subscription-plans", requireSection("payments"), adminSubscrip
 adminRouter.use("/guide-items", requireSection("guides"), adminGuideItemsRouter);
 adminRouter.use("/site-settings", requireSection("content"), adminSiteSettingsRouter);
 adminRouter.use("/faq-items", requireSection("content"), adminFaqItemsRouter);
+adminRouter.use("/feedback", requireSection("feedback"), adminFeedbackRouter);
+adminRouter.use("/users", requireSection("users"), adminUsersRouter);
 // Managing other admins is always superadmin-only, enforced inside
 // adminAdminsRouter itself (not via requireSection) - granting the
 // "admins" section to a regular admin isn't even possible from the UI,

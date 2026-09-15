@@ -14,6 +14,8 @@ import {
   ShieldWarning,
   List as MenuIcon,
   X as CloseIcon,
+  ChatText as MessageSquare,
+  Users,
 } from "@phosphor-icons/react";
 import { supabase } from "../lib/supabaseClient";
 import { api } from "../lib/api";
@@ -27,16 +29,20 @@ import PaymentsPanel from "./PaymentsPanel";
 import GuidesPanel from "./GuidesPanel";
 import AdminsPanel from "./AdminsPanel";
 import SiteContentPanel from "./SiteContentPanel";
+import FeedbackPanel from "./FeedbackPanel";
+import UsersPanel from "./UsersPanel";
 
 const AuthPortal = lazy(() => import("../components/AuthPortal"));
 
 type AdminStatus = "checking" | "authorized" | "unauthorized";
-type Tab = "dashboard" | "flags" | "announcements" | "surveys" | "branding" | "payments" | "content" | "guides" | "admins";
+type Tab = "dashboard" | "flags" | "announcements" | "surveys" | "branding" | "payments" | "content" | "guides" | "admins" | "feedback" | "users";
 
 const NAV: { id: Tab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "flags", label: "Feature Flags", icon: ToggleLeft },
+  { id: "users", label: "Users", icon: Users },
   { id: "announcements", label: "Announcements", icon: Megaphone },
+  { id: "feedback", label: "Feedback", icon: MessageSquare },
   { id: "surveys", label: "Surveys", icon: ClipboardText },
   { id: "payments", label: "Payments", icon: CreditCard },
   { id: "branding", label: "Branding Kits", icon: ImageIcon },
@@ -270,7 +276,9 @@ export default function AdminApp() {
           <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6">
             {activeTab === "dashboard" && <AdminDashboardHome />}
             {activeTab === "flags" && <FeatureFlagsPanel />}
+            {activeTab === "users" && <UsersPanel />}
             {activeTab === "announcements" && <AnnouncementsPanel />}
+            {activeTab === "feedback" && <FeedbackPanel />}
             {activeTab === "surveys" && <SurveysPanel />}
             {activeTab === "payments" && <PaymentsPanel />}
             {activeTab === "branding" && <BrandingPanel />}

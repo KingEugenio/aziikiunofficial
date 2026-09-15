@@ -485,6 +485,27 @@ export const api = {
         }),
     },
 
+    feedback: {
+      list: () =>
+        request<{
+          data: Array<{ id: string; name: string; email: string; message: string; createdAt: string }>;
+        }>("/admin/feedback").then((r) => r.data),
+    },
+
+    users: {
+      list: () =>
+        request<{
+          data: Array<{
+            id: string;
+            email: string;
+            tier: "basic" | "standard" | "pro";
+            isAdmin: boolean;
+            createdAt: string;
+            businessCount: number;
+          }>;
+        }>("/admin/users").then((r) => r.data),
+    },
+
     assets: {
       list: () =>
         request<{
