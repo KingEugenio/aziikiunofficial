@@ -842,16 +842,6 @@ export default function FinancialReports({
             </div>
           )}
         </div>
-
-        <div className="sm:ml-auto flex items-center gap-1.5 text-indigo-600 text-xs font-bold font-mono">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          {filteredTx.length} records processed
-          {periodType === "daily" && ` for ${selectedDate}`}
-          {periodType === "weekly" && ` for week starting ${getWeekRange(selectedDate).start}`}
-          {periodType === "monthly" && ` for ${selectedYear} - ${monthsList.find(m => m.val === selectedMonth)?.label}`}
-          {periodType === "quarterly" && ` for ${selectedYear} - ${selectedQuarter}`}
-          {periodType === "annual" && ` for ${selectedYear}`}
-        </div>
       </div>
 
       {/* METRIC SUMMARIES */}

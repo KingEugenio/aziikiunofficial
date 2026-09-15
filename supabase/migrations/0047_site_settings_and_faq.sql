@@ -60,7 +60,6 @@ create policy "faq_items_write_admin"
 insert into public.faq_items (question, answer, sort_order) values
   ('Is Aziiki free to use?', 'Yes - every core feature (income/expense tracking, invoices, receipts, customer records, and the AI Advisor) is free during Launch Edition. Some advanced features are part of paid Standard/Pro plans - see Plan & Billing for details.', 1),
   ('Does Aziiki work without internet?', 'Yes. You can record transactions, create invoices, and keep working while offline - everything syncs automatically the next time you''re connected.', 2),
-  ('How do I get paid through an invoice?', 'Enable Paystack on an invoice when creating it, then share the payment link with your customer via WhatsApp or email. Once they pay, the invoice updates automatically.', 3),
   ('How do I contact support?', 'Use the Contact Support section on the Help & Support page, or reach out on WhatsApp for the fastest response.', 4)
 on conflict (question) do nothing;
 

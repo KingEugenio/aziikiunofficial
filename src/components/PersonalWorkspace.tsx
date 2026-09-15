@@ -670,7 +670,6 @@ export default function PersonalWorkspace({
 
         {/* Action button: Toggle Ads illustration and Free promise */}
         <div className="flex items-center gap-2 shrink-0 bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-2xl font-sans text-[11px] font-semibold text-slate-500">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span>Permanently Free Workspace</span>
         </div>
       </div>

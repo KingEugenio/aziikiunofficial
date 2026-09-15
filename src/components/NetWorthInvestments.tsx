@@ -1785,18 +1785,15 @@ export default function NetWorthInvestments({
                   
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
                     <div className="flex items-start gap-3">
-                      <div className="bg-emerald-600/15 text-emerald-400 w-10 h-10 rounded-xl flex items-center justify-center border border-emerald-500/25 shrink-0 mt-0.5 animate-pulse">
+                      <div className="bg-emerald-600/15 text-emerald-400 w-10 h-10 rounded-xl flex items-center justify-center border border-emerald-500/25 shrink-0 mt-0.5">
                         <Globe className="w-5 h-5" />
                       </div>
                       <div>
                         <h4 className="text-sm font-black tracking-tight flex items-center gap-2">
-                          Live Investment Indices Sourcing Desk
-                          <span className="text-[9px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full uppercase tracking-wider animate-pulse">
-                            AI Connected
-                          </span>
+                          Investment Indices Sourcing Desk
                         </h4>
                         <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
-                          Sourced real-time central bank policy rates, sovereign treasury yields, and consumer inflation indices from live online searches.
+                          Sourced central bank policy rates, sovereign treasury yields, and consumer inflation indices from an AI search.
                         </p>
                       </div>
                     </div>
