@@ -192,6 +192,13 @@ geminiRouter.post("/chat", optionalAuth, geminiLimiter, async (req: Request, res
 
 const liveInvestmentsSchema = z.object({
   currency: z.string().trim().max(10).default("GHS"),
+  // ISO-2 country code from the business profile (src/server/validation/businesses.ts) -
+  // a more precise targeting signal than currency alone, since several
+  // currencies (XOF, XAF) are shared across multiple countries and USD is
+  // used informally in many economies. Optional: older businesses and the
+  // Personal Workspace may not have one set, in which case the prompt
+  // falls back to currency-based inference.
+  countryCode: z.string().trim().length(2).toUpperCase().optional(),
 });
 
 const FALLBACKS: Record<string, { rates: unknown[]; inflation: string; source: string; advisory: string }> = {
@@ -255,6 +262,7 @@ const FALLBACKS: Record<string, { rates: unknown[]; inflation: string; source: s
 geminiRouter.post("/live-investments", optionalAuth, geminiLimiter, async (req: Request, res: Response) => {
   const parsed = liveInvestmentsSchema.safeParse(req.body ?? {});
   const currency = parsed.success ? parsed.data.currency : "GHS";
+  const countryCode = parsed.success ? parsed.data.countryCode : undefined;
   const apiKey = hasGeminiKeyConfigured();
 
   const respondWithFallback = () => {
@@ -278,17 +286,32 @@ geminiRouter.post("/live-investments", optionalAuth, geminiLimiter, async (req: 
 
     const sysPrompt = `
         You are an elite research analyst specializing in global asset management, sovereign treasuries, and public stock exchange indices as of mid-2026.
-        Your task is to search real-time global and local financial indices online (using Google Search) to find the absolute LATEST yield figures, year-over-year inflation rates, central bank monetary policy interest rates, and major public stock indices performance corresponding to the user's base currency: ${currency}.
+        Your task is to search real-time global and local financial indices online (using Google Search) to find the absolute LATEST yield figures, year-over-year inflation rates, central bank monetary policy interest rates, and major public stock indices performance for the user's business.
 
-        Identify the target country corresponding to the currency:
+        ${
+          countryCode
+            ? `The user's business is registered in the country with ISO 3166-1 alpha-2 code "${countryCode}" - use THIS as the primary signal for which country's central bank, treasury, and stock exchange to research (their base currency is ${currency}, which is a secondary signal only - some currencies like XOF/XAF are shared across several countries, so the country code takes priority whenever the two would suggest different markets).`
+            : `The user's business has no country on file, so infer the target country from their base currency: ${currency}.`
+        }
+
+        Reference examples for mapping a country/currency to its market (use the same reasoning for any country/currency not listed here):
         - USD: United States (latest US Federal Reserve policy rates, US Treasury Bills yields, and stock market indices like S&P 500, NASDAQ, or Dow Jones)
         - CAD: Canada (latest Bank of Canada policy rates, Canadian Treasury Bills, and stock market indices like S&P/TSX Composite Index)
         - GHS: Ghana (latest Bank of Ghana policy rates, GoG 91-Day & 182-Day treasury bill yields, and GSE Composite Stock Index)
         - NGN: Nigeria (latest Central Bank of Nigeria policy rates, Nigerian Treasury Bills, and Nigerian Exchange Group - NGX All-Share / 30 Index)
         - KES: Kenya (latest Central Bank of Kenya treasury bill yields, and NSE All-Share / NSE 20 Index)
+        - ZAR: South Africa (latest South African Reserve Bank repo rate, RSA Treasury Bills, and JSE All Share Index)
+        - EGP: Egypt (latest Central Bank of Egypt rates, Egyptian Treasury Bills, and EGX 30 Index)
+        - XOF: West African Economic and Monetary Union (BCEAO/UEMOA policy rates, regional treasury bills, and BRVM Composite Index) - if the country code narrows this to a specific member country (e.g. Senegal, Côte d'Ivoire), mention that country by name too
+        - XAF: Central African Economic and Monetary Community (BEAC policy rates, regional treasury bills, and BVMAC/Douala Stock Exchange where applicable) - if the country code narrows this to a specific member country, mention that country by name too
+        - TZS: Tanzania (latest Bank of Tanzania rates, Tanzanian Treasury Bills, and Dar es Salaam Stock Exchange - DSE All Share Index)
+        - UGX: Uganda (latest Bank of Uganda rates, Ugandan Treasury Bills, and Uganda Securities Exchange - USE All Share Index)
+        - ETB: Ethiopia (latest National Bank of Ethiopia rates and Ethiopian Treasury Bills - note Ethiopia's stock exchange, ESX, only recently launched; note this if equity data is thin)
+        - ZMW: Zambia (latest Bank of Zambia rates, Zambian Treasury Bills, and Lusaka Securities Exchange - LuSE All Share Index)
+        - RWF: Rwanda (latest National Bank of Rwanda rates, Rwandan Treasury Bills, and Rwanda Stock Exchange - RSE All Share Index)
         - EUR: Eurozone (latest ECB interest rates, German Bund yields, and STOXX Europe 600 stock index)
         - GBP: United Kingdom (latest Bank of England base rates, UK Government Gilt/T-bill yields, and FTSE 100 stock index)
-        - Other currencies: Map to their respective country's central bank and primary stock exchange.
+        - Any other country/currency: identify its own central bank, its own government treasury-bill/bond instrument, and its own primary stock exchange index using the same pattern as the examples above.
 
         You MUST include a mix of BOTH Risk-Free sovereign paper (Treasury Bills / Government Bonds) AND Equity assets (Major Stock Exchange Indices or Blue-chip Stocks index tracker) in the rates array.
 
@@ -309,7 +332,7 @@ geminiRouter.post("/live-investments", optionalAuth, geminiLimiter, async (req: 
 
     const response = await generateContentWithFailover({
       model: "gemini-3.5-flash",
-      contents: `${sysPrompt}\nPerform a live web search for the latest mid-2026 financial and stock indices for base currency code: "${currency}" and generate a formatted JSON object.`,
+      contents: `${sysPrompt}\nPerform a live web search for the latest mid-2026 financial and stock indices for ${countryCode ? `country code: "${countryCode}" (base currency: "${currency}")` : `base currency code: "${currency}"`} and generate a formatted JSON object.`,
       config: { responseMimeType: "application/json", tools: [{ googleSearch: {} }], temperature: 0.15 },
     });
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Briefcase, Plus, TrendUp as TrendingUp, Pulse as Activity, CaretRight as ChevronRight, Trash as Trash2, Target, Coins, Scales as Scale, Warning as AlertTriangle, CalendarDots as CalendarDays, Percent, MagicWand as Sparkles, ArrowsClockwise as RefreshCw, Globe, MagnifyingGlass as Search, TrendDown as TrendingDown, Wrench, FileText, Clock, ShieldCheck, Calculator, Stack as Layers, Question as HelpCircle, SealCheck as FileCheck, CheckCircle, BookOpen, Lightbulb, ChartBar, HandCoins } from "@phosphor-icons/react";
+import { Briefcase, Plus, TrendUp as TrendingUp, Pulse as Activity, CaretRight as ChevronRight, Trash as Trash2, Target, Coins, Scales as Scale, Warning as AlertTriangle, CalendarDots as CalendarDays, Percent, MagicWand as Sparkles, ArrowsClockwise as RefreshCw, Globe, MagnifyingGlass as Search, TrendDown as TrendingDown, Wrench, FileText, Clock, ShieldCheck, Calculator, Stack as Layers, Question as HelpCircle, SealCheck as FileCheck, CheckCircle, BookOpen, Lightbulb, ChartBar, HandCoins, Info } from "@phosphor-icons/react";
 import { Investment, Goal, Debt, Business, Asset } from "../types";
 import { SUPPORTED_CURRENCY_CODES, getCurrencySymbol } from "../lib/currency";
 import { useFeatureFlags } from "../lib/featureFlags";
@@ -278,7 +278,7 @@ export default function NetWorthInvestments({
       const response = await fetch("/api/gemini/live-investments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ currency: activeCurrency })
+        body: JSON.stringify({ currency: activeCurrency, countryCode: currentBusiness?.countryCode })
       });
 
       if (!response.ok) {
@@ -1817,6 +1817,11 @@ export default function NetWorthInvestments({
                       )}
                     </button>
                   </div>
+
+                  <p className="text-[10px] text-slate-500 leading-relaxed -mt-1 flex items-start gap-1.5">
+                    <Info className="w-3 h-3 shrink-0 mt-0.5 text-slate-500" />
+                    <span>Educational information only, not financial advice - Aziiki is not a licensed investment advisor. Confirm any figures with your own bank or broker before acting on them.</span>
+                  </p>
 
                   {liveError && (
                     <div className="bg-rose-500/10 border border-rose-500/25 rounded-xl p-3 text-xs text-red-400 font-mono flex items-start gap-1.5">
