@@ -6,6 +6,12 @@ import { LoadingSwap } from "../components/LoadingSwap";
 import { SkeletonAdminBranding } from "../components/Skeleton";
 import { MAX_LOGO_BYTES } from "../lib/imageCompress";
 
+// Shared documents (contracts, policy PDFs) are legitimately larger than a
+// logo, so this cap is more generous - just enough to stop an accidental
+// huge upload from quietly eating into Storage, not to block a real
+// multi-page PDF.
+const MAX_DOCUMENT_BYTES = 10_000_000; // 10MB
+
 interface AssetRow {
   id: string;
   kind: "logo" | "favicon" | "document";
@@ -154,6 +160,11 @@ export default function BrandingPanel() {
 
   const handleDocFile = async (file: File) => {
     setDocError(null);
+    if (file.size > MAX_DOCUMENT_BYTES) {
+      setDocError(`That file is too large - documents are capped at ${Math.round(MAX_DOCUMENT_BYTES / 1_000_000)}MB.`);
+      if (docInputRef.current) docInputRef.current.value = "";
+      return;
+    }
     setIsUploadingDoc(true);
     try {
       const path = `document/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;

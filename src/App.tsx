@@ -4,7 +4,7 @@ import { Buildings as Building2, Stack as Layers2, Coins, Users, Target, Warehou
 import { Business, Customer, Transaction, Invoice, Receipt, Quotation, Investment, Asset, Goal, Debt, InventoryItem, Partner, Shareholder, UserRole, AuditLog } from "./types";
 import BusinessDashboard from "./components/BusinessDashboard";
 
-import AIFieldAssistant from "./components/AIFieldAssistant";
+const AIFieldAssistant = lazy(() => import("./components/AIFieldAssistant"));
 import { Skeleton, SkeletonDashboard, SkeletonTable, SkeletonDetail, SkeletonForm, SkeletonCRM, SkeletonInventory, SkeletonBillingBuilder, SkeletonReportsCharts, SkeletonAppShell } from "./components/Skeleton";
 import { useMinimumLoadingTime, useLoadingTimedOut } from "./hooks/useMinimumLoadingTime";
 import { useDocumentTitle } from "./hooks/useDocumentTitle";
@@ -3070,13 +3070,15 @@ export default function App() {
                 )}
 
                 {isEnabled("core_ai_advisor") && activeTab === "ai" && (
-                  <AIFieldAssistant
-                    currentBusiness={currentBusiness}
-                    transactions={transactions}
-                    invoices={invoices}
-                    goals={goals}
-                    currencySymbol={currencySymbol}
-                  />
+                  <Suspense fallback={<SkeletonForm />}>
+                    <AIFieldAssistant
+                      currentBusiness={currentBusiness}
+                      transactions={transactions}
+                      invoices={invoices}
+                      goals={goals}
+                      currencySymbol={currencySymbol}
+                    />
+                  </Suspense>
                 )}
 
                 {/* Off by default in Phase 1, code preserved for the admin portal to turn on later. */}
