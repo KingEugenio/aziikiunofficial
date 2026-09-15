@@ -27,7 +27,6 @@ import PaymentsPanel from "./PaymentsPanel";
 import GuidesPanel from "./GuidesPanel";
 import AdminsPanel from "./AdminsPanel";
 import SiteContentPanel from "./SiteContentPanel";
-import ThemeToggle from "../components/ThemeToggle";
 
 const AuthPortal = lazy(() => import("../components/AuthPortal"));
 
@@ -135,13 +134,13 @@ export default function AdminApp() {
   if (adminStatus === "unauthorized") {
     return (
       <CenteredMessage>
-        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-8 shadow-xl max-w-sm w-full text-center space-y-4">
-          <div className="w-12 h-12 bg-rose-50 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 rounded-2xl flex items-center justify-center mx-auto border border-rose-200 dark:border-rose-700">
+        <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-xl max-w-sm w-full text-center space-y-4">
+          <div className="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center mx-auto border border-rose-200">
             <ShieldWarning className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="text-sm font-black text-slate-900 dark:text-slate-100">Not authorized</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+            <h3 className="text-sm font-black text-slate-900">Not authorized</h3>
+            <p className="text-xs text-slate-500 mt-2 leading-relaxed">
               This account ({session.user.email}) doesn't have admin access to Aziiki.
             </p>
           </div>
@@ -159,10 +158,10 @@ export default function AdminApp() {
   if (!activeTab) {
     return (
       <CenteredMessage>
-        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-8 shadow-xl max-w-sm w-full text-center space-y-4">
+        <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-xl max-w-sm w-full text-center space-y-4">
           <div>
-            <h3 className="text-sm font-black text-slate-900 dark:text-slate-100">No sections granted yet</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+            <h3 className="text-sm font-black text-slate-900">No sections granted yet</h3>
+            <p className="text-xs text-slate-500 mt-2 leading-relaxed">
               This account ({session.user.email}) has admin access but no sections have been granted yet. Ask a superadmin
               to grant some from Admins.
             </p>
@@ -181,13 +180,13 @@ export default function AdminApp() {
   const activeNav = visibleNav.find((n) => n.id === activeTab)!;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 font-sans flex">
+    <div className="min-h-screen bg-slate-50 font-sans flex">
       {/* Sidebar */}
-      <aside className="hidden md:flex md:w-60 shrink-0 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex-col">
-        <div className="flex items-center gap-2.5 px-5 py-5 border-b border-slate-100 dark:border-slate-700">
+      <aside className="hidden md:flex md:w-60 shrink-0 bg-white border-r border-slate-200 flex-col">
+        <div className="flex items-center gap-2.5 px-5 py-5 border-b border-slate-100">
           <BrandLogo className="w-8 h-8" />
           <div>
-            <p className="text-sm font-black text-slate-900 dark:text-slate-100 leading-tight">Aziiki</p>
+            <p className="text-sm font-black text-slate-900 leading-tight">Aziiki</p>
             <p className="text-[9px] font-mono uppercase tracking-widest text-slate-400">Admin</p>
           </div>
         </div>
@@ -201,7 +200,7 @@ export default function AdminApp() {
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
                 className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
-                  active ? "bg-slate-900 text-white shadow-sm" : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 hover:dark:bg-slate-800"
+                  active ? "bg-slate-900 text-white shadow-sm" : "text-slate-500 hover:bg-slate-100"
                 }`}
               >
                 <NavIcon className="w-4 h-4 shrink-0" /> {item.label}
@@ -210,15 +209,11 @@ export default function AdminApp() {
           })}
         </nav>
 
-        <div className="px-3 py-4 border-t border-slate-100 dark:border-slate-700 space-y-2">
+        <div className="px-3 py-4 border-t border-slate-100 space-y-2">
           <p className="text-[9px] font-mono text-slate-400 px-3 truncate">{session.user.email}</p>
-          <ThemeToggle
-            showLabel
-            className="w-full gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-100 hover:dark:bg-slate-800"
-          />
           <button
             onClick={handleSignOut}
-            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-100 hover:dark:bg-slate-800 cursor-pointer"
+            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100 cursor-pointer"
           >
             <LogOut className="w-4 h-4 shrink-0" /> Sign out
           </button>
@@ -227,7 +222,7 @@ export default function AdminApp() {
 
       {/* Main content */}
       <div className="flex-1 min-w-0 flex flex-col">
-        <header className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-4 sm:px-8 py-4 flex items-center justify-between md:justify-start gap-3">
+        <header className="bg-white border-b border-slate-200 px-4 sm:px-8 py-4 flex items-center justify-between md:justify-start gap-3">
           <button
             onClick={() => setMobileMenuOpen((v) => !v)}
             className="flex items-center gap-2 md:hidden cursor-pointer"
@@ -235,10 +230,10 @@ export default function AdminApp() {
             aria-label="Admin sections menu"
           >
             <BrandLogo className="w-6 h-6" />
-            <span className="text-xs font-black text-slate-900 dark:text-slate-100">{activeNav.label}</span>
+            <span className="text-xs font-black text-slate-900">{activeNav.label}</span>
             {mobileMenuOpen ? <CloseIcon className="w-4 h-4 text-slate-400" /> : <MenuIcon className="w-4 h-4 text-slate-400" />}
           </button>
-          <h1 className="hidden md:block text-sm font-black text-slate-900 dark:text-slate-100">{activeNav.label}</h1>
+          <h1 className="hidden md:block text-sm font-black text-slate-900">{activeNav.label}</h1>
           <button onClick={handleSignOut} className="md:hidden text-slate-400 cursor-pointer">
             <LogOut className="w-4 h-4" />
           </button>
@@ -249,7 +244,7 @@ export default function AdminApp() {
             Announcements, Surveys, Payments, Branding Kits, Site Content,
             Guides, Admins) is reachable in one tap without swiping to find it. */}
         {mobileMenuOpen && (
-          <nav className="md:hidden flex flex-col bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm animate-fade-in">
+          <nav className="md:hidden flex flex-col bg-white border-b border-slate-200 shadow-sm animate-fade-in">
             {visibleNav.map((item) => {
               const NavIcon = item.icon;
               const active = activeTab === item.id;
@@ -260,8 +255,8 @@ export default function AdminApp() {
                     setActiveTab(item.id);
                     setMobileMenuOpen(false);
                   }}
-                  className={`flex items-center gap-2.5 px-4 py-3 text-xs font-bold cursor-pointer border-b border-slate-100 dark:border-slate-700 last:border-b-0 ${
-                    active ? "bg-slate-900 text-white" : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 hover:dark:bg-slate-900"
+                  className={`flex items-center gap-2.5 px-4 py-3 text-xs font-bold cursor-pointer border-b border-slate-100 last:border-b-0 ${
+                    active ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-50"
                   }`}
                 >
                   <NavIcon className="w-4 h-4 shrink-0" /> {item.label}
@@ -272,7 +267,7 @@ export default function AdminApp() {
         )}
 
         <main className="flex-1 p-4 sm:p-8 max-w-4xl w-full">
-          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 sm:p-6">
+          <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6">
             {activeTab === "dashboard" && <AdminDashboardHome />}
             {activeTab === "flags" && <FeatureFlagsPanel />}
             {activeTab === "announcements" && <AnnouncementsPanel />}
@@ -290,5 +285,5 @@ export default function AdminApp() {
 }
 
 function CenteredMessage({ children }: { children: React.ReactNode }) {
-  return <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center p-4 font-sans text-xs text-slate-500 dark:text-slate-400">{children}</div>;
+  return <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans text-xs text-slate-500">{children}</div>;
 }

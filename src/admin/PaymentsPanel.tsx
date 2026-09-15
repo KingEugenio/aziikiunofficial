@@ -70,15 +70,15 @@ function CurrencyRow({
   };
 
   return (
-    <form onSubmit={handleSave} className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 space-y-3">
+    <form onSubmit={handleSave} className="border border-slate-200 rounded-2xl p-4 space-y-3">
       <div className="flex items-center justify-between">
-        <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 font-mono">{plan.currency}</h4>
+        <h4 className="text-xs font-bold text-slate-800 font-mono">{plan.currency}</h4>
         {removable && (
           <button
             type="button"
             onClick={handleRemove}
             disabled={isRemoving}
-            className="text-slate-400 hover:text-rose-600 hover:dark:text-rose-400 cursor-pointer disabled:opacity-50"
+            className="text-slate-400 hover:text-rose-600 cursor-pointer disabled:opacity-50"
             aria-label={`Remove ${plan.currency}`}
           >
             <Trash2 className="w-3.5 h-3.5" />
@@ -86,7 +86,7 @@ function CurrencyRow({
         )}
       </div>
       <div className="space-y-1">
-        <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block">
+        <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">
           {provider === "stripe" ? "Stripe Payment Link" : "Paystack Payment Page link"}
         </label>
         <input
@@ -94,7 +94,7 @@ function CurrencyRow({
           placeholder={provider === "stripe" ? "https://buy.stripe.com/..." : "https://paystack.com/pay/your-page-slug"}
           value={link}
           onChange={(e) => setLink(e.target.value)}
-          className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
+          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
         />
         <p className="text-[10px] text-slate-400 leading-relaxed">
           Create a payment link for this exact price with your provider, then paste it here. Aziiki appends the user's email
@@ -103,7 +103,7 @@ function CurrencyRow({
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
-          <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Price ({plan.currency})</label>
+          <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Price ({plan.currency})</label>
           <input
             type="number"
             step="0.01"
@@ -111,15 +111,15 @@ function CurrencyRow({
             placeholder="e.g. 49.00"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
-            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
           />
         </div>
         <div className="space-y-1">
-          <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Provider</label>
+          <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Provider</label>
           <select
             value={provider}
             onChange={(e) => setProvider(e.target.value as "paystack" | "stripe")}
-            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none text-xs"
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs"
           >
             <option value="paystack">Paystack</option>
             <option value="stripe">Stripe</option>
@@ -131,7 +131,7 @@ function CurrencyRow({
         matched back to this tier (Stripe links aren't auto-matched by webhook yet; upgrade those accounts manually below
         until that's wired up).
       </p>
-      {error && <p className="text-[10px] text-rose-600 dark:text-rose-400">{error}</p>}
+      {error && <p className="text-[10px] text-rose-600">{error}</p>}
       <button
         type="submit"
         disabled={isSaving}
@@ -163,8 +163,8 @@ function TierGroup({ tier, rows, onChange }: { tier: string; rows: PlanRow[]; on
   };
 
   return (
-    <div className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 space-y-3">
-      <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200">{TIER_LABEL[tier] ?? tier} plan</h3>
+    <div className="border border-slate-200 rounded-2xl p-4 space-y-3">
+      <h3 className="text-xs font-bold text-slate-800">{TIER_LABEL[tier] ?? tier} plan</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {rows.map((row) => (
           <CurrencyRow
@@ -183,16 +183,16 @@ function TierGroup({ tier, rows, onChange }: { tier: string; rows: PlanRow[]; on
           placeholder="Add currency, e.g. USD"
           value={newCurrency}
           onChange={(e) => setNewCurrency(e.target.value)}
-          className="w-40 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none text-xs uppercase focus:border-emerald-500"
+          className="w-40 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs uppercase focus:border-emerald-500"
         />
         <button
           type="button"
           onClick={addCurrency}
-          className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 hover:dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[11px] font-bold px-3 py-2 rounded-xl cursor-pointer"
+          className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold px-3 py-2 rounded-xl cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5" /> Add currency
         </button>
-        {addError && <p className="text-[10px] text-rose-600 dark:text-rose-400">{addError}</p>}
+        {addError && <p className="text-[10px] text-rose-600">{addError}</p>}
       </div>
     </div>
   );
@@ -241,7 +241,7 @@ export default function PaymentsPanel() {
     <div className="space-y-6">
       <div className="flex items-start gap-2">
         <CreditCard className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-        <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+        <p className="text-[11px] text-slate-500 leading-relaxed">
           Basic accounts get the Phase 1 core loop for free. Standard unlocks everything through Phase 2; Pro unlocks
           everything. Price each tier per currency - a visitor sees the row matching their business's currency, falling back
           to USD if theirs isn't configured. A successful Paystack payment upgrades the account automatically via webhook;
@@ -257,11 +257,11 @@ export default function PaymentsPanel() {
         </div>
       </LoadingSwap>
 
-      <form onSubmit={handleSetUserTier} className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 space-y-3">
-        <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+      <form onSubmit={handleSetUserTier} className="border border-slate-200 rounded-2xl p-4 space-y-3">
+        <h3 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
           <UserGear className="w-3.5 h-3.5" /> Manually set an account's plan
         </h3>
-        <p className="text-[11px] text-slate-500 dark:text-slate-400">For comping an account, a Stripe payment, or fixing a payment the webhook couldn't match automatically.</p>
+        <p className="text-[11px] text-slate-500">For comping an account, a Stripe payment, or fixing a payment the webhook couldn't match automatically.</p>
         <div className="flex flex-wrap items-center gap-2">
           <input
             type="email"
@@ -269,12 +269,12 @@ export default function PaymentsPanel() {
             placeholder="user@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="flex-1 min-w-[200px] bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
+            className="flex-1 min-w-[200px] bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
           />
           <select
             value={manualTier}
             onChange={(e) => setManualTier(e.target.value as "basic" | "standard" | "pro")}
-            className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none text-xs"
+            className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs"
           >
             <option value="basic">Basic</option>
             <option value="standard">Standard</option>
@@ -288,8 +288,8 @@ export default function PaymentsPanel() {
             {isSettingTier ? "Setting..." : "Set plan"}
           </button>
         </div>
-        {manualError && <p className="text-[10px] text-rose-600 dark:text-rose-400">{manualError}</p>}
-        {manualSuccess && <p className="text-[10px] text-emerald-600 dark:text-emerald-400">{manualSuccess}</p>}
+        {manualError && <p className="text-[10px] text-rose-600">{manualError}</p>}
+        {manualSuccess && <p className="text-[10px] text-emerald-600">{manualSuccess}</p>}
       </form>
     </div>
   );

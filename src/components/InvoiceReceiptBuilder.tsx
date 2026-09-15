@@ -52,9 +52,9 @@ const DESIGN_TEMPLATES = [
     description: "Formal corporate structure: bordered ledger table, boxed total, strict metadata columns.",
     category: "Corporate",
     layout: "ledger" as const,
-    badgeBg: "bg-emerald-50 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-700",
-    tableHeaderBg: "bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400",
-    tableBorder: "border border-slate-200 dark:border-slate-700",
+    badgeBg: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+    tableHeaderBg: "bg-slate-50 border-b border-slate-200 text-slate-500",
+    tableBorder: "border border-slate-200",
     tableShadow: "shadow-sm shadow-slate-200/5",
     totalsStyle: "boxed" as const,
     hasLeftStrip: false,
@@ -66,8 +66,8 @@ const DESIGN_TEMPLATES = [
     description: "Scandinavian white space: no table at all, hairline-ruled line list, quiet right-aligned total.",
     category: "Minimal",
     layout: "minimalList" as const,
-    badgeBg: "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700",
-    tableHeaderBg: "bg-transparent border-b border-slate-200 dark:border-slate-700 text-slate-400",
+    badgeBg: "bg-slate-100 text-slate-800 border border-slate-200",
+    tableHeaderBg: "bg-transparent border-b border-slate-200 text-slate-400",
     tableBorder: "border-0",
     tableShadow: "shadow-none",
     totalsStyle: "underline" as const,
@@ -80,9 +80,9 @@ const DESIGN_TEMPLATES = [
     description: "Full-bleed colored header panel, business identity stacked large on the left, doc meta pinned right.",
     category: "Agency",
     layout: "split" as const,
-    badgeBg: "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-900 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-600",
-    tableHeaderBg: "bg-emerald-50/40 dark:bg-emerald-900/40 border-b border-emerald-100 dark:border-emerald-700 text-emerald-800 dark:text-emerald-300",
-    tableBorder: "border-l-4 border-r border-t border-b border-slate-200 dark:border-slate-700",
+    badgeBg: "bg-emerald-100 text-emerald-900 border border-emerald-300",
+    tableHeaderBg: "bg-emerald-50/40 border-b border-emerald-150 text-emerald-800",
+    tableBorder: "border-l-4 border-r border-t border-b border-slate-200",
     tableShadow: "shadow-md shadow-emerald-500/5",
     totalsStyle: "dark" as const,
     hasLeftStrip: true,
@@ -94,9 +94,9 @@ const DESIGN_TEMPLATES = [
     description: "Terminal-ticket line list in monospace, dashed rules, boxed total in a code-block frame.",
     category: "Startup",
     layout: "minimalList" as const,
-    badgeBg: "bg-zinc-100 dark:bg-zinc-800 text-zinc-950 dark:text-zinc-50 border border-zinc-300 dark:border-zinc-600",
-    tableHeaderBg: "bg-zinc-50 dark:bg-zinc-900 border-t border-b border-dashed border-zinc-300 dark:border-zinc-600 text-zinc-600 dark:text-zinc-300",
-    tableBorder: "border border-dashed border-zinc-300 dark:border-zinc-600",
+    badgeBg: "bg-zinc-100 text-zinc-950 border border-zinc-300",
+    tableHeaderBg: "bg-zinc-50 border-t border-b border-dashed border-zinc-300 text-zinc-600",
+    tableBorder: "border border-dashed border-zinc-300",
     tableShadow: "shadow-none",
     totalsStyle: "boxed" as const,
     hasLeftStrip: false,
@@ -108,9 +108,9 @@ const DESIGN_TEMPLATES = [
     description: "Serif high-society heading over a bordered ledger table, warm ivory shading, large underlined total.",
     category: "Classic",
     layout: "ledger" as const,
-    badgeBg: "bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200 border border-stone-300 dark:border-stone-600",
-    tableHeaderBg: "bg-stone-50 dark:bg-stone-900 border-b border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300",
-    tableBorder: "border border-stone-200/80 dark:border-stone-700/80",
+    badgeBg: "bg-stone-105 text-stone-800 border border-stone-300",
+    tableHeaderBg: "bg-stone-50 border-b border-stone-200 text-stone-600",
+    tableBorder: "border border-stone-200/80",
     tableShadow: "shadow-sm",
     totalsStyle: "underline" as const,
     hasLeftStrip: false,
@@ -122,9 +122,9 @@ const DESIGN_TEMPLATES = [
     description: "Dot-matrix thermal-receipt coupon: centered stub, dotted line list, rounded pill total badge — built for high-volume market and retail trade.",
     category: "African Business",
     layout: "minimalList" as const,
-    badgeBg: "bg-teal-50 dark:bg-teal-900/40 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-700",
-    tableHeaderBg: "bg-teal-50 dark:bg-teal-900/40 border-t border-b border-dotted border-teal-200 dark:border-teal-700 text-teal-700 dark:text-teal-400",
-    tableBorder: "border border-dotted border-teal-200 dark:border-teal-700",
+    badgeBg: "bg-teal-50 text-teal-800 border border-teal-200",
+    tableHeaderBg: "bg-teal-50 border-t border-b border-dotted border-teal-200 text-teal-700",
+    tableBorder: "border border-dotted border-teal-200",
     tableShadow: "shadow-none",
     totalsStyle: "badge" as const,
     hasLeftStrip: false,
@@ -136,9 +136,9 @@ const DESIGN_TEMPLATES = [
     description: "Full-bleed near-black header panel, gold rule accents, gold-on-navy total block.",
     category: "Luxury",
     layout: "split" as const,
-    badgeBg: "bg-amber-50 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-700",
+    badgeBg: "bg-amber-50 text-amber-800 border border-amber-200",
     tableHeaderBg: "bg-slate-900 text-white",
-    tableBorder: "border-4 border-double border-amber-200 dark:border-amber-700",
+    tableBorder: "border-4 border-double border-amber-250",
     tableShadow: "shadow-md",
     totalsStyle: "dark" as const,
     hasLeftStrip: false,
@@ -150,9 +150,9 @@ const DESIGN_TEMPLATES = [
     description: "Bordered ledger table with chubby rounded corners, soft indigo tint, a big rounded total badge.",
     category: "Modern",
     layout: "ledger" as const,
-    badgeBg: "bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-700",
-    tableHeaderBg: "bg-indigo-100/30 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300",
-    tableBorder: "border border-indigo-100 dark:border-indigo-700 rounded-2xl",
+    badgeBg: "bg-indigo-50 text-indigo-700 border border-indigo-200",
+    tableHeaderBg: "bg-indigo-100/30 text-indigo-850",
+    tableBorder: "border border-indigo-100 rounded-2xl",
     tableShadow: "shadow-lg shadow-indigo-500/5",
     totalsStyle: "badge" as const,
     hasLeftStrip: false,
@@ -164,8 +164,8 @@ const DESIGN_TEMPLATES = [
     description: "Full-bleed color header panel with a large circular logo mark, playful bright rounded total badge.",
     category: "Photography",
     layout: "split" as const,
-    badgeBg: "bg-sky-50 dark:bg-sky-900/40 text-sky-800 dark:text-sky-300 border border-sky-200 dark:border-sky-700",
-    tableHeaderBg: "bg-sky-50 dark:bg-sky-900/40 text-sky-900 dark:text-sky-300 border-b border-sky-100 dark:border-sky-700",
+    badgeBg: "bg-sky-50 text-sky-800 border border-sky-200",
+    tableHeaderBg: "bg-sky-50 text-sky-900 border-b border-sky-100",
     tableBorder: "border-0",
     tableShadow: "shadow-sm shadow-sky-400/10",
     totalsStyle: "badge" as const,
@@ -178,9 +178,9 @@ const DESIGN_TEMPLATES = [
     description: "Heavy structured ledger table with thick partitions and bold alignment — reads like a lookbook order sheet for textile and fashion houses.",
     category: "Fashion",
     layout: "ledger" as const,
-    badgeBg: "bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-600",
-    tableHeaderBg: "bg-slate-200/75 dark:bg-slate-700/75 border-b-2 border-slate-400 dark:border-slate-500 text-slate-800 dark:text-slate-200",
-    tableBorder: "border-2 border-slate-300 dark:border-slate-600",
+    badgeBg: "bg-slate-200 text-slate-800 border border-slate-350",
+    tableHeaderBg: "bg-slate-200/75 border-b-2 border-slate-400 text-slate-800",
+    tableBorder: "border-2 border-slate-300",
     tableShadow: "shadow-none",
     totalsStyle: "boxed" as const,
     hasLeftStrip: false,
@@ -839,28 +839,28 @@ export default function InvoiceReceiptBuilder({
   const activeTemplate = DESIGN_TEMPLATES[templateIndex];
 
   return (
-    <div id="invoice-receipt-builder-root" className="grid grid-cols-1 lg:grid-cols-12 gap-6 text-slate-800 dark:text-slate-200">
+    <div id="invoice-receipt-builder-root" className="grid grid-cols-1 lg:grid-cols-12 gap-6 text-slate-800">
       
       {/* 4-Column Controls Panel */}
-      <div className="lg:col-span-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 space-y-4 shadow-sm shadow-emerald-500/5">
+      <div className="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-sm shadow-emerald-500/5">
         
         {/* Component Header info */}
         <div>
-          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 font-sans flex items-center gap-2">
-            <Sliders className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+          <h3 className="text-sm font-bold text-slate-900 font-sans flex items-center gap-2">
+            <Sliders className="w-4 h-4 text-emerald-600" />
             Workspace Designer
           </h3>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 font-sans mt-0.5">
+          <p className="text-[11px] text-slate-500 font-sans mt-0.5">
             Configure, style, auto-import, and design local business invoices with high design standards.
           </p>
         </div>
 
         {/* Action Type Toggle */}
-        <div className="grid grid-cols-3 gap-1 bg-slate-50 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div className="grid grid-cols-3 gap-1 bg-slate-50 p-1 rounded-xl border border-slate-200">
           <button
             onClick={() => setMode("invoice")}
             className={`py-2 text-[10px] font-bold font-sans rounded-lg transition-all cursor-pointer ${
-              mode === "invoice" ? "bg-emerald-600 text-white shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 hover:dark:text-slate-300"
+              mode === "invoice" ? "bg-emerald-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-700"
             }`}
           >
             Invoice
@@ -868,7 +868,7 @@ export default function InvoiceReceiptBuilder({
           <button
             onClick={() => setMode("receipt")}
             className={`py-2 text-[10px] font-bold font-sans rounded-lg transition-all cursor-pointer ${
-              mode === "receipt" ? "bg-emerald-600 text-white shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 hover:dark:text-slate-300"
+              mode === "receipt" ? "bg-emerald-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-700"
             }`}
           >
             Receipt
@@ -876,7 +876,7 @@ export default function InvoiceReceiptBuilder({
           <button
             onClick={() => setMode("quotation")}
             className={`py-2 text-[10px] font-bold font-sans rounded-lg transition-all cursor-pointer ${
-              mode === "quotation" ? "bg-emerald-600 text-white shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 hover:dark:text-slate-300"
+              mode === "quotation" ? "bg-emerald-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-700"
             }`}
           >
             Estimate
@@ -884,11 +884,11 @@ export default function InvoiceReceiptBuilder({
         </div>
 
         {/* Tab Controls for the Side Panel */}
-        <div className="flex border-b border-slate-100 dark:border-slate-700 pb-1 gap-1">
+        <div className="flex border-b border-slate-100 pb-1 gap-1">
           <button
             onClick={() => changePaneTab("builder")}
             className={`flex-1 pb-2 text-[10px] font-bold font-sans border-b-2 text-center cursor-pointer transition-colors ${
-              activePaneTab === "builder" ? "border-emerald-600 text-emerald-600 dark:text-emerald-400 font-extrabold" : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 hover:dark:text-slate-300"
+              activePaneTab === "builder" ? "border-emerald-600 text-emerald-600 font-extrabold" : "border-transparent text-slate-455 hover:text-slate-700"
             }`}
           >
             <span className="inline-flex items-center gap-1"><PencilSimple className="w-3.5 h-3.5" /> Info Form</span>
@@ -896,7 +896,7 @@ export default function InvoiceReceiptBuilder({
           <button
             onClick={() => changePaneTab("style")}
             className={`flex-1 pb-2 text-[10px] font-bold font-sans border-b-2 text-center cursor-pointer transition-colors ${
-              activePaneTab === "style" ? "border-emerald-600 text-emerald-600 dark:text-emerald-400 font-extrabold" : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 hover:dark:text-slate-300"
+              activePaneTab === "style" ? "border-emerald-600 text-emerald-600 font-extrabold" : "border-transparent text-slate-455 hover:text-slate-700"
             }`}
           >
             <span className="inline-flex items-center gap-1"><Palette className="w-3.5 h-3.5" /> Styles</span>
@@ -904,7 +904,7 @@ export default function InvoiceReceiptBuilder({
           <button
             onClick={() => changePaneTab("history")}
             className={`flex-1 pb-2 text-[10px] font-bold font-sans border-b-2 text-center cursor-pointer transition-colors ${
-              activePaneTab === "history" ? "border-emerald-600 text-emerald-600 dark:text-emerald-400 font-extrabold" : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 hover:dark:text-slate-300"
+              activePaneTab === "history" ? "border-emerald-600 text-emerald-600 font-extrabold" : "border-transparent text-slate-455 hover:text-slate-700"
             }`}
           >
             <span className="inline-flex items-center gap-1"><History className="w-3.5 h-3.5" /> Past Ledger</span>
@@ -912,7 +912,7 @@ export default function InvoiceReceiptBuilder({
           <button
             onClick={() => changePaneTab("brandKit")}
             className={`flex-1 pb-2 text-[10px] font-bold font-sans border-b-2 text-center cursor-pointer transition-colors ${
-              activePaneTab === "brandKit" ? "border-emerald-600 text-emerald-600 dark:text-emerald-400 font-extrabold" : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 hover:dark:text-slate-300"
+              activePaneTab === "brandKit" ? "border-emerald-600 text-emerald-600 font-extrabold" : "border-transparent text-slate-455 hover:text-slate-700"
             }`}
           >
             <span className="inline-flex items-center gap-1"><Tag className="w-3.5 h-3.5" /> Brand Kit</span>
@@ -921,8 +921,8 @@ export default function InvoiceReceiptBuilder({
 
         {/* Global Toast Alerts */}
         {toastMessage && (
-          <div className="bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-700 text-emerald-800 dark:text-emerald-300 text-[11px] p-3 rounded-xl font-sans flex items-start gap-2 animate-fade-in shadow-sm shadow-emerald-500/5 select-none">
-            <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+          <div className="bg-emerald-50 border border-emerald-250 text-emerald-850 text-[11px] p-3 rounded-xl font-sans flex items-start gap-2 animate-fade-in shadow-sm shadow-emerald-500/5 select-none">
+            <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
             <p className="font-semibold">{toastMessage}</p>
           </div>
         )}
@@ -935,71 +935,71 @@ export default function InvoiceReceiptBuilder({
           <form onSubmit={mode === "invoice" ? handleSaveInvoice : mode === "receipt" ? handleSaveReceipt : handleSaveQuotation} className="space-y-3.5 text-xs">
             
             {/* COLLAPSIBLE ISSUER DETAILS BRAND CARD (Issued By) */}
-            <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden shadow-sm text-left">
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden shadow-sm text-left">
               <button
                 type="button"
                 onClick={() => setShowIssuerConfig(!showIssuerConfig)}
-                className="w-full px-4 py-3 flex justify-between items-center text-left hover:bg-slate-100/50 hover:dark:bg-slate-800/50 transition-colors select-none"
+                className="w-full px-4 py-3 flex justify-between items-center text-left hover:bg-slate-100/50 transition-colors select-none"
               >
                 <div className="flex items-center gap-2">
-                  <Buildings className="w-4 h-4 text-slate-600 dark:text-slate-300" />
-                  <span className="text-[10px] font-mono font-bold text-slate-600 dark:text-slate-300 uppercase tracking-widest">
+                  <Buildings className="w-4 h-4 text-slate-600" />
+                  <span className="text-[10px] font-mono font-bold text-slate-650 uppercase tracking-widest">
                     Edit Issuer Brand Info (Issued By)
                   </span>
                 </div>
-                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono font-bold">{showIssuerConfig ? "Close" : "Customize"}</span>
+                <span className="text-[10px] text-emerald-600 font-mono font-bold">{showIssuerConfig ? "Close" : "Customize"}</span>
               </button>
 
               {showIssuerConfig && (
-                <div className="p-4 border-t border-slate-200 dark:border-slate-700 space-y-3 bg-white dark:bg-slate-800 animate-fade-in text-xs">
+                <div className="p-4 border-t border-slate-200 space-y-3 bg-white animate-fade-in text-xs">
                   {currentBusiness?.locked && (
-                    <div className="p-2.5 bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-100 dark:border-emerald-700 rounded-xl text-emerald-800 dark:text-emerald-300 text-[10px] font-sans font-medium flex items-center gap-1.5">
+                    <div className="p-2.5 bg-emerald-50 border border-emerald-150 rounded-xl text-emerald-800 text-[10px] font-sans font-medium flex items-center gap-1.5">
                       <Lock className="w-3.5 h-3.5 shrink-0" /> <strong>Brand Profile Locked:</strong> Company profile details are locked from editing. Uncheck "Lock Business Profile Details" in Settings (Edit) to modify.
                     </div>
                   )}
                   <div>
-                    <label className="text-[9px] font-mono text-slate-400 uppercase font-bold block mb-1">Company / Issuer Name</label>
+                    <label className="text-[9px] font-mono text-slate-450 uppercase font-bold block mb-1">Company / Issuer Name</label>
                     <input
                       type="text"
                       disabled={currentBusiness?.locked}
                       value={issuerName}
                       onChange={(e) => setIssuerName(e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans focus:bg-white focus:dark:bg-slate-800 focus:border-emerald-500 transition-all font-medium disabled:opacity-60"
+                      className="w-full bg-slate-50 text-slate-805 border border-slate-205 rounded-xl px-3 py-2 outline-none font-sans focus:bg-white focus:border-emerald-500 transition-all font-medium disabled:opacity-60"
                       placeholder="e.g. BlueStar Agro-Ventures"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="text-[9px] font-mono text-slate-400 uppercase font-bold block mb-1">Industry / Branch label</label>
+                      <label className="text-[9px] font-mono text-slate-450 uppercase font-bold block mb-1">Industry / Branch label</label>
                       <input
                         type="text"
                         disabled={currentBusiness?.locked}
                         value={issuerIndustry}
                         onChange={(e) => setIssuerIndustry(e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans focus:bg-white focus:dark:bg-slate-800 focus:border-emerald-500 transition-all disabled:opacity-60"
+                        className="w-full bg-slate-50 text-slate-805 border border-slate-205 rounded-xl px-3 py-2 outline-none font-sans focus:bg-white focus:border-emerald-500 transition-all disabled:opacity-60"
                         placeholder="e.g. Accra Logistics Branch"
                       />
                     </div>
                     <div>
-                      <label className="text-[9px] font-mono text-slate-400 uppercase font-bold block mb-1">Accreditation / Contacts</label>
+                      <label className="text-[9px] font-mono text-slate-450 uppercase font-bold block mb-1">Accreditation / Contacts</label>
                       <input
                         type="text"
                         disabled={currentBusiness?.locked}
                         value={issuerContact}
                         onChange={(e) => setIssuerContact(e.target.value)}
-                        className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans focus:bg-white focus:dark:bg-slate-800 focus:border-emerald-500 transition-all disabled:opacity-60"
+                        className="w-full bg-slate-50 text-slate-805 border border-slate-205 rounded-xl px-3 py-2 outline-none font-sans focus:bg-white focus:border-emerald-500 transition-all disabled:opacity-60"
                         placeholder="City, Country • Phone/Email"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="text-[9px] font-mono text-slate-400 uppercase font-bold block mb-1">Legal/VAT Description</label>
+                    <label className="text-[9px] font-mono text-slate-450 uppercase font-bold block mb-1">Legal/VAT Description</label>
                     <textarea
                       rows={2}
                       disabled={currentBusiness?.locked}
                       value={issuerDesc}
                       onChange={(e) => setIssuerDesc(e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans resize-none text-[11px] focus:bg-white focus:dark:bg-slate-800 focus:border-emerald-500 transition-all disabled:opacity-60"
+                      className="w-full bg-slate-50 text-slate-805 border border-slate-205 rounded-xl px-3 py-2 outline-none font-sans resize-none text-[11px] focus:bg-white focus:border-emerald-500 transition-all disabled:opacity-60"
                       placeholder="Compliant SME hub description..."
                     />
                   </div>
@@ -1010,15 +1010,15 @@ export default function InvoiceReceiptBuilder({
             {/* Customer dropdown selection */}
             <div className="text-left">
               <div className="flex justify-between items-center mb-1">
-                <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wide">
+                <label className="text-[10px] font-mono font-bold text-slate-450 uppercase tracking-wide">
                   Account CRM Customer (Issued To)
                 </label>
-                <span className="text-[9px] text-indigo-600 dark:text-indigo-400 font-mono font-bold">Limitless Direct Input</span>
+                <span className="text-[9px] text-indigo-600 font-mono font-bold">Limitless Direct Input</span>
               </div>
               <select
                 value={customerId}
                 onChange={(e) => setCustomerId(e.target.value)}
-                className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 font-sans cursor-pointer transition-all font-medium"
+                className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 font-sans cursor-pointer transition-all font-medium"
               >
                 <option value="custom">[Manual Client] Type custom customer below...</option>
                 {customers.map(c => (
@@ -1031,13 +1031,13 @@ export default function InvoiceReceiptBuilder({
                 auto-fills from a customer's saved preference, always overridable. */}
             <div className={`grid ${documentCurrency !== currentBusiness.currency ? "grid-cols-2" : "grid-cols-1"} gap-2 text-left`}>
               <div>
-                <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wide block mb-1">
+                <label className="text-[10px] font-mono font-bold text-slate-450 uppercase tracking-wide block mb-1">
                   Document Currency
                 </label>
                 <select
                   value={documentCurrency}
                   onChange={(e) => setDocumentCurrency(e.target.value)}
-                  className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 font-sans cursor-pointer transition-all font-medium"
+                  className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 font-sans cursor-pointer transition-all font-medium"
                 >
                   {SUPPORTED_CURRENCY_CODES.map((code) => (
                     <option key={code} value={code}>{code}</option>
@@ -1046,7 +1046,7 @@ export default function InvoiceReceiptBuilder({
               </div>
               {documentCurrency !== currentBusiness.currency && (
                 <div>
-                  <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wide block mb-1">
+                  <label className="text-[10px] font-mono font-bold text-slate-450 uppercase tracking-wide block mb-1">
                     1 {documentCurrency} = ? {currentBusiness.currency}
                   </label>
                   <input
@@ -1055,7 +1055,7 @@ export default function InvoiceReceiptBuilder({
                     step="0.0001"
                     value={exchangeRate}
                     onChange={(e) => setExchangeRate(Number(e.target.value) || 1)}
-                    className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 font-sans font-mono"
+                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 font-sans font-mono"
                   />
                 </div>
               )}
@@ -1063,51 +1063,51 @@ export default function InvoiceReceiptBuilder({
 
             {/* Custom Manual Customer Fields */}
             {customerId === "custom" && (
-              <div className="bg-emerald-50/40 dark:bg-emerald-900/40 border border-emerald-100 dark:border-emerald-700 rounded-2xl p-4 space-y-3 animate-fade-in text-left">
-                <span className="text-[9.5px] font-mono text-emerald-600 dark:text-emerald-400 uppercase tracking-widest font-extrabold flex items-center gap-1">
+              <div className="bg-emerald-50/40 border border-emerald-100 rounded-2xl p-4 space-y-3 animate-fade-in text-left">
+                <span className="text-[9.5px] font-mono text-emerald-600 uppercase tracking-widest font-extrabold flex items-center gap-1">
                   <User className="w-3 h-3" /> Custom Client Profile
                 </span>
                 <div>
-                  <label className="text-[9px] font-mono text-slate-400 uppercase font-bold block mb-1 font-sans">Customer name / Company Name</label>
+                  <label className="text-[9px] font-mono text-slate-450 uppercase font-bold block mb-1 font-sans">Customer name / Company Name</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. Osei-Tutu & Partners Ltd"
                     value={customClientName}
                     onChange={(e) => setCustomClientName(e.target.value)}
-                    className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans focus:border-emerald-500 font-medium"
+                    className="w-full bg-white text-slate-808 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans focus:border-emerald-500 font-medium"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="text-[9px] font-mono text-slate-400 uppercase font-bold block mb-1 font-sans">Email Address</label>
+                    <label className="text-[9px] font-mono text-slate-450 uppercase font-bold block mb-1 font-sans">Email Address</label>
                     <input
                       type="email"
                       placeholder="finance@oseitutu.gh"
                       value={customClientEmail}
                       onChange={(e) => setCustomClientEmail(e.target.value)}
-                      className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans focus:border-emerald-500"
+                      className="w-full bg-white text-slate-808 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans focus:border-emerald-500"
                     />
                   </div>
                   <div>
-                    <label className="text-[9px] font-mono text-slate-400 uppercase font-bold block mb-1 font-sans">Phone Number</label>
+                    <label className="text-[9px] font-mono text-slate-450 uppercase font-bold block mb-1 font-sans">Phone Number</label>
                     <input
                       type="text"
                       placeholder="+233 55 987 6543"
                       value={customClientPhone}
                       onChange={(e) => setCustomClientPhone(e.target.value)}
-                      className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans focus:border-emerald-500"
+                      className="w-full bg-white text-slate-808 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans focus:border-emerald-500"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="text-[9px] font-mono text-slate-400 uppercase font-bold block mb-1 font-sans">Client Segment Category</label>
+                  <label className="text-[9px] font-mono text-slate-450 uppercase font-bold block mb-1 font-sans">Client Segment Category</label>
                   <input
                     type="text"
                     placeholder="e.g. Retail Consumer, Wholesale, Distributor"
                     value={customClientCategory}
                     onChange={(e) => setCustomClientCategory(e.target.value)}
-                    className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans focus:border-emerald-500"
+                    className="w-full bg-white text-slate-808 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans focus:border-emerald-500"
                   />
                 </div>
               </div>
@@ -1116,25 +1116,25 @@ export default function InvoiceReceiptBuilder({
             {/* Code identifier and date */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-[10px] font-mono font-bold text-slate-400 tracking-wider block mb-1">
+                <label className="text-[10px] font-mono font-bold text-slate-450 tracking-wider block mb-1">
                   Document Code Call
                 </label>
                 <input
                   type="text"
                   value={mode === "invoice" ? invoiceNumber : mode === "receipt" ? receiptNumber : quoteNumber}
                   onChange={(e) => mode === "invoice" ? setInvoiceNumber(e.target.value) : mode === "receipt" ? setReceiptNumber(e.target.value) : setQuoteNumber(e.target.value)}
-                  className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 font-mono"
+                  className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 font-mono"
                 />
               </div>
               <div>
-                <label className="text-[10px] font-mono font-bold text-slate-400 tracking-wider block mb-1">
+                <label className="text-[10px] font-mono font-bold text-slate-450 tracking-wider block mb-1">
                   Issue Statement Date
                 </label>
                 <input
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 font-mono"
+                  className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 font-mono"
                 />
               </div>
             </div>
@@ -1143,11 +1143,11 @@ export default function InvoiceReceiptBuilder({
             {(mode === "invoice" || mode === "quotation") ? (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono font-bold text-slate-400 tracking-wider uppercase">Line Ledger Items</span>
+                  <span className="text-[10px] font-mono font-bold text-slate-450 tracking-wider uppercase">Line Ledger Items</span>
                   <button
                     type="button"
                     onClick={handleAddItem}
-                    className="text-[10px] text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 hover:dark:text-emerald-400 font-bold font-sans flex items-center gap-1 cursor-pointer transition-all"
+                    className="text-[10px] text-emerald-600 hover:text-emerald-700 font-bold font-sans flex items-center gap-1 cursor-pointer transition-all"
                   >
                     <Plus className="w-3.5 h-3.5" /> Add Row
                   </button>
@@ -1155,13 +1155,13 @@ export default function InvoiceReceiptBuilder({
 
                 <div className="space-y-2 max-h-[170px] overflow-y-auto pr-1">
                   {items.map((item, index) => (
-                    <div key={index} className="bg-slate-50/70 dark:bg-slate-900/70 p-2.5 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                    <div key={index} className="bg-slate-50/70 p-2.5 border border-slate-205 rounded-xl space-y-2">
                       <input
                         type="text"
                         placeholder="Service / stock material description"
                         value={item.description}
                         onChange={(e) => handleItemChange(index, "description", e.target.value)}
-                        className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 outline-none font-sans"
+                        className="w-full bg-white text-slate-800 border border-slate-200 rounded-lg px-2.5 py-1.5 outline-none font-sans"
                       />
                       <div className="grid grid-cols-3 gap-2">
                         <input
@@ -1169,20 +1169,20 @@ export default function InvoiceReceiptBuilder({
                           placeholder="Qty"
                           value={item.quantity}
                           onChange={(e) => handleItemChange(index, "quantity", e.target.value)}
-                          className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 outline-none font-mono text-center"
+                          className="w-full bg-white text-slate-800 border border-slate-200 rounded-lg px-2 py-1 outline-none font-mono text-center"
                         />
                         <input
                           type="number"
                           placeholder="Rate"
                           value={item.rate}
                           onChange={(e) => handleItemChange(index, "rate", e.target.value)}
-                          className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 outline-none font-mono text-right"
+                          className="w-full bg-white text-slate-800 border border-slate-200 rounded-lg px-2 py-1 outline-none font-mono text-right"
                         />
                         <button
                           type="button"
                           onClick={() => handleRemoveItem(index)}
                           disabled={items.length === 1}
-                          className="bg-rose-50 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-700 rounded-lg flex items-center justify-center p-1.5 hover:bg-rose-100 hover:dark:bg-rose-900/40 transition-colors disabled:opacity-40 cursor-pointer"
+                          className="bg-rose-50 text-rose-600 border border-rose-100 rounded-lg flex items-center justify-center p-1.5 hover:bg-rose-100 transition-colors disabled:opacity-40 cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -1194,21 +1194,21 @@ export default function InvoiceReceiptBuilder({
                 {/* Discounts and compliance rates */}
                 <div className="grid grid-cols-2 gap-3 pt-1">
                   <div>
-                    <label className="text-[10px] font-mono font-bold text-slate-400">Discount Percent (%)</label>
+                    <label className="text-[10px] font-mono font-bold text-slate-450">Discount Percent (%)</label>
                     <input
                       type="number"
                       value={discount}
                       onChange={(e) => setDiscount(Number(e.target.value))}
-                      className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-mono focus:border-emerald-500"
+                      className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 outline-none font-mono focus:border-emerald-500"
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] font-mono font-bold text-slate-500 dark:text-slate-400">Local VAT Rate (%)</label>
+                    <label className="text-[10px] font-mono font-bold text-slate-455">Local VAT Rate (%)</label>
                     <input
                       type="number"
                       value={taxRate}
                       onChange={(e) => setTaxRate(Number(e.target.value))}
-                      className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-mono focus:border-emerald-500"
+                      className="w-full bg-white text-slate-805 border border-slate-200 rounded-xl px-3 py-2 outline-none font-mono focus:border-emerald-500"
                     />
                   </div>
                 </div>
@@ -1216,21 +1216,21 @@ export default function InvoiceReceiptBuilder({
                 {/* Shipping and Amount Paid */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-[10px] font-mono font-bold text-slate-400">Shipping Cost ({currencySymbol})</label>
+                    <label className="text-[10px] font-mono font-bold text-slate-450">Shipping Cost ({currencySymbol})</label>
                     <input
                       type="number"
                       value={shipping}
                       onChange={(e) => setShipping(Number(e.target.value))}
-                      className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-mono focus:border-emerald-500"
+                      className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 outline-none font-mono focus:border-emerald-500"
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] font-mono font-bold text-slate-500 dark:text-slate-400">Amount Paid ({currencySymbol})</label>
+                    <label className="text-[10px] font-mono font-bold text-slate-455">Amount Paid ({currencySymbol})</label>
                     <input
                       type="number"
                       value={invoiceAmountPaid}
                       onChange={(e) => setInvoiceAmountPaid(Number(e.target.value))}
-                      className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-mono focus:border-emerald-500"
+                      className="w-full bg-white text-slate-805 border border-slate-200 rounded-xl px-3 py-2 outline-none font-mono focus:border-emerald-500"
                     />
                   </div>
                 </div>
@@ -1239,32 +1239,32 @@ export default function InvoiceReceiptBuilder({
               /* Receipt single item fields */
               <div className="space-y-3">
                 <div>
-                  <label className="text-[10px] font-mono font-bold text-slate-400 block mb-1">
+                  <label className="text-[10px] font-mono font-bold text-slate-450 block mb-1">
                     Receipt Ledger Payment Description
                   </label>
                   <input
                     type="text"
                     value={receiptDesc}
                     onChange={(e) => setReceiptDesc(e.target.value)}
-                    className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 font-sans"
+                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 font-sans"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-[10px] font-mono font-bold text-slate-400 block mb-1">Amount Settled ({currencySymbol})</label>
+                    <label className="text-[10px] font-mono font-bold text-slate-450 block mb-1">Amount Settled ({currencySymbol})</label>
                     <input
                       type="number"
                       value={receiptAmount}
                       onChange={(e) => setReceiptAmount(Number(e.target.value))}
-                      className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 outline-none font-mono"
+                      className="w-full bg-white text-slate-805 border border-slate-200 rounded-xl px-3 py-2.5 outline-none font-mono"
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] font-mono font-bold text-slate-400 block mb-1">Payment Channel</label>
+                    <label className="text-[10px] font-mono font-bold text-slate-450 block mb-1">Payment Channel</label>
                     <select
                       value={paymentMethod}
                       onChange={(e) => setPaymentMethod(e.target.value as any)}
-                      className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 outline-none font-sans cursor-pointer"
+                      className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2.5 outline-none font-sans cursor-pointer"
                     >
                       <option value="Mobile Money">Mobile Money</option>
                       <option value="Cash">Cash Ledger</option>
@@ -1279,24 +1279,24 @@ export default function InvoiceReceiptBuilder({
             {mode === "invoice" && (
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] font-mono font-bold text-slate-400 block mb-1">
+                  <label className="text-[10px] font-mono font-bold text-slate-450 block mb-1">
                     Settlement Due Date
                   </label>
                   <input
                     type="date"
                     value={dueDate}
                     onChange={(e) => setDueDate(e.target.value)}
-                    className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 font-mono"
+                    className="w-full bg-white text-slate-808 border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 font-mono"
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-mono font-bold text-slate-400 block mb-1">
+                  <label className="text-[10px] font-mono font-bold text-slate-450 block mb-1">
                     Document Payment Status
                   </label>
                   <select
                     value={invoiceStatus}
                     onChange={(e) => setInvoiceStatus(e.target.value as Invoice["status"])}
-                    className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 outline-none font-sans cursor-pointer focus:border-emerald-500"
+                    className="w-full bg-white text-slate-850 border border-slate-200 rounded-xl px-3 py-2.5 outline-none font-sans cursor-pointer focus:border-emerald-500"
                   >
                     <option value="Sent">Sent (Unpaid)</option>
                     <option value="Paid">Paid (Automated Stock Lift)</option>
@@ -1361,15 +1361,15 @@ export default function InvoiceReceiptBuilder({
                     }}
                     className={`text-left p-2.5 rounded-xl border transition-all text-[11px] ${
                       templateIndex === i
-                        ? "border-emerald-600 bg-emerald-50/50 dark:bg-emerald-900/50 shadow-sm"
-                        : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300 hover:dark:border-slate-600"
+                        ? "border-emerald-600 bg-emerald-50/50 shadow-sm"
+                        : "border-slate-200 bg-white hover:border-slate-300"
                     }`}
                   >
-                    <div className="font-bold text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1">
-                      <span className="text-emerald-600 dark:text-emerald-400 font-bold font-mono">#{displayNumber}</span>
+                    <div className="font-bold text-slate-900 font-sans flex items-center gap-1">
+                      <span className="text-emerald-600 font-bold font-mono">#{displayNumber}</span>
                       {tpl.name}
                     </div>
-                    <p className="text-[9px] text-slate-400 leading-tight mt-1 line-clamp-2">
+                    <p className="text-[9px] text-slate-450 leading-tight mt-1 line-clamp-2">
                       {tpl.description}
                     </p>
                   </button>
@@ -1379,14 +1379,14 @@ export default function InvoiceReceiptBuilder({
             </div>
 
             {/* Design Their Own / Customizable Section */}
-            <div className="border-t border-slate-100 dark:border-slate-700 pt-3 space-y-3">
+            <div className="border-t border-slate-100 pt-3 space-y-3">
               <span className="text-[10px] font-mono font-bold text-slate-400 flex items-center gap-1 uppercase tracking-wider">
                 <Wrench className="w-3.5 h-3.5" /> Custom Branding Suite
               </span>
 
               {/* Accent Color Picker and safe codes */}
               <div>
-                <label className="text-[10px] text-slate-500 dark:text-slate-400 block mb-1 font-sans">
+                <label className="text-[10px] text-slate-455 block mb-1 font-sans">
                   Accent Primary Colorway
                 </label>
                 <div className="flex items-center gap-2">
@@ -1401,7 +1401,7 @@ export default function InvoiceReceiptBuilder({
                     value={accentColor}
                     onChange={(e) => setAccentColor(e.target.value)}
                     placeholder="#10b981"
-                    className="flex-1 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 outline-none font-mono"
+                    className="flex-1 bg-slate-50 text-slate-800 border border-slate-200 rounded-lg px-2 py-1 outline-none font-mono"
                   />
                 </div>
                 {/* Accent presets */}
@@ -1410,7 +1410,7 @@ export default function InvoiceReceiptBuilder({
                     <button
                       key={color}
                       onClick={() => setAccentColor(color)}
-                      className="w-5 h-5 rounded-full border border-slate-200 dark:border-slate-700 cursor-pointer"
+                      className="w-5 h-5 rounded-full border border-slate-200 cursor-pointer"
                       style={{ backgroundColor: color }}
                       title={color}
                     />
@@ -1420,13 +1420,13 @@ export default function InvoiceReceiptBuilder({
 
               {/* Font style Selector */}
               <div>
-                <label className="text-[10px] text-slate-400 block mb-1 font-sans">
+                <label className="text-[10px] text-slate-450 block mb-1 font-sans">
                   Typography pairing font
                 </label>
                 <select
                   value={selectedFont}
                   onChange={(e) => setSelectedFont(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-2 py-1.5 outline-none font-sans"
+                  className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-2 py-1.5 outline-none font-sans"
                 >
                   <option value="Arial">Sans-Serif (Standard Clear)</option>
                   <option value="Georgia">Editorial Serif (Tradition)</option>
@@ -1438,7 +1438,7 @@ export default function InvoiceReceiptBuilder({
               {/* Secondary Color Picker */}
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-[10px] text-slate-500 dark:text-slate-400 block mb-1 font-sans">
+                  <label className="text-[10px] text-slate-455 block mb-1 font-sans">
                     Secondary Accent
                   </label>
                   <div className="flex items-center gap-1.5">
@@ -1453,13 +1453,13 @@ export default function InvoiceReceiptBuilder({
                       value={secondaryColor}
                       onChange={(e) => setSecondaryColor(e.target.value)}
                       placeholder="#475569"
-                      className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 outline-none font-mono text-[10px]"
+                      className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-lg px-2 py-1 outline-none font-mono text-[10px]"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[10px] text-slate-500 dark:text-slate-400 block mb-1 font-sans">
+                  <label className="text-[10px] text-slate-455 block mb-1 font-sans">
                     Branding Highlight
                   </label>
                   <div className="flex items-center gap-1.5">
@@ -1474,7 +1474,7 @@ export default function InvoiceReceiptBuilder({
                       value={customAccentColor}
                       onChange={(e) => setCustomAccentColor(e.target.value)}
                       placeholder="#f59e0b"
-                      className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 outline-none font-mono text-[10px]"
+                      className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-lg px-2 py-1 outline-none font-mono text-[10px]"
                     />
                   </div>
                 </div>
@@ -1482,11 +1482,11 @@ export default function InvoiceReceiptBuilder({
 
               {/* Paper Background Style */}
               <div>
-                <label className="text-[10px] text-slate-400 block mb-1 font-sans">Paper Background Treatment</label>
+                <label className="text-[10px] text-slate-450 block mb-1 font-sans">Paper Background Treatment</label>
                 <select
                   value={paperBackground}
                   onChange={(e) => setPaperBackground(e.target.value as any)}
-                  className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-2 py-1.5 outline-none font-sans"
+                  className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-2 py-1.5 outline-none font-sans"
                 >
                   <option value="White">Pure White (#FFFFFF)</option>
                   <option value="Ivory">Creamy Ivory (#FAF8F5)</option>
@@ -1497,11 +1497,11 @@ export default function InvoiceReceiptBuilder({
 
               {/* Border Style Option */}
               <div>
-                <label className="text-[10px] text-slate-400 block mb-1 font-sans">Document Border Style</label>
+                <label className="text-[10px] text-slate-450 block mb-1 font-sans">Document Border Style</label>
                 <select
                   value={borderStyle}
                   onChange={(e) => setBorderStyle(e.target.value as any)}
-                  className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-2 py-1.5 outline-none font-sans"
+                  className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-2 py-1.5 outline-none font-sans"
                 >
                   <option value="Solid">Solid Border</option>
                   <option value="Double">Double Border</option>
@@ -1513,11 +1513,11 @@ export default function InvoiceReceiptBuilder({
 
               {/* Logo Placement */}
               <div>
-                <label className="text-[10px] text-slate-400 block mb-1 font-sans">Logo Header Placement</label>
+                <label className="text-[10px] text-slate-450 block mb-1 font-sans">Logo Header Placement</label>
                 <select
                   value={logoPlacement}
                   onChange={(e) => setLogoPlacement(e.target.value as any)}
-                  className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-2 py-1.5 outline-none font-sans"
+                  className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-2 py-1.5 outline-none font-sans"
                 >
                   <option value="Left">Left-Aligned Logo</option>
                   <option value="Center">Centered Logo</option>
@@ -1527,11 +1527,11 @@ export default function InvoiceReceiptBuilder({
 
               {/* Footer Alignment */}
               <div>
-                <label className="text-[10px] text-slate-400 block mb-1 font-sans">Footer Elements Alignment</label>
+                <label className="text-[10px] text-slate-450 block mb-1 font-sans">Footer Elements Alignment</label>
                 <select
                   value={footerAlignment}
                   onChange={(e) => setFooterAlignment(e.target.value as any)}
-                  className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-2 py-1.5 outline-none font-sans"
+                  className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-2 py-1.5 outline-none font-sans"
                 >
                   <option value="Left">Left Aligned</option>
                   <option value="Center">Centered Alignment</option>
@@ -1541,11 +1541,11 @@ export default function InvoiceReceiptBuilder({
 
               {/* Date Format Option */}
               <div>
-                <label className="text-[10px] text-slate-400 block mb-1 font-sans">Localized Date Format</label>
+                <label className="text-[10px] text-slate-450 block mb-1 font-sans">Localized Date Format</label>
                 <select
                   value={dateFormat}
                   onChange={(e) => setDateFormat(e.target.value as any)}
-                  className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-2 py-1.5 outline-none font-sans"
+                  className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-2 py-1.5 outline-none font-sans"
                 >
                   <option value="YYYY-MM-DD">Standard ISO (YYYY-MM-DD)</option>
                   <option value="DD/MM/YYYY">Commonwealth (DD/MM/YYYY)</option>
@@ -1555,60 +1555,60 @@ export default function InvoiceReceiptBuilder({
 
               {/* Bank Transfer Details Input */}
               <div>
-                <label className="text-[10px] text-slate-400 block mb-1 font-sans">Bank Payment Details</label>
+                <label className="text-[10px] text-slate-450 block mb-1 font-sans">Bank Payment Details</label>
                 <input
                   type="text"
                   value={bankDetails}
                   onChange={(e) => setBankDetails(e.target.value)}
                   placeholder="e.g. Bank Name, Account Number, Branch"
-                  className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 outline-none font-sans"
+                  className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-2.5 py-1.5 outline-none font-sans"
                 />
               </div>
 
               {/* Mobile Money Details Input */}
               <div>
-                <label className="text-[10px] text-slate-400 block mb-1 font-sans">Mobile Money (MOMO) Details</label>
+                <label className="text-[10px] text-slate-450 block mb-1 font-sans">Mobile Money (MOMO) Details</label>
                 <input
                   type="text"
                   value={momoDetails}
                   onChange={(e) => setMomoDetails(e.target.value)}
                   placeholder="e.g. MTN Mobile Money / Telecel Cash"
-                  className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 outline-none font-sans"
+                  className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-2.5 py-1.5 outline-none font-sans"
                 />
               </div>
 
               {/* Terms and Conditions Input */}
               <div>
-                <label className="text-[10px] text-slate-400 block mb-1 font-sans">Terms & Conditions Statement</label>
+                <label className="text-[10px] text-slate-450 block mb-1 font-sans">Terms & Conditions Statement</label>
                 <textarea
                   value={termsAndConditions}
                   onChange={(e) => setTermsAndConditions(e.target.value)}
                   rows={2}
                   placeholder="Official Terms and Conditions text..."
-                  className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl p-2 outline-none font-sans text-[11px]"
+                  className="w-full bg-slate-50 text-slate-808 border border-slate-200 rounded-xl p-2 outline-none font-sans text-[11px]"
                 />
               </div>
 
               {/* Logo Manager - preset custom icon vs upload brand */}
               <div>
-                <label className="text-[10px] text-slate-500 dark:text-slate-400 block font-sans">Logo Import Channels</label>
+                <label className="text-[10px] text-slate-455 block font-sans">Logo Import Channels</label>
                 
                 {/* File picker for custom logo */}
-                <div className="mt-1 flex items-center justify-between gap-2 bg-slate-50 dark:bg-slate-900 p-2 border border-slate-200 dark:border-slate-700 rounded-xl">
+                <div className="mt-1 flex items-center justify-between gap-2 bg-slate-50 p-2 border border-slate-200 rounded-xl">
                   <div className="flex items-center gap-2">
                     {uploadedLogo ? (
                       <img 
                         src={uploadedLogo} 
                         alt="Brand preview" 
-                        className="w-8 h-8 rounded-lg object-contain bg-white dark:bg-slate-800 border"
+                        className="w-8 h-8 rounded-lg object-contain bg-white border"
                       />
                     ) : (
-                      <div className="w-8 h-8 bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-lg flex items-center justify-center text-xs">
+                      <div className="w-8 h-8 bg-slate-200 text-slate-500 rounded-lg flex items-center justify-center text-xs">
                         <ImageIcon className="w-4 h-4" />
                       </div>
                     )}
                     <div>
-                      <span className="text-[10px] font-bold block text-slate-800 dark:text-slate-200">
+                      <span className="text-[10px] font-bold block text-slate-800">
                         {uploadedLogo ? "Brand Imaged loaded" : "Upload Custom Logo"}
                       </span>
                       <span className="text-[9px] text-slate-400 block">PNG only</span>
@@ -1628,7 +1628,7 @@ export default function InvoiceReceiptBuilder({
                     {uploadedLogo && (
                       <button
                         onClick={clearUploadedLogo}
-                        className="text-rose-600 dark:text-rose-400 hover:text-rose-700 hover:dark:text-rose-400 font-bold text-[9px] font-sans"
+                        className="text-rose-600 hover:text-rose-700 font-bold text-[9px] font-sans"
                       >
                         Reset
                       </button>
@@ -1639,7 +1639,7 @@ export default function InvoiceReceiptBuilder({
                 {/* Preset badges choice if they do not have file ready */}
                 {!uploadedLogo && (
                   <div className="mt-2">
-                    <span className="text-[9px] text-slate-400 block mb-1">Or choose a pre-designed icon graphic:</span>
+                    <span className="text-[9px] text-slate-450 block mb-1">Or choose a pre-designed icon graphic:</span>
                     <div className="flex gap-1 overflow-x-auto max-width-full py-0.5">
                       {PRESET_LOGOS.map((logo) => (
                         <button
@@ -1651,7 +1651,7 @@ export default function InvoiceReceiptBuilder({
                           className={`px-2 py-1 rounded border text-[9px] whitespace-nowrap transition-all ${
                             selectedPresetLogo === logo.id 
                               ? "bg-emerald-600 text-white font-bold border-emerald-600" 
-                              : "bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700"
+                              : "bg-slate-50 text-slate-655 border-slate-200"
                           }`}
                         >
                           <span className="mr-0.5 font-mono font-black">{logo.char}</span> {logo.name.split(" ")[0]}
@@ -1664,7 +1664,7 @@ export default function InvoiceReceiptBuilder({
 
               {/* Borders control and roundness settings */}
               <div>
-                <label className="text-[10px] text-slate-400 block mb-1 font-sans">
+                <label className="text-[10px] text-slate-450 block mb-1 font-sans">
                   Edge Borders Roundness
                 </label>
                 <div className="grid grid-cols-3 gap-1.5">
@@ -1674,8 +1674,8 @@ export default function InvoiceReceiptBuilder({
                       onClick={() => setBorderRadiusMode(mode as any)}
                       className={`py-1 rounded border font-sans text-[10px] transition-all capitalize ${
                         borderRadiusMode === mode 
-                          ? "bg-slate-200 dark:bg-slate-700 border-slate-400 dark:border-slate-500 font-bold text-slate-900 dark:text-slate-100" 
-                          : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400"
+                          ? "bg-slate-200 border-slate-400 font-bold text-slate-900" 
+                          : "bg-white border-slate-205 text-slate-500"
                       }`}
                     >
                       {mode}
@@ -1687,14 +1687,14 @@ export default function InvoiceReceiptBuilder({
               {/* Watermark texts */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-[10px] text-slate-500 dark:text-slate-400 font-sans">
+                  <label className="text-[10px] text-slate-455 font-sans">
                     Enable Background Watermark
                   </label>
                   <input
                     type="checkbox"
                     checked={showWatermark}
                     onChange={(e) => setShowWatermark(e.target.checked)}
-                    className="w-3.5 h-3.5 bg-white dark:bg-slate-800 rounded accent-emerald-600"
+                    className="w-3.5 h-3.5 bg-white rounded accent-emerald-600"
                   />
                 </div>
                 {showWatermark && (
@@ -1703,14 +1703,14 @@ export default function InvoiceReceiptBuilder({
                     value={watermarkText}
                     onChange={(e) => setWatermarkText(e.target.value)}
                     placeholder="e.g. TAX COMPLIANT ORIGINAL"
-                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 outline-none font-sans"
+                    className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-2.5 py-1.5 outline-none font-sans"
                   />
                 )}
               </div>
 
               {/* Header Style */}
               <div>
-                <label className="text-[10px] text-slate-400 block mb-1 font-sans">Header Alignment Variant</label>
+                <label className="text-[10px] text-slate-450 block mb-1 font-sans">Header Alignment Variant</label>
                 <div className="grid grid-cols-3 gap-1">
                   {(["Compact", "TwoColumn", "Centered"] as const).map((opt) => (
                     <button
@@ -1719,7 +1719,7 @@ export default function InvoiceReceiptBuilder({
                       className={`py-1 text-[9px] rounded border transition-all ${
                         headerLayout === opt 
                           ? "bg-emerald-600 text-white font-bold border-emerald-600" 
-                          : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400"
+                          : "bg-white border-slate-200 text-slate-500"
                       }`}
                     >
                       {opt === "TwoColumn" ? "2-Col Detail" : opt}
@@ -1730,23 +1730,23 @@ export default function InvoiceReceiptBuilder({
 
               {/* Signature Block edit */}
               <div>
-                <label className="text-[10px] text-slate-400 block mb-1 font-sans">Signature Title line</label>
+                <label className="text-[10px] text-slate-450 block mb-1 font-sans">Signature Title line</label>
                 <input
                   type="text"
                   value={authorizedSignature}
                   onChange={(e) => setAuthorizedSignature(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 outline-none font-sans"
+                  className="w-full bg-slate-50 text-slate-805 border border-slate-200 rounded-xl px-2.5 py-1.5 outline-none font-sans"
                 />
               </div>
 
               {/* Footnotes statement */}
               <div>
-                <label className="text-[10px] text-slate-400 block mb-1 font-sans">Footnote Disclaimers</label>
+                <label className="text-[10px] text-slate-450 block mb-1 font-sans">Footnote Disclaimers</label>
                 <textarea
                   value={customFooterNotes}
                   onChange={(e) => setCustomFooterNotes(e.target.value)}
                   rows={2}
-                  className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl p-2 outline-none font-sans text-[11px]"
+                  className="w-full bg-slate-50 text-slate-808 border border-slate-200 rounded-xl p-2 outline-none font-sans text-[11px]"
                 />
               </div>
 
@@ -1768,10 +1768,10 @@ export default function InvoiceReceiptBuilder({
             {mode === "invoice" && (
             <>
             <div>
-              <span className="text-[10px] font-mono font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1 uppercase tracking-wider mb-1">
+              <span className="text-[10px] font-mono font-bold text-indigo-650 flex items-center gap-1 uppercase tracking-wider mb-1">
                 <ReceiptIcon className="w-3.5 h-3.5" /> Past Invoices Ledger List
               </span>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed font-sans mb-3">
+              <p className="text-[11px] text-slate-500 leading-relaxed font-sans mb-3">
                 Manage sent estimates or invoices. Flagging an invoice as "Paid" automatically triggers inventory stock lift and ledger cash inflow transaction registration.
               </p>
             </div>
@@ -1785,26 +1785,26 @@ export default function InvoiceReceiptBuilder({
                   <div
                     key={inv.id}
                     onClick={() => loadInvoiceIntoBuilder(inv)}
-                    className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-slate-300 hover:dark:border-slate-600 rounded-xl p-3.5 space-y-2 text-left relative flex flex-col justify-between hover:border-slate-300 hover:dark:border-slate-600 hover:shadow-sm transition-all cursor-pointer"
+                    className="bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl p-3.5 space-y-2 text-left relative flex flex-col justify-between hover:border-slate-350 hover:shadow-sm transition-all cursor-pointer"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-mono font-bold text-slate-900 dark:text-slate-100 text-[11px]">
+                      <span className="font-mono font-bold text-slate-900 text-[11px]">
                         {inv.invoiceNumber}
                       </span>
                       {inv.status === "Paid" ? (
-                        <span className="text-[9px] font-mono bg-emerald-50 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 font-bold px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-700 flex items-center gap-1">
+                        <span className="text-[9px] font-mono bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-md border border-emerald-200 flex items-center gap-1">
                           <CheckCircle className="w-3 h-3" weight="fill" /> PAID
                         </span>
                       ) : inv.status === "Overdue" ? (
-                        <span className="text-[9px] font-mono bg-red-50 dark:bg-red-900/40 text-red-600 dark:text-red-400 font-bold px-2 py-0.5 rounded-md border border-red-100 dark:border-red-700 flex items-center gap-1">
+                        <span className="text-[9px] font-mono bg-red-50 text-red-600 font-bold px-2 py-0.5 rounded-md border border-red-150 flex items-center gap-1">
                           <Warning className="w-3 h-3" weight="fill" /> OVERDUE
                         </span>
                       ) : inv.status === "Draft" ? (
-                        <span className="text-[9px] font-mono bg-slate-100/80 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 font-medium px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700 flex items-center gap-1">
+                        <span className="text-[9px] font-mono bg-slate-100/80 text-slate-600 font-medium px-2 py-0.5 rounded-md border border-slate-200 flex items-center gap-1">
                           <PencilSimple className="w-3 h-3" /> DRAFT
                         </span>
                       ) : (
-                        <span className="text-[9px] font-mono bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 font-bold px-2 py-0.5 rounded-md border border-emerald-100 dark:border-emerald-700 flex items-center gap-1">
+                        <span className="text-[9px] font-mono bg-emerald-50 text-emerald-600 font-bold px-2 py-0.5 rounded-md border border-emerald-150 flex items-center gap-1">
                           <Mail className="w-3 h-3" /> SENT / UNPAID
                         </span>
                       )}
@@ -1814,10 +1814,10 @@ export default function InvoiceReceiptBuilder({
                       <div
                         className={`text-[9px] font-mono font-bold px-2 py-1 rounded-md border flex items-center gap-1 w-fit ${
                           latestFailedOrPendingPaymentByInvoice.get(inv.id).status === "failed"
-                            ? "bg-rose-50 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 border-rose-100 dark:border-rose-700"
+                            ? "bg-rose-50 text-rose-600 border-rose-150"
                             : latestFailedOrPendingPaymentByInvoice.get(inv.id).status === "abandoned"
-                            ? "bg-amber-50 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-700"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700"
+                            ? "bg-amber-50 text-amber-700 border-amber-150"
+                            : "bg-slate-100 text-slate-500 border-slate-200"
                         }`}
                       >
                         {latestFailedOrPendingPaymentByInvoice.get(inv.id).status === "failed"
@@ -1828,19 +1828,19 @@ export default function InvoiceReceiptBuilder({
                       </div>
                     )}
 
-                    <div className="grid grid-cols-2 gap-2 text-[11px] leading-tight text-slate-600 dark:text-slate-300 font-sans">
+                    <div className="grid grid-cols-2 gap-2 text-[11px] leading-tight text-slate-600 font-sans">
                       <div>
                         <span className="text-[9px] text-slate-400 block font-mono">CLIENT</span>
-                        <strong className="text-slate-800 dark:text-slate-200">{customerObj?.name || (inv.customerId?.startsWith("custom-") ? inv.customerId.replace("custom-", "") : "Direct Buyer")}</strong>
+                        <strong className="text-slate-800">{customerObj?.name || (inv.customerId?.startsWith("custom-") ? inv.customerId.replace("custom-", "") : "Direct Buyer")}</strong>
                       </div>
                       <div className="text-right">
                         <span className="text-[9px] text-slate-400 block font-mono">DUE VALUE</span>
-                        <strong className="text-slate-900 dark:text-slate-100 text-xs font-mono">{currencySymbol}{grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>
+                        <strong className="text-slate-900 text-xs font-mono">{currencySymbol}{grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>
                       </div>
                     </div>
 
-                    <div className="border-t border-slate-200/50 dark:border-slate-700/50 pt-2 flex items-center justify-between text-[10px]">
-                      <span className="text-slate-400">Issue: {inv.date}</span>
+                    <div className="border-t border-slate-200/50 pt-2 flex items-center justify-between text-[10px]">
+                      <span className="text-slate-450">Issue: {inv.date}</span>
                       
                       {inv.status !== "Paid" && onUpdateInvoiceStatus && (
                         <button
@@ -1860,7 +1860,7 @@ export default function InvoiceReceiptBuilder({
               })}
 
               {invoices.filter(inv => inv.businessId === currentBusiness.id).length === 0 && (
-                <div className="bg-slate-50/50 dark:bg-slate-900/50 border border-slate-200/60 dark:border-slate-700/60 rounded-xl p-8 text-center text-slate-400 italic text-[11px] font-sans">
+                <div className="bg-slate-50/50 border border-slate-200/60 rounded-xl p-8 text-center text-slate-400 italic text-[11px] font-sans">
                   No invoices are registered for this account profile yet. Fill in standard client info under info tab to generate records.
                 </div>
               )}
@@ -1871,10 +1871,10 @@ export default function InvoiceReceiptBuilder({
             {mode === "receipt" && (
             <>
             <div>
-              <span className="text-[10px] font-mono font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1 uppercase tracking-wider mb-1">
+              <span className="text-[10px] font-mono font-bold text-indigo-650 flex items-center gap-1 uppercase tracking-wider mb-1">
                 <ReceiptIcon className="w-3.5 h-3.5" /> Past Receipts Ledger List
               </span>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed font-sans mb-3">
+              <p className="text-[11px] text-slate-500 leading-relaxed font-sans mb-3">
                 Every payment receipt you've issued, permanently on record and linked to its customer.
               </p>
             </div>
@@ -1886,33 +1886,33 @@ export default function InvoiceReceiptBuilder({
                   <div
                     key={rec.id}
                     onClick={() => loadReceiptIntoBuilder(rec)}
-                    className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-slate-300 hover:dark:border-slate-600 rounded-xl p-3.5 space-y-2 text-left relative flex flex-col justify-between hover:border-slate-300 hover:dark:border-slate-600 hover:shadow-sm transition-all cursor-pointer"
+                    className="bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl p-3.5 space-y-2 text-left relative flex flex-col justify-between hover:border-slate-350 hover:shadow-sm transition-all cursor-pointer"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-mono font-bold text-slate-900 dark:text-slate-100 text-[11px]">{rec.receiptNumber}</span>
-                      <span className="text-[9px] font-mono bg-emerald-50 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 font-bold px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-700 flex items-center gap-1">
+                      <span className="font-mono font-bold text-slate-900 text-[11px]">{rec.receiptNumber}</span>
+                      <span className="text-[9px] font-mono bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-md border border-emerald-200 flex items-center gap-1">
                         <CheckCircle className="w-3 h-3" weight="fill" /> SETTLED
                       </span>
                     </div>
-                    <div className="grid grid-cols-2 gap-2 text-[11px] leading-tight text-slate-600 dark:text-slate-300 font-sans">
+                    <div className="grid grid-cols-2 gap-2 text-[11px] leading-tight text-slate-600 font-sans">
                       <div>
                         <span className="text-[9px] text-slate-400 block font-mono">CLIENT</span>
-                        <strong className="text-slate-800 dark:text-slate-200">{customerObj?.name || (rec.customerId?.startsWith("custom-") ? rec.customerId.replace("custom-", "") : "Direct Buyer")}</strong>
+                        <strong className="text-slate-800">{customerObj?.name || (rec.customerId?.startsWith("custom-") ? rec.customerId.replace("custom-", "") : "Direct Buyer")}</strong>
                       </div>
                       <div className="text-right">
                         <span className="text-[9px] text-slate-400 block font-mono">AMOUNT PAID</span>
-                        <strong className="text-slate-900 dark:text-slate-100 text-xs font-mono">{currencySymbol}{(rec.amountPaid ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>
+                        <strong className="text-slate-900 text-xs font-mono">{currencySymbol}{(rec.amountPaid ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>
                       </div>
                     </div>
-                    <div className="border-t border-slate-200/50 dark:border-slate-700/50 pt-2 flex items-center justify-between text-[10px]">
-                      <span className="text-slate-400">Issue: {rec.date}</span>
-                      <span className="text-slate-400">{rec.paymentMethod}</span>
+                    <div className="border-t border-slate-200/50 pt-2 flex items-center justify-between text-[10px]">
+                      <span className="text-slate-450">Issue: {rec.date}</span>
+                      <span className="text-slate-450">{rec.paymentMethod}</span>
                     </div>
                   </div>
                 );
               })}
               {receipts.filter(rec => rec.businessId === currentBusiness.id).length === 0 && (
-                <div className="bg-slate-50/50 dark:bg-slate-900/50 border border-slate-200/60 dark:border-slate-700/60 rounded-xl p-8 text-center text-slate-400 italic text-[11px] font-sans">
+                <div className="bg-slate-50/50 border border-slate-200/60 rounded-xl p-8 text-center text-slate-400 italic text-[11px] font-sans">
                   No receipts are registered for this account profile yet. Log a payment under the info tab to generate records.
                 </div>
               )}
@@ -1923,10 +1923,10 @@ export default function InvoiceReceiptBuilder({
             {mode === "quotation" && (
             <>
             <div>
-              <span className="text-[10px] font-mono font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1 uppercase tracking-wider mb-1">
+              <span className="text-[10px] font-mono font-bold text-indigo-650 flex items-center gap-1 uppercase tracking-wider mb-1">
                 <ReceiptIcon className="w-3.5 h-3.5" /> Past Estimates Ledger List
               </span>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed font-sans mb-3">
+              <p className="text-[11px] text-slate-500 leading-relaxed font-sans mb-3">
                 Every estimate you've issued. Accepted estimates can be converted into an invoice while keeping this original record intact.
               </p>
             </div>
@@ -1938,47 +1938,47 @@ export default function InvoiceReceiptBuilder({
                   <div
                     key={q.id}
                     onClick={() => loadQuotationIntoBuilder(q)}
-                    className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-slate-300 hover:dark:border-slate-600 rounded-xl p-3.5 space-y-2 text-left relative flex flex-col justify-between hover:border-slate-300 hover:dark:border-slate-600 hover:shadow-sm transition-all cursor-pointer"
+                    className="bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl p-3.5 space-y-2 text-left relative flex flex-col justify-between hover:border-slate-350 hover:shadow-sm transition-all cursor-pointer"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-mono font-bold text-slate-900 dark:text-slate-100 text-[11px]">{q.quoteNumber}</span>
+                      <span className="font-mono font-bold text-slate-900 text-[11px]">{q.quoteNumber}</span>
                       {q.status === "Converted" ? (
-                        <span className="text-[9px] font-mono bg-emerald-50 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 font-bold px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-700 flex items-center gap-1">
+                        <span className="text-[9px] font-mono bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-md border border-emerald-200 flex items-center gap-1">
                           <ArrowBendUpRight className="w-3 h-3" /> CONVERTED
                         </span>
                       ) : q.status === "Accepted" ? (
-                        <span className="text-[9px] font-mono bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 font-bold px-2 py-0.5 rounded-md border border-emerald-100 dark:border-emerald-700 flex items-center gap-1">
+                        <span className="text-[9px] font-mono bg-emerald-50 text-emerald-600 font-bold px-2 py-0.5 rounded-md border border-emerald-150 flex items-center gap-1">
                           <CheckCircle className="w-3 h-3" weight="fill" /> ACCEPTED
                         </span>
                       ) : q.status === "Draft" ? (
-                        <span className="text-[9px] font-mono bg-slate-100/80 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 font-medium px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700 flex items-center gap-1">
+                        <span className="text-[9px] font-mono bg-slate-100/80 text-slate-600 font-medium px-2 py-0.5 rounded-md border border-slate-200 flex items-center gap-1">
                           <PencilSimple className="w-3 h-3" /> DRAFT
                         </span>
                       ) : (
-                        <span className="text-[9px] font-mono bg-amber-50 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 font-bold px-2 py-0.5 rounded-md border border-amber-100 dark:border-amber-700 flex items-center gap-1">
+                        <span className="text-[9px] font-mono bg-amber-50 text-amber-600 font-bold px-2 py-0.5 rounded-md border border-amber-150 flex items-center gap-1">
                           <Mail className="w-3 h-3" /> SENT
                         </span>
                       )}
                     </div>
-                    <div className="grid grid-cols-2 gap-2 text-[11px] leading-tight text-slate-600 dark:text-slate-300 font-sans">
+                    <div className="grid grid-cols-2 gap-2 text-[11px] leading-tight text-slate-600 font-sans">
                       <div>
                         <span className="text-[9px] text-slate-400 block font-mono">CLIENT</span>
-                        <strong className="text-slate-800 dark:text-slate-200">{customerObj?.name || (q.customerId?.startsWith("custom-") ? q.customerId.replace("custom-", "") : "Direct Buyer")}</strong>
+                        <strong className="text-slate-800">{customerObj?.name || (q.customerId?.startsWith("custom-") ? q.customerId.replace("custom-", "") : "Direct Buyer")}</strong>
                       </div>
                       <div className="text-right">
                         <span className="text-[9px] text-slate-400 block font-mono">VALUE</span>
-                        <strong className="text-slate-900 dark:text-slate-100 text-xs font-mono">{currencySymbol}{(q.totalAmount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>
+                        <strong className="text-slate-900 text-xs font-mono">{currencySymbol}{(q.totalAmount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>
                       </div>
                     </div>
-                    <div className="border-t border-slate-200/50 dark:border-slate-700/50 pt-2 flex items-center justify-between text-[10px]">
-                      <span className="text-slate-400">Issue: {q.date}</span>
-                      <span className="text-slate-400">Valid until: {q.validUntil}</span>
+                    <div className="border-t border-slate-200/50 pt-2 flex items-center justify-between text-[10px]">
+                      <span className="text-slate-450">Issue: {q.date}</span>
+                      <span className="text-slate-450">Valid until: {q.validUntil}</span>
                     </div>
                   </div>
                 );
               })}
               {quotations.filter(q => q.businessId === currentBusiness.id).length === 0 && (
-                <div className="bg-slate-50/50 dark:bg-slate-900/50 border border-slate-200/60 dark:border-slate-700/60 rounded-xl p-8 text-center text-slate-400 italic text-[11px] font-sans">
+                <div className="bg-slate-50/50 border border-slate-200/60 rounded-xl p-8 text-center text-slate-400 italic text-[11px] font-sans">
                   No estimates are registered for this account profile yet. Fill in the info tab to generate records.
                 </div>
               )}
@@ -2088,14 +2088,14 @@ export default function InvoiceReceiptBuilder({
                     <img
                       src={uploadedLogo}
                       alt="Company Custom Logo"
-                      className="w-14 h-14 rounded-xl object-contain bg-white dark:bg-slate-800 p-1 border border-white/30 shadow-sm select-none"
+                      className="w-14 h-14 rounded-xl object-contain bg-white p-1 border border-white/30 shadow-sm select-none"
                     />
                   ) : selectedPresetLogo ? (
-                    <div className="w-14 h-14 rounded-full flex items-center justify-center text-white text-2xl font-bold select-none bg-white/15 dark:bg-slate-800/15 border border-white/25">
+                    <div className="w-14 h-14 rounded-full flex items-center justify-center text-white text-2xl font-bold select-none bg-white/15 border border-white/25">
                       {PRESET_LOGOS.find(l => l.id === selectedPresetLogo)?.char}
                     </div>
                   ) : (
-                    <div className="w-14 h-14 rounded-full flex items-center justify-center text-white text-xl font-black select-none bg-white/15 dark:bg-slate-800/15 border border-white/25 tracking-tight">
+                    <div className="w-14 h-14 rounded-full flex items-center justify-center text-white text-xl font-black select-none bg-white/15 border border-white/25 tracking-tight">
                       {getInitials(issuerName)}
                     </div>
                   )}
@@ -2113,7 +2113,7 @@ export default function InvoiceReceiptBuilder({
                 </div>
 
                 <div className="space-y-1.5 text-left sm:text-right">
-                  <span className="px-2.5 py-0.5 rounded text-[9px] font-mono tracking-widest uppercase inline-block font-extrabold bg-white/15 dark:bg-slate-800/15 text-white border border-white/25">
+                  <span className="px-2.5 py-0.5 rounded text-[9px] font-mono tracking-widest uppercase inline-block font-extrabold bg-white/15 text-white border border-white/25">
                     {mode === "invoice" ? "PROFESSIONAL INVOICE" : mode === "receipt" ? "PAYMENT RECORD" : "OFFICIAL ESTIMATE"}
                   </span>
                   <p className="text-sm font-bold font-mono text-white">
@@ -2131,7 +2131,7 @@ export default function InvoiceReceiptBuilder({
               headerLayout === "Centered" 
                 ? "items-center text-center" 
                 : "sm:flex-row justify-between items-start"
-            } gap-4 border-b border-slate-100 dark:border-slate-700 pb-5`}>
+            } gap-4 border-b border-slate-100 pb-5`}>
               
               {/* Brand Logo & Basic details */}
               <div className={`flex ${
@@ -2147,7 +2147,7 @@ export default function InvoiceReceiptBuilder({
                   <img
                     src={uploadedLogo}
                     alt="Company Custom Logo"
-                    className="w-14 h-14 rounded-xl object-contain bg-slate-50 dark:bg-slate-900 p-1 border shadow-sm select-none"
+                    className="w-14 h-14 rounded-xl object-contain bg-slate-50 p-1 border shadow-sm select-none"
                   />
                 ) : selectedPresetLogo ? (
                   <div className="w-11 h-11 rounded-xl flex items-center justify-center text-white text-xl font-bold select-none shadow-sm shadow-emerald-500/10" style={{ backgroundColor: accentColor }}>
@@ -2160,13 +2160,13 @@ export default function InvoiceReceiptBuilder({
                 )}
 
                 <div className={logoPlacement === "Center" || headerLayout === "Centered" ? "text-center" : "text-left"}>
-                  <h3 className="font-sans font-extrabold text-base tracking-tight text-slate-900 dark:text-slate-100">
+                  <h3 className="font-sans font-extrabold text-base tracking-tight text-slate-900">
                     {issuerName}
                   </h3>
                   <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest font-mono block mt-0.5">
                     {issuerIndustry}
                   </span>
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed max-w-sm mt-1">
+                  <p className="text-[10px] text-slate-500 leading-relaxed max-w-sm mt-1">
                     {issuerDesc}
                   </p>
                   <p className="text-[9px] text-slate-400 font-mono mt-0.5">
@@ -2182,10 +2182,10 @@ export default function InvoiceReceiptBuilder({
                 <span className={`px-2.5 py-0.5 rounded text-[9px] font-mono tracking-widest uppercase inline-block font-extrabold ${activeTemplate.badgeBg}`}>
                   {mode === "invoice" ? "PROFESSIONAL INVOICE" : mode === "receipt" ? "PAYMENT RECORD" : "OFFICIAL ESTIMATE"}
                 </span>
-                <p className="text-sm font-bold font-mono text-slate-900 dark:text-slate-100">
+                <p className="text-sm font-bold font-mono text-slate-900">
                   #{mode === "invoice" ? invoiceNumber : mode === "receipt" ? receiptNumber : quoteNumber}
                 </p>
-                <div className="text-[9px] text-slate-500 dark:text-slate-400 font-mono space-y-0.5">
+                <div className="text-[9px] text-slate-500 font-mono space-y-0.5">
                   <p>Issue Date: {formatDateString(date)}</p>
                   {mode === "invoice" && <p>Due Date: {formatDateString(dueDate)}</p>}
                   {mode === "quotation" && <p>Valid Until: {formatDateString(dueDate)}</p>}
@@ -2200,15 +2200,15 @@ export default function InvoiceReceiptBuilder({
               
               {/* Customer Profile info */}
               <div className={`p-3 rounded-xl border ${
-                activeTemplate.tableBorder.includes("dashed") ? "border-dashed border-zinc-300 dark:border-zinc-600" : activeTemplate.tableBorder.includes("dotted") ? "border-dotted border-teal-200 dark:border-teal-700" : "border-slate-100 dark:border-slate-700"
-              } bg-slate-50/40 dark:bg-slate-900/40 text-left`}>
+                activeTemplate.tableBorder.includes("dashed") ? "border-dashed border-zinc-300" : activeTemplate.tableBorder.includes("dotted") ? "border-dotted border-teal-200" : "border-slate-100"
+              } bg-slate-50/40 text-left`}>
                 <span className="text-[9px] font-mono text-slate-400 uppercase tracking-wider block mb-1">Target Customer Profile</span>
                 {customerId === "custom" ? (
                   <div className="space-y-0.5 select-all">
-                    <p className="font-extrabold text-slate-900 dark:text-slate-100 text-xs">{customClientName || "Enter Custom Customer Name"}</p>
-                    <p className="text-slate-500 dark:text-slate-400 text-[11px]">{customClientEmail || "No Email Provided"}</p>
-                    <p className="text-slate-500 dark:text-slate-400 text-[11px]">{customClientPhone || "No Mobile Info"}</p>
-                    <span className="text-[8px] font-mono bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-700 px-1.5 py-0.5 rounded inline-block mt-1">
+                    <p className="font-extrabold text-slate-905 text-xs">{customClientName || "Enter Custom Customer Name"}</p>
+                    <p className="text-slate-500 text-[11px]">{customClientEmail || "No Email Provided"}</p>
+                    <p className="text-slate-500 text-[11px]">{customClientPhone || "No Mobile Info"}</p>
+                    <span className="text-[8px] font-mono bg-indigo-50 text-indigo-700 border border-indigo-150 px-1.5 py-0.5 rounded inline-block mt-1">
                       Custom Segment: {customClientCategory}
                     </span>
                   </div>
@@ -2218,10 +2218,10 @@ export default function InvoiceReceiptBuilder({
                     if (!cust) return <p className="text-slate-400 italic">Unassigned Client Profile</p>;
                     return (
                       <div className="space-y-0.5 select-all">
-                        <p className="font-extrabold text-slate-900 dark:text-slate-100 text-xs">{cust.name}</p>
-                        <p className="text-slate-500 dark:text-slate-400 text-[11px]">{cust.email || "accounts@client-hub.com"}</p>
-                        <p className="text-slate-500 dark:text-slate-400 text-[11px]">{cust.phone || "+233 24..."}</p>
-                        <span className="text-[8px] font-mono bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400 border border-slate-100 dark:border-slate-700 px-1 py-0.5 rounded inline-block mt-1">
+                        <p className="font-extrabold text-slate-905 text-xs">{cust.name}</p>
+                        <p className="text-slate-500 text-[11px]">{cust.email || "accounts@client-hub.com"}</p>
+                        <p className="text-slate-500 text-[11px]">{cust.phone || "+233 24..."}</p>
+                        <span className="text-[8px] font-mono bg-slate-50 text-slate-500 border border-slate-150 px-1 py-0.5 rounded inline-block mt-1">
                           CRM category: {cust.category}
                         </span>
                       </div>
@@ -2234,20 +2234,20 @@ export default function InvoiceReceiptBuilder({
 
               {/* Payment details and expectations */}
               <div className={`p-3 rounded-xl border ${
-                activeTemplate.tableBorder.includes("dashed") ? "border-dashed border-zinc-300 dark:border-zinc-600" : activeTemplate.tableBorder.includes("dotted") ? "border-dotted border-teal-200 dark:border-teal-700" : "border-slate-100 dark:border-slate-700"
-              } bg-slate-50/40 dark:bg-slate-900/40 text-left sm:text-right flex flex-col justify-between`}>
+                activeTemplate.tableBorder.includes("dashed") ? "border-dashed border-zinc-300" : activeTemplate.tableBorder.includes("dotted") ? "border-dotted border-teal-200" : "border-slate-100"
+              } bg-slate-50/40 text-left sm:text-right flex flex-col justify-between`}>
                 <div>
                   <span className="text-[9px] font-mono text-slate-400 uppercase tracking-wider block mb-1">Expected Settlement Channels</span>
-                  <p className="text-[10px] text-slate-600 dark:text-slate-300 leading-relaxed font-mono">
+                  <p className="text-[10px] text-slate-650 leading-relaxed font-mono">
                     Bank: {bankDetails.split("•")[0]}
                   </p>
-                  <p className="text-[10px] text-slate-600 dark:text-slate-300 leading-relaxed font-mono">
+                  <p className="text-[10px] text-slate-650 leading-relaxed font-mono">
                     MOMO: {momoDetails.split("•")[1] || momoDetails}
                   </p>
                 </div>
                 {mode === "invoice" && (
                   <div className="mt-2 text-left sm:text-right">
-                    <span className="text-[8px] font-mono text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/40 border border-amber-100 dark:border-amber-700 px-1.5 py-0.5 rounded inline-block">
+                    <span className="text-[8px] font-mono text-amber-700 bg-amber-50 border border-amber-100 px-1.5 py-0.5 rounded inline-block">
                       Terms: Net 14 Days
                     </span>
                   </div>
@@ -2264,7 +2264,7 @@ export default function InvoiceReceiptBuilder({
                 family, not a color swap. */}
             {(mode === "invoice" || mode === "quotation") ? (
               activeTemplate.layout === "minimalList" ? (
-                <div className={`divide-y ${activeTemplate.tableBorder.includes("dashed") ? "divide-dashed divide-zinc-300 dark:divide-zinc-600" : activeTemplate.tableBorder.includes("dotted") ? "divide-dotted divide-teal-200 dark:divide-teal-700" : "divide-slate-100 dark:divide-slate-700"}`}>
+                <div className={`divide-y ${activeTemplate.tableBorder.includes("dashed") ? "divide-dashed divide-zinc-300" : activeTemplate.tableBorder.includes("dotted") ? "divide-dotted divide-teal-200" : "divide-slate-150"}`}>
                   <div className="flex items-center justify-between pb-2 uppercase tracking-wider font-mono text-[9px] text-slate-400">
                     <span>Statement Lines</span>
                     <span className="flex gap-6">
@@ -2275,18 +2275,18 @@ export default function InvoiceReceiptBuilder({
                   </div>
                   {items.map((item, idx) => (
                     <div key={idx} className="flex items-center justify-between py-3 text-xs">
-                      <span className="font-semibold text-slate-900 dark:text-slate-100">{item.description || "Consultancy Material Support"}</span>
-                      <span className="flex gap-6 font-mono text-slate-600 dark:text-slate-300 shrink-0">
+                      <span className="font-semibold text-slate-905">{item.description || "Consultancy Material Support"}</span>
+                      <span className="flex gap-6 font-mono text-slate-600 shrink-0">
                         <span className="w-10 text-center">{item.quantity}</span>
                         <span className="w-16 text-right">{fmt(item.rate)}</span>
-                        <span className="w-20 text-right font-bold text-slate-900 dark:text-slate-100">{fmt(item.quantity * item.rate)}</span>
+                        <span className="w-20 text-right font-bold text-slate-900">{fmt(item.quantity * item.rate)}</span>
                       </span>
                     </div>
                   ))}
                 </div>
               ) : (
               <div className={`overflow-hidden rounded-xl ${activeTemplate.tableBorder} ${activeTemplate.tableShadow}`}>
-                <table className="min-w-full divide-y divide-slate-100 dark:divide-slate-700 text-xs select-all">
+                <table className="min-w-full divide-y divide-slate-100 text-xs select-all">
                   <thead className={activeTemplate.tableHeaderBg} style={{ backgroundColor: templateIndex === 6 ? "#0f172a" : templateIndex === 2 ? accentColor : undefined, color: templateIndex === 2 ? "#ffffff" : undefined }}>
                     <tr className="uppercase tracking-wider font-mono text-[9px]">
                       <th className="px-4 py-3 text-left">Statement Lines</th>
@@ -2295,13 +2295,13 @@ export default function InvoiceReceiptBuilder({
                       <th className="px-4 py-3 text-right w-28">Row Total</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-slate-700 text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800">
+                  <tbody className="divide-y divide-slate-100 text-slate-700 bg-white">
                     {items.map((item, idx) => (
-                      <tr key={idx} className={idx % 2 === 0 ? "bg-white dark:bg-slate-800" : "bg-slate-50/20 dark:bg-slate-900/20"}>
-                        <td className="px-4 py-3.5 font-semibold text-slate-900 dark:text-slate-100">{item.description || "Consultancy Material Support"}</td>
-                        <td className="px-4 py-3.5 text-center font-mono text-slate-600 dark:text-slate-300">{item.quantity}</td>
-                        <td className="px-4 py-3.5 text-right font-mono text-slate-600 dark:text-slate-300">{fmt(item.rate)}</td>
-                        <td className="px-4 py-3.5 text-right font-mono font-bold text-slate-900 dark:text-slate-100">{fmt(item.quantity * item.rate)}</td>
+                      <tr key={idx} className={idx % 2 === 0 ? "bg-white" : "bg-slate-50/20"}>
+                        <td className="px-4 py-3.5 font-semibold text-slate-905">{item.description || "Consultancy Material Support"}</td>
+                        <td className="px-4 py-3.5 text-center font-mono text-slate-600">{item.quantity}</td>
+                        <td className="px-4 py-3.5 text-right font-mono text-slate-600">{fmt(item.rate)}</td>
+                        <td className="px-4 py-3.5 text-right font-mono font-bold text-slate-900">{fmt(item.quantity * item.rate)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -2319,7 +2319,7 @@ export default function InvoiceReceiptBuilder({
                    Startup, African Business) since this format reads as
                    traditional market/trade paperwork, which suits those
                    templates' character. */
-                <div className="relative bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden">
+                <div className="relative bg-white border border-slate-200 rounded-2xl overflow-hidden">
                   <div
                     className="absolute top-0 right-0 w-20 h-20"
                     style={{
@@ -2332,38 +2332,38 @@ export default function InvoiceReceiptBuilder({
                       <div className="w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0" style={{ borderColor: accentColor, color: accentColor }}>
                         <Check className="w-4 h-4" weight="bold" />
                       </div>
-                      <h4 className="text-slate-900 dark:text-slate-100 font-extrabold text-xs tracking-wider uppercase font-mono">
+                      <h4 className="text-slate-900 font-extrabold text-xs tracking-wider uppercase font-mono">
                         Official Receipt of Payment
                       </h4>
                     </div>
 
-                    <p className="text-slate-700 dark:text-slate-300">
+                    <p className="text-slate-700">
                       Received with thanks from{" "}
-                      <span className="font-bold border-b border-dotted border-slate-400 dark:border-slate-500 px-1">
+                      <span className="font-bold border-b border-dotted border-slate-400 px-1">
                         {(customerId === "custom" ? customClientName : customers.find(c => c.id === customerId)?.name) || "________________"}
                       </span>
                       {" "}the sum of{" "}
-                      <span className="font-bold border-b border-dotted border-slate-400 dark:border-slate-500 px-1" style={{ color: accentColor }}>{fmt(receiptAmount)}</span>
+                      <span className="font-bold border-b border-dotted border-slate-400 px-1" style={{ color: accentColor }}>{fmt(receiptAmount)}</span>
                     </p>
 
                     <div className="grid grid-cols-2 gap-x-6 gap-y-3 pt-1">
                       <div>
                         <span className="text-slate-400 block font-mono text-[9px] uppercase tracking-wider">Paid Via</span>
-                        <span className="border-b border-dotted border-slate-400 dark:border-slate-500 block pb-1 font-semibold text-slate-800 dark:text-slate-200">{paymentMethod}</span>
+                        <span className="border-b border-dotted border-slate-400 block pb-1 font-semibold text-slate-800">{paymentMethod}</span>
                       </div>
                       <div>
                         <span className="text-slate-400 block font-mono text-[9px] uppercase tracking-wider">Reference No.</span>
-                        <span className="border-b border-dotted border-slate-400 dark:border-slate-500 block pb-1 font-semibold text-slate-800 dark:text-slate-200 font-mono">{receiptNumber}</span>
+                        <span className="border-b border-dotted border-slate-400 block pb-1 font-semibold text-slate-800 font-mono">{receiptNumber}</span>
                       </div>
                     </div>
 
-                    <p className="text-[10px] text-slate-500 dark:text-slate-400 pt-1">
+                    <p className="text-[10px] text-slate-500 pt-1">
                       {receiptDesc || "For goods/services rendered, as agreed between both parties."}
                     </p>
 
                     <div className="flex justify-end pt-3">
                       <div className="text-center">
-                        <div className="w-32 border-b border-slate-400 dark:border-slate-500 mb-1"></div>
+                        <div className="w-32 border-b border-slate-400 mb-1"></div>
                         <span className="text-[9px] text-slate-400 font-mono uppercase tracking-wider">Authorized Signature</span>
                       </div>
                     </div>
@@ -2372,22 +2372,22 @@ export default function InvoiceReceiptBuilder({
               ) : (
               /* Receipt Specific Layout Slip - modern card family, used by
                  ledger and split templates. */
-              <div className="bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-2xl p-6 text-center space-y-4">
-                <div className="mx-auto w-12 h-12 bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-700 flex items-center justify-center rounded-full animate-fade-in" style={{ borderColor: accentColor, color: accentColor }}>
+              <div className="bg-slate-50 border border-slate-150 rounded-2xl p-6 text-center space-y-4">
+                <div className="mx-auto w-12 h-12 bg-emerald-50 text-emerald-600 border border-emerald-250 flex items-center justify-center rounded-full animate-fade-in" style={{ borderColor: accentColor, color: accentColor }}>
                   <Check className="w-6 h-6" weight="bold" />
                 </div>
                 <div>
-                  <h4 className="text-slate-950 dark:text-slate-50 font-extrabold text-xs tracking-wider uppercase font-mono">Mobile Money Receipt Slip</h4>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed mt-1">
+                  <h4 className="text-slate-950 font-extrabold text-xs tracking-wider uppercase font-mono">Mobile Money Receipt Slip</h4>
+                  <p className="text-[11px] text-slate-500 max-w-md mx-auto leading-relaxed mt-1">
                     {receiptDesc || "Official settlement confirmation slip recorded in corporate cash ledgers."}
                   </p>
                 </div>
                 
                 {/* Visual acquired cash box */}
-                <div className="border border-slate-200/65 dark:border-slate-700/65 py-3 p-4 rounded-xl grid grid-cols-2 gap-4 text-xs font-sans bg-white dark:bg-slate-800">
+                <div className="border border-slate-200/65 py-3 p-4 rounded-xl grid grid-cols-2 gap-4 text-xs font-sans bg-white">
                   <div className="text-left pl-2">
                     <span className="text-slate-400 block font-mono text-[9px] uppercase tracking-wider">Settlement Routing</span>
-                    <strong className="text-slate-800 dark:text-slate-200 font-bold block mt-0.5">{paymentMethod}</strong>
+                    <strong className="text-slate-850 font-bold block mt-0.5">{paymentMethod}</strong>
                   </div>
                   <div className="text-right pr-2">
                     <span className="text-slate-400 block font-mono text-[9px] uppercase tracking-wider">Acquired Cash Position</span>
@@ -2398,7 +2398,7 @@ export default function InvoiceReceiptBuilder({
                 </div>
 
                 <div className="flex items-center justify-center gap-1 opacity-25 font-mono text-[9px]">
-                  <Barcode className="w-5 h-5 text-slate-800 dark:text-slate-200" />
+                  <Barcode className="w-5 h-5 text-slate-800" />
                   <span>TRANSACTION-SECURE-Aziiki-#2026</span>
                 </div>
               </div>
@@ -2408,13 +2408,13 @@ export default function InvoiceReceiptBuilder({
             {/* Interactive totals block */}
             {(mode === "invoice" || mode === "quotation") && (
               <div className="flex justify-end pt-2">
-                <div className="w-full sm:w-72 space-y-2 border-t border-slate-100 dark:border-slate-700 pt-3 text-xs text-slate-600 dark:text-slate-300">
+                <div className="w-full sm:w-72 space-y-2 border-t border-slate-100 pt-3 text-xs text-slate-650">
                   <div className="flex justify-between">
                     <span>Base Subtotal:</span>
-                    <span className="font-mono text-slate-800 dark:text-slate-200">{fmt(getSubtotal())}</span>
+                    <span className="font-mono text-slate-800">{fmt(getSubtotal())}</span>
                   </div>
                   {discount > 0 && (
-                    <div className="flex justify-between text-rose-600 dark:text-rose-400 font-bold">
+                    <div className="flex justify-between text-rose-600 font-bold">
                       <span>Discount ({discount}%):</span>
                       <span className="font-mono">-{fmt(calculateInvoiceTotals(items, discount, taxRate).discountAmount)}</span>
                     </div>
@@ -2441,19 +2441,19 @@ export default function InvoiceReceiptBuilder({
                       <span className="font-mono text-base" style={{ color: accentColor }}>{fmt(getTotal())}</span>
                     </div>
                   ) : activeTemplate.totalsStyle === "badge" ? (
-                    <div className="flex justify-between items-center pt-3 border-t border-slate-200 dark:border-slate-700">
-                      <span className="text-sm font-black text-slate-900 dark:text-slate-100">Grand Total:</span>
+                    <div className="flex justify-between items-center pt-3 border-t border-slate-200">
+                      <span className="text-sm font-black text-slate-900">Grand Total:</span>
                       <span className="font-mono font-extrabold text-sm text-white rounded-full px-4 py-1.5" style={{ backgroundColor: accentColor }}>
                         {fmt(getTotal())}
                       </span>
                     </div>
                   ) : activeTemplate.totalsStyle === "underline" ? (
                     <div className="flex justify-between items-baseline border-t-2 border-slate-800 pt-3">
-                      <span className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Grand Total</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-slate-500">Grand Total</span>
                       <span className="font-mono font-black text-lg tracking-tight" style={{ color: accentColor }}>{fmt(getTotal())}</span>
                     </div>
                   ) : (
-                    <div className="flex justify-between items-center rounded-lg px-3 py-2.5 mt-1 text-sm font-black text-slate-900 dark:text-slate-100 border" style={{ backgroundColor: `${accentColor}0d`, borderColor: `${accentColor}33` }}>
+                    <div className="flex justify-between items-center rounded-lg px-3 py-2.5 mt-1 text-sm font-black text-slate-900 border" style={{ backgroundColor: `${accentColor}0d`, borderColor: `${accentColor}33` }}>
                       <span>Grand Total:</span>
                       <span className="font-mono" style={{ color: accentColor }}>{fmt(getTotal())}</span>
                     </div>
@@ -2461,13 +2461,13 @@ export default function InvoiceReceiptBuilder({
 
                   {Number(invoiceAmountPaid) > 0 && (
                     <>
-                      <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-bold">
+                      <div className="flex justify-between text-emerald-600 font-bold">
                         <span>Paid to Date:</span>
                         <span className="font-mono">-{fmt(Number(invoiceAmountPaid))}</span>
                       </div>
-                      <div className="flex justify-between border-t border-slate-100 dark:border-slate-700 pt-1.5 text-xs font-bold text-slate-900 dark:text-slate-100">
+                      <div className="flex justify-between border-t border-slate-100 pt-1.5 text-xs font-bold text-slate-900">
                         <span>Balance Due:</span>
-                        <span className="font-mono text-rose-600 dark:text-rose-400">{fmt(getBalanceDue())}</span>
+                        <span className="font-mono text-rose-600">{fmt(getBalanceDue())}</span>
                       </div>
                     </>
                   )}
@@ -2476,13 +2476,13 @@ export default function InvoiceReceiptBuilder({
             )}
 
             {/* Verification Widgets Panel (Stamp, Barcode, QR code, Signature) */}
-            <div className="border-t border-slate-100 dark:border-slate-700 pt-5 flex flex-col sm:flex-row justify-between items-center gap-6">
+            <div className="border-t border-slate-100 pt-5 flex flex-col sm:flex-row justify-between items-center gap-6">
               
               {/* Barcode & QR Code representation */}
               <div className="flex items-center gap-4">
                 {/* SVG QR Code */}
-                <div className="w-16 h-16 bg-white dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm shrink-0 flex flex-col items-center justify-center relative">
-                  <svg className="w-full h-full text-slate-800 dark:text-slate-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <div className="w-16 h-16 bg-white p-1 rounded-lg border border-slate-200 shadow-sm shrink-0 flex flex-col items-center justify-center relative">
+                  <svg className="w-full h-full text-slate-800" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <rect x="2" y="2" width="6" height="6" rx="1" />
                     <rect x="16" y="2" width="6" height="6" rx="1" />
                     <rect x="2" y="16" width="6" height="6" rx="1" />
@@ -2497,7 +2497,7 @@ export default function InvoiceReceiptBuilder({
 
                 {/* SVG Barcode */}
                 <div className="flex flex-col items-center shrink-0">
-                  <div className="flex gap-[1.5px] h-7 items-end bg-white dark:bg-slate-800 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">
+                  <div className="flex gap-[1.5px] h-7 items-end bg-white px-2 py-0.5 rounded border border-slate-200">
                     {[1,2,1,3,1,1,2,1,3,1,2,2,1,3,1,2,1,1,2,3,1,1,2].map((w, idx) => (
                       <div key={idx} className="bg-slate-800" style={{ width: `${w}px`, height: idx % 4 === 0 ? "100%" : "85%" }} />
                     ))}
@@ -2518,8 +2518,8 @@ export default function InvoiceReceiptBuilder({
                 </div>
 
                 {/* cursive signature lines */}
-                <div className="text-center border-t border-slate-200 dark:border-slate-700 pt-1.5 w-36">
-                  <span className="text-[12px] font-serif italic text-slate-700 dark:text-slate-300 flex items-center justify-center gap-1 max-w-full truncate tracking-wider font-semibold" style={{ fontFamily: "'Georgia', serif" }}>
+                <div className="text-center border-t border-slate-200 pt-1.5 w-36">
+                  <span className="text-[12px] font-serif italic text-slate-700 flex items-center justify-center gap-1 max-w-full truncate tracking-wider font-semibold" style={{ fontFamily: "'Georgia', serif" }}>
                     <Signature className="w-3.5 h-3.5 shrink-0 not-italic" /> {authorizedSignature}
                   </span>
                   <span className="text-[8px] font-mono text-slate-400 tracking-widest block uppercase mt-0.5">Authorized Officer</span>
@@ -2532,10 +2532,10 @@ export default function InvoiceReceiptBuilder({
                     longer offers hand-drawing); the "drawn" branch here only
                     renders signatures captured before that change. */}
                 {(mode === "invoice" || mode === "quotation") && (
-                  <div className="text-center border-t border-slate-200 dark:border-slate-700 pt-1.5 w-36">
+                  <div className="text-center border-t border-slate-200 pt-1.5 w-36">
                     {documentSignature ? (
                       documentSignature.signatureKind === "typed" ? (
-                        <span className="text-[12px] text-slate-700 dark:text-slate-300 block max-w-full truncate tracking-wider font-semibold" style={{ fontFamily: "'Georgia', serif", fontStyle: "italic" }}>
+                        <span className="text-[12px] text-slate-700 block max-w-full truncate tracking-wider font-semibold" style={{ fontFamily: "'Georgia', serif", fontStyle: "italic" }}>
                           {documentSignature.signatureData}
                         </span>
                       ) : (
@@ -2567,12 +2567,12 @@ export default function InvoiceReceiptBuilder({
               buttons that used to live in this same flex row have been
               moved out entirely - see the toolbar rendered right after
               this div closes below. */}
-          <div className="bg-slate-50 dark:bg-slate-900 border-t border-slate-100 dark:border-slate-700 p-6 text-xs font-sans text-slate-500 dark:text-slate-400 relative z-10">
+          <div className="bg-slate-50 border-t border-slate-150 p-6 text-xs font-sans text-slate-500 relative z-10">
             <div className={`max-w-md ${
               footerAlignment === "Center" ? "text-center mx-auto" : footerAlignment === "Right" ? "text-right ml-auto" : "text-left"
             }`}>
-              <p className="font-extrabold text-slate-700 dark:text-slate-300 tracking-wider text-[9px] uppercase font-mono">Disclaimers & Conditions</p>
-              <p className="text-[10px] text-slate-400 leading-relaxed font-sans mt-1">
+              <p className="font-extrabold text-slate-700 tracking-wider text-[9px] uppercase font-mono">Disclaimers & Conditions</p>
+              <p className="text-[10px] text-slate-450 leading-relaxed font-sans mt-1">
                 {termsAndConditions}
               </p>
               <p className="text-[9px] text-slate-400 italic mt-1 leading-relaxed">
@@ -2610,12 +2610,12 @@ export default function InvoiceReceiptBuilder({
             type="button"
             onClick={handleDownloadPdf}
             disabled={isDownloadingPdf}
-            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 hover:dark:bg-slate-800 font-bold text-[10px] px-3.5 py-2.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer uppercase tracking-wider disabled:opacity-60 disabled:cursor-wait"
+            className="bg-white border border-slate-205 text-slate-700 hover:bg-slate-100 font-bold text-[10px] px-3.5 py-2.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer uppercase tracking-wider disabled:opacity-60 disabled:cursor-wait"
           >
             {isDownloadingPdf ? (
-              <Loader2 className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300 animate-spin" />
+              <Loader2 className="w-3.5 h-3.5 text-slate-600 animate-spin" />
             ) : (
-              <FileArrowDown className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300" />
+              <FileArrowDown className="w-3.5 h-3.5 text-slate-600" />
             )}
             {isDownloadingPdf ? "Preparing PDF..." : "Download PDF"}
           </button>
@@ -2674,7 +2674,7 @@ export default function InvoiceReceiptBuilder({
               onClick={() => setIsSignatureModalOpen(true)}
               disabled={!savedDocumentId}
               title={!savedDocumentId ? `Save this ${mode} first to capture a signature.` : documentSignature ? "Replace the captured signature" : "Capture the business representative's signature"}
-              className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 hover:dark:bg-slate-800 font-bold text-[10px] px-3.5 py-2.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed"
+              className="bg-white border border-slate-205 text-slate-700 hover:bg-slate-100 font-bold text-[10px] px-3.5 py-2.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Signature className="w-3.5 h-3.5" /> {documentSignature ? "Signed" : "Sign Document"}
             </button>
@@ -2683,22 +2683,22 @@ export default function InvoiceReceiptBuilder({
             onClick={() => {
               window.print();
             }}
-            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 hover:dark:bg-slate-800 font-bold text-[10px] px-3.5 py-2.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer uppercase tracking-wider"
+            className="bg-white border border-slate-205 text-slate-700 hover:bg-slate-100 font-bold text-[10px] px-3.5 py-2.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer uppercase tracking-wider"
           >
-            <Printer className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300" /> Print Sheet
+            <Printer className="w-3.5 h-3.5 text-slate-600" /> Print Sheet
           </button>
         </div>
 
         {/* Dynamic Estimate proposal Convert block */}
         {mode === "quotation" && quotations.length > 0 && (
-          <div className="bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-700 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-center gap-4 animate-fade-in text-xs shadow-sm shadow-emerald-500/5 select-none">
+          <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-center gap-4 animate-fade-in text-xs shadow-sm shadow-emerald-500/5 select-none">
             <div className="flex items-center gap-3">
-              <div className="bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 p-2 rounded-lg shrink-0">
-                <RefreshCw className="w-4.5 h-4.5 animate-spin text-emerald-600 dark:text-emerald-400" />
+              <div className="bg-emerald-100 text-emerald-600 p-2 rounded-lg shrink-0">
+                <RefreshCw className="w-4.5 h-4.5 animate-spin text-emerald-600" />
               </div>
               <div className="leading-relaxed">
-                <h5 className="font-bold text-emerald-800 dark:text-emerald-300 font-sans">Convert estimate quotation parameters to Invoice?</h5>
-                <p className="text-slate-600 dark:text-slate-300 text-[11px] mt-0.5 font-sans">Directly transform this quote into a draft invoice ledger with zero double data entry.</p>
+                <h5 className="font-bold text-emerald-800 font-sans">Convert estimate quotation parameters to Invoice?</h5>
+                <p className="text-slate-600 text-[11px] mt-0.5 font-sans">Directly transform this quote into a draft invoice ledger with zero double data entry.</p>
               </div>
             </div>
             <button

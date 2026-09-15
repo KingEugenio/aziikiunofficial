@@ -32,20 +32,20 @@ export default function Footer({ onShowPrivacyPolicy, onShowTermsOfService, onGo
   ];
 
   return (
-    <footer className="mt-16 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 rounded-2xl flex flex-col justify-between items-center gap-6 text-xs shadow-sm shadow-slate-100/10">
+    <footer className="mt-16 bg-white border border-slate-200 p-6 rounded-2xl flex flex-col justify-between items-center gap-6 text-xs shadow-sm shadow-slate-100/10">
       <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="font-sans text-slate-500 dark:text-slate-400 space-y-1 text-center sm:text-left">
+        <div className="font-sans text-slate-500 space-y-1 text-center sm:text-left">
           <p>© 2026 Aziiki. Your Business. Organized.</p>
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-3 gap-y-1 text-[11px]">
             {onGoToHelp && (
-              <button type="button" onClick={onGoToHelp} className="hover:text-emerald-600 hover:dark:text-emerald-400 hover:underline cursor-pointer">
+              <button type="button" onClick={onGoToHelp} className="hover:text-emerald-600 hover:underline cursor-pointer">
                 Help & Support
               </button>
             )}
-            <button type="button" onClick={onShowPrivacyPolicy} className="hover:text-emerald-600 hover:dark:text-emerald-400 hover:underline cursor-pointer">
+            <button type="button" onClick={onShowPrivacyPolicy} className="hover:text-emerald-600 hover:underline cursor-pointer">
               Privacy Policy
             </button>
-            <button type="button" onClick={onShowTermsOfService} className="hover:text-emerald-600 hover:dark:text-emerald-400 hover:underline cursor-pointer">
+            <button type="button" onClick={onShowTermsOfService} className="hover:text-emerald-600 hover:underline cursor-pointer">
               Terms of Service
             </button>
           </div>
@@ -63,7 +63,7 @@ export default function Footer({ onShowPrivacyPolicy, onShowTermsOfService, onGo
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={s.label}
-                className="w-8 h-8 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-emerald-50 hover:dark:bg-emerald-900/40 hover:text-emerald-600 hover:dark:text-emerald-400 hover:border-emerald-200 hover:dark:border-emerald-700 flex items-center justify-center transition-colors"
+                className="w-8 h-8 rounded-xl bg-slate-50 border border-slate-200 text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 flex items-center justify-center transition-colors"
               >
                 <SocialIcon className="w-4 h-4" weight="fill" />
               </a>

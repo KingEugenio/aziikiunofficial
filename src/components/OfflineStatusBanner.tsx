@@ -26,15 +26,15 @@ export default function OfflineStatusBanner() {
   }, [pendingCount, isOnline, prevPending]);
 
   const droppedBanner = dropped.length > 0 && (
-    <div className="mb-3 bg-rose-50 dark:bg-rose-900/40 border border-rose-200 dark:border-rose-700 text-rose-800 dark:text-rose-300 rounded-2xl p-4 shadow-sm flex items-start gap-3 animate-fade-in text-left">
-      <div className="bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
+    <div className="mb-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-2xl p-4 shadow-sm flex items-start gap-3 animate-fade-in text-left">
+      <div className="bg-rose-100 text-rose-600 w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
         <AlertCircle className="w-4.5 h-4.5" />
       </div>
       <div className="flex-1">
         <p className="text-xs font-extrabold">
           {dropped.length} change{dropped.length === 1 ? "" : "s"} couldn't be saved
         </p>
-        <p className="text-[11px] text-rose-700 dark:text-rose-400 mt-0.5">
+        <p className="text-[11px] text-rose-700 mt-0.5">
           The server rejected {dropped.length === 1 ? "this change" : "these changes"} when it came back online (not a connection
           problem) - it may need to be redone.
         </p>
@@ -43,7 +43,7 @@ export default function OfflineStatusBanner() {
         type="button"
         onClick={dismissDropped}
         aria-label="Dismiss"
-        className="text-rose-400 hover:text-rose-700 hover:dark:text-rose-400 cursor-pointer shrink-0"
+        className="text-rose-400 hover:text-rose-700 cursor-pointer shrink-0"
       >
         <X className="w-4 h-4" />
       </button>
@@ -59,7 +59,7 @@ export default function OfflineStatusBanner() {
       <>
         {droppedBanner}
         <div className="mb-6 bg-slate-800 text-white rounded-2xl p-4 shadow-sm flex items-center gap-3 animate-fade-in text-left">
-          <div className="bg-white/10 dark:bg-slate-800/10 w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
+          <div className="bg-white/10 w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
             <WifiSlash className="w-4.5 h-4.5" />
           </div>
           <div>
@@ -79,8 +79,8 @@ export default function OfflineStatusBanner() {
     return (
       <>
         {droppedBanner}
-        <div className="mb-6 bg-indigo-50 dark:bg-indigo-900/40 border border-indigo-200 dark:border-indigo-700 text-indigo-900 dark:text-indigo-300 rounded-2xl p-4 shadow-sm flex items-center gap-3 animate-fade-in text-left">
-          <div className="bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-400 w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
+        <div className="mb-6 bg-indigo-50 border border-indigo-200 text-indigo-900 rounded-2xl p-4 shadow-sm flex items-center gap-3 animate-fade-in text-left">
+          <div className="bg-indigo-100 text-indigo-700 w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
             <CloudArrowUp className="w-4.5 h-4.5" />
           </div>
           <p className="text-xs font-extrabold flex-1">
@@ -90,7 +90,7 @@ export default function OfflineStatusBanner() {
             <button
               type="button"
               onClick={() => retryNow()}
-              className="text-indigo-700 dark:text-indigo-400 hover:text-indigo-900 hover:dark:text-indigo-300 cursor-pointer shrink-0 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide"
+              className="text-indigo-700 hover:text-indigo-900 cursor-pointer shrink-0 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide"
             >
               <RefreshCw className="w-3.5 h-3.5" /> Retry now
             </button>
@@ -103,8 +103,8 @@ export default function OfflineStatusBanner() {
   return (
     <>
       {droppedBanner}
-      <div className="mb-6 bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-700 text-emerald-800 dark:text-emerald-300 rounded-2xl p-4 shadow-sm flex items-center gap-3 animate-fade-in text-left">
-        <div className="bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
+      <div className="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl p-4 shadow-sm flex items-center gap-3 animate-fade-in text-left">
+        <div className="bg-emerald-100 text-emerald-700 w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
           <CloudCheck className="w-4.5 h-4.5" />
         </div>
         <p className="text-xs font-extrabold">All changes synced.</p>

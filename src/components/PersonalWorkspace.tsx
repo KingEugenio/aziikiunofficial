@@ -652,31 +652,31 @@ export default function PersonalWorkspace({
     <div id="personal-workspace-frame" className="space-y-6">
       
       {/* Premium Workspace Header with mini-selector navigation */}
-      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 sm:p-6 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 text-left">
+      <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 text-left">
         <div className="flex items-center gap-3.5">
-          <div className="bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 w-12 h-12 rounded-2xl border border-emerald-100 dark:border-emerald-700 flex items-center justify-center shadow-inner">
+          <div className="bg-emerald-50 text-emerald-600 w-12 h-12 rounded-2xl border border-emerald-100 flex items-center justify-center shadow-inner">
             <User className="w-6 h-6" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-base font-black tracking-tight text-slate-900 dark:text-slate-100 font-sans">{currentBusiness.name}</h2>
-              <span className="text-[9px] font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full uppercase tracking-wider">
+              <h2 className="text-base font-black tracking-tight text-slate-900 font-sans">{currentBusiness.name}</h2>
+              <span className="text-[9px] font-mono font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 px-2 py-0.5 rounded-full uppercase tracking-wider">
                 Free Personal Workspace
               </span>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Keep track of your individual salary, savings targets, liquid mobile wallets, and overall net worth without complex ledger registers.</p>
+            <p className="text-xs text-slate-500 mt-0.5">Keep track of your individual salary, savings targets, liquid mobile wallets, and overall net worth without complex ledger registers.</p>
           </div>
         </div>
 
         {/* Action button: Toggle Ads illustration and Free promise */}
-        <div className="flex items-center gap-2 shrink-0 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 px-3.5 py-2 rounded-2xl font-sans text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+        <div className="flex items-center gap-2 shrink-0 bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-2xl font-sans text-[11px] font-semibold text-slate-500">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span>Permanently Free Workspace</span>
         </div>
       </div>
 
       {/* Internal Navigation Subtabs */}
-      <div className="border-b border-slate-200 dark:border-slate-700 pb-px flex gap-2 overflow-x-auto custom-scrollbar scrollbar-none">
+      <div className="border-b border-slate-200 pb-px flex gap-2 overflow-x-auto custom-scrollbar scrollbar-none">
         {[
           { id: "dashboard", label: "Dashboard", icon: Activity },
           { id: "transactions", label: "Income & Spend", icon: TrendingUp },
@@ -693,8 +693,8 @@ export default function PersonalWorkspace({
               onClick={() => changePersonalTab(tab.id)}
               className={`pb-3.5 pt-1 px-4 text-xs font-bold font-sans transition-all flex items-center gap-2 cursor-pointer border-b-2 whitespace-nowrap -mb-px ${
  personalTab === tab.id
- ? "border-emerald-600 text-emerald-600 dark:text-emerald-400 font-black"
- : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 hover:dark:text-slate-300 hover:border-slate-200 hover:dark:border-slate-700"
+ ? "border-emerald-600 text-emerald-600 font-black"
+ : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-200"
  }`}
             >
               <Icon className="w-4 h-4 shrink-0" />
@@ -717,48 +717,48 @@ export default function PersonalWorkspace({
             {/* Top Row: Financial parameters cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               
-              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4.5 flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400">
+              <div className="bg-white border border-slate-200 rounded-2xl p-4.5 flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-emerald-50 text-emerald-600">
                   <Wallet className="w-5 h-5" />
                 </div>
                 <div>
                   <span className="text-[10px] font-mono font-bold text-slate-400 uppercase block tracking-wider">Total Cash Balance</span>
-                  <strong className="text-lg font-sans font-black text-slate-900 dark:text-slate-100 mt-0.5 block">{currencySymbol} {totalAccountBalance.toLocaleString()}</strong>
+                  <strong className="text-lg font-sans font-black text-slate-900 mt-0.5 block">{currencySymbol} {totalAccountBalance.toLocaleString()}</strong>
                   <span className="text-[9px] text-slate-400 block mt-0.5">{accounts.length} dynamic wallets linked</span>
                 </div>
               </div>
 
-              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4.5 flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400">
+              <div className="bg-white border border-slate-200 rounded-2xl p-4.5 flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-indigo-50 text-indigo-600">
                   <PiggyBank className="w-5 h-5" />
                 </div>
                 <div>
                   <span className="text-[10px] font-mono font-bold text-slate-400 uppercase block tracking-wider">Total Goal Savings</span>
-                  <strong className="text-lg font-sans font-black text-slate-900 dark:text-slate-100 mt-0.5 block">{currencySymbol} {totalSavingsGoalValue.toLocaleString()}</strong>
+                  <strong className="text-lg font-sans font-black text-slate-900 mt-0.5 block">{currencySymbol} {totalSavingsGoalValue.toLocaleString()}</strong>
                   <span className="text-[9px] text-slate-400 block mt-0.5">{workspaceGoals.length} active savings targets</span>
                 </div>
               </div>
 
-              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4.5 flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400">
+              <div className="bg-white border border-slate-200 rounded-2xl p-4.5 flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-amber-50 text-amber-600">
                   <TrendingUp className="w-5 h-5" />
                 </div>
                 <div>
                   <span className="text-[10px] font-mono font-bold text-slate-400 uppercase block tracking-wider">Net Monthly Growth</span>
-                  <strong className={`text-lg font-sans font-black mt-0.5 block ${netMonthlySavings >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                  <strong className={`text-lg font-sans font-black mt-0.5 block ${netMonthlySavings >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
                     {netMonthlySavings >= 0 ? "+" : ""}{currencySymbol} {netMonthlySavings.toLocaleString()}
                   </strong>
                   <span className="text-[9px] text-slate-400 block mt-0.5">Income vs Spend this month</span>
                 </div>
               </div>
 
-              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4.5 flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400">
+              <div className="bg-white border border-slate-200 rounded-2xl p-4.5 flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-rose-50 text-rose-600">
                   <DollarSign className="w-5 h-5" />
                 </div>
                 <div>
                   <span className="text-[10px] font-mono font-bold text-slate-400 uppercase block tracking-wider">Calculated Net Worth</span>
-                  <strong className="text-lg font-sans font-black text-slate-900 dark:text-slate-100 mt-0.5 block">{currencySymbol} {personalNetWorth.toLocaleString()}</strong>
+                  <strong className="text-lg font-sans font-black text-slate-900 mt-0.5 block">{currencySymbol} {personalNetWorth.toLocaleString()}</strong>
                   <span className="text-[9px] text-slate-400 block mt-0.5">Liquid cash + investments - debts</span>
                 </div>
               </div>
@@ -769,45 +769,45 @@ export default function PersonalWorkspace({
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               
               {/* Health score widget */}
-              <div className="lg:col-span-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 flex flex-col justify-between space-y-4">
-                <div className="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-700">
-                  <h3 className="font-bold text-slate-800 dark:text-slate-200 text-xs font-sans flex items-center gap-1.5">
-                    <Activity className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
+              <div className="lg:col-span-4 bg-white border border-slate-200 rounded-3xl p-5 flex flex-col justify-between space-y-4">
+                <div className="flex justify-between items-center pb-2 border-b border-slate-100">
+                  <h3 className="font-bold text-slate-800 text-xs font-sans flex items-center gap-1.5">
+                    <Activity className="w-4 h-4 text-emerald-500" />
                     Financial Health Score
                   </h3>
-                  <span className="text-[10px] font-mono bg-emerald-50 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-full font-bold">Excellent</span>
+                  <span className="text-[10px] font-mono bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-bold">Excellent</span>
                 </div>
 
                 <div className="flex items-center gap-4 py-1.5">
                   <div className="relative flex items-center justify-center shrink-0">
                     <svg className="w-20 h-20">
                       <circle className="text-slate-100" strokeWidth="6" stroke="currentColor" fill="transparent" r="30" cx="40" cy="40"/>
-                      <circle className="text-emerald-600 dark:text-emerald-400" strokeWidth="6" strokeDasharray="188.4" strokeDashoffset={188.4 - (188.4 * healthScore) / 100} strokeLinecap="round" stroke="currentColor" fill="transparent" r="30" cx="40" cy="40"/>
+                      <circle className="text-emerald-600" strokeWidth="6" strokeDasharray="188.4" strokeDashoffset={188.4 - (188.4 * healthScore) / 100} strokeLinecap="round" stroke="currentColor" fill="transparent" r="30" cx="40" cy="40"/>
                     </svg>
-                    <span className="absolute text-sm font-sans font-black text-slate-900 dark:text-slate-100">{healthScore}%</span>
+                    <span className="absolute text-sm font-sans font-black text-slate-900">{healthScore}%</span>
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">Aziiki Scoring Index</h4>
-                    <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-normal">Your score analyzes savings velocity, emergency wallet reserves, and budget limits compliance.</p>
+                    <h4 className="text-xs font-bold text-slate-800">Aziiki Scoring Index</h4>
+                    <p className="text-[10px] text-slate-500 mt-1 leading-normal">Your score analyzes savings velocity, emergency wallet reserves, and budget limits compliance.</p>
                   </div>
                 </div>
 
-                <div className="bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 p-3 rounded-xl space-y-1">
-                  <strong className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 uppercase block font-black">Coach Tip:</strong>
-                  <p className="text-[10px] text-slate-600 dark:text-slate-300 leading-relaxed font-sans">
+                <div className="bg-slate-50 border border-slate-150 p-3 rounded-xl space-y-1">
+                  <strong className="text-[10px] font-mono text-emerald-600 uppercase block font-black">Coach Tip:</strong>
+                  <p className="text-[10px] text-slate-600 leading-relaxed font-sans">
                     {getActionableHealthTips()[0] || "All clear! You are balancing budgets beautifully. Keep logging to track savings targets."}
                   </p>
                 </div>
               </div>
 
               {/* Monthly Budgets & Limit status bars */}
-              <div className="lg:col-span-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 space-y-4">
-                <div className="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-700">
-                  <h3 className="font-bold text-slate-800 dark:text-slate-200 text-xs font-sans flex items-center gap-1.5">
-                    <Target className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
+              <div className="lg:col-span-8 bg-white border border-slate-200 rounded-3xl p-5 space-y-4">
+                <div className="flex justify-between items-center pb-2 border-b border-slate-100">
+                  <h3 className="font-bold text-slate-800 text-xs font-sans flex items-center gap-1.5">
+                    <Target className="w-4 h-4 text-emerald-500" />
                     Monthly Budget Compliance
                   </h3>
-                  <button onClick={() => changePersonalTab("budgets")} className="text-[10px] text-emerald-600 dark:text-emerald-400 hover:underline font-bold">Edit Limits</button>
+                  <button onClick={() => changePersonalTab("budgets")} className="text-[10px] text-emerald-600 hover:underline font-bold">Edit Limits</button>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -819,14 +819,14 @@ export default function PersonalWorkspace({
                     const isOver = spent > b.limitAmount;
 
                     return (
-                      <div key={b.category} className="space-y-1 border border-slate-100 dark:border-slate-700 p-2.5 rounded-xl bg-slate-50/40 dark:bg-slate-900/40">
+                      <div key={b.category} className="space-y-1 border border-slate-100 p-2.5 rounded-xl bg-slate-50/40">
                         <div className="flex justify-between text-[11px] font-bold">
-                          <span className="text-slate-700 dark:text-slate-300">{b.category}</span>
-                          <span className={isOver ? "text-rose-600 dark:text-rose-400" : pct > 80 ? "text-amber-600 dark:text-amber-400" : "text-slate-500 dark:text-slate-400"}>
+                          <span className="text-slate-700">{b.category}</span>
+                          <span className={isOver ? "text-rose-600" : pct > 80 ? "text-amber-600" : "text-slate-500"}>
                             {currencySymbol}{spent} / {currencySymbol}{b.limitAmount}
                           </span>
                         </div>
-                        <div className="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                        <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
                           <div 
                             className={`h-full transition-all ${isOver ? "bg-rose-500" : pct > 80 ? "bg-amber-500" : "bg-emerald-500"}`}
                             style={{ width: `${Math.min(100, pct)}%` }}
@@ -834,7 +834,7 @@ export default function PersonalWorkspace({
                         </div>
                         <div className="flex justify-between text-[9px] font-medium mt-1">
                           <span className="text-slate-400">{pct}% utilized</span>
-                          {isOver && <span className="text-rose-500 dark:text-rose-400 font-bold animate-pulse">ALERT: Over Budget!</span>}
+                          {isOver && <span className="text-rose-500 font-bold animate-pulse">ALERT: Over Budget!</span>}
                         </div>
                       </div>
                     );
@@ -848,13 +848,13 @@ export default function PersonalWorkspace({
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               
               {/* Left Column: Recent transactions (filtered) */}
-              <div className="lg:col-span-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 space-y-4">
-                <div className="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-700">
-                  <h3 className="font-bold text-slate-800 dark:text-slate-200 text-xs font-sans flex items-center gap-1.5">
-                    <PlusCircle className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
+              <div className="lg:col-span-6 bg-white border border-slate-200 rounded-3xl p-5 space-y-4">
+                <div className="flex justify-between items-center pb-2 border-b border-slate-100">
+                  <h3 className="font-bold text-slate-800 text-xs font-sans flex items-center gap-1.5">
+                    <PlusCircle className="w-4 h-4 text-emerald-500" />
                     Recent Cash Adjustments
                   </h3>
-                  <button onClick={() => changePersonalTab("transactions")} className="text-[10px] text-emerald-600 dark:text-emerald-400 hover:underline font-bold">Add Transaction</button>
+                  <button onClick={() => changePersonalTab("transactions")} className="text-[10px] text-emerald-600 hover:underline font-bold">Add Transaction</button>
                 </div>
 
                 {workspaceTransactions.length === 0 ? (
@@ -870,22 +870,22 @@ export default function PersonalWorkspace({
                 ) : (
                   <div className="space-y-2.5 max-h-[300px] overflow-y-auto">
                     {workspaceTransactions.slice(0, 5).map(t => (
-                      <div key={t.id} className="flex justify-between items-center p-2.5 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700 text-[11.5px]">
+                      <div key={t.id} className="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl border border-slate-100 text-[11.5px]">
                         <div className="flex items-center gap-2.5 min-w-0">
                           <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 ${
  t.type === "income" 
- ? "bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400" 
- : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
+ ? "bg-emerald-50 text-emerald-600" 
+ : "bg-slate-100 text-slate-500"
  }`}>
                             {t.type === "income" ? <ArrowCircleDown className="w-4 h-4" /> : <ArrowCircleUp className="w-4 h-4" />}
                           </div>
                           <div className="text-left min-w-0">
-                            <strong className="text-slate-800 dark:text-slate-200 block truncate leading-tight font-sans">{t.description}</strong>
+                            <strong className="text-slate-800 block truncate leading-tight font-sans">{t.description}</strong>
                             <span className="text-[9px] text-slate-400 font-mono">{t.category} • {t.paymentMethod}</span>
                           </div>
                         </div>
                         <div className="text-right shrink-0">
-                          <strong className={`font-mono font-bold ${t.type === "income" ? "text-emerald-600 dark:text-emerald-400" : "text-slate-800 dark:text-slate-200"}`}>
+                          <strong className={`font-mono font-bold ${t.type === "income" ? "text-emerald-600" : "text-slate-800"}`}>
                             {t.type === "income" ? "+" : "-"}{currencySymbol}{t.amount.toLocaleString()}
                           </strong>
                           <span className="text-[9px] text-slate-400 block mt-0.5">{t.date}</span>
@@ -897,13 +897,13 @@ export default function PersonalWorkspace({
               </div>
 
               {/* Right Column: Savings goals list and Debt alert widgets */}
-              <div className="lg:col-span-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 space-y-4">
-                <div className="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-700">
-                  <h3 className="font-bold text-slate-800 dark:text-slate-200 text-xs font-sans flex items-center gap-1.5">
-                    <Target className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
+              <div className="lg:col-span-6 bg-white border border-slate-200 rounded-3xl p-5 space-y-4">
+                <div className="flex justify-between items-center pb-2 border-b border-slate-100">
+                  <h3 className="font-bold text-slate-800 text-xs font-sans flex items-center gap-1.5">
+                    <Target className="w-4 h-4 text-emerald-500" />
                     Active Savings Progress
                   </h3>
-                  <button onClick={() => changePersonalTab("savings")} className="text-[10px] text-emerald-600 dark:text-emerald-400 hover:underline font-bold">New Goal</button>
+                  <button onClick={() => changePersonalTab("savings")} className="text-[10px] text-emerald-600 hover:underline font-bold">New Goal</button>
                 </div>
 
                 {workspaceGoals.length === 0 ? (
@@ -917,10 +917,10 @@ export default function PersonalWorkspace({
                       return (
                         <div key={g.id} className="space-y-1">
                           <div className="flex justify-between text-[11px] font-bold">
-                            <span className="text-slate-700 dark:text-slate-300">{g.name}</span>
-                            <span className="text-slate-500 dark:text-slate-400">{currencySymbol}{g.currentAmount.toLocaleString()} / {currencySymbol}{g.targetAmount.toLocaleString()}</span>
+                            <span className="text-slate-700">{g.name}</span>
+                            <span className="text-slate-500">{currencySymbol}{g.currentAmount.toLocaleString()} / {currencySymbol}{g.targetAmount.toLocaleString()}</span>
                           </div>
-                          <div className="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                          <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
                             <div className="bg-emerald-500 h-full" style={{ width: `${progress}%` }}></div>
                           </div>
                         </div>
@@ -930,7 +930,7 @@ export default function PersonalWorkspace({
                 )}
 
                 {/* Upcoming Debts due soon */}
-                <div className="pt-2 border-t border-slate-100 dark:border-slate-700 space-y-2.5">
+                <div className="pt-2 border-t border-slate-100 space-y-2.5">
                   <span className="text-[10px] font-mono font-bold text-slate-400 uppercase block tracking-wider">Upcoming Bills & Loan Due Dates</span>
                   {workspaceDebts.filter(d => d.dueDate).length === 0 ? (
                     <p className="text-[10px] text-slate-400 italic">No upcoming credit/loans due.</p>
@@ -939,13 +939,13 @@ export default function PersonalWorkspace({
                       {workspaceDebts.slice(0, 2).map(d => (
                         <div key={d.id} className="flex justify-between items-center bg-rose-500/5 border border-rose-500/10 p-2.5 rounded-xl text-[10.5px]">
                           <div className="flex items-center gap-2">
-                            <AlertTriangle className="w-4 h-4 text-rose-500 dark:text-rose-400 shrink-0" />
+                            <AlertTriangle className="w-4 h-4 text-rose-500 shrink-0" />
                             <div className="text-left">
-                              <strong className="text-slate-800 dark:text-slate-200 block">{d.creditor} ({d.type})</strong>
+                              <strong className="text-slate-800 block">{d.creditor} ({d.type})</strong>
                               <span className="text-[9px] text-slate-400">Due Date: {d.dueDate}</span>
                             </div>
                           </div>
-                          <strong className="font-mono text-rose-600 dark:text-rose-400 text-xs">{currencySymbol}{d.amount.toLocaleString()}</strong>
+                          <strong className="font-mono text-rose-600 text-xs">{currencySymbol}{d.amount.toLocaleString()}</strong>
                         </div>
                       ))}
                     </div>
@@ -964,14 +964,14 @@ export default function PersonalWorkspace({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
             {/* Form Column */}
-            <div className="lg:col-span-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 space-y-4">
-              <h3 className="font-bold text-slate-800 dark:text-slate-200 text-xs uppercase tracking-wider font-mono border-b border-slate-100 dark:border-slate-700 pb-2 flex items-center gap-1.5">
+            <div className="lg:col-span-5 bg-white border border-slate-200 rounded-3xl p-5 space-y-4">
+              <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider font-mono border-b border-slate-100 pb-2 flex items-center gap-1.5">
                 <PencilSimple className="w-3.5 h-3.5 shrink-0" /> Log Cash Inflow / Outflow
               </h3>
 
               <form onSubmit={handleSaveTransaction} className="space-y-3.5 text-xs">
                 
-                <div className="grid grid-cols-2 gap-2 bg-slate-50 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+                <div className="grid grid-cols-2 gap-2 bg-slate-50 p-1 rounded-xl border border-slate-200">
                   <button
                     type="button"
                     onClick={() => {
@@ -979,7 +979,7 @@ export default function PersonalWorkspace({
                       setTxCategory("Salary");
                     }}
                     className={`py-1.5 text-[10px] font-bold font-sans rounded-lg transition-colors cursor-pointer inline-flex items-center justify-center gap-1 ${
- txType === "income" ? "bg-emerald-600 text-white shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 hover:dark:text-slate-300 bg-transparent"
+ txType === "income" ? "bg-emerald-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-700 bg-transparent"
  }`}
                   >
                     <ArrowCircleDown className="w-3.5 h-3.5 shrink-0" /> Cash Inflow (Income)
@@ -991,7 +991,7 @@ export default function PersonalWorkspace({
                       setTxCategory("Food");
                     }}
                     className={`py-1.5 text-[10px] font-bold font-sans rounded-lg transition-colors cursor-pointer inline-flex items-center justify-center gap-1 ${
- txType === "expense" ? "bg-emerald-600 text-white shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 hover:dark:text-slate-300 bg-transparent"
+ txType === "expense" ? "bg-emerald-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-700 bg-transparent"
  }`}
                   >
                     <ArrowCircleUp className="w-3.5 h-3.5 shrink-0" /> Cash Outflow (Spend)
@@ -1005,7 +1005,7 @@ export default function PersonalWorkspace({
                     required
                     value={txAmount || ""}
                     onChange={(e) => setTxAmount(parseFloat(e.target.value) || 0)}
-                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-mono font-bold"
+                    className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-3 py-2 outline-none font-mono font-bold"
                   />
                 </div>
 
@@ -1014,7 +1014,7 @@ export default function PersonalWorkspace({
                   <select
                     value={txCategory}
                     onChange={(e) => setTxCategory(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans"
+                    className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans"
                   >
                     {txType === "income" ? (
                       ["Salary", "Freelance Work", "Business Income", "Gifts", "Investments", "Allowances", "Side Hustles", "Other"].map(c => (
@@ -1033,7 +1033,7 @@ export default function PersonalWorkspace({
                   <select
                     value={txAccount}
                     onChange={(e) => setTxAccount(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans"
+                    className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans"
                   >
                     {accounts.map(acc => (
                       <option key={acc.id} value={acc.name}>
@@ -1050,7 +1050,7 @@ export default function PersonalWorkspace({
                     value={txDescription}
                     onChange={(e) => setTxDescription(e.target.value)}
                     placeholder="e.g. Weekly family groceries buy"
-                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans"
+                    className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans"
                   />
                 </div>
 
@@ -1061,7 +1061,7 @@ export default function PersonalWorkspace({
                     required
                     value={txDate}
                     onChange={(e) => setTxDate(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans"
+                    className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans"
                   />
                 </div>
 
@@ -1076,8 +1076,8 @@ export default function PersonalWorkspace({
             </div>
 
             {/* List Column */}
-            <div className="lg:col-span-7 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 space-y-4">
-              <h3 className="font-bold text-slate-800 dark:text-slate-200 text-xs uppercase tracking-wider font-mono border-b border-slate-100 dark:border-slate-700 pb-2 flex items-center gap-1.5">
+            <div className="lg:col-span-7 bg-white border border-slate-200 rounded-3xl p-5 space-y-4">
+              <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider font-mono border-b border-slate-100 pb-2 flex items-center gap-1.5">
                 <FolderOpen className="w-3.5 h-3.5 shrink-0" /> Personal Transaction Ledger
               </h3>
 
@@ -1086,31 +1086,31 @@ export default function PersonalWorkspace({
               ) : (
                 <div className="space-y-2.5 max-h-[500px] overflow-y-auto">
                   {workspaceTransactions.map(t => (
-                    <div key={t.id} className="flex justify-between items-center p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700 text-[11.5px]">
+                    <div key={t.id} className="flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100 text-[11.5px]">
                       <div className="flex items-center gap-3 min-w-0">
                         <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 ${
  t.type === "income" 
- ? "bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400" 
- : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
+ ? "bg-emerald-50 text-emerald-600" 
+ : "bg-slate-100 text-slate-500"
  }`}>
                           {t.type === "income" ? <ArrowCircleDown className="w-4 h-4" /> : <ArrowCircleUp className="w-4 h-4" />}
                         </div>
                         <div className="text-left min-w-0">
-                          <strong className="text-slate-800 dark:text-slate-200 block truncate leading-tight font-sans">{t.description}</strong>
+                          <strong className="text-slate-800 block truncate leading-tight font-sans">{t.description}</strong>
                           <span className="text-[9px] text-slate-400 font-mono">{t.category} • {t.paymentMethod}</span>
                         </div>
                       </div>
                       
                       <div className="flex items-center gap-4 shrink-0">
                         <div className="text-right">
-                          <strong className={`font-mono font-bold ${t.type === "income" ? "text-emerald-600 dark:text-emerald-400" : "text-slate-800 dark:text-slate-200"}`}>
+                          <strong className={`font-mono font-bold ${t.type === "income" ? "text-emerald-600" : "text-slate-800"}`}>
                             {t.type === "income" ? "+" : "-"}{currencySymbol}{t.amount.toLocaleString()}
                           </strong>
                           <span className="text-[9px] text-slate-400 block mt-0.5">{t.date}</span>
                         </div>
                         <button
                           onClick={() => confirmDelete(`Delete "${t.description}"? This can't be undone.`, () => onDeleteTransaction(t.id))}
-                          className="text-slate-300 hover:text-rose-600 hover:dark:text-rose-400 p-1 rounded transition-colors cursor-pointer"
+                          className="text-slate-350 hover:text-rose-600 p-1 rounded transition-colors cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -1129,8 +1129,8 @@ export default function PersonalWorkspace({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
             {/* Form Column */}
-            <div className="lg:col-span-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 space-y-4">
-              <h3 className="font-bold text-slate-800 dark:text-slate-200 text-xs uppercase tracking-wider font-mono border-b border-slate-100 dark:border-slate-700 pb-2 flex items-center gap-1.5">
+            <div className="lg:col-span-4 bg-white border border-slate-200 rounded-3xl p-5 space-y-4">
+              <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider font-mono border-b border-slate-100 pb-2 flex items-center gap-1.5">
                 <Plus className="w-3.5 h-3.5 shrink-0" /> Add Wallet / Bank
               </h3>
 
@@ -1144,7 +1144,7 @@ export default function PersonalWorkspace({
                     placeholder="e.g. My MTN MoMo Cash"
                     value={newAccName}
                     onChange={(e) => setNewAccName(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans"
+                    className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans"
                   />
                 </div>
 
@@ -1153,7 +1153,7 @@ export default function PersonalWorkspace({
                   <select
                     value={newAccType}
                     onChange={(e) => setNewAccType(e.target.value as any)}
-                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans"
+                    className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans"
                   >
                     <option value="MTN Mobile Money">MTN Mobile Money</option>
                     <option value="Telecel Cash">Telecel Cash</option>
@@ -1171,7 +1171,7 @@ export default function PersonalWorkspace({
                     required
                     value={newAccBalance || ""}
                     onChange={(e) => setNewAccBalance(parseFloat(e.target.value) || 0)}
-                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-mono"
+                    className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-3 py-2 outline-none font-mono"
                   />
                 </div>
 
@@ -1186,14 +1186,14 @@ export default function PersonalWorkspace({
             </div>
 
             {/* List Column */}
-            <div className="lg:col-span-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 space-y-4">
-              <h3 className="font-bold text-slate-800 dark:text-slate-200 text-xs uppercase tracking-wider font-mono border-b border-slate-100 dark:border-slate-700 pb-2 flex items-center gap-1.5">
+            <div className="lg:col-span-8 bg-white border border-slate-200 rounded-3xl p-5 space-y-4">
+              <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider font-mono border-b border-slate-100 pb-2 flex items-center gap-1.5">
                 <CreditCard className="w-3.5 h-3.5 shrink-0" /> Registered Payment Accounts
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {accounts.map(acc => (
-                  <div key={acc.id} className="bg-gradient-to-tr from-slate-900 via-slate-950 to-slate-900 border border-slate-800 p-4.5 rounded-2xl text-white space-y-4 flex flex-col justify-between shadow-lg relative overflow-hidden">
+                  <div key={acc.id} className="bg-gradient-to-tr from-slate-900 via-slate-950 to-slate-900 border border-slate-850 p-4.5 rounded-2xl text-white space-y-4 flex flex-col justify-between shadow-lg relative overflow-hidden">
                     {/* decorative circles */}
                     <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
@@ -1206,7 +1206,7 @@ export default function PersonalWorkspace({
                       {accounts.length > 1 && (
                         <button
                           onClick={() => confirmDelete(`Delete the "${acc.name}" account? This can't be undone.`, () => handleDeleteAccount(acc.id))}
-                          className="text-slate-500 dark:text-slate-400 hover:text-rose-500 hover:dark:text-rose-400 p-1.5 rounded bg-white/5 dark:bg-slate-800/5 transition-all cursor-pointer"
+                          className="text-slate-500 hover:text-rose-500 p-1.5 rounded bg-white/5 transition-all cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -1230,8 +1230,8 @@ export default function PersonalWorkspace({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
             {/* Form Column */}
-            <div className="lg:col-span-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 space-y-4">
-              <h3 className="font-bold text-slate-800 dark:text-slate-200 text-xs uppercase tracking-wider font-mono border-b border-slate-100 dark:border-slate-700 pb-2 flex items-center gap-1.5">
+            <div className="lg:col-span-4 bg-white border border-slate-200 rounded-3xl p-5 space-y-4">
+              <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider font-mono border-b border-slate-100 pb-2 flex items-center gap-1.5">
                 <PiggyBank className="w-3.5 h-3.5 shrink-0" /> Create Savings Goal
               </h3>
 
@@ -1249,7 +1249,7 @@ export default function PersonalWorkspace({
                     placeholder="e.g. Purchase High-Spec Laptop"
                     value={newGoalName}
                     onChange={(e) => setNewGoalName(e.target.value.slice(0, 80))}
-                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans"
+                    className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans"
                   />
                 </div>
 
@@ -1258,7 +1258,7 @@ export default function PersonalWorkspace({
                   <select
                     value={newGoalType}
                     onChange={(e) => setNewGoalType(e.target.value as any)}
-                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans"
+                    className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans"
                   >
                     <option value="Savings">Emergency Fund / Savings</option>
                     <option value="Equipment">Buy Gadgets / Equipment</option>
@@ -1274,7 +1274,7 @@ export default function PersonalWorkspace({
                     required
                     value={newGoalTarget || ""}
                     onChange={(e) => setNewGoalTarget(parseFloat(e.target.value) || 0)}
-                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-mono font-bold"
+                    className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-3 py-2 outline-none font-mono font-bold"
                   />
                 </div>
 
@@ -1285,7 +1285,7 @@ export default function PersonalWorkspace({
                     value={newGoalCurrent || ""}
                     onChange={(e) => setNewGoalCurrent(parseFloat(e.target.value) || 0)}
                     placeholder="e.g. 100"
-                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-mono"
+                    className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-3 py-2 outline-none font-mono"
                   />
                 </div>
 
@@ -1296,7 +1296,7 @@ export default function PersonalWorkspace({
                     required
                     value={newGoalDeadline}
                     onChange={(e) => setNewGoalDeadline(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans"
+                    className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans"
                   />
                 </div>
 
@@ -1311,8 +1311,8 @@ export default function PersonalWorkspace({
             </div>
 
             {/* List Column */}
-            <div className="lg:col-span-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 space-y-4">
-              <h3 className="font-bold text-slate-800 dark:text-slate-200 text-xs uppercase tracking-wider font-mono border-b border-slate-100 dark:border-slate-700 pb-2 flex items-center gap-1.5">
+            <div className="lg:col-span-8 bg-white border border-slate-200 rounded-3xl p-5 space-y-4">
+              <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider font-mono border-b border-slate-100 pb-2 flex items-center gap-1.5">
                 <PiggyBank className="w-3.5 h-3.5 shrink-0" /> Savings Goals Progress Tracker
               </h3>
 
@@ -1325,18 +1325,18 @@ export default function PersonalWorkspace({
                     const remaining = Math.max(0, g.targetAmount - g.currentAmount);
 
                     return (
-                      <div key={g.id} className="bg-slate-50 dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 flex flex-col justify-between space-y-3 relative overflow-hidden">
+                      <div key={g.id} className="bg-slate-50 p-4 rounded-2xl border border-slate-150 flex flex-col justify-between space-y-3 relative overflow-hidden">
                         
                         <div className="flex justify-between items-start">
                           <div className="text-left">
-                            <strong className="text-xs font-bold text-slate-800 dark:text-slate-200 block">{g.name}</strong>
+                            <strong className="text-xs font-bold text-slate-800 block">{g.name}</strong>
                             <span className="text-[9px] font-mono text-slate-400">Deadline: {g.deadline}</span>
                           </div>
                           
                           <button
                             onClick={() => confirmDelete(`Delete the "${g.name}" goal? This can't be undone.`, () => onDeleteGoal(g.id))}
                             aria-label={`Delete goal ${g.name}`}
-                            className="text-slate-400 hover:text-rose-500 hover:dark:text-rose-400 p-1 rounded hover:bg-slate-100 hover:dark:bg-slate-800 transition-colors cursor-pointer"
+                            className="text-slate-400 hover:text-rose-500 p-1 rounded hover:bg-slate-100 transition-colors cursor-pointer"
                           >
                             <X className="w-3.5 h-3.5" weight="bold" />
                           </button>
@@ -1345,15 +1345,15 @@ export default function PersonalWorkspace({
                         {/* progress bar */}
                         <div className="space-y-1 pt-1">
                           <div className="flex justify-between text-[10px] font-bold">
-                            <span className="text-emerald-600 dark:text-emerald-400 font-mono">{progress}% Complete</span>
-                            <span className="text-slate-500 dark:text-slate-400">{currencySymbol}{g.currentAmount.toLocaleString()} / {currencySymbol}{g.targetAmount.toLocaleString()}</span>
+                            <span className="text-emerald-600 font-mono">{progress}% Complete</span>
+                            <span className="text-slate-500">{currencySymbol}{g.currentAmount.toLocaleString()} / {currencySymbol}{g.targetAmount.toLocaleString()}</span>
                           </div>
-                          <div className="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                          <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
                             <div className="bg-emerald-500 h-full" style={{ width: `${progress}%` }}></div>
                           </div>
                         </div>
 
-                        <div className="flex justify-between items-center text-[10px] border-t border-slate-200/50 dark:border-slate-700/50 pt-2 mt-1">
+                        <div className="flex justify-between items-center text-[10px] border-t border-slate-200/50 pt-2 mt-1">
                           <span className="text-slate-400">Remaining: {currencySymbol}{remaining.toLocaleString()}</span>
                           <button
                             onClick={() => setContributingGoalId(g.id)}
@@ -1371,29 +1371,29 @@ export default function PersonalWorkspace({
 
               {/* Goal Contribution modal popup inline */}
               {contributingGoalId && (
-                <div className="border border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-900/50 p-4 rounded-2xl space-y-3 mt-4 text-xs">
+                <div className="border border-emerald-500/30 bg-emerald-50/50 p-4 rounded-2xl space-y-3 mt-4 text-xs">
                   <div className="flex justify-between items-center">
-                    <strong className="text-emerald-800 dark:text-emerald-300">Defray/Contribute cash to selected target</strong>
-                    <button onClick={() => setContributingGoalId(null)} aria-label="Close" className="font-bold text-slate-400 hover:text-slate-600 hover:dark:text-slate-300"><X className="w-3 h-3 inline" weight="bold" /></button>
+                    <strong className="text-emerald-800">Defray/Contribute cash to selected target</strong>
+                    <button onClick={() => setContributingGoalId(null)} aria-label="Close" className="font-bold text-slate-400 hover:text-slate-650"><X className="w-3 h-3 inline" weight="bold" /></button>
                   </div>
 
                   <form onSubmit={handleExecuteGoalContribution} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                      <label className="text-[9px] text-slate-400 block mb-1">Amount to contribute ({currencySymbol})</label>
+                      <label className="text-[9px] text-slate-450 block mb-1">Amount to contribute ({currencySymbol})</label>
                       <input
                         type="number"
                         required
                         value={contributionAmount || ""}
                         onChange={(e) => setContributionAmount(parseFloat(e.target.value) || 0)}
-                        className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 font-mono"
+                        className="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono"
                       />
                     </div>
                     <div>
-                      <label className="text-[9px] text-slate-400 block mb-1">Deduct from wallet</label>
+                      <label className="text-[9px] text-slate-450 block mb-1">Deduct from wallet</label>
                       <select
                         value={contributionAccount}
                         onChange={(e) => setContributionAccount(e.target.value)}
-                        className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5"
+                        className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5"
                       >
                         {accounts.map(acc => (
                           <option key={acc.id} value={acc.name}>{acc.name} ({currencySymbol}{acc.balance.toLocaleString()})</option>
@@ -1422,8 +1422,8 @@ export default function PersonalWorkspace({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
             {/* Form Column */}
-            <div className="lg:col-span-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 space-y-4">
-              <h3 className="font-bold text-slate-800 dark:text-slate-200 text-xs uppercase tracking-wider font-mono border-b border-slate-100 dark:border-slate-700 pb-2 flex items-center gap-1.5">
+            <div className="lg:col-span-4 bg-white border border-slate-200 rounded-3xl p-5 space-y-4">
+              <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider font-mono border-b border-slate-100 pb-2 flex items-center gap-1.5">
                 <Target className="w-3.5 h-3.5 shrink-0" /> Set Budget Caps
               </h3>
 
@@ -1434,7 +1434,7 @@ export default function PersonalWorkspace({
                   <select
                     value={budgetCategory}
                     onChange={(e) => setBudgetCategory(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-sans"
+                    className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-3 py-2 outline-none font-sans"
                   >
                     {["Food", "Transport", "Rent", "Utilities", "Fuel", "Airtime", "Internet", "Shopping", "Entertainment", "Healthcare", "Education", "Family Support", "Charity", "Other"].map(c => (
                       <option key={c} value={c}>{c}</option>
@@ -1449,7 +1449,7 @@ export default function PersonalWorkspace({
                     required
                     value={budgetLimit || ""}
                     onChange={(e) => setBudgetLimit(parseFloat(e.target.value) || 0)}
-                    className="w-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none font-mono"
+                    className="w-full bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-3 py-2 outline-none font-mono"
                   />
                 </div>
 
@@ -1464,8 +1464,8 @@ export default function PersonalWorkspace({
             </div>
 
             {/* List Column */}
-            <div className="lg:col-span-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 space-y-4">
-              <h3 className="font-bold text-slate-800 dark:text-slate-200 text-xs uppercase tracking-wider font-mono border-b border-slate-100 dark:border-slate-700 pb-2 flex items-center gap-1.5">
+            <div className="lg:col-span-8 bg-white border border-slate-200 rounded-3xl p-5 space-y-4">
+              <h3 className="font-bold text-slate-800 text-xs uppercase tracking-wider font-mono border-b border-slate-100 pb-2 flex items-center gap-1.5">
                 <Target className="w-3.5 h-3.5 shrink-0" /> Configure Monthly Expenditure Budgets
               </h3>
 
@@ -1478,21 +1478,21 @@ export default function PersonalWorkspace({
                   const isOver = spent > b.limitAmount;
 
                   return (
-                    <div key={b.category} className="border border-slate-200 dark:border-slate-700 p-3.5 rounded-2xl space-y-2 bg-slate-50/40 dark:bg-slate-900/40">
+                    <div key={b.category} className="border border-slate-200 p-3.5 rounded-2xl space-y-2 bg-slate-50/40">
                       <div className="flex justify-between items-center text-xs font-bold">
                         <div className="flex items-center gap-2">
-                          <span className="text-slate-800 dark:text-slate-200">{b.category}</span>
-                          {isOver && <span className="bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 px-2 py-0.5 rounded-full text-[9px] font-bold animate-pulse">OVER BUDGET LIMIT</span>}
+                          <span className="text-slate-800">{b.category}</span>
+                          {isOver && <span className="bg-rose-500/10 text-rose-600 border border-rose-500/20 px-2 py-0.5 rounded-full text-[9px] font-bold animate-pulse">OVER BUDGET LIMIT</span>}
                         </div>
                         
                         <div className="flex items-center gap-4">
-                          <span className={isOver ? "text-rose-600 dark:text-rose-400 font-mono" : "text-slate-500 dark:text-slate-400 font-mono"}>
+                          <span className={isOver ? "text-rose-600 font-mono" : "text-slate-500 font-mono"}>
                             {currencySymbol}{spent.toLocaleString()} spent of {currencySymbol}{b.limitAmount.toLocaleString()}
                           </span>
                           <button
                             onClick={() => confirmDelete(`Delete the "${b.category}" budget? This can't be undone.`, () => handleDeleteBudget(b.category))}
                             aria-label={`Delete budget ${b.category}`}
-                            className="text-slate-400 hover:text-rose-600 hover:dark:text-rose-400 transition-colors cursor-pointer"
+                            className="text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
                           >
                             <X className="w-3.5 h-3.5" weight="bold" />
                           </button>
@@ -1500,7 +1500,7 @@ export default function PersonalWorkspace({
                       </div>
 
                       {/* progress bar */}
-                      <div className="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                      <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
                         <div 
                           className={`h-full ${isOver ? "bg-rose-500" : pct > 80 ? "bg-amber-500" : "bg-emerald-500"}`}
                           style={{ width: `${Math.min(100, pct)}%` }}
@@ -1526,7 +1526,7 @@ export default function PersonalWorkspace({
             {/* Net Worth trend historical reporting chart card */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               
-              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 space-y-4">
+              <div className="bg-white border border-slate-200 rounded-3xl p-5 space-y-4">
                 <span className="text-[10px] font-mono font-bold text-slate-400 uppercase block tracking-wider">Dynamic Net Worth Trend</span>
                 <div className="h-64">
                   <ResponsiveContainer width="100%" height="100%">
@@ -1541,7 +1541,7 @@ export default function PersonalWorkspace({
                 </div>
               </div>
 
-              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 space-y-4">
+              <div className="bg-white border border-slate-200 rounded-3xl p-5 space-y-4">
                 <span className="text-[10px] font-mono font-bold text-slate-400 uppercase block tracking-wider">Monthly Income vs Spending</span>
                 <div className="h-64">
                   <ResponsiveContainer width="100%" height="100%">
@@ -1563,7 +1563,7 @@ export default function PersonalWorkspace({
             {/* Category expenditure pie chart and Savings growth bars */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               
-              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 space-y-4">
+              <div className="bg-white border border-slate-200 rounded-3xl p-5 space-y-4">
                 <span className="text-[10px] font-mono font-bold text-slate-400 uppercase block tracking-wider">Monthly Spend Category Breakdown</span>
                 {categoryBreakdown.length === 0 ? (
                   <div className="py-12 text-center text-slate-400 italic">No expenditures logged this month.</div>
@@ -1594,8 +1594,8 @@ export default function PersonalWorkspace({
                       {categoryBreakdown.map((item, idx) => (
                         <div key={item.name} className="flex items-center gap-1.5">
                           <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: PIE_COLORS[idx % PIE_COLORS.length] }}></span>
-                          <span className="text-slate-600 dark:text-slate-300 truncate">{item.name}:</span>
-                          <span className="text-slate-800 dark:text-slate-200 font-mono font-extrabold">{currencySymbol}{item.value}</span>
+                          <span className="text-slate-600 truncate">{item.name}:</span>
+                          <span className="text-slate-800 font-mono font-extrabold">{currencySymbol}{item.value}</span>
                         </div>
                       ))}
                     </div>
@@ -1604,11 +1604,11 @@ export default function PersonalWorkspace({
               </div>
 
               {/* Debt & Investment tracker panel */}
-              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 space-y-4">
-                <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-700 pb-2">
+              <div className="bg-white border border-slate-200 rounded-3xl p-5 space-y-4">
+                <div className="flex justify-between items-center border-b border-slate-100 pb-2">
                   <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">Debts & Assets Ledger</span>
                   <div className="flex gap-2">
-                    <button onClick={() => changePersonalTab("accounts")} className="text-[10px] text-emerald-600 dark:text-emerald-400 hover:underline font-bold">Accounts</button>
+                    <button onClick={() => changePersonalTab("accounts")} className="text-[10px] text-emerald-600 hover:underline font-bold">Accounts</button>
                   </div>
                 </div>
 
@@ -1616,9 +1616,9 @@ export default function PersonalWorkspace({
                   
                   {/* Debt tracker */}
                   <div className="space-y-3.5">
-                    <div className="flex justify-between items-center text-xs font-bold text-slate-800 dark:text-slate-200 border-b border-slate-50 dark:border-slate-800 pb-1">
+                    <div className="flex justify-between items-center text-xs font-bold text-slate-800 border-b border-slate-50 pb-1">
                       <span className="inline-flex items-center gap-1"><HandCoins className="w-3.5 h-3.5 shrink-0" /> Creditors & Loans</span>
-                      <button onClick={() => setRepayingDebtId("new")} className="text-[10px] text-emerald-600 dark:text-emerald-400 hover:underline">Add Debt</button>
+                      <button onClick={() => setRepayingDebtId("new")} className="text-[10px] text-emerald-600 hover:underline">Add Debt</button>
                     </div>
 
                     {workspaceDebts.length === 0 ? (
@@ -1626,21 +1626,21 @@ export default function PersonalWorkspace({
                     ) : (
                       <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
                         {workspaceDebts.map(d => (
-                          <div key={d.id} className="p-2 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700 text-[11px] relative">
+                          <div key={d.id} className="p-2 bg-slate-50 rounded-xl border border-slate-150 text-[11px] relative">
                             <button
                               onClick={() => confirmDelete(`Delete the debt owed to "${d.creditor}"? This can't be undone.`, () => onDeleteDebt(d.id))}
                               aria-label={`Delete debt ${d.creditor}`}
-                              className="absolute top-1.5 right-1.5 text-[9px] font-black text-slate-400 hover:text-rose-500 hover:dark:text-rose-400"
+                              className="absolute top-1.5 right-1.5 text-[9px] font-black text-slate-400 hover:text-rose-500"
                             >
                               <X className="w-3.5 h-3.5" weight="bold" />
                             </button>
-                            <div className="text-left font-sans font-bold text-slate-700 dark:text-slate-300 pr-4">{d.creditor}</div>
-                            <div className="flex justify-between font-mono font-bold text-[10px] mt-1 text-slate-500 dark:text-slate-400">
+                            <div className="text-left font-sans font-bold text-slate-750 pr-4">{d.creditor}</div>
+                            <div className="flex justify-between font-mono font-bold text-[10px] mt-1 text-slate-500">
                               <span>{d.type}</span>
-                              <span className="text-rose-600 dark:text-rose-400 font-extrabold">{currencySymbol}{d.amount.toLocaleString()}</span>
+                              <span className="text-rose-600 font-extrabold">{currencySymbol}{d.amount.toLocaleString()}</span>
                             </div>
-                            <div className="flex justify-between items-center text-[9px] mt-1.5 border-t border-dashed border-slate-200 dark:border-slate-700 pt-1">
-                              <span className="text-slate-400">Due: {d.dueDate}</span>
+                            <div className="flex justify-between items-center text-[9px] mt-1.5 border-t border-dashed border-slate-200 pt-1">
+                              <span className="text-slate-450">Due: {d.dueDate}</span>
                               <button
                                 onClick={() => setRepayingDebtId(d.id)}
                                 className="text-[9px] font-extrabold text-white bg-slate-800 px-1.5 py-0.5 rounded"
@@ -1656,9 +1656,9 @@ export default function PersonalWorkspace({
 
                   {/* Investment tracker */}
                   <div className="space-y-3.5">
-                    <div className="flex justify-between items-center text-xs font-bold text-slate-800 dark:text-slate-200 border-b border-slate-50 dark:border-slate-800 pb-1">
+                    <div className="flex justify-between items-center text-xs font-bold text-slate-800 border-b border-slate-50 pb-1">
                       <span className="inline-flex items-center gap-1"><LucideLineChart className="w-3.5 h-3.5 shrink-0" /> Investment Assets</span>
-                      <button onClick={() => setRepayingDebtId("new-investment")} className="text-[10px] text-emerald-600 dark:text-emerald-400 hover:underline">Add asset</button>
+                      <button onClick={() => setRepayingDebtId("new-investment")} className="text-[10px] text-emerald-600 hover:underline">Add asset</button>
                     </div>
 
                     {workspaceInvestments.length === 0 ? (
@@ -1666,18 +1666,18 @@ export default function PersonalWorkspace({
                     ) : (
                       <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
                         {workspaceInvestments.map(i => (
-                          <div key={i.id} className="p-2 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700 text-[11px] relative">
+                          <div key={i.id} className="p-2 bg-slate-50 rounded-xl border border-slate-150 text-[11px] relative">
                             <button
                               onClick={() => confirmDelete(`Delete the "${i.name}" investment? This can't be undone.`, () => onDeleteInvestment(i.id))}
                               aria-label={`Delete investment ${i.name}`}
-                              className="absolute top-1.5 right-1.5 text-[9px] font-black text-slate-400 hover:text-rose-500 hover:dark:text-rose-400"
+                              className="absolute top-1.5 right-1.5 text-[9px] font-black text-slate-400 hover:text-rose-500"
                             >
                               <X className="w-3.5 h-3.5" weight="bold" />
                             </button>
-                            <div className="text-left font-sans font-bold text-slate-700 dark:text-slate-300 pr-4">{i.name}</div>
-                            <div className="flex justify-between font-mono font-bold text-[10px] mt-1 text-slate-500 dark:text-slate-400">
+                            <div className="text-left font-sans font-bold text-slate-750 pr-4">{i.name}</div>
+                            <div className="flex justify-between font-mono font-bold text-[10px] mt-1 text-slate-500">
                               <span>Yield: {i.expectedReturnRate}%</span>
-                              <span className="text-emerald-600 dark:text-emerald-400 font-extrabold">{currencySymbol}{i.value.toLocaleString()}</span>
+                              <span className="text-emerald-600 font-extrabold">{currencySymbol}{i.value.toLocaleString()}</span>
                             </div>
                           </div>
                         ))}
@@ -1691,8 +1691,8 @@ export default function PersonalWorkspace({
                 {repayingDebtId && repayingDebtId !== "new" && repayingDebtId !== "new-investment" && (
                   <div className="border border-rose-500/20 bg-rose-500/5 p-3 rounded-xl space-y-2 text-xs">
                     <div className="flex justify-between items-center">
-                      <strong className="text-rose-700 dark:text-rose-400">Log Debt Repayment</strong>
-                      <button onClick={() => setRepayingDebtId(null)} aria-label="Close" className="font-bold text-slate-400 hover:text-slate-600 hover:dark:text-slate-300"><X className="w-3 h-3 inline" weight="bold" /></button>
+                      <strong className="text-rose-700">Log Debt Repayment</strong>
+                      <button onClick={() => setRepayingDebtId(null)} aria-label="Close" className="font-bold text-slate-450 hover:text-slate-600"><X className="w-3 h-3 inline" weight="bold" /></button>
                     </div>
                     <form onSubmit={handleExecuteDebtRepayment} className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                       <input
@@ -1701,12 +1701,12 @@ export default function PersonalWorkspace({
                         placeholder="Repayment amount"
                         value={repayAmount || ""}
                         onChange={(e) => setRepayAmount(parseFloat(e.target.value) || 0)}
-                        className="bg-white dark:bg-slate-800 border rounded p-1.5 font-mono text-[11px]"
+                        className="bg-white border rounded p-1.5 font-mono text-[11px]"
                       />
                       <select
                         value={repayAccountName}
                         onChange={(e) => setRepayAccountName(e.target.value)}
-                        className="bg-white dark:bg-slate-800 border rounded p-1.5 text-[11px]"
+                        className="bg-white border rounded p-1.5 text-[11px]"
                       >
                         {accounts.map(acc => (
                           <option key={acc.id} value={acc.name}>{acc.name} ({currencySymbol}{acc.balance.toLocaleString()})</option>
@@ -1719,10 +1719,10 @@ export default function PersonalWorkspace({
 
                 {/* Create Debt modal popup */}
                 {repayingDebtId === "new" && (
-                  <div className="border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-4 rounded-xl space-y-3 mt-4 text-xs">
+                  <div className="border border-slate-200 bg-slate-50 p-4 rounded-xl space-y-3 mt-4 text-xs">
                     <div className="flex justify-between items-center">
-                      <strong className="text-slate-800 dark:text-slate-200">Register Credit Outstanding</strong>
-                      <button onClick={() => setRepayingDebtId(null)} aria-label="Close" className="font-bold text-slate-400 hover:text-slate-600 hover:dark:text-slate-300"><X className="w-3 h-3 inline" weight="bold" /></button>
+                      <strong className="text-slate-800">Register Credit Outstanding</strong>
+                      <button onClick={() => setRepayingDebtId(null)} aria-label="Close" className="font-bold text-slate-450 hover:text-slate-650"><X className="w-3 h-3 inline" weight="bold" /></button>
                     </div>
 
                     <form onSubmit={handleCreateDebt} className="space-y-2">
@@ -1733,7 +1733,7 @@ export default function PersonalWorkspace({
                           placeholder="Creditor Name"
                           value={debtCreditor}
                           onChange={(e) => setDebtCreditor(e.target.value)}
-                          className="bg-white dark:bg-slate-800 border rounded p-1.5 text-[11px]"
+                          className="bg-white border rounded p-1.5 text-[11px]"
                         />
                         <input
                           type="number"
@@ -1741,14 +1741,14 @@ export default function PersonalWorkspace({
                           placeholder="Amount"
                           value={debtAmount || ""}
                           onChange={(e) => setDebtAmount(parseFloat(e.target.value) || 0)}
-                          className="bg-white dark:bg-slate-800 border rounded p-1.5 text-[11px] font-mono"
+                          className="bg-white border rounded p-1.5 text-[11px] font-mono"
                         />
                       </div>
                       <div className="grid grid-cols-3 gap-2">
                         <select
                           value={debtType}
                           onChange={(e) => setDebtType(e.target.value as any)}
-                          className="bg-white dark:bg-slate-800 border rounded p-1.5 text-[11px]"
+                          className="bg-white border rounded p-1.5 text-[11px]"
                         >
                           <option value="Loan">Loan</option>
                           <option value="Supplier Credit">Supplier Credit</option>
@@ -1759,14 +1759,14 @@ export default function PersonalWorkspace({
                           placeholder="Interest %"
                           value={debtInterest || ""}
                           onChange={(e) => setDebtInterest(parseFloat(e.target.value) || 0)}
-                          className="bg-white dark:bg-slate-800 border rounded p-1.5 text-[11px]"
+                          className="bg-white border rounded p-1.5 text-[11px]"
                         />
                         <input
                           type="date"
                           required
                           value={debtDue}
                           onChange={(e) => setDebtDue(e.target.value)}
-                          className="bg-white dark:bg-slate-800 border rounded p-1.5 text-[10px]"
+                          className="bg-white border rounded p-1.5 text-[10px]"
                         />
                       </div>
                       <button type="submit" className="w-full bg-slate-900 text-white font-bold p-2 rounded">Save Credit Record</button>
@@ -1776,10 +1776,10 @@ export default function PersonalWorkspace({
 
                 {/* Create Investment Asset modal popup */}
                 {repayingDebtId === "new-investment" && (
-                  <div className="border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-4 rounded-xl space-y-3 mt-4 text-xs">
+                  <div className="border border-slate-200 bg-slate-50 p-4 rounded-xl space-y-3 mt-4 text-xs">
                     <div className="flex justify-between items-center">
-                      <strong className="text-slate-800 dark:text-slate-200">Log Wealth Asset Placement</strong>
-                      <button onClick={() => setRepayingDebtId(null)} aria-label="Close" className="font-bold text-slate-400 hover:text-slate-600 hover:dark:text-slate-300"><X className="w-3 h-3 inline" weight="bold" /></button>
+                      <strong className="text-slate-800">Log Wealth Asset Placement</strong>
+                      <button onClick={() => setRepayingDebtId(null)} aria-label="Close" className="font-bold text-slate-450 hover:text-slate-650"><X className="w-3 h-3 inline" weight="bold" /></button>
                     </div>
 
                     <form onSubmit={handleCreateInvestment} className="space-y-2">
@@ -1790,7 +1790,7 @@ export default function PersonalWorkspace({
                           placeholder="Investment Asset Name"
                           value={invName}
                           onChange={(e) => setInvName(e.target.value)}
-                          className="bg-white dark:bg-slate-800 border rounded p-1.5 text-[11px]"
+                          className="bg-white border rounded p-1.5 text-[11px]"
                         />
                         <input
                           type="number"
@@ -1798,14 +1798,14 @@ export default function PersonalWorkspace({
                           placeholder="Principal Value"
                           value={invValue || ""}
                           onChange={(e) => setInvValue(parseFloat(e.target.value) || 0)}
-                          className="bg-white dark:bg-slate-800 border rounded p-1.5 text-[11px] font-mono"
+                          className="bg-white border rounded p-1.5 text-[11px] font-mono"
                         />
                       </div>
                       <div className="grid grid-cols-3 gap-2">
                         <select
                           value={invType}
                           onChange={(e) => setInvType(e.target.value as any)}
-                          className="bg-white dark:bg-slate-800 border rounded p-1.5 text-[11px]"
+                          className="bg-white border rounded p-1.5 text-[11px]"
                         >
                           <option value="Treasury Bill">Treasury Bill</option>
                           <option value="Mutual Fund">Mutual Fund</option>
@@ -1820,14 +1820,14 @@ export default function PersonalWorkspace({
                           placeholder="Institution Name"
                           value={invInst}
                           onChange={(e) => setInvInst(e.target.value)}
-                          className="bg-white dark:bg-slate-800 border rounded p-1.5 text-[11px]"
+                          className="bg-white border rounded p-1.5 text-[11px]"
                         />
                         <input
                           type="number"
                           placeholder="Yield return %"
                           value={invReturn || ""}
                           onChange={(e) => setInvReturn(parseFloat(e.target.value) || 0)}
-                          className="bg-white dark:bg-slate-800 border rounded p-1.5 text-[11px]"
+                          className="bg-white border rounded p-1.5 text-[11px]"
                         />
                       </div>
                       <button type="submit" className="w-full bg-slate-900 text-white font-bold p-2 rounded">Commit Asset Placement</button>
@@ -1847,12 +1847,12 @@ export default function PersonalWorkspace({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
             {/* Left side: Chat Console */}
-            <div className="lg:col-span-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 flex flex-col justify-between h-[520px]">
-              <div className="flex items-center gap-2 pb-2.5 border-b border-slate-100 dark:border-slate-700">
-                <BrainCircuit className="w-5 h-5 text-emerald-500 dark:text-emerald-400 animate-pulse" />
+            <div className="lg:col-span-8 bg-white border border-slate-200 rounded-3xl p-5 flex flex-col justify-between h-[520px]">
+              <div className="flex items-center gap-2 pb-2.5 border-b border-slate-100">
+                <BrainCircuit className="w-5 h-5 text-emerald-500 animate-pulse" />
                 <div>
-                  <h3 className="font-bold text-slate-800 dark:text-slate-200 text-xs font-sans">Active AI Financial Coaching Panel</h3>
-                  <span className="text-[9px] text-slate-400 font-mono">Secured Sandbox Engine • Realtime Context</span>
+                  <h3 className="font-bold text-slate-850 text-xs font-sans">Active AI Financial Coaching Panel</h3>
+                  <span className="text-[9px] text-slate-450 font-mono">Secured Sandbox Engine • Realtime Context</span>
                 </div>
               </div>
 
@@ -1861,14 +1861,14 @@ export default function PersonalWorkspace({
                 {coachChat.map((msg, idx) => (
                   <div key={idx} className={`flex gap-3 text-xs leading-relaxed max-w-[85%] ${msg.sender === "user" ? "ml-auto flex-row-reverse" : "mr-auto"}`}>
                     <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
- msg.sender === "coach" ? "bg-emerald-500 text-white" : "bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+ msg.sender === "coach" ? "bg-emerald-500 text-white" : "bg-slate-200 text-slate-700"
  }`}>
                       {msg.sender === "coach" ? <Robot className="w-4 h-4" /> : <User className="w-4 h-4" />}
                     </div>
                     
                     <div className={`p-3 rounded-2xl text-left shadow-sm ${
  msg.sender === "coach" 
- ? "bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-100 dark:border-slate-700" 
+ ? "bg-slate-50 text-slate-850 border border-slate-100" 
  : "bg-emerald-600 text-white font-medium"
  }`}>
                       {msg.text}
@@ -1879,7 +1879,7 @@ export default function PersonalWorkspace({
                 {isCoachLoading && (
                   <div className="flex gap-3 text-xs items-center mr-auto animate-pulse">
                     <div className="w-7 h-7 rounded-lg bg-emerald-500 text-white flex items-center justify-center"><Robot className="w-4 h-4" /></div>
-                    <div className="p-3 bg-slate-50 dark:bg-slate-900 text-slate-400 border border-slate-100 dark:border-slate-700 rounded-2xl">
+                    <div className="p-3 bg-slate-50 text-slate-450 border border-slate-100 rounded-2xl">
                       Thinking and auditing wallet entries...
                     </div>
                   </div>
@@ -1887,7 +1887,7 @@ export default function PersonalWorkspace({
               </div>
 
               {/* Chat Input form */}
-              <form onSubmit={handleSendChat} className="flex gap-2.5 border-t border-slate-100 dark:border-slate-700 pt-3">
+              <form onSubmit={handleSendChat} className="flex gap-2.5 border-t border-slate-100 pt-3">
                 <input
                   type="text"
                   required
@@ -1895,7 +1895,7 @@ export default function PersonalWorkspace({
                   value={chatInput}
                   onChange={(e) => setChatInput(e.target.value)}
                   placeholder="Ask e.g. How do I calculate a high-yield mutual fund? / Am I spending too much?"
-                  className="flex-1 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 outline-none font-sans"
+                  className="flex-1 bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-4 py-2.5 outline-none font-sans"
                 />
                 <button
                   type="submit"
@@ -1908,31 +1908,31 @@ export default function PersonalWorkspace({
             </div>
 
             {/* Right side: Advice panel */}
-            <div className="lg:col-span-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-5 space-y-4">
+            <div className="lg:col-span-4 bg-white border border-slate-200 rounded-3xl p-5 space-y-4">
               <span className="text-[10px] font-mono font-bold text-slate-400 uppercase block tracking-wider">Coach Auditing Observations</span>
               
               <div className="space-y-3 text-xs font-sans">
-                <div className="p-3 bg-slate-50 dark:bg-slate-900 border rounded-xl flex items-start gap-2.5">
-                  <Lightbulb className="w-4 h-4 mt-0.5 shrink-0 text-slate-500 dark:text-slate-400" />
+                <div className="p-3 bg-slate-50 border rounded-xl flex items-start gap-2.5">
+                  <Lightbulb className="w-4 h-4 mt-0.5 shrink-0 text-slate-500" />
                   <div>
-                    <h4 className="font-bold text-slate-800 dark:text-slate-200 text-[11px]">Primary Spend Outflow</h4>
-                    <p className="text-[10.5px] text-slate-500 dark:text-slate-400 mt-0.5">Your biggest spending category this month is <strong>{coachStats.topCategory !== "None" ? coachStats.topCategory : "not set yet"}</strong>.</p>
+                    <h4 className="font-bold text-slate-800 text-[11px]">Primary Spend Outflow</h4>
+                    <p className="text-[10.5px] text-slate-500 mt-0.5">Your biggest spending category this month is <strong>{coachStats.topCategory !== "None" ? coachStats.topCategory : "not set yet"}</strong>.</p>
                   </div>
                 </div>
 
-                <div className="p-3 bg-slate-50 dark:bg-slate-900 border rounded-xl flex items-start gap-2.5">
-                  <LucideLineChart className="w-4 h-4 mt-0.5 shrink-0 text-slate-500 dark:text-slate-400" />
+                <div className="p-3 bg-slate-50 border rounded-xl flex items-start gap-2.5">
+                  <LucideLineChart className="w-4 h-4 mt-0.5 shrink-0 text-slate-500" />
                   <div>
-                    <h4 className="font-bold text-slate-800 dark:text-slate-200 text-[11px]">Savings Target Pace</h4>
-                    <p className="text-[10.5px] text-slate-500 dark:text-slate-400 mt-0.5">You have satisfied <strong>{coachStats.savingsProgress}%</strong> of combined goals parameters.</p>
+                    <h4 className="font-bold text-slate-800 text-[11px]">Savings Target Pace</h4>
+                    <p className="text-[10.5px] text-slate-500 mt-0.5">You have satisfied <strong>{coachStats.savingsProgress}%</strong> of combined goals parameters.</p>
                   </div>
                 </div>
 
-                <div className="p-3 bg-slate-50 dark:bg-slate-900 border rounded-xl flex items-start gap-2.5">
-                  <LockKey className="w-4 h-4 mt-0.5 shrink-0 text-slate-500 dark:text-slate-400" />
+                <div className="p-3 bg-slate-50 border rounded-xl flex items-start gap-2.5">
+                  <LockKey className="w-4 h-4 mt-0.5 shrink-0 text-slate-500" />
                   <div>
-                    <h4 className="font-bold text-slate-800 dark:text-slate-200 text-[11px]">Financial Health Index</h4>
-                    <p className="text-[10.5px] text-slate-500 dark:text-slate-400 mt-0.5">Your Score is <strong>{healthScore}/100</strong>. Cap entertainment limits and fund emergency reserves to raise it.</p>
+                    <h4 className="font-bold text-slate-800 text-[11px]">Financial Health Index</h4>
+                    <p className="text-[10.5px] text-slate-500 mt-0.5">Your Score is <strong>{healthScore}/100</strong>. Cap entertainment limits and fund emergency reserves to raise it.</p>
                   </div>
                 </div>
               </div>

@@ -256,17 +256,17 @@ export default function CustomerCRM({
   };
 
   return (
-    <div id="customer-crm-root" className="grid grid-cols-1 lg:grid-cols-12 gap-6 text-slate-800 dark:text-slate-200">
+    <div id="customer-crm-root" className="grid grid-cols-1 lg:grid-cols-12 gap-6 text-slate-800">
       
       {/* LEFT: Customer List Panel Column */}
-      <div className="lg:col-span-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 flex flex-col gap-4 shadow-sm shadow-emerald-500/5">
+      <div className="lg:col-span-4 bg-white border border-slate-200 rounded-2xl p-5 flex flex-col gap-4 shadow-sm shadow-emerald-500/5">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1.5">
-              <Building className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <h3 className="text-sm font-bold text-slate-900 font-sans flex items-center gap-1.5">
+              <Building className="w-4 h-4 text-emerald-600" />
               SME Accounts Directory
             </h3>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-sans mt-0.5">
+            <p className="text-[11px] text-slate-500 font-sans mt-0.5">
               Clients registered under {currentBusiness.name}
             </p>
           </div>
@@ -288,7 +288,7 @@ export default function CustomerCRM({
                 }
                 setShowBulkImport(false);
               }}
-              className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 hover:dark:text-emerald-400 font-sans flex items-center gap-1 cursor-pointer bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-slate-300 hover:dark:border-slate-600 px-2 py-1 rounded-xl"
+              className="text-[11px] font-bold text-emerald-600 hover:text-emerald-750 font-sans flex items-center gap-1 cursor-pointer bg-slate-50 border border-slate-200 hover:border-slate-300 px-2 py-1 rounded-xl"
             >
               <Plus className="w-3.5 h-3.5" /> Register
             </button>
@@ -297,7 +297,7 @@ export default function CustomerCRM({
                 setShowBulkImport(!showBulkImport);
                 setIsAddingCustomer(false);
               }}
-              className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 hover:dark:text-indigo-400 font-sans flex items-center gap-1 cursor-pointer bg-indigo-50 dark:bg-indigo-900/40 border border-indigo-100 dark:border-indigo-700 hover:border-indigo-300 hover:dark:border-indigo-600 px-2 py-1 rounded-xl"
+              className="text-[11px] font-bold text-indigo-600 hover:text-indigo-750 font-sans flex items-center gap-1 cursor-pointer bg-indigo-50 border border-indigo-120 hover:border-indigo-300 px-2 py-1 rounded-xl"
             >
               <FileSpreadsheet className="w-3.5 h-3.5" /> Bulk CSV
             </button>
@@ -313,36 +313,36 @@ export default function CustomerCRM({
             placeholder="Search accounts directory..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-xl pl-9 pr-4 py-2.5 outline-none text-xs focus:border-emerald-500 font-sans shadow-inner"
+            className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl pl-9 pr-4 py-2.5 outline-none text-xs focus:border-emerald-500 font-sans shadow-inner"
           />
         </div>
 
         {notif && (
-          <div className="bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400 text-[11px] p-2.5 rounded-xl font-sans flex items-center gap-1.5">
+          <div className="bg-emerald-50 border border-emerald-250 text-emerald-700 text-[11px] p-2.5 rounded-xl font-sans flex items-center gap-1.5">
             <CheckCircle className="w-3.5 h-3.5 shrink-0" /> {notif}
           </div>
         )}
 
         {/* Bulk CSV Importer */}
         {showBulkImport && (
-          <div className="bg-indigo-50/40 dark:bg-indigo-900/40 border border-indigo-100 dark:border-indigo-700 rounded-xl p-4 space-y-4 text-xs animate-fade-in leading-relaxed">
-            <div className="flex justify-between items-center border-b border-indigo-200/30 dark:border-indigo-700/30 pb-2">
-              <h4 className="font-bold text-indigo-950 dark:text-indigo-300 font-sans flex items-center gap-1">
-                <FileSpreadsheet className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+          <div className="bg-indigo-50/40 border border-indigo-150 rounded-xl p-4 space-y-4 text-xs animate-fade-in leading-relaxed">
+            <div className="flex justify-between items-center border-b border-indigo-200/30 pb-2">
+              <h4 className="font-bold text-indigo-950 font-sans flex items-center gap-1">
+                <FileSpreadsheet className="w-4 h-4 text-indigo-600" />
                 Bulk Import CSV Contacts
               </h4>
               <button
                 onClick={() => setShowBulkImport(false)}
                 aria-label="Close"
-                className="text-slate-400 hover:text-slate-700 hover:dark:text-slate-300"
+                className="text-slate-450 hover:text-slate-700"
               >
                 <X className="w-3.5 h-3.5" weight="bold" />
               </button>
             </div>
 
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight font-sans">
+            <p className="text-[10px] text-slate-500 leading-tight font-sans">
               Expected column order (or comma-separated):<br/>
-              <code className="bg-white/80 dark:bg-slate-800/80 px-1 border rounded text-[9.5px] font-mono">name, email, phone, notes, category</code>
+              <code className="bg-white/80 px-1 border rounded text-[9.5px] font-mono">name, email, phone, notes, category</code>
             </p>
 
             <div
@@ -351,15 +351,15 @@ export default function CustomerCRM({
               onDrop={handleDrop}
               className={`border-2 border-dashed rounded-xl p-6 text-center transition-all cursor-pointer ${
                 dragOver 
-                  ? "border-emerald-600 bg-emerald-50/50 dark:bg-emerald-900/50" 
-                  : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-slate-400 hover:dark:border-slate-500"
+                  ? "border-emerald-600 bg-emerald-50/50" 
+                  : "border-slate-300 bg-white hover:border-slate-400"
               }`}
             >
               <FileSpreadsheet className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-              <p className="text-[11px] font-medium text-slate-700 dark:text-slate-300">
+              <p className="text-[11px] font-medium text-slate-750">
                 Drag and drop your contacts.csv file here
               </p>
-              <p className="text-[9px] text-slate-400 mt-1 font-sans">
+              <p className="text-[9px] text-slate-450 mt-1 font-sans">
                 Or click browse below to select a local file
               </p>
               
@@ -385,7 +385,7 @@ export default function CustomerCRM({
             </div>
 
             {csvError && (
-              <p className="text-[10px] text-rose-600 dark:text-rose-400 font-semibold font-mono bg-rose-50 dark:bg-rose-900/40 p-2 rounded-lg border border-rose-100 dark:border-rose-700">
+              <p className="text-[10px] text-rose-600 font-semibold font-mono bg-rose-50 p-2 rounded-lg border border-rose-150">
                 {csvError}
               </p>
             )}
@@ -394,13 +394,13 @@ export default function CustomerCRM({
 
         {/* Add customer form */}
         {isAddingCustomer && (
-          <form onSubmit={handleSaveCustomer} className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 space-y-3.5 text-xs animate-fade-in leading-relaxed">
-            <h4 className="font-bold text-slate-900 dark:text-slate-100 font-sans border-b border-slate-100 dark:border-slate-700 pb-2">
+          <form onSubmit={handleSaveCustomer} className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3.5 text-xs animate-fade-in leading-relaxed">
+            <h4 className="font-bold text-slate-900 font-sans border-b border-slate-150 pb-2">
               {editingCustomerId ? "Edit Account Record" : "New Account Record"}
             </h4>
 
             {saveError && (
-              <div className="bg-rose-50 dark:bg-rose-900/40 border border-rose-200 dark:border-rose-700 text-rose-700 dark:text-rose-400 text-[11px] font-semibold rounded-lg p-2.5 flex items-start gap-1.5">
+              <div className="bg-rose-50 border border-rose-200 text-rose-700 text-[11px] font-semibold rounded-lg p-2.5 flex items-start gap-1.5">
                 <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                 <span>{saveError}</span>
               </div>
@@ -415,7 +415,7 @@ export default function CustomerCRM({
                 placeholder="e.g. Alaba Fabrics Ltd"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 outline-none text-xs"
+                className="w-full bg-white text-slate-800 border border-slate-200 rounded-lg px-2.5 py-1.5 outline-none text-xs"
               />
             </div>
 
@@ -427,7 +427,7 @@ export default function CustomerCRM({
                   placeholder="+233 24 123..."
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 outline-none text-xs"
+                  className="w-full bg-white text-slate-800 border border-slate-200 rounded-lg px-2.5 py-1.5 outline-none text-xs"
                 />
               </div>
               <div>
@@ -437,7 +437,7 @@ export default function CustomerCRM({
                   placeholder="name@company.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 outline-none text-xs"
+                  className="w-full bg-white text-slate-800 border border-slate-200 rounded-lg px-2.5 py-1.5 outline-none text-xs"
                 />
               </div>
             </div>
@@ -447,7 +447,7 @@ export default function CustomerCRM({
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as any)}
-                className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5 outline-none text-xs cursor-pointer"
+                className="w-full bg-white text-slate-850 border border-slate-200 rounded-lg px-2 py-1.5 outline-none text-xs cursor-pointer"
               >
                 <option value="Creative Client">Creative Services Client</option>
                 <option value="Enterprise">SME / Corporate Account</option>
@@ -462,7 +462,7 @@ export default function CustomerCRM({
               <select
                 value={preferredCurrency}
                 onChange={(e) => setPreferredCurrency(e.target.value)}
-                className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5 outline-none text-xs cursor-pointer"
+                className="w-full bg-white text-slate-850 border border-slate-200 rounded-lg px-2 py-1.5 outline-none text-xs cursor-pointer"
               >
                 <option value="">Use this business's default currency</option>
                 {SUPPORTED_CURRENCY_CODES.map((code) => (
@@ -483,7 +483,7 @@ export default function CustomerCRM({
                 type="button"
                 onClick={resetForm}
                 disabled={isSaving}
-                className="px-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:dark:bg-slate-800 py-2.5 rounded-lg text-slate-600 dark:text-slate-300 font-semibold font-sans tracking-wide cursor-pointer text-xs transition-colors"
+                className="px-4 bg-white border border-slate-200 hover:bg-slate-100 py-2.5 rounded-lg text-slate-600 font-semibold font-sans tracking-wide cursor-pointer text-xs transition-colors"
               >
                 Cancel
               </button>
@@ -503,12 +503,12 @@ export default function CustomerCRM({
                 onClick={() => setSelectedCustomerId(cust.id)}
                 className={`w-full p-3 text-left rounded-xl flex items-center justify-between border transition-all cursor-pointer font-sans text-xs ${
                   isSelected 
-                    ? "bg-emerald-50 dark:bg-emerald-900/40 border-emerald-200 dark:border-emerald-700 text-emerald-900 dark:text-emerald-300 font-bold" 
-                    : "bg-white dark:bg-slate-800 border-transparent hover:bg-slate-50 hover:dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:border-slate-200 hover:dark:border-slate-700"
+                    ? "bg-emerald-50 border-emerald-200 text-emerald-900 font-bold" 
+                    : "bg-white border-transparent hover:bg-slate-50 text-slate-700 hover:border-slate-200"
                 }`}
               >
                 <div className="flex items-center gap-2.5">
-                  <div className={`p-1.5 rounded-lg ${isSelected ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400" : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"}`}>
+                  <div className={`p-1.5 rounded-lg ${isSelected ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>
                     <User className="w-4 h-4" />
                   </div>
                   <div>
@@ -518,16 +518,16 @@ export default function CustomerCRM({
                 </div>
 
                 <div className="text-right">
-                  <strong className={`font-mono text-xs block ${m.balance > 0 ? "text-amber-600 dark:text-amber-400 font-black" : "text-emerald-600 dark:text-emerald-400"}`}>
+                  <strong className={`font-mono text-xs block ${m.balance > 0 ? "text-amber-600 font-black" : "text-emerald-600"}`}>
                     {currencySymbol}{m.balance.toLocaleString()}
                   </strong>
-                  <span className="text-[9px] text-slate-400 block font-normal mt-0.5">Bal Due</span>
+                  <span className="text-[9px] text-slate-450 block font-normal mt-0.5">Bal Due</span>
                 </div>
               </button>
             );
           })}
           {filteredCustomers.length === 0 && (
-            <div className="text-center py-12 text-slate-500 dark:text-slate-400 italic text-xs font-sans">
+            <div className="text-center py-12 text-slate-500 italic text-xs font-sans">
               No matching business accounts registered yet.
             </div>
           )}
@@ -541,17 +541,17 @@ export default function CustomerCRM({
             const metrics = getCustomerMetrics(selectedCustomer.id);
 
             return (
-              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 space-y-6 shadow-sm shadow-emerald-500/5">
+              <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-6 shadow-sm shadow-emerald-500/5">
                 
                 {/* Profile Header card summary */}
-                <div className="flex flex-col sm:flex-row justify-between items-start gap-4 border-b border-slate-100 dark:border-slate-700 pb-5">
+                <div className="flex flex-col sm:flex-row justify-between items-start gap-4 border-b border-slate-100 pb-5">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-100 dark:border-emerald-700 text-emerald-600 dark:text-emerald-400 text-lg font-bold flex items-center justify-center font-mono">
+                    <div className="w-12 h-12 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-600 text-lg font-bold flex items-center justify-center font-mono">
                       {selectedCustomer.name.slice(0, 1).toUpperCase()}
                     </div>
                     <div>
-                      <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 font-sans">{selectedCustomer.name}</h3>
-                      <span className="text-[10px] font-mono bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded uppercase font-bold tracking-widest mt-1 inline-block">
+                      <h3 className="text-sm font-bold text-slate-900 font-sans">{selectedCustomer.name}</h3>
+                      <span className="text-[10px] font-mono bg-emerald-50 border border-emerald-200 text-emerald-700 px-2 py-0.5 rounded uppercase font-bold tracking-widest mt-1 inline-block">
                         {selectedCustomer.category}
                       </span>
                     </div>
@@ -568,7 +568,7 @@ export default function CustomerCRM({
 
                     <button
                       onClick={() => openEditForm(selectedCustomer)}
-                      className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold text-[11px] px-3 py-2 rounded-xl transition-all cursor-pointer"
+                      className="bg-white border border-slate-200 hover:bg-slate-100 text-slate-600 font-semibold text-[11px] px-3 py-2 rounded-xl transition-all cursor-pointer"
                     >
                       Edit
                     </button>
@@ -576,7 +576,7 @@ export default function CustomerCRM({
                     <button
                       onClick={() => setConfirmingDelete(true)}
                       disabled={isDeleting}
-                      className="bg-rose-50 dark:bg-rose-900/40 border border-rose-200 dark:border-rose-700 hover:bg-rose-100 hover:dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 p-2 rounded-xl transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-wait"
+                      className="bg-rose-50 border border-rose-200 hover:bg-rose-100 text-rose-600 p-2 rounded-xl transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-wait"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -585,35 +585,35 @@ export default function CustomerCRM({
 
                 {/* Grid info contact fields */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-sans">
-                  <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-700/60 p-3 rounded-xl flex items-center gap-2.5">
+                  <div className="bg-slate-50 border border-slate-250/60 p-3 rounded-xl flex items-center gap-2.5">
                     <Phone className="w-4 h-4 text-slate-400 shrink-0" />
                     <div>
                       <span className="text-[9px] font-mono text-slate-400 uppercase tracking-widest block">WhatsApp Carrier Channel</span>
-                      <strong className="text-slate-800 dark:text-slate-200">{selectedCustomer.phone}</strong>
+                      <strong className="text-slate-800">{selectedCustomer.phone}</strong>
                     </div>
                   </div>
-                  <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-700/60 p-3 rounded-xl flex items-center gap-2.5">
+                  <div className="bg-slate-50 border border-slate-250/60 p-3 rounded-xl flex items-center gap-2.5">
                     <Mail className="w-4 h-4 text-slate-400 shrink-0" />
                     <div>
                       <span className="text-[9px] font-mono text-slate-400 uppercase tracking-widest block">Email Statement Target</span>
-                      <strong className="text-slate-800 dark:text-slate-200">{selectedCustomer.email}</strong>
+                      <strong className="text-slate-800">{selectedCustomer.email}</strong>
                     </div>
                   </div>
                 </div>
 
                 {/* Consolidated Balance summaries widgets */}
                 <div className="grid grid-cols-3 gap-4">
-                  <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-4 rounded-xl shadow-inner text-center">
+                  <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl shadow-inner text-center">
                     <span className="text-[9px] font-mono text-slate-400 uppercase tracking-widest block mb-1">Invoice billing</span>
-                    <strong className="text-slate-900 dark:text-slate-100 font-mono text-sm leading-relaxed">{currencySymbol}{metrics.billed.toLocaleString()}</strong>
+                    <strong className="text-slate-900 font-mono text-sm leading-relaxed">{currencySymbol}{metrics.billed.toLocaleString()}</strong>
                   </div>
-                  <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-4 rounded-xl shadow-inner text-center">
+                  <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl shadow-inner text-center">
                     <span className="text-[9px] font-mono text-slate-400 uppercase tracking-widest block mb-1">Settled payments</span>
-                    <strong className="text-emerald-600 dark:text-emerald-400 font-mono text-sm leading-relaxed">{currencySymbol}{metrics.settled.toLocaleString()}</strong>
+                    <strong className="text-emerald-600 font-mono text-sm leading-relaxed">{currencySymbol}{metrics.settled.toLocaleString()}</strong>
                   </div>
-                  <div className="bg-amber-50 dark:bg-amber-900/40 border border-amber-100 dark:border-amber-700 p-4 rounded-xl shadow-inner text-center">
-                    <span className="text-[9px] font-mono text-amber-700 dark:text-amber-400 uppercase tracking-widest block mb-1">Remaining Balance</span>
-                    <strong className="text-amber-600 dark:text-amber-400 font-mono text-sm leading-relaxed">{currencySymbol}{metrics.balance.toLocaleString()}</strong>
+                  <div className="bg-amber-50 border border-amber-100 p-4 rounded-xl shadow-inner text-center">
+                    <span className="text-[9px] font-mono text-amber-700 uppercase tracking-widest block mb-1">Remaining Balance</span>
+                    <strong className="text-amber-600 font-mono text-sm leading-relaxed">{currencySymbol}{metrics.balance.toLocaleString()}</strong>
                   </div>
                 </div>
 
@@ -627,21 +627,21 @@ export default function CustomerCRM({
                     {transactions
                       .filter(t => t.customerId === selectedCustomer.id && t.businessId === currentBusiness.id)
                       .map(t => (
-                        <div key={t.id} className="bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700/80 rounded-xl p-3 flex justify-between items-center text-xs">
+                        <div key={t.id} className="bg-slate-50 border border-slate-200/80 rounded-xl p-3 flex justify-between items-center text-xs">
                           <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-mono bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400 p-1 rounded font-bold">{t.paymentMethod}</span>
+                            <span className="text-[10px] font-mono bg-emerald-50 border border-emerald-200 text-emerald-700 p-1 rounded font-bold">{t.paymentMethod}</span>
                             <div>
-                              <p className="font-semibold text-slate-800 dark:text-slate-200 font-sans">{t.description}</p>
+                              <p className="font-semibold text-slate-850 font-sans">{t.description}</p>
                               <span className="text-[9px] text-slate-400 block mt-0.5">{t.date}</span>
                             </div>
                           </div>
-                          <strong className="text-emerald-600 dark:text-emerald-400 font-semibold font-mono">
+                          <strong className="text-emerald-600 font-semibold font-mono">
                             +{currencySymbol}{t.amount.toLocaleString()}
                           </strong>
                         </div>
                       ))}
                     {transactions.filter(t => t.customerId === selectedCustomer.id && t.businessId === currentBusiness.id).length === 0 && (
-                      <div className="text-center py-6 text-slate-400 italic text-[11px] font-sans border border-dashed border-slate-200 dark:border-slate-700 rounded-xl">
+                      <div className="text-center py-6 text-slate-450 italic text-[11px] font-sans border border-dashed border-slate-200 rounded-xl">
                         No settled mobile money logs mapped under this specific client. Get invoices settled to fill historical logs!
                       </div>
                     )}
@@ -652,7 +652,7 @@ export default function CustomerCRM({
             );
           })()
         ) : (
-          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-16 text-center italic text-slate-400 text-xs font-sans shadow-sm shadow-emerald-500/5">
+          <div className="bg-white border border-slate-200 rounded-2xl p-16 text-center italic text-slate-450 text-xs font-sans shadow-sm shadow-emerald-500/5">
             Select or register a client account profile from the sidebar to inspect consolidated ledger activities.
           </div>
         )}

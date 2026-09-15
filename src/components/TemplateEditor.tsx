@@ -191,18 +191,18 @@ export default function TemplateEditor({
 
   return (
     <div role="dialog" aria-modal="true" aria-label="Template Editor" className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 text-left">
-      <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl w-full max-w-6xl max-h-[92vh] flex flex-col overflow-hidden">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-6xl max-h-[92vh] flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="p-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between gap-3 shrink-0">
+        <div className="p-4 border-b border-slate-200 flex items-center justify-between gap-3 shrink-0">
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="font-bold text-sm text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 outline-none focus:border-emerald-500 w-72"
+            className="font-bold text-sm text-slate-900 border border-slate-200 rounded-lg px-3 py-1.5 outline-none focus:border-emerald-500 w-72"
             placeholder="Design name"
           />
           <div className="flex items-center gap-2">
-            {error && <span className="text-[11px] text-rose-600 dark:text-rose-400 font-bold">{error}</span>}
-            <button type="button" onClick={onClose} className="text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-slate-800 hover:dark:text-slate-200 px-3 py-2 cursor-pointer">
+            {error && <span className="text-[11px] text-rose-600 font-bold">{error}</span>}
+            <button type="button" onClick={onClose} className="text-xs font-bold text-slate-500 hover:text-slate-800 px-3 py-2 cursor-pointer">
               Cancel
             </button>
             <button
@@ -218,25 +218,25 @@ export default function TemplateEditor({
 
         <div className="flex flex-1 min-h-0">
           {/* Toolbar */}
-          <div className="w-44 border-r border-slate-200 dark:border-slate-700 p-3 space-y-2 shrink-0 overflow-y-auto">
+          <div className="w-44 border-r border-slate-200 p-3 space-y-2 shrink-0 overflow-y-auto">
             <p className="text-[9px] font-mono uppercase tracking-wider text-slate-400 font-bold mb-1">Add Block</p>
-            <button type="button" onClick={addTextBlock} className="w-full flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 hover:dark:bg-slate-700 rounded-lg px-3 py-2 cursor-pointer">
+            <button type="button" onClick={addTextBlock} className="w-full flex items-center gap-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg px-3 py-2 cursor-pointer">
               <TextT className="w-3.5 h-3.5" /> Text
             </button>
-            <button type="button" onClick={addDataFieldBlock} className="w-full flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 hover:dark:bg-slate-700 rounded-lg px-3 py-2 cursor-pointer">
+            <button type="button" onClick={addDataFieldBlock} className="w-full flex items-center gap-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg px-3 py-2 cursor-pointer">
               <Tag className="w-3.5 h-3.5" /> Data Field
             </button>
             <button
               type="button"
               onClick={addItemsTableBlock}
               disabled={layout.blocks.some((b) => b.type === "itemsTable")}
-              className="w-full flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 hover:dark:bg-slate-700 rounded-lg px-3 py-2 cursor-pointer disabled:opacity-40"
+              className="w-full flex items-center gap-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg px-3 py-2 cursor-pointer disabled:opacity-40"
             >
               <Table className="w-3.5 h-3.5" /> Line Items Table
             </button>
 
             {selectedBlock && (
-              <div className="pt-3 mt-3 border-t border-slate-200 dark:border-slate-700 space-y-2.5">
+              <div className="pt-3 mt-3 border-t border-slate-200 space-y-2.5">
                 <p className="text-[9px] font-mono uppercase tracking-wider text-slate-400 font-bold">Selected Block</p>
 
                 {selectedBlock.type === "text" && (
@@ -244,7 +244,7 @@ export default function TemplateEditor({
                     value={selectedBlock.content ?? ""}
                     onChange={(e) => updateBlock(selectedBlock.id, { content: e.target.value })}
                     rows={2}
-                    className="w-full text-xs border border-slate-200 dark:border-slate-700 rounded-lg p-2 outline-none focus:border-emerald-500 resize-none"
+                    className="w-full text-xs border border-slate-200 rounded-lg p-2 outline-none focus:border-emerald-500 resize-none"
                   />
                 )}
 
@@ -252,7 +252,7 @@ export default function TemplateEditor({
                   <select
                     value={selectedBlock.binding}
                     onChange={(e) => updateBlock(selectedBlock.id, { binding: e.target.value })}
-                    className="w-full text-xs border border-slate-200 dark:border-slate-700 rounded-lg p-2 outline-none focus:border-emerald-500"
+                    className="w-full text-xs border border-slate-200 rounded-lg p-2 outline-none focus:border-emerald-500"
                   >
                     {DATA_BINDING_FIELDS.map((f) => (
                       <option key={f.key} value={f.key}>
@@ -269,14 +269,14 @@ export default function TemplateEditor({
                       type="number"
                       value={selectedBlock.fontSize ?? 14}
                       onChange={(e) => updateBlock(selectedBlock.id, { fontSize: Number(e.target.value) })}
-                      className="w-full text-xs border border-slate-200 dark:border-slate-700 rounded-lg p-2 outline-none focus:border-emerald-500"
+                      className="w-full text-xs border border-slate-200 rounded-lg p-2 outline-none focus:border-emerald-500"
                     />
                     <label className="text-[9px] font-mono text-slate-400 uppercase block">Color</label>
                     <input
                       type="color"
                       value={selectedBlock.color ?? "#0f172a"}
                       onChange={(e) => updateBlock(selectedBlock.id, { color: e.target.value })}
-                      className="w-full h-8 rounded-lg border border-slate-200 dark:border-slate-700 cursor-pointer"
+                      className="w-full h-8 rounded-lg border border-slate-200 cursor-pointer"
                     />
                     <label className="text-[9px] font-mono text-slate-400 uppercase block">Align</label>
                     <div className="flex gap-1">
@@ -286,7 +286,7 @@ export default function TemplateEditor({
                           type="button"
                           onClick={() => updateBlock(selectedBlock.id, { align: a })}
                           className={`flex-1 text-[10px] font-bold py-1.5 rounded-md cursor-pointer ${
-                            selectedBlock.align === a ? "bg-emerald-600 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
+                            selectedBlock.align === a ? "bg-emerald-600 text-white" : "bg-slate-100 text-slate-600"
                           }`}
                         >
                           {a[0].toUpperCase()}
@@ -299,7 +299,7 @@ export default function TemplateEditor({
                 <button
                   type="button"
                   onClick={deleteSelectedBlock}
-                  className="w-full flex items-center justify-center gap-1.5 text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/40 hover:bg-rose-100 hover:dark:bg-rose-900/40 rounded-lg px-3 py-2 cursor-pointer mt-2"
+                  className="w-full flex items-center justify-center gap-1.5 text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg px-3 py-2 cursor-pointer mt-2"
                 >
                   <Trash className="w-3.5 h-3.5" /> Delete Block
                 </button>
@@ -308,7 +308,7 @@ export default function TemplateEditor({
           </div>
 
           {/* Canvas */}
-          <div className="flex-1 overflow-auto bg-slate-100 dark:bg-slate-800 p-8 flex justify-center">
+          <div className="flex-1 overflow-auto bg-slate-100 p-8 flex justify-center">
             <div
               ref={canvasRef}
               onPointerMove={handlePointerMove}
@@ -326,12 +326,12 @@ export default function TemplateEditor({
                 <div
                   key={block.id}
                   onPointerDown={(e) => handlePointerDownOnBlock(e, block)}
-                  className={`absolute cursor-move border ${selectedBlockId === block.id ? "border-emerald-500" : "border-transparent hover:border-slate-300 hover:dark:border-slate-600"}`}
+                  className={`absolute cursor-move border ${selectedBlockId === block.id ? "border-emerald-500" : "border-transparent hover:border-slate-300"}`}
                   style={{ left: block.x, top: block.y, width: block.width, height: block.height }}
                 >
                   {block.type === "itemsTable" ? (
-                    <div className="w-full h-full border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden bg-white dark:bg-slate-800 pointer-events-none">
-                      <div className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 px-3 py-2 text-[10px] font-bold text-slate-500 dark:text-slate-400 grid grid-cols-4">
+                    <div className="w-full h-full border border-slate-200 rounded-lg overflow-hidden bg-white pointer-events-none">
+                      <div className="bg-slate-50 border-b border-slate-200 px-3 py-2 text-[10px] font-bold text-slate-500 grid grid-cols-4">
                         <span>Description</span>
                         <span className="text-center">Qty</span>
                         <span className="text-right">Rate</span>

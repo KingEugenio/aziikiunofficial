@@ -53,15 +53,15 @@ export default function Phase3Commit({ step, onEmailContinue, onFinishToCreateAc
             <p className="text-[11px] font-bold uppercase tracking-widest text-[color:var(--color-onboard-teal)] mb-2 font-mono">
               Save your progress
             </p>
-            <h1 className="text-2xl font-heading font-extrabold text-slate-900 dark:text-slate-100 mb-2">
+            <h1 className="text-2xl font-heading font-extrabold text-slate-900 mb-2">
               Don't lose what you just saw
             </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
+            <p className="text-sm text-slate-500 mb-6 leading-relaxed">
               Enter your email and we'll take you straight to setting up your account so everything you add is saved to the cloud.
             </p>
 
             {errorMsg && (
-              <div className="bg-rose-50 dark:bg-rose-900/40 border border-rose-200 dark:border-rose-700 text-rose-700 dark:text-rose-400 text-xs font-semibold rounded-xl p-3 mb-4 text-left">
+              <div className="bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold rounded-xl p-3 mb-4 text-left">
                 {errorMsg}
               </div>
             )}
@@ -73,7 +73,7 @@ export default function Phase3Commit({ step, onEmailContinue, onFinishToCreateAc
                 placeholder="you@business.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm outline-none focus:border-[color:var(--color-onboard-teal)] transition-colors font-sans"
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-[color:var(--color-onboard-teal)] transition-colors font-sans"
               />
               <button
                 type="submit"
@@ -96,10 +96,10 @@ export default function Phase3Commit({ step, onEmailContinue, onFinishToCreateAc
             <p className="text-[11px] font-bold uppercase tracking-widest text-[color:var(--color-onboard-teal)] mb-2 font-mono">
               Launch Edition
             </p>
-            <h1 className="text-2xl font-heading font-extrabold text-slate-900 dark:text-slate-100 mb-3 leading-tight">
+            <h1 className="text-2xl font-heading font-extrabold text-slate-900 mb-3 leading-tight">
               You're all set
             </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mb-8 leading-relaxed">
+            <p className="text-sm text-slate-500 mb-8 leading-relaxed">
               Aziiki is completely free to use right now. We'll let you know here in the app, well ahead of time, whenever paid plans are introduced down the line — nothing changes for you today.
             </p>
 

@@ -36,7 +36,7 @@ function SectionCheckboxes({ selected, onChange }: { selected: string[]; onChang
             key={opt.value}
             onClick={() => toggle(opt.value)}
             className={`text-[10px] font-bold px-2.5 py-1 rounded-lg border cursor-pointer transition-colors ${
-              active ? "bg-emerald-50 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-700" : "bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700"
+              active ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-slate-50 text-slate-500 border-slate-200"
             }`}
           >
             {opt.label}
@@ -108,29 +108,29 @@ export default function AdminsPanel() {
 
   return (
     <div className="space-y-6">
-      <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+      <p className="text-[11px] text-slate-500 leading-relaxed">
         As superadmin, you can grant admin access to any existing Aziiki account and choose exactly which parts of this
         portal they can reach. A new admin starts with nothing checked below - pick their sections deliberately.
       </p>
 
-      <form onSubmit={handleGrant} className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 space-y-3">
-        <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+      <form onSubmit={handleGrant} className="border border-slate-200 rounded-2xl p-4 space-y-3">
+        <h3 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
           <UserPlus className="w-3.5 h-3.5" /> Add an admin
         </h3>
-        <p className="text-[11px] text-slate-500 dark:text-slate-400">The person must already have an Aziiki account (this doesn't create one).</p>
+        <p className="text-[11px] text-slate-500">The person must already have an Aziiki account (this doesn't create one).</p>
         <input
           type="email"
           required
           placeholder="teammate@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
+          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
         />
         <div className="space-y-1">
-          <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Sections they can access</label>
+          <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Sections they can access</label>
           <SectionCheckboxes selected={newSections} onChange={setNewSections} />
         </div>
-        {error && <p className="text-[10px] text-rose-600 dark:text-rose-400">{error}</p>}
+        {error && <p className="text-[10px] text-rose-600">{error}</p>}
         <button
           type="submit"
           disabled={isGranting}
@@ -141,18 +141,18 @@ export default function AdminsPanel() {
       </form>
 
       <div className="space-y-2">
-        <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200">Current admins</h3>
+        <h3 className="text-xs font-bold text-slate-800">Current admins</h3>
         <LoadingSwap isLoading={loading} skeleton={<SkeletonAdminItemList />}>
           {admins.length === 0 ? (
             <p className="text-xs text-slate-400">No admins found.</p>
           ) : (
             admins.map((row) => (
-              <div key={row.id} className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 space-y-2.5">
+              <div key={row.id} className="border border-slate-200 rounded-2xl p-4 space-y-2.5">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2 min-w-0">
-                    <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">{row.email}</p>
+                    <p className="text-xs font-bold text-slate-900 truncate">{row.email}</p>
                     {row.isSuperAdmin && (
-                      <span className="shrink-0 text-[9px] font-mono uppercase tracking-wider text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/40 border border-amber-200 dark:border-amber-700 px-1.5 py-0.5 rounded flex items-center gap-1">
+                      <span className="shrink-0 text-[9px] font-mono uppercase tracking-wider text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded flex items-center gap-1">
                         <ShieldStar className="w-3 h-3" weight="fill" /> Superadmin
                       </span>
                     )}
@@ -162,7 +162,7 @@ export default function AdminsPanel() {
                       type="button"
                       onClick={() => handleRevoke(row)}
                       aria-label="Revoke admin access"
-                      className="text-slate-300 hover:text-rose-600 hover:dark:text-rose-400 cursor-pointer shrink-0"
+                      className="text-slate-300 hover:text-rose-600 cursor-pointer shrink-0"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>

@@ -5,26 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Aziiki — Your Business. Organized.</title>
 
-    <!-- Sets the light/dark theme before first paint, so there's no flash
-         of the wrong theme. A saved choice (from the in-app toggle) always
-         wins; otherwise this falls back to the OS's own light/dark setting.
-         Deliberately inline and synchronous, not a module script - this
-         must run and finish before any CSS paints. -->
-    <script>
-      (function () {
-        try {
-          var saved = localStorage.getItem("aziiki_theme");
-          var theme = saved === "dark" || saved === "light"
-            ? saved
-            : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-          document.documentElement.setAttribute("data-theme", theme);
-        } catch (e) {
-          // localStorage/matchMedia unavailable - just leave the default
-          // light theme in place.
-        }
-      })();
-    </script>
-
     <meta name="description" content="Aziiki — the free Business Operating System for African entrepreneurs. Track income, expenses, invoices, inventory, and net worth in one place.">
 
     <!-- Open Graph -->

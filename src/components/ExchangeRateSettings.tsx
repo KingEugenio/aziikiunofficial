@@ -97,38 +97,38 @@ export default function ExchangeRateSettings({ businessId, businessCurrency }: E
   };
 
   return (
-    <div id="exchange-rate-settings-root" className="space-y-4 text-slate-800 dark:text-slate-200 font-sans">
+    <div id="exchange-rate-settings-root" className="space-y-4 text-slate-800 font-sans">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-            <CurrencyIcon className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+          <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+            <CurrencyIcon className="w-4 h-4 text-emerald-600" />
             Exchange Rates
           </h3>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-[11px] text-slate-500 mt-0.5">
             Saved rates auto-fill when you create a document in a foreign currency. Business currency: {businessCurrency}.
           </p>
         </div>
         <button
           type="button"
           onClick={() => setIsAdding((v) => !v)}
-          className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 hover:dark:text-emerald-400 flex items-center gap-1 cursor-pointer bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-slate-300 hover:dark:border-slate-600 px-2 py-1 rounded-xl"
+          className="text-[11px] font-bold text-emerald-600 hover:text-emerald-750 flex items-center gap-1 cursor-pointer bg-slate-50 border border-slate-200 hover:border-slate-300 px-2 py-1 rounded-xl"
         >
           <Plus className="w-3.5 h-3.5" /> Add Rate
         </button>
       </div>
 
-      {error && <div className="bg-rose-50 dark:bg-rose-900/40 border border-rose-200 dark:border-rose-700 text-rose-700 dark:text-rose-400 p-2.5 rounded-xl text-xs">{error}</div>}
+      {error && <div className="bg-rose-50 border border-rose-200 text-rose-700 p-2.5 rounded-xl text-xs">{error}</div>}
 
       {isAdding && (
-        <form onSubmit={handleSave} className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 space-y-3 text-xs">
+        <form onSubmit={handleSave} className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3 text-xs">
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label htmlFor="fx-currency" className="text-[9px] font-mono font-bold text-slate-400 block">Currency</label>
+              <label htmlFor="fx-currency" className="text-[9px] font-mono font-bold text-slate-450 block">Currency</label>
               <select
                 id="fx-currency"
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
-                className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-lg px-2.5 py-1.5 border border-slate-200 dark:border-slate-700 mt-1 outline-none"
+                className="w-full bg-white text-slate-800 rounded-lg px-2.5 py-1.5 border border-slate-200 mt-1 outline-none"
               >
                 {SUPPORTED_CURRENCY_CODES.filter((c) => c !== businessCurrency).map((code) => (
                   <option key={code} value={code}>{code}</option>
@@ -136,7 +136,7 @@ export default function ExchangeRateSettings({ businessId, businessCurrency }: E
               </select>
             </div>
             <div>
-              <label htmlFor="fx-rate" className="text-[9px] font-mono font-bold text-slate-400 block">
+              <label htmlFor="fx-rate" className="text-[9px] font-mono font-bold text-slate-450 block">
                 1 {currency} = ? {businessCurrency}
               </label>
               <input
@@ -146,7 +146,7 @@ export default function ExchangeRateSettings({ businessId, businessCurrency }: E
                 step="0.0001"
                 value={rate}
                 onChange={(e) => setRate(Number(e.target.value) || 0)}
-                className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-lg px-2.5 py-1.5 border border-slate-200 dark:border-slate-700 mt-1 outline-none font-mono"
+                className="w-full bg-white text-slate-800 rounded-lg px-2.5 py-1.5 border border-slate-200 mt-1 outline-none font-mono"
               />
             </div>
           </div>
@@ -168,9 +168,9 @@ export default function ExchangeRateSettings({ businessId, businessCurrency }: E
             </div>
           ) : (
             rates.map((r) => (
-              <div key={r.id} className="border border-slate-200 dark:border-slate-700 rounded-xl p-3.5 bg-white dark:bg-slate-800 flex items-center justify-between text-xs gap-3">
+              <div key={r.id} className="border border-slate-200 rounded-xl p-3.5 bg-white flex items-center justify-between text-xs gap-3">
                 <div className="min-w-0">
-                  <p className="font-bold text-slate-900 dark:text-slate-100">1 {r.currency} = {r.rateToBusinessCurrency} {businessCurrency}</p>
+                  <p className="font-bold text-slate-900">1 {r.currency} = {r.rateToBusinessCurrency} {businessCurrency}</p>
                   <p className="text-slate-400 text-[9px] mt-0.5">
                     Updated {new Date(r.updatedAt).toLocaleDateString()} · {r.source}
                   </p>
@@ -179,7 +179,7 @@ export default function ExchangeRateSettings({ businessId, businessCurrency }: E
                   type="button"
                   onClick={() => handleRemove(r.id)}
                   aria-label={`Remove exchange rate for ${r.currency}`}
-                  className="w-7 h-7 bg-rose-50 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-700 rounded-lg flex items-center justify-center cursor-pointer hover:bg-rose-100 hover:dark:bg-rose-900/40 shrink-0"
+                  className="w-7 h-7 bg-rose-50 text-rose-600 border border-rose-100 rounded-lg flex items-center justify-center cursor-pointer hover:bg-rose-100 shrink-0"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>

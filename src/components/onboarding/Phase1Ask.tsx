@@ -39,10 +39,10 @@ export default function Phase1Ask({ step, answers, onAnswer }: Phase1AskProps) {
             <p className="text-[11px] font-bold uppercase tracking-widest text-[color:var(--color-onboard-teal)] mb-2 font-mono">
               Let's get to know your business
             </p>
-            <h1 className="text-2xl font-heading font-extrabold text-slate-900 dark:text-slate-100 mb-2">
+            <h1 className="text-2xl font-heading font-extrabold text-slate-900 mb-2">
               What kind of business do you run?
             </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
+            <p className="text-sm text-slate-500 mb-6">
               This changes what we show you next.
             </p>
             <div className="space-y-2.5">
@@ -71,10 +71,10 @@ export default function Phase1Ask({ step, answers, onAnswer }: Phase1AskProps) {
             <p className="text-[11px] font-bold uppercase tracking-widest text-[color:var(--color-onboard-teal)] mb-2 font-mono">
               {businessTypeLabel(answers.businessType) ?? "Your business"}
             </p>
-            <h1 className="text-2xl font-heading font-extrabold text-slate-900 dark:text-slate-100 mb-2">
+            <h1 className="text-2xl font-heading font-extrabold text-slate-900 mb-2">
               Roughly, what's your monthly revenue?
             </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
+            <p className="text-sm text-slate-500 mb-6">
               We'll scale your examples to match - no judgment, just context.
             </p>
             <div className="space-y-2.5">
@@ -102,10 +102,10 @@ export default function Phase1Ask({ step, answers, onAnswer }: Phase1AskProps) {
             <p className="text-[11px] font-bold uppercase tracking-widest text-[color:var(--color-onboard-teal)] mb-2 font-mono">
               Almost there
             </p>
-            <h1 className="text-2xl font-heading font-extrabold text-slate-900 dark:text-slate-100 mb-2">
+            <h1 className="text-2xl font-heading font-extrabold text-slate-900 mb-2">
               What's your biggest financial headache right now?
             </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
+            <p className="text-sm text-slate-500 mb-6">
               We'll show you exactly how Aziiki helps with this.
             </p>
             <div className="space-y-2.5">

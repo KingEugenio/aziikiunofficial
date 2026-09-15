@@ -18,9 +18,9 @@ interface TeamManagerProps {
 }
 
 const ROLE_STYLES: Record<Membership["role"], string> = {
-  Admin: "bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-400 border-indigo-200 dark:border-indigo-700",
-  Accountant: "bg-amber-50 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-700",
-  Staff: "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700",
+  Admin: "bg-indigo-50 text-indigo-700 border-indigo-200",
+  Accountant: "bg-amber-50 text-amber-700 border-amber-200",
+  Staff: "bg-slate-100 text-slate-600 border-slate-200",
 };
 
 const ROLE_OPTIONS: { value: Membership["role"]; label: string }[] = [
@@ -109,32 +109,32 @@ export default function TeamManager({ businessId }: TeamManagerProps) {
   };
 
   return (
-    <div id="team-manager-root" className="space-y-4 text-slate-800 dark:text-slate-200 font-sans">
+    <div id="team-manager-root" className="space-y-4 text-slate-800 font-sans">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-            <Users className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+          <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+            <Users className="w-4 h-4 text-emerald-600" />
             Team
           </h3>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-[11px] text-slate-500 mt-0.5">
             Invite people to help run this business. You keep full control as owner.
           </p>
         </div>
         <button
           type="button"
           onClick={() => setIsInviting((v) => !v)}
-          className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 hover:dark:text-emerald-400 flex items-center gap-1 cursor-pointer bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-slate-300 hover:dark:border-slate-600 px-2 py-1 rounded-xl"
+          className="text-[11px] font-bold text-emerald-600 hover:text-emerald-750 flex items-center gap-1 cursor-pointer bg-slate-50 border border-slate-200 hover:border-slate-300 px-2 py-1 rounded-xl"
         >
           <Plus className="w-3.5 h-3.5" /> Invite
         </button>
       </div>
 
-      {error && <div className="bg-rose-50 dark:bg-rose-900/40 border border-rose-200 dark:border-rose-700 text-rose-700 dark:text-rose-400 p-2.5 rounded-xl text-xs">{error}</div>}
+      {error && <div className="bg-rose-50 border border-rose-200 text-rose-700 p-2.5 rounded-xl text-xs">{error}</div>}
 
       {isInviting && (
-        <form onSubmit={handleInvite} className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 space-y-3 text-xs">
+        <form onSubmit={handleInvite} className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3 text-xs">
           <div>
-            <label htmlFor="team-invite-email" className="text-[9px] font-mono font-bold text-slate-400 block">
+            <label htmlFor="team-invite-email" className="text-[9px] font-mono font-bold text-slate-450 block">
               Email
             </label>
             <input
@@ -144,18 +144,18 @@ export default function TeamManager({ businessId }: TeamManagerProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="teammate@company.com"
-              className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-lg px-2.5 py-1.5 border border-slate-200 dark:border-slate-700 mt-1 outline-none"
+              className="w-full bg-white text-slate-800 rounded-lg px-2.5 py-1.5 border border-slate-200 mt-1 outline-none"
             />
           </div>
           <div>
-            <label htmlFor="team-invite-role" className="text-[9px] font-mono font-bold text-slate-400 block">
+            <label htmlFor="team-invite-role" className="text-[9px] font-mono font-bold text-slate-450 block">
               Role
             </label>
             <select
               id="team-invite-role"
               value={role}
               onChange={(e) => setRole(e.target.value as Membership["role"])}
-              className="w-full bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-lg px-2.5 py-1.5 border border-slate-200 dark:border-slate-700 mt-1 outline-none"
+              className="w-full bg-white text-slate-800 rounded-lg px-2.5 py-1.5 border border-slate-200 mt-1 outline-none"
             >
               {ROLE_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -184,10 +184,10 @@ export default function TeamManager({ businessId }: TeamManagerProps) {
             members.map((member) => (
               <div
                 key={member.id}
-                className="border border-slate-200 dark:border-slate-700 rounded-xl p-3.5 bg-white dark:bg-slate-800 flex items-center justify-between text-xs gap-3"
+                className="border border-slate-200 rounded-xl p-3.5 bg-white flex items-center justify-between text-xs gap-3"
               >
                 <div className="min-w-0">
-                  <p className="font-bold text-slate-900 dark:text-slate-100 truncate">{member.invitedEmail}</p>
+                  <p className="font-bold text-slate-900 truncate">{member.invitedEmail}</p>
                   <p className="text-slate-400 text-[9px] mt-0.5">
                     Invited {new Date(member.createdAt).toLocaleDateString()}
                   </p>
@@ -207,7 +207,7 @@ export default function TeamManager({ businessId }: TeamManagerProps) {
                     type="button"
                     onClick={() => handleRemove(member.id)}
                     aria-label={`Remove ${member.invitedEmail}`}
-                    className="w-7 h-7 bg-rose-50 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-700 rounded-lg flex items-center justify-center cursor-pointer hover:bg-rose-100 hover:dark:bg-rose-900/40"
+                    className="w-7 h-7 bg-rose-50 text-rose-600 border border-rose-100 rounded-lg flex items-center justify-center cursor-pointer hover:bg-rose-100"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>

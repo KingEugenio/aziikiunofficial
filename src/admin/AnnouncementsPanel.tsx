@@ -112,11 +112,11 @@ export default function AnnouncementsPanel() {
 
   return (
     <div className="space-y-6">
-      <form onSubmit={handleSend} className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 space-y-3">
-        <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+      <form onSubmit={handleSend} className="border border-slate-200 rounded-2xl p-4 space-y-3">
+        <h3 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
           <Megaphone className="w-3.5 h-3.5" /> Send a new announcement
         </h3>
-        <p className="text-[11px] text-slate-500 dark:text-slate-400">Shown as a dismissible banner, until dismissed. Pick which screen it shows on below.</p>
+        <p className="text-[11px] text-slate-500">Shown as a dismissible banner, until dismissed. Pick which screen it shows on below.</p>
         <input
           type="text"
           required
@@ -124,7 +124,7 @@ export default function AnnouncementsPanel() {
           placeholder="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
+          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
         />
         <textarea
           required
@@ -133,15 +133,15 @@ export default function AnnouncementsPanel() {
           placeholder="Message"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none text-xs resize-none focus:border-emerald-500"
+          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs resize-none focus:border-emerald-500"
         />
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div className="space-y-1">
-            <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Show on</label>
+            <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Show on</label>
             <select
               value={targetScreen}
               onChange={(e) => setTargetScreen(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
             >
               {TARGET_SCREEN_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -151,11 +151,11 @@ export default function AnnouncementsPanel() {
             </select>
           </div>
           <div className="space-y-1">
-            <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Plan</label>
+            <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Plan</label>
             <select
               value={targetTier}
               onChange={(e) => setTargetTier(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
             >
               {TARGET_TIER_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -165,11 +165,11 @@ export default function AnnouncementsPanel() {
             </select>
           </div>
           <div className="space-y-1">
-            <label className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Activity</label>
+            <label className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-widest block">Activity</label>
             <select
               value={targetActivity}
               onChange={(e) => setTargetActivity(e.target.value)}
-              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
             >
               {TARGET_ACTIVITY_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -184,7 +184,7 @@ export default function AnnouncementsPanel() {
           someone uses most isn't available yet - that would need feature-usage data synced to the server, which isn't
           built yet.
         </p>
-        {error && <p className="text-[10px] text-rose-600 dark:text-rose-400">{error}</p>}
+        {error && <p className="text-[10px] text-rose-600">{error}</p>}
         <button
           type="submit"
           disabled={isSending}
@@ -195,31 +195,31 @@ export default function AnnouncementsPanel() {
       </form>
 
       <div className="space-y-2">
-        <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200">Sent announcements</h3>
+        <h3 className="text-xs font-bold text-slate-800">Sent announcements</h3>
         <LoadingSwap isLoading={loading} skeleton={<SkeletonAdminItemList />}>
         {announcements.length === 0 ? (
           <p className="text-xs text-slate-400">Nothing sent yet.</p>
         ) : (
           announcements.map((a) => (
-            <div key={a.id} className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 flex items-start justify-between gap-4">
+            <div key={a.id} className="border border-slate-200 rounded-2xl p-4 flex items-start justify-between gap-4">
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <p className="text-xs font-bold text-slate-900 dark:text-slate-100">{a.title}</p>
-                  <span className="text-[9px] font-mono uppercase tracking-wider text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/40 px-1.5 py-0.5 rounded">
+                  <p className="text-xs font-bold text-slate-900">{a.title}</p>
+                  <span className="text-[9px] font-mono uppercase tracking-wider text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">
                     {targetScreenLabel(a.targetScreen)}
                   </span>
                   {a.targetTier !== "all" && (
-                    <span className="text-[9px] font-mono uppercase tracking-wider text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/40 px-1.5 py-0.5 rounded">
+                    <span className="text-[9px] font-mono uppercase tracking-wider text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded">
                       {targetTierLabel(a.targetTier)}
                     </span>
                   )}
                   {a.targetActivity !== "all" && (
-                    <span className="text-[9px] font-mono uppercase tracking-wider text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/40 px-1.5 py-0.5 rounded">
+                    <span className="text-[9px] font-mono uppercase tracking-wider text-teal-700 bg-teal-50 px-1.5 py-0.5 rounded">
                       {targetActivityLabel(a.targetActivity)}
                     </span>
                   )}
                 </div>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">{a.message}</p>
+                <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">{a.message}</p>
                 <p className="text-[9px] font-mono text-slate-400 mt-1.5">
                   {new Date(a.createdAt).toLocaleString()} · Seen by {a.readCount}
                 </p>
@@ -228,7 +228,7 @@ export default function AnnouncementsPanel() {
                 type="button"
                 onClick={() => handleToggleActive(a)}
                 className={`shrink-0 text-[10px] font-bold px-2.5 py-1.5 rounded-lg cursor-pointer ${
-                  a.isActive ? "bg-emerald-50 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-700" : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700"
+                  a.isActive ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-slate-100 text-slate-500 border border-slate-200"
                 }`}
               >
                 {a.isActive ? "Active" : "Inactive"}

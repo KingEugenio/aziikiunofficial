@@ -1,15 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
-/* Toggle-driven dark mode, not just OS preference: every `dark:` utility
-   in the app now applies when [data-theme="dark"] is set on <html> (see
-   index.html's pre-paint script, which sets it from localStorage or the
-   OS preference on first visit) or on any of its descendants - not only
-   when the OS itself is in dark mode. This is the standard Tailwind v4
-   way to make `dark:` mean "the app's own toggle" instead of only
-   `prefers-color-scheme`. */
-@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
-
 @theme {
   /* Montserrat is the site-wide font - body copy, headings, onboarding, and
      UI chrome all route through these three theme tokens, so this is the
@@ -75,11 +66,6 @@ body {
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-:root[data-theme="dark"] body {
-  background-color: #0f172a; /* slate-900 - same page-bg token the codemod maps bg-slate-50 to */
-  color: #f1f5f9; /* slate-100 */
-}
-
 /* Visible keyboard focus on every interactive element. Text inputs already
    got a focus cue from their own focus:border-* utility classes, but
    buttons, links, and selects across the app had no explicit focus style
@@ -98,16 +84,6 @@ textarea:focus-visible {
   border-radius: 2px;
 }
 
-:root[data-theme="dark"] button:focus-visible,
-:root[data-theme="dark"] a:focus-visible,
-:root[data-theme="dark"] [role="button"]:focus-visible,
-:root[data-theme="dark"] [tabindex]:focus-visible,
-:root[data-theme="dark"] input:focus-visible,
-:root[data-theme="dark"] select:focus-visible,
-:root[data-theme="dark"] textarea:focus-visible {
-  outline-color: #34d399; /* brighter emerald - #006837 doesn't read against a dark page */
-}
-
 /* Premium Design System Token Classes */
 .soft-card {
   background: #ffffff;
@@ -117,19 +93,9 @@ textarea:focus-visible {
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-:root[data-theme="dark"] .soft-card {
-  background: #1e293b;
-  border-color: rgba(51, 65, 85, 0.8);
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.24), 0 2px 8px -1px rgba(0, 0, 0, 0.16);
-}
-
 .soft-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 24px -4px rgba(148, 163, 184, 0.12), 0 4px 12px -2px rgba(148, 163, 184, 0.06);
-}
-
-:root[data-theme="dark"] .soft-card:hover {
-  box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.32), 0 4px 12px -2px rgba(0, 0, 0, 0.2);
 }
 
 .premium-glass {
@@ -138,12 +104,6 @@ textarea:focus-visible {
   -webkit-backdrop-filter: blur(12px) saturate(140%);
   border: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04);
-}
-
-:root[data-theme="dark"] .premium-glass {
-  background: rgba(15, 23, 42, 0.7);
-  border-color: rgba(51, 65, 85, 0.5);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.24);
 }
 
 .micro-press {
@@ -163,10 +123,6 @@ textarea:focus-visible {
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 9999px;
-}
-
-:root[data-theme="dark"] .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #475569;
 }
 
 /* Premium Skeleton Shimmer Animations */
@@ -190,23 +146,9 @@ textarea:focus-visible {
   animation: skeleton-shimmer 1.8s infinite linear;
 }
 
-:root[data-theme="dark"] .shimmer-bg {
-  background: linear-gradient(
-    90deg,
-    rgba(51, 65, 85, 0.6) 25%,
-    rgba(71, 85, 105, 0.9) 37%,
-    rgba(51, 65, 85, 0.6) 50%
-  );
-  background-size: 200% 100%;
-}
-
 .skeleton-pulse {
   background-color: rgba(226, 232, 240, 0.65);
   animation: pulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-:root[data-theme="dark"] .skeleton-pulse {
-  background-color: rgba(51, 65, 85, 0.65);
 }
 
 /* Respect the OS-level "reduce motion" accessibility setting: the shimmer
@@ -219,10 +161,6 @@ textarea:focus-visible {
   .skeleton-pulse {
     animation: none;
     background: rgba(226, 232, 240, 0.6);
-  }
-  :root[data-theme="dark"] .shimmer-bg,
-  :root[data-theme="dark"] .skeleton-pulse {
-    background: rgba(51, 65, 85, 0.6);
   }
 }
 

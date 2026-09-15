@@ -28,19 +28,19 @@ function SurveyResults({ surveyId, onClose }: { surveyId: string; onClose: () =>
   }, [surveyId]);
 
   return (
-    <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700 space-y-3">
+    <div className="mt-3 pt-3 border-t border-slate-100 space-y-3">
       {!results ? (
         <p className="text-[10px] text-slate-400">Loading results...</p>
       ) : results.responseCount === 0 ? (
         <p className="text-[10px] text-slate-400">No responses yet.</p>
       ) : (
         results.questions.map((q) => (
-          <div key={q.id} className="bg-slate-50 dark:bg-slate-900 rounded-xl p-3 space-y-1.5">
-            <p className="text-[11px] font-bold text-slate-700 dark:text-slate-300">{q.prompt}</p>
+          <div key={q.id} className="bg-slate-50 rounded-xl p-3 space-y-1.5">
+            <p className="text-[11px] font-bold text-slate-700">{q.prompt}</p>
             {q.type === "choice" ? (
               <div className="space-y-1">
                 {Object.entries(q.counts ?? {}).map(([option, count]) => (
-                  <div key={option} className="flex items-center justify-between text-[10px] text-slate-600 dark:text-slate-300">
+                  <div key={option} className="flex items-center justify-between text-[10px] text-slate-600">
                     <span>{option}</span>
                     <span className="font-mono font-bold">{count}</span>
                   </div>
@@ -49,7 +49,7 @@ function SurveyResults({ surveyId, onClose }: { surveyId: string; onClose: () =>
             ) : (
               <ul className="space-y-1 max-h-32 overflow-y-auto">
                 {(q.answers ?? []).map((answer, i) => (
-                  <li key={i} className="text-[10px] text-slate-600 dark:text-slate-300 border-b border-slate-100 dark:border-slate-700 pb-1 last:border-0">
+                  <li key={i} className="text-[10px] text-slate-600 border-b border-slate-100 pb-1 last:border-0">
                     {answer}
                   </li>
                 ))}
@@ -58,7 +58,7 @@ function SurveyResults({ surveyId, onClose }: { surveyId: string; onClose: () =>
           </div>
         ))
       )}
-      <button type="button" onClick={onClose} className="text-[10px] font-bold text-slate-400 hover:text-slate-700 hover:dark:text-slate-300 cursor-pointer">
+      <button type="button" onClick={onClose} className="text-[10px] font-bold text-slate-400 hover:text-slate-700 cursor-pointer">
         Hide results
       </button>
     </div>
@@ -128,8 +128,8 @@ export default function SurveysPanel() {
 
   return (
     <div className="space-y-6">
-      <form onSubmit={handleCreate} className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 space-y-3">
-        <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+      <form onSubmit={handleCreate} className="border border-slate-200 rounded-2xl p-4 space-y-3">
+        <h3 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
           <ClipboardText className="w-3.5 h-3.5" /> Create a new survey
         </h3>
         <input
@@ -139,7 +139,7 @@ export default function SurveysPanel() {
           placeholder="Survey title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
+          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
         />
         <input
           type="text"
@@ -147,24 +147,24 @@ export default function SurveysPanel() {
           placeholder="Description (optional)"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
+          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none text-xs focus:border-emerald-500"
         />
 
         <div className="space-y-2.5">
           {questions.map((q, i) => (
-            <div key={q.id} className="bg-slate-50 dark:bg-slate-900 rounded-xl p-3 space-y-2">
+            <div key={q.id} className="bg-slate-50 rounded-xl p-3 space-y-2">
               <div className="flex items-center gap-2">
                 <input
                   type="text"
                   placeholder={`Question ${i + 1}`}
                   value={q.prompt}
                   onChange={(e) => updateQuestion(q.id, { prompt: e.target.value })}
-                  className="flex-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-[11px] outline-none focus:border-emerald-500"
+                  className="flex-1 bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-[11px] outline-none focus:border-emerald-500"
                 />
                 <select
                   value={q.type}
                   onChange={(e) => updateQuestion(q.id, { type: e.target.value as "text" | "choice", options: e.target.value === "choice" ? [""] : undefined })}
-                  className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5 text-[11px] outline-none"
+                  className="bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-[11px] outline-none"
                 >
                   <option value="text">Free text</option>
                   <option value="choice">Multiple choice</option>
@@ -174,7 +174,7 @@ export default function SurveysPanel() {
                     type="button"
                     onClick={() => setQuestions((prev) => prev.filter((x) => x.id !== q.id))}
                     aria-label="Remove question"
-                    className="text-slate-400 hover:text-rose-600 hover:dark:text-rose-400 cursor-pointer"
+                    className="text-slate-400 hover:text-rose-600 cursor-pointer"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -193,14 +193,14 @@ export default function SurveysPanel() {
                           next[oi] = e.target.value;
                           updateQuestion(q.id, { options: next });
                         }}
-                        className="flex-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-[11px] outline-none focus:border-emerald-500"
+                        className="flex-1 bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-[11px] outline-none focus:border-emerald-500"
                       />
                     </div>
                   ))}
                   <button
                     type="button"
                     onClick={() => updateQuestion(q.id, { options: [...(q.options ?? [""]), ""] })}
-                    className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
+                    className="text-[10px] font-bold text-emerald-600 hover:underline cursor-pointer"
                   >
                     + Add option
                   </button>
@@ -211,13 +211,13 @@ export default function SurveysPanel() {
           <button
             type="button"
             onClick={() => setQuestions((prev) => [...prev, emptyQuestion()])}
-            className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer flex items-center gap-1"
+            className="text-[10px] font-bold text-emerald-600 hover:underline cursor-pointer flex items-center gap-1"
           >
             <Plus className="w-3 h-3" /> Add question
           </button>
         </div>
 
-        {error && <p className="text-[10px] text-rose-600 dark:text-rose-400">{error}</p>}
+        {error && <p className="text-[10px] text-rose-600">{error}</p>}
         <button
           type="submit"
           disabled={isSaving}
@@ -228,24 +228,24 @@ export default function SurveysPanel() {
       </form>
 
       <div className="space-y-2">
-        <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200">Surveys</h3>
+        <h3 className="text-xs font-bold text-slate-800">Surveys</h3>
         <LoadingSwap isLoading={loading} skeleton={<SkeletonAdminItemList />}>
         {surveys.length === 0 ? (
           <p className="text-xs text-slate-400">No surveys yet.</p>
         ) : (
           surveys.map((s) => (
-            <div key={s.id} className="border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
+            <div key={s.id} className="border border-slate-200 rounded-2xl p-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
-                  <p className="text-xs font-bold text-slate-900 dark:text-slate-100">{s.title}</p>
-                  {s.description && <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{s.description}</p>}
+                  <p className="text-xs font-bold text-slate-900">{s.title}</p>
+                  {s.description && <p className="text-[11px] text-slate-500 mt-0.5">{s.description}</p>}
                   <p className="text-[9px] font-mono text-slate-400 mt-1.5">{s.responseCount} response{s.responseCount === 1 ? "" : "s"}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <button
                     type="button"
                     onClick={() => setOpenResultsId(openResultsId === s.id ? null : s.id)}
-                    className="text-[10px] font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 hover:dark:text-slate-100 bg-slate-100 dark:bg-slate-800 px-2.5 py-1.5 rounded-lg cursor-pointer flex items-center gap-1"
+                    className="text-[10px] font-bold text-slate-600 hover:text-slate-900 bg-slate-100 px-2.5 py-1.5 rounded-lg cursor-pointer flex items-center gap-1"
                   >
                     <ChartBar className="w-3 h-3" /> Results
                   </button>
@@ -253,7 +253,7 @@ export default function SurveysPanel() {
                     type="button"
                     onClick={() => handleToggleActive(s)}
                     className={`text-[10px] font-bold px-2.5 py-1.5 rounded-lg cursor-pointer ${
-                      s.isActive ? "bg-emerald-50 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-700" : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700"
+                      s.isActive ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-slate-100 text-slate-500 border border-slate-200"
                     }`}
                   >
                     {s.isActive ? "Active" : "Inactive"}

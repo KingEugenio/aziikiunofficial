@@ -190,42 +190,42 @@ export default function AIFieldAssistant({
   };
 
   return (
-    <div id="ai-assistant-container" className="grid grid-cols-1 lg:grid-cols-12 gap-6 text-slate-800 dark:text-slate-200">
+    <div id="ai-assistant-container" className="grid grid-cols-1 lg:grid-cols-12 gap-6 text-slate-800">
       
       {/* LEFT: Business Diagnostic Cockpit Card */}
-      <div className="lg:col-span-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 flex flex-col gap-4 shadow-sm shadow-emerald-500/5">
+      <div className="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-5 flex flex-col gap-4 shadow-sm shadow-emerald-500/5">
         <div>
-          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 font-sans flex items-center gap-1.5">
-            <BrainCircuit className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+          <h3 className="text-sm font-bold text-slate-900 font-sans flex items-center gap-1.5">
+            <BrainCircuit className="w-5 h-5 text-emerald-600" />
             CFO Diagnostic Desk
           </h3>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 font-sans mt-0.5">
+          <p className="text-[11px] text-slate-500 font-sans mt-0.5">
             AI-driven audit telemetry based on active GHS ledger balances.
           </p>
         </div>
 
         {/* Dynamic Diagnostics visual boxes */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-3 rounded-xl">
+          <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl">
             <span className="text-[9px] font-mono text-slate-400 block tracking-widest uppercase">Current Liquidity</span>
-            <strong className="text-sm font-extrabold text-emerald-600 dark:text-emerald-400 font-mono mt-1 block">
+            <strong className="text-sm font-extrabold text-emerald-600 font-mono mt-1 block">
               {currencySymbol}{netProfit.toLocaleString()}
             </strong>
           </div>
-          <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-3 rounded-xl">
+          <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl">
             <span className="text-[9px] font-mono text-slate-400 block tracking-widest uppercase">Overdue Collections</span>
-            <strong className="text-sm font-extrabold text-amber-600 dark:text-amber-400 font-mono mt-1 block">
+            <strong className="text-sm font-extrabold text-amber-600 font-mono mt-1 block">
               {currencySymbol}{outstandingInvoices.toLocaleString()}
             </strong>
           </div>
         </div>
 
         {errorMessage && (
-          <div className="bg-rose-50 dark:bg-rose-900/40 border border-rose-200 dark:border-rose-700 text-rose-800 dark:text-rose-300 p-3.5 rounded-xl text-xs flex items-start gap-2 animate-fade-in font-sans">
-            <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
+          <div className="bg-rose-50 border border-rose-200 text-rose-800 p-3.5 rounded-xl text-xs flex items-start gap-2 animate-fade-in font-sans">
+            <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
             <div>
               <p className="font-bold">Execution Warning</p>
-              <p className="text-[11px] text-rose-700/90 dark:text-rose-400/90 leading-relaxed mt-0.5">{errorMessage}</p>
+              <p className="text-[11px] text-rose-700/90 leading-relaxed mt-0.5">{errorMessage}</p>
             </div>
           </div>
         )}
@@ -250,35 +250,35 @@ export default function AIFieldAssistant({
 
         {/* Diagnostic Results Card / Skeleton Loader */}
         {loading && !insights ? (
-          <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 space-y-4 animate-pulse">
-            <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-700/60 pb-2">
-              <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/3"></div>
-              <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/5"></div>
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-4 animate-pulse">
+            <div className="flex items-center justify-between border-b border-slate-200/60 pb-2">
+              <div className="h-4 bg-slate-200 rounded w-1/3"></div>
+              <div className="h-4 bg-slate-200 rounded w-1/5"></div>
             </div>
             <div className="space-y-3">
               <div className="space-y-1.5">
-                <div className="h-3.5 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
-                <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded w-full"></div>
-                <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded w-11/12"></div>
+                <div className="h-3.5 bg-slate-200 rounded w-1/2"></div>
+                <div className="h-3 bg-slate-150 rounded w-full"></div>
+                <div className="h-3 bg-slate-150 rounded w-11/12"></div>
               </div>
               <div className="space-y-1.5">
-                <div className="h-3.5 bg-slate-200 dark:bg-slate-700 rounded w-2/5"></div>
-                <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded w-5/6"></div>
+                <div className="h-3.5 bg-slate-200 rounded w-2/5"></div>
+                <div className="h-3 bg-slate-150 rounded w-5/6"></div>
               </div>
               <div className="space-y-1.5">
-                <div className="h-3.5 bg-slate-200 dark:bg-slate-700 rounded w-1/3"></div>
-                <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded w-2/3"></div>
+                <div className="h-3.5 bg-slate-200 rounded w-1/3"></div>
+                <div className="h-3 bg-slate-150 rounded w-2/3"></div>
               </div>
             </div>
           </div>
         ) : diagnosed && insights ? (
-          <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 space-y-4 text-xs leading-relaxed animate-fade-in">
-            <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-700/60 pb-2">
-              <span className="font-sans font-bold text-slate-900 dark:text-slate-100 block flex items-center gap-1">
-                <Sparkle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> Executive Scenarios
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-4 text-xs leading-relaxed animate-fade-in">
+            <div className="flex items-center justify-between border-b border-slate-200/60 pb-2">
+              <span className="font-sans font-bold text-slate-900 block flex items-center gap-1">
+                <Sparkle className="w-4 h-4 text-emerald-600" /> Executive Scenarios
               </span>
               <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded border ${
- insights.riskRating === "High" ? "bg-rose-50 dark:bg-rose-900/40 border-rose-200 dark:border-rose-700 text-rose-700 dark:text-rose-400" : "bg-emerald-50 dark:bg-emerald-900/40 border-emerald-200 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400"
+ insights.riskRating === "High" ? "bg-rose-50 border-rose-200 text-rose-700" : "bg-emerald-50 border-emerald-250 text-emerald-700"
  }`}>
                 RISK: {insights.riskRating || "Medium"}
               </span>
@@ -286,18 +286,18 @@ export default function AIFieldAssistant({
 
             <div className="space-y-3 font-sans">
               <div>
-                <strong className="text-slate-900 dark:text-slate-100 block mb-0.5">Stability Vector Index:</strong>
-                <p className="text-slate-600 dark:text-slate-300">{insights.growthDiagnosis}</p>
+                <strong className="text-slate-900 block mb-0.5">Stability Vector Index:</strong>
+                <p className="text-slate-650">{insights.growthDiagnosis}</p>
               </div>
               
               <div>
-                <strong className="text-slate-900 dark:text-slate-100 block mb-0.5">Mitigation Guardrails:</strong>
-                <p className="text-slate-600 dark:text-slate-300">{insights.hedgingTactics}</p>
+                <strong className="text-slate-900 block mb-0.5">Mitigation Guardrails:</strong>
+                <p className="text-slate-650">{insights.hedgingTactics}</p>
               </div>
 
               <div>
-                <strong className="text-slate-900 dark:text-slate-100 block mb-1">Immediate Prioritized Objectives:</strong>
-                <ul className="space-y-1 list-disc list-inside text-slate-600 dark:text-slate-300">
+                <strong className="text-slate-900 block mb-1">Immediate Prioritized Objectives:</strong>
+                <ul className="space-y-1 list-disc list-inside text-slate-650">
                   {insights.actionSteps?.map((step, i) => (
                     <li key={i}>{step}</li>
                   ))}
@@ -307,22 +307,22 @@ export default function AIFieldAssistant({
           </div>
         ) : null}
 
-        <p className="text-[11px] text-slate-500 dark:text-slate-400 font-sans leading-relaxed">
+        <p className="text-[11px] text-slate-500 font-sans leading-relaxed">
           The CFO intelligent advisor executes real-time simulations over GHS interest rate positions, supplier debt schedules, inflation projections, and customer receivables.
         </p>
       </div>
 
       {/* RIGHT: Chat Room Interactive Canvas */}
-      <div className="lg:col-span-7 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 flex flex-col justify-between h-[480px] shadow-sm shadow-emerald-500/5">
+      <div className="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between h-[480px] shadow-sm shadow-emerald-500/5">
         
         {/* Chat Room header */}
-        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3 mb-3 shrink-0">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3 shrink-0">
           <div className="flex items-center gap-2">
-            <div className="bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-100 dark:border-emerald-700 p-2 rounded-xl text-emerald-600 dark:text-emerald-400">
+            <div className="bg-emerald-50 border border-emerald-100 p-2 rounded-xl text-emerald-600">
               <MessageSquare className="w-4 h-4" />
             </div>
             <div>
-              <h4 className="font-bold text-slate-900 dark:text-slate-100 font-sans text-xs">Simulate Inflation Scenarios</h4>
+              <h4 className="font-bold text-slate-900 font-sans text-xs">Simulate Inflation Scenarios</h4>
               <p className="text-[10px] text-slate-400 font-mono tracking-wide mt-0.5">AI Engine Level Active</p>
             </div>
           </div>
@@ -340,8 +340,8 @@ export default function AIFieldAssistant({
               >
                 <div className={`max-w-[85%] rounded-xl p-3.5 border font-sans ${
  isCfo 
- ? "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 shadow-sm" 
- : "bg-emerald-50 dark:bg-emerald-900/40 border-emerald-200 dark:border-emerald-700 text-emerald-900 dark:text-emerald-300 font-semibold"
+ ? "bg-white border-slate-200 text-slate-800 shadow-sm" 
+ : "bg-emerald-50 border-emerald-250 text-emerald-900 font-semibold"
  }`}>
                   <p>{msg.text}</p>
                 </div>
@@ -350,21 +350,21 @@ export default function AIFieldAssistant({
           })}
           {loading && (
             <div className="flex justify-start w-full max-w-[85%] animate-pulse">
-              <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3.5 w-full space-y-2">
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 w-full space-y-2">
                 <div className="flex items-center gap-1.5 mb-1 text-slate-400 font-medium">
                   <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-bounce"></div>
                   <span className="text-[10px] font-mono uppercase tracking-wider">Aziiki AI Computing...</span>
                 </div>
-                <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
-                <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-11/12"></div>
-                <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-4/5"></div>
+                <div className="h-3 bg-slate-200 rounded w-full"></div>
+                <div className="h-3 bg-slate-200 rounded w-11/12"></div>
+                <div className="h-3 bg-slate-200 rounded w-4/5"></div>
               </div>
             </div>
           )}
         </div>
 
         {/* Quick App Guide Presets */}
-        <div className="mt-3.5 pt-2.5 border-t border-slate-100 dark:border-slate-700 shrink-0">
+        <div className="mt-3.5 pt-2.5 border-t border-slate-100 shrink-0">
           <span className="text-[9px] font-mono text-slate-400 mb-1.5 uppercase font-bold tracking-wider text-left flex items-center gap-1.5">
             <Lightbulb className="w-3 h-3 shrink-0" /> Tap to ask how Aziiki works (Gemini AI Guide):
           </span>
@@ -375,7 +375,7 @@ export default function AIFieldAssistant({
                 type="button"
                 disabled={loading}
                 onClick={() => handleQuickQuestion(g.query)}
-                className="px-2.5 py-1 text-[10px] bg-slate-50 dark:bg-slate-900 hover:bg-emerald-50/70 hover:dark:bg-emerald-900/70 text-slate-700 dark:text-slate-300 hover:text-emerald-700 hover:dark:text-emerald-400 border border-slate-200 dark:border-slate-700 hover:border-emerald-200 hover:dark:border-emerald-700 rounded-xl transition-all cursor-pointer font-medium active:scale-95 inline-flex items-center gap-1"
+                className="px-2.5 py-1 text-[10px] bg-slate-50 hover:bg-emerald-50/70 text-slate-700 hover:text-emerald-700 border border-slate-200 hover:border-emerald-200 rounded-xl transition-all cursor-pointer font-medium active:scale-95 inline-flex items-center gap-1"
               >
                 <g.icon className="w-3 h-3 shrink-0" /> {g.title}
               </button>
@@ -391,7 +391,7 @@ export default function AIFieldAssistant({
             placeholder="Ask about Mobile Money integration, inflation, or tax compliance..."
             value={userQuery}
             onChange={(e) => setUserQuery(e.target.value)}
-            className="flex-1 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 rounded-xl px-4 py-2.5 border border-slate-200 dark:border-slate-700 text-xs outline-none focus:border-emerald-500 font-sans transition-all"
+            className="flex-1 bg-slate-50 text-slate-850 rounded-xl px-4 py-2.5 border border-slate-200 text-xs outline-none focus:border-emerald-500 font-sans transition-all"
           />
           <button
             type="submit"

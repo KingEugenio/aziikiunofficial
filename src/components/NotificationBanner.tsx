@@ -42,23 +42,23 @@ export default function NotificationBanner({ userEmail }: NotificationBannerProp
   };
 
   return (
-    <div className="mb-6 bg-amber-50 dark:bg-amber-900/40 border border-amber-200 dark:border-amber-700 rounded-2xl p-4 text-amber-900 dark:text-amber-300 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in text-left">
+    <div className="mb-6 bg-amber-50 border border-amber-200 rounded-2xl p-4 text-amber-900 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in text-left">
       <div className="flex items-start gap-3">
-        <div className="bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
+        <div className="bg-amber-100 text-amber-700 w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
           <Mail className="w-4.5 h-4.5" />
         </div>
         <div>
           <p className="text-xs font-extrabold">
             {unread.length === 1 ? "You have a new alert" : `You have ${unread.length} new alerts`} - check your email{userEmail ? ` (${userEmail})` : ""}
           </p>
-          <p className="text-[11px] text-amber-700 dark:text-amber-400 mt-0.5 leading-relaxed">{latest.title}: {latest.message}</p>
+          <p className="text-[11px] text-amber-700 mt-0.5 leading-relaxed">{latest.title}: {latest.message}</p>
         </div>
       </div>
       <button
         type="button"
         onClick={dismissAll}
         disabled={isDismissing}
-        className="shrink-0 flex items-center gap-1 bg-white dark:bg-slate-800 hover:bg-amber-100 hover:dark:bg-amber-900/40 border border-amber-200 dark:border-amber-700 text-amber-800 dark:text-amber-300 font-bold text-[10px] px-3 py-2 rounded-xl transition-colors cursor-pointer disabled:opacity-50"
+        className="shrink-0 flex items-center gap-1 bg-white hover:bg-amber-100 border border-amber-200 text-amber-800 font-bold text-[10px] px-3 py-2 rounded-xl transition-colors cursor-pointer disabled:opacity-50"
       >
         <X className="w-3.5 h-3.5" /> Dismiss
       </button>

@@ -53,17 +53,17 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   render() {
     if (this.state.error) {
       return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center p-4 font-sans">
-          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-8 shadow-xl max-w-md w-full text-center space-y-4">
-            <div className="w-12 h-12 bg-rose-50 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 rounded-2xl flex items-center justify-center mx-auto border border-rose-200 dark:border-rose-700">
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans">
+          <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-xl max-w-md w-full text-center space-y-4">
+            <div className="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center mx-auto border border-rose-200">
               <AlertCircle className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-sm font-black text-slate-900 dark:text-slate-100 uppercase tracking-widest">Something went wrong</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+              <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest">Something went wrong</h3>
+              <p className="text-xs text-slate-500 mt-2 leading-relaxed">
                 This part of Aziiki hit an unexpected error. Your data is safe - nothing was lost. Try again, and if it keeps happening, let us know what you were doing right before this appeared.
               </p>
-              <p className="text-[10px] text-slate-400 mt-3 font-mono break-words bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-2">
+              <p className="text-[10px] text-slate-400 mt-3 font-mono break-words bg-slate-50 border border-slate-200 rounded-lg p-2">
                 {this.state.error.message}
               </p>
             </div>
@@ -76,7 +76,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
               </button>
               <button
                 onClick={() => window.location.reload()}
-                className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold px-4 py-2.5 rounded-xl transition-colors cursor-pointer"
+                className="bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold px-4 py-2.5 rounded-xl transition-colors cursor-pointer"
               >
                 Reload Page
               </button>
