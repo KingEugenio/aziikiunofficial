@@ -29,6 +29,10 @@ interface MobileNavBarProps {
   upgradeUrl?: string | null;
   nextTier?: string | null;
   onLogout?: () => void;
+  /** Signed-in account's email - shown here instead of in the always-
+   * visible mobile header, which only ever showed a truncated address
+   * with no real use for the space it took up. */
+  userEmail?: string | null;
 }
 
 const PRIMARY_TABS = [
@@ -46,7 +50,7 @@ const PRIMARY_TABS = [
  * report this fixes. A fixed bottom tab bar is always fully visible with
  * no scrolling required, and is the standard mobile nav pattern.
  */
-export default function MobileNavBar({ activeTab, onChangeTab, isEnabled, tier, upgradeUrl, nextTier, onLogout }: MobileNavBarProps) {
+export default function MobileNavBar({ activeTab, onChangeTab, isEnabled, tier, upgradeUrl, nextTier, onLogout, userEmail }: MobileNavBarProps) {
   const [showMore, setShowMore] = useState(false);
 
   const visiblePrimaryTabs = PRIMARY_TABS.filter((tab) => isEnabled(tab.flag));
@@ -133,9 +137,18 @@ export default function MobileNavBar({ activeTab, onChangeTab, isEnabled, tier, 
               );
             })}
 
-            {/* Plan + sign out: last, and only here on mobile/tablet - the
-                desktop sidebar shows both directly instead (always
-                visible there, so no need to bury them in a sheet). */}
+            {/* Account email + Plan + sign out: last, and only here on
+                mobile/tablet - the desktop sidebar shows all three
+                directly instead (always visible there, so no need to
+                bury them in a sheet). */}
+            {userEmail && (
+              <div className="w-full flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-slate-50 mt-2">
+                <div className="w-8 h-8 rounded-xl bg-brand-teal text-white text-xs font-black flex items-center justify-center shadow-sm uppercase shrink-0">
+                  {userEmail[0] ?? "U"}
+                </div>
+                <span className="text-xs font-bold text-slate-800 truncate">{userEmail}</span>
+              </div>
+            )}
             {tier && (
               <div className="w-full flex items-center justify-between px-4 py-3 rounded-2xl bg-slate-50 mt-2">
                 <div className="flex flex-col">

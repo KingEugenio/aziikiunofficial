@@ -172,9 +172,14 @@ export default function App() {
     const requiredFlag = flagForTab[tab];
     if (requiredFlag && !isEnabled(requiredFlag)) {
       setActiveTab(getFallbackTab() ?? tab);
+      window.scrollTo({ top: 0 });
       return;
     }
     setActiveTab(tab);
+    // Tapping a nav icon should always open that screen at the top, not
+    // wherever the previous screen happened to be scrolled to - the user
+    // is still free to scroll down again once the new screen is open.
+    window.scrollTo({ top: 0 });
     if (tab === "reports") trackFeatureUsage("reportsGenerated");
     if (tab === "ai") trackFeatureUsage("aiQueries");
     if (tab === "guide") trackFeatureUsage("guideViews");
@@ -2068,31 +2073,45 @@ export default function App() {
         {/* User Container Footer Section */}
         <div className={`${sidebarCollapsed ? "hidden md:flex" : "flex"} md:flex-col items-center md:items-stretch gap-2.5 mt-auto pt-3 border-t border-slate-100`}>
           
-          {/* User Account Central State Indicator */}
-          <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-2xl p-2.5 w-full transition-colors duration-200 text-left">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-xl bg-brand-teal text-white text-xs font-black flex items-center justify-center shadow-md shadow-brand-navy/10 uppercase shrink-0">
-                {user ? (user.email?.[0] ?? "U") : "G"}
+          {/* User Account Central State Indicator - the signed-in account
+              email/avatar card is desktop/tablet only now (hidden md:flex);
+              it's shown instead in MobileNavBar's "More" sheet, alongside
+              sign-out, so the mobile header stays uncluttered. Guest mode's
+              "Sync" prompt stays visible on mobile too, since it's a real
+              call-to-action (not account info) and has no other mobile
+              entry point. */}
+          {user ? (
+            <div className="hidden md:flex items-center justify-between bg-slate-50 border border-slate-200 rounded-2xl p-2.5 w-full transition-colors duration-200 text-left">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-xl bg-brand-teal text-white text-xs font-black flex items-center justify-center shadow-md shadow-brand-navy/10 uppercase shrink-0">
+                  {user.email?.[0] ?? "U"}
+                </div>
+                <div className="flex flex-col text-left min-w-0">
+                  <span className="text-[10px] font-bold text-slate-800 truncate max-w-[110px]" title={user.email ?? "Signed in"}>
+                    {user.email ?? "Signed in"}
+                  </span>
+                </div>
               </div>
-              <div className="flex flex-col text-left min-w-0">
-                <span className="text-[10px] font-bold text-slate-800 truncate max-w-[110px]" title={user ? (user.email ?? "Signed in") : "Guest Session"}>
-                  {user ? (user.email ?? "Signed in") : "Guest Session"}
-                </span>
-              </div>
-            </div>
-
-            {user ? (
-              // Hidden on mobile/tablet (md:flex) - moved into MobileNavBar's
-              // "More" sheet as the last item there instead, so it isn't
-              // competing for space in this always-visible header card.
               <button
                 onClick={handleLogout}
                 title="Sign Out of SME Cloud"
-                className="hidden md:flex p-1.5 hover:bg-slate-200 text-slate-400 hover:text-rose-600 rounded-lg transition-colors cursor-pointer shrink-0"
+                className="flex p-1.5 hover:bg-slate-200 text-slate-400 hover:text-rose-600 rounded-lg transition-colors cursor-pointer shrink-0"
               >
                 <LogOut className="w-4 h-4" />
               </button>
-            ) : (
+            </div>
+          ) : (
+            <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-2xl p-2.5 w-full transition-colors duration-200 text-left">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-xl bg-brand-teal text-white text-xs font-black flex items-center justify-center shadow-md shadow-brand-navy/10 uppercase shrink-0">
+                  G
+                </div>
+                <div className="flex flex-col text-left min-w-0">
+                  <span className="text-[10px] font-bold text-slate-800 truncate max-w-[110px]" title="Guest Session">
+                    Guest Session
+                  </span>
+                </div>
+              </div>
               <button
                 onClick={() => {
                   setIsGuest(false);
@@ -2102,8 +2121,8 @@ export default function App() {
               >
                 Sync
               </button>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Plan badge + upgrade link. Basic/Standard/Pro is per-account
               (see useFeatureFlags' `tier`), not per-business - a paid
@@ -3124,6 +3143,7 @@ export default function App() {
         upgradeUrl={upgradeUrl}
         nextTier={nextTier}
         onLogout={user ? handleLogout : undefined}
+        userEmail={user?.email ?? null}
       />
 
     </div>

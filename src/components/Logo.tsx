@@ -14,63 +14,43 @@ export default function Logo({ className = "", size = 36 }: LogoProps) {
       height={size}
       className={className}
     >
-      {/* Circle background in exact dark green from the logo */}
-      <circle cx="500" cy="500" r="415" fill="#006837" />
-      
-      {/* Head and Antennae white structure */}
+      {/* Circle background in the app's brand green */}
+      <circle cx="500" cy="500" r="490" fill="#006837" />
+
+      {/* Two thin curved antennae - drawn as separate strokes, not fused
+          into the head outline, matching the official mark's simpler,
+          cleaner silhouette. */}
+      <path
+        d="M 430,330 C 400,260 360,215 320,205"
+        fill="none"
+        stroke="#ffffff"
+        strokeWidth="26"
+        strokeLinecap="round"
+      />
+      <path
+        d="M 570,330 C 600,260 640,215 680,205"
+        fill="none"
+        stroke="#ffffff"
+        strokeWidth="26"
+        strokeLinecap="round"
+      />
+
+      {/* Rounded head/body silhouette */}
       <path
         fill="#ffffff"
-        d="M 500,360 
-           C 490,360 485,350 485,310
-           C 485,250 440,218 395,218
-           C 345,218 318,260 318,310
-           C 318,332 332,348 355,348
-           C 375,348 395,335 410,315
-           C 425,295 442,275 460,275
-           C 475,275 480,295 480,352
-           C 480,365 470,378 450,380
-           C 410,385 354,435 354,530
-           C 354,625 410,695 500,695
-           C 590,695 646,625 646,530
-           C 646,435 590,385 550,380
-           C 530,378 520,365 520,352
-           C 520,295 525,275 540,275
-           C 558,275 575,295 590,315
-           C 605,335 625,348 645,348
-           C 668,348 682,332 682,310
-           C 682,260 655,218 605,218
-           C 560,218 515,250 515,310
-           C 515,350 510,360 500,360
+        d="M 500,300
+           C 610,300 690,385 690,510
+           C 690,650 605,745 500,745
+           C 395,745 310,650 310,510
+           C 310,385 390,300 500,300
            Z"
       />
-      
-      {/* Left Eye Patch (Dark Green) */}
-      <path
-        fill="#006837"
-        d="M 375,490
-           C 370,440 425,410 450,450
-           C 460,465 460,515 445,525
-           C 430,535 378,530 375,490
-           Z"
-      />
-      
-      {/* Right Eye Patch (Dark Green) */}
-      <path
-        fill="#006837"
-        d="M 625,490
-           C 630,440 575,410 550,450
-           C 540,465 540,515 555,525
-           C 570,535 622,530 625,490
-           Z"
-      />
-      
-      {/* Eyeballs */}
-      <circle cx="425" cy="475" r="32" fill="#ffffff" />
-      <circle cx="575" cy="475" r="32" fill="#ffffff" />
-      
-      {/* Pupils (looking up and slightly right) */}
-      <circle cx="435" cy="465" r="13" fill="#006837" />
-      <circle cx="585" cy="465" r="13" fill="#006837" />
+
+      {/* Eyes - white ovals with a centered dark pupil, looking forward */}
+      <ellipse cx="435" cy="500" rx="52" ry="58" fill="#ffffff" stroke="#006837" strokeWidth="14" />
+      <ellipse cx="565" cy="500" rx="52" ry="58" fill="#ffffff" stroke="#006837" strokeWidth="14" />
+      <circle cx="435" cy="508" r="22" fill="#006837" />
+      <circle cx="565" cy="508" r="22" fill="#006837" />
     </svg>
   );
 }

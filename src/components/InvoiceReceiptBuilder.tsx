@@ -43,7 +43,14 @@ interface InvoiceReceiptBuilderProps {
 // curate a smaller set again — the underlying DESIGN_TEMPLATES data and
 // every template's rendering logic stay untouched either way.
 // ─────────────────────────────────────────────────────────────────────────
-const MVP_TEMPLATE_IDS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+const MVP_TEMPLATE_IDS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+
+// How many of the designs above a tier can actually use - Basic gets the
+// one chosen at signup (defaults to the first design until that onboarding
+// choice exists), Standard gets 3, Pro gets every design. Unlock order
+// follows MVP_TEMPLATE_IDS itself (design #1, #2, #3, ...), the same
+// ordinal-ceiling pattern TIER_MAX_PHASE uses for feature flags.
+const TIER_MAX_TEMPLATES: Record<string, number> = { basic: 1, standard: 3, pro: Infinity };
 
 const DESIGN_TEMPLATES = [
   {
@@ -185,6 +192,63 @@ const DESIGN_TEMPLATES = [
     totalsStyle: "boxed" as const,
     hasLeftStrip: false,
     logoAlign: "left" as const,
+  },
+  {
+    id: 10,
+    name: "Executive Navy & Gold",
+    description: "Deep navy full-bleed header with a gold accent rule, boxed grand total, gold top/bottom border bars.",
+    category: "Corporate",
+    layout: "split" as const,
+    badgeBg: "bg-amber-50 text-amber-800 border border-amber-200",
+    tableHeaderBg: "bg-slate-900 text-white",
+    tableBorder: "border border-slate-200",
+    tableShadow: "shadow-sm",
+    totalsStyle: "boxed" as const,
+    hasLeftStrip: false,
+    logoAlign: "left" as const,
+  },
+  {
+    id: 11,
+    name: "Bold Diagonal",
+    description: "Black-to-green diagonal ribbon header, alternating-shaded line list, a big pill-shaped grand total.",
+    category: "Retail",
+    layout: "split" as const,
+    headerShape: "ribbon" as const,
+    badgeBg: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+    tableHeaderBg: "bg-slate-900 text-white",
+    tableBorder: "border border-slate-200",
+    tableShadow: "shadow-sm",
+    totalsStyle: "badge" as const,
+    hasLeftStrip: false,
+    logoAlign: "left" as const,
+  },
+  {
+    id: 12,
+    name: "Market Ledger Book",
+    description: "Classic printed-invoice-book look: a solid color header band, fill-in-the-blank customer/date lines, a numbered S/N item table, and Customer/Office Manager signature lines - built for market traders and small retail.",
+    category: "Retail",
+    layout: "book" as const,
+    badgeBg: "bg-amber-50 text-amber-800 border border-amber-200",
+    tableHeaderBg: "bg-slate-900 text-white",
+    tableBorder: "border border-slate-800",
+    tableShadow: "shadow-none",
+    totalsStyle: "boxed" as const,
+    hasLeftStrip: false,
+    logoAlign: "left" as const,
+  },
+  {
+    id: 13,
+    name: "Event Planner Book",
+    description: "Same fill-in-the-blank ledger-book format as Market Ledger Book, in a softer palette suited to events, decor, and creative services.",
+    category: "Services",
+    layout: "book" as const,
+    badgeBg: "bg-indigo-50 text-indigo-700 border border-indigo-200",
+    tableHeaderBg: "bg-slate-900 text-white",
+    tableBorder: "border border-slate-800",
+    tableShadow: "shadow-none",
+    totalsStyle: "boxed" as const,
+    hasLeftStrip: false,
+    logoAlign: "left" as const,
   }
 ];
 
@@ -209,7 +273,7 @@ export default function InvoiceReceiptBuilder({
   onConvertQuote,
   onUpdateInvoiceStatus
 }: InvoiceReceiptBuilderProps) {
-  const { isEnabled } = useFeatureFlags();
+  const { isEnabled, tier } = useFeatureFlags();
   // Navigation tabs: "builder" (Form Info) | "style" (10 Designs + Customs) | "history" (Past Invoices Ledger)
   // "pdfImport" was removed entirely - it was a fully simulated "OCR" that
   // never read the uploaded file's actual content at all (only its
@@ -1343,24 +1407,53 @@ export default function InvoiceReceiptBuilder({
                 {DESIGN_TEMPLATES.filter((t) => MVP_TEMPLATE_IDS.includes(t.id)).map((tpl, displayPosition) => {
                   const i = tpl.id; // real array index — used for state/rendering, never shown to the user
                   const displayNumber = displayPosition + 1; // what the user sees — always sequential
+                  const maxUnlocked = TIER_MAX_TEMPLATES[tier] ?? TIER_MAX_TEMPLATES.basic;
+                  const isLocked = displayNumber > maxUnlocked;
                   return (
                   <button
                     key={tpl.id}
+                    disabled={isLocked}
                     onClick={() => {
+                      if (isLocked) {
+                        triggerToast(
+                          tier === "basic"
+                            ? "Upgrade to Standard or Pro to unlock more designs."
+                            : "Upgrade to Pro to unlock every design."
+                        );
+                        return;
+                      }
                       setTemplateIndex(i);
                       // Apply default configuration values for specific templates to improve UX
                       if (i === 3) {
                         setSelectedFont("Courier");
                         setBorderRadiusMode("None");
-                      } else if (i === 4 || i === 2) {
+                      } else if (i === 4 || i === 2 || i === 12 || i === 13) {
                         setSelectedFont("Georgia");
                       } else {
                         setSelectedFont("Arial");
                       }
+                      // New templates (10-13) each have a signature color
+                      // pairing from their reference design - applied as a
+                      // starting point, still fully overridable below.
+                      if (i === 10) {
+                        setAccentColor("#B8860B"); // gold
+                        setSecondaryColor("#102A43"); // navy
+                      } else if (i === 11) {
+                        setAccentColor("#22C55E"); // green
+                        setSecondaryColor("#0F0F0F"); // near-black
+                      } else if (i === 12) {
+                        setAccentColor("#A0522D"); // brown
+                        setSecondaryColor("#78350F");
+                      } else if (i === 13) {
+                        setAccentColor("#A21CAF"); // purple/magenta
+                        setSecondaryColor("#701A75");
+                      }
                       triggerToast(`Applied visual template layout: ${tpl.name}`);
                     }}
-                    className={`text-left p-2.5 rounded-xl border transition-all text-[11px] ${
-                      templateIndex === i
+                    className={`text-left p-2.5 rounded-xl border transition-all text-[11px] relative ${
+                      isLocked
+                        ? "border-slate-150 bg-slate-50/60 opacity-60 cursor-pointer"
+                        : templateIndex === i
                         ? "border-emerald-600 bg-emerald-50/50 shadow-sm"
                         : "border-slate-200 bg-white hover:border-slate-300"
                     }`}
@@ -1368,9 +1461,10 @@ export default function InvoiceReceiptBuilder({
                     <div className="font-bold text-slate-900 font-sans flex items-center gap-1">
                       <span className="text-emerald-600 font-bold font-mono">#{displayNumber}</span>
                       {tpl.name}
+                      {isLocked && <Lock className="w-3 h-3 text-slate-400 ml-auto shrink-0" />}
                     </div>
                     <p className="text-[9px] text-slate-450 leading-tight mt-1 line-clamp-2">
-                      {tpl.description}
+                      {isLocked ? "Upgrade to unlock this design." : tpl.description}
                     </p>
                   </button>
                   );
@@ -2080,10 +2174,20 @@ export default function InvoiceReceiptBuilder({
                 recolor. */}
             {activeTemplate.layout === "split" ? (
               <div
-                className="-mx-6 -mt-6 sm:-mx-8 sm:-mt-8 mb-6 px-6 sm:px-8 py-7 flex flex-col sm:flex-row justify-between items-start gap-5"
-                style={{ backgroundColor: templateIndex === 6 ? "#0f172a" : accentColor }}
+                className="-mx-6 -mt-6 sm:-mx-8 sm:-mt-8 mb-6 px-6 sm:px-8 py-7 flex flex-col sm:flex-row justify-between items-start gap-5 relative overflow-hidden"
+                style={{ backgroundColor: templateIndex === 6 ? "#0f172a" : (activeTemplate as any).headerShape === "ribbon" ? secondaryColor : accentColor }}
               >
-                <div className={`flex items-start gap-3 ${logoPlacement === "Center" ? "flex-col items-center text-center w-full" : logoPlacement === "Right" ? "flex-row-reverse" : ""}`}>
+                {/* "Bold Diagonal" template's signature diagonal ribbon -
+                    a second color block cut on an angle across the header
+                    panel, matching its reference design's parallelogram
+                    banner rather than a plain flat-color bar. */}
+                {(activeTemplate as any).headerShape === "ribbon" && (
+                  <div
+                    className="absolute inset-y-0 right-0 w-2/3 pointer-events-none"
+                    style={{ backgroundColor: accentColor, clipPath: "polygon(30% 0, 100% 0, 100% 100%, 0% 100%)" }}
+                  />
+                )}
+                <div className={`relative z-10 flex items-start gap-3 ${logoPlacement === "Center" ? "flex-col items-center text-center w-full" : logoPlacement === "Right" ? "flex-row-reverse" : ""}`}>
                   {uploadedLogo ? (
                     <img
                       src={uploadedLogo}
@@ -2112,7 +2216,7 @@ export default function InvoiceReceiptBuilder({
                   </div>
                 </div>
 
-                <div className="space-y-1.5 text-left sm:text-right">
+                <div className="relative z-10 space-y-1.5 text-left sm:text-right">
                   <span className="px-2.5 py-0.5 rounded text-[9px] font-mono tracking-widest uppercase inline-block font-extrabold bg-white/15 text-white border border-white/25">
                     {mode === "invoice" ? "PROFESSIONAL INVOICE" : mode === "receipt" ? "PAYMENT RECORD" : "OFFICIAL ESTIMATE"}
                   </span>
@@ -2289,15 +2393,23 @@ export default function InvoiceReceiptBuilder({
                 <table className="min-w-full divide-y divide-slate-100 text-xs select-all">
                   <thead className={activeTemplate.tableHeaderBg} style={{ backgroundColor: templateIndex === 6 ? "#0f172a" : templateIndex === 2 ? accentColor : undefined, color: templateIndex === 2 ? "#ffffff" : undefined }}>
                     <tr className="uppercase tracking-wider font-mono text-[9px]">
-                      <th className="px-4 py-3 text-left">Statement Lines</th>
+                      {/* "book" family (Market/Event Ledger Book) numbers
+                          each row like a classic printed invoice pad -
+                          the rest of the table shares the same structure
+                          and real data as every other template. */}
+                      {activeTemplate.layout === "book" && <th className="px-3 py-3 text-center w-10">S/N</th>}
+                      <th className="px-4 py-3 text-left">{activeTemplate.layout === "book" ? "Item" : "Statement Lines"}</th>
                       <th className="px-4 py-3 text-center w-16">Qty</th>
-                      <th className="px-4 py-3 text-right w-24">Rate</th>
-                      <th className="px-4 py-3 text-right w-28">Row Total</th>
+                      <th className="px-4 py-3 text-right w-24">{activeTemplate.layout === "book" ? "Unit Price" : "Rate"}</th>
+                      <th className="px-4 py-3 text-right w-28">{activeTemplate.layout === "book" ? "Amount" : "Row Total"}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-slate-700 bg-white">
                     {items.map((item, idx) => (
                       <tr key={idx} className={idx % 2 === 0 ? "bg-white" : "bg-slate-50/20"}>
+                        {activeTemplate.layout === "book" && (
+                          <td className="px-3 py-3.5 text-center font-mono text-slate-400">{idx + 1}</td>
+                        )}
                         <td className="px-4 py-3.5 font-semibold text-slate-905">{item.description || "Consultancy Material Support"}</td>
                         <td className="px-4 py-3.5 text-center font-mono text-slate-600">{item.quantity}</td>
                         <td className="px-4 py-3.5 text-right font-mono text-slate-600">{fmt(item.rate)}</td>
@@ -2522,7 +2634,9 @@ export default function InvoiceReceiptBuilder({
                   <span className="text-[12px] font-serif italic text-slate-700 flex items-center justify-center gap-1 max-w-full truncate tracking-wider font-semibold" style={{ fontFamily: "'Georgia', serif" }}>
                     <Signature className="w-3.5 h-3.5 shrink-0 not-italic" /> {authorizedSignature}
                   </span>
-                  <span className="text-[8px] font-mono text-slate-400 tracking-widest block uppercase mt-0.5">Authorized Officer</span>
+                  <span className="text-[8px] font-mono text-slate-400 tracking-widest block uppercase mt-0.5">
+                    {activeTemplate.layout === "book" ? "Office Manager" : "Authorized Officer"}
+                  </span>
                 </div>
 
                 {/* Business representative signature (invoice/quotation only) -

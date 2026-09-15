@@ -20,6 +20,7 @@ import { authRouter } from "./routes/auth";
 import { geminiRouter } from "./routes/gemini";
 import { syncRouter } from "./routes/sync";
 import { businessesRouter } from "./routes/businesses";
+import { enforceBusinessLimits } from "./routes/businessLimits";
 import {
   businessPartnersRouter,
   businessShareholdersRouter,
@@ -115,7 +116,7 @@ export function createApp(): express.Express {
   // Everything below requires a valid Supabase session.
   // ---------------------------------------------------------------------
   app.use("/api/sync", requireAuth, syncRouter);
-  app.use("/api/businesses", requireAuth, businessesRouter);
+  app.use("/api/businesses", requireAuth, enforceBusinessLimits, businessesRouter);
   app.use("/api/business-partners", requireAuth, businessPartnersRouter);
   app.use("/api/business-shareholders", requireAuth, businessShareholdersRouter);
   app.use("/api/business-roles", requireAuth, businessRolesRouter);
