@@ -1,11 +1,12 @@
 import type { Request, Response, NextFunction } from "express";
 
 // Same tier-ceiling convention as TIER_MAX_PHASE in config.ts: Basic gets
-// one business profile, Standard three, Pro unlimited. Personal Workspace
+// one business profile, Standard three, Pro five - explicit product
+// decision, Pro is no longer unlimited. Personal Workspace
 // (businesses.is_personal = true) doesn't count against this - it's a
 // separate always-available feature, not a business profile someone would
 // use to game the limit.
-const TIER_MAX_BUSINESSES: Record<string, number> = { basic: 1, standard: 3, pro: Infinity };
+const TIER_MAX_BUSINESSES: Record<string, number> = { basic: 1, standard: 3, pro: 5 };
 
 // A business's name can be changed at most this many times - without a cap,
 // a Basic account (limited to one business profile above) could rename its
@@ -48,8 +49,8 @@ export async function enforceBusinessLimits(req: Request, res: Response, next: N
       res.status(403).json({
         error:
           tier === "basic"
-            ? "Basic accounts can have one business profile. Upgrade to Standard for up to 3, or Pro for unlimited."
-            : `Your ${tier} plan supports up to ${max} business profiles. Upgrade to add more.`,
+            ? "Basic accounts can have one business profile. Upgrade to Standard for up to 3, or Pro for up to 5."
+            : `Your ${tier} plan supports up to ${max} business profiles.${tier === "pro" ? "" : " Upgrade to add more."}`,
       });
       return;
     }
