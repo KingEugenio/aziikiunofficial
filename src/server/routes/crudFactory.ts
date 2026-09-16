@@ -166,37 +166,3 @@ export async function resolveBusinessCurrency(
   const { data } = await supabase.from("businesses").select("currency").eq("id", businessId).maybeSingle();
   return (data as { currency?: string } | null)?.currency ?? "GHS";
 }
-
-/** Converts an amount from one currency to another for a given business,
- * pivoting through the business's own currency since that's the only rate
- * relationship business_exchange_rates stores ("1 unit of X = N units of
- * the business currency"). Falls back to a 1:1 rate for any leg with no
- * saved rate - the same "no rate yet" fallback used everywhere else in the
- * currency system, rather than blocking the action entirely. */
-export async function convertViaBusinessCurrency(
-  supabase: SupabaseClient,
-  businessId: string,
-  amount: number,
-  fromCurrency: string,
-  toCurrency: string
-): Promise<number> {
-  if (fromCurrency === toCurrency) return amount;
-
-  const businessCurrency = await resolveBusinessCurrency(supabase, businessId);
-  const { data: rates } = await supabase
-    .from("business_exchange_rates")
-    .select("currency, rate_to_business_currency")
-    .eq("business_id", businessId)
-    .in("currency", [fromCurrency, toCurrency]);
-
-  const rateMap: Record<string, number> = {};
-  for (const r of (rates ?? []) as { currency: string; rate_to_business_currency: number }[]) {
-    rateMap[r.currency] = Number(r.rate_to_business_currency);
-  }
-
-  const fromRate = fromCurrency === businessCurrency ? 1 : rateMap[fromCurrency] ?? 1;
-  const toRate = toCurrency === businessCurrency ? 1 : rateMap[toCurrency] ?? 1;
-
-  const amountInBusinessCurrency = amount * fromRate;
-  return amountInBusinessCurrency / toRate;
-}

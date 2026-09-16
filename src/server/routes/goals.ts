@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { createCrudRouter, resolveBusinessCurrency, convertViaBusinessCurrency } from "./crudFactory";
+import { createCrudRouter, resolveBusinessCurrency } from "./crudFactory";
 import { goalSchema, goalContributionSchema } from "../validation/wealth";
 import { invalidate } from "../redis";
 import { addMoney } from "../../lib/money";
@@ -83,13 +83,13 @@ goalsRouter.post("/:id/contribute", async (req: Request, res: Response) => {
   }
 
   // A contribution can be made in a currency other than the goal's own
-  // target currency (e.g. paying into a USD goal with GHS cash on hand) -
-  // convert to the goal's currency before adding to its balance.
+  // target currency (e.g. paying into a USD goal with GHS cash on hand).
+  // There's no exchange-rate source to convert it with (that standalone
+  // feature was removed), so it's added at face value - same as every
+  // other spot in the app where a document in a foreign currency is
+  // entered without a rate, which already treats amounts at face value.
   const contributionCurrency = parsed.data.currency ?? goal.currency;
-  const amountInGoalCurrency =
-    contributionCurrency === goal.currency
-      ? parsed.data.amount
-      : await convertViaBusinessCurrency(supabase, goal.business_id, parsed.data.amount, contributionCurrency, goal.currency);
+  const amountInGoalCurrency = parsed.data.amount;
 
   const newAmount = addMoney(Number(goal.current_amount), amountInGoalCurrency);
 

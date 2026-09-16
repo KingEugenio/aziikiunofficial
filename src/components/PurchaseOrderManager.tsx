@@ -68,32 +68,19 @@ export default function PurchaseOrderManager({ businessId, businessCurrency }: P
   const [notes, setNotes] = useState("");
   const [currency, setCurrency] = useState(businessCurrency);
   const [exchangeRate, setExchangeRate] = useState(1);
-  const [savedExchangeRates, setSavedExchangeRates] = useState<Record<string, number>>({});
 
   useEffect(() => {
     setCurrency(businessCurrency);
   }, [businessCurrency]);
 
-  useEffect(() => {
-    api.exchangeRates
-      .list(businessId)
-      .then((rates: any[]) => {
-        const map: Record<string, number> = {};
-        for (const r of rates) map[r.currency] = r.rateToBusinessCurrency;
-        setSavedExchangeRates(map);
-      })
-      .catch(() => {});
-  }, [businessId]);
-
-  // Auto-fill from a saved rate (see the "Exchange Rates" pane) instead of
-  // leaving a foreign-currency PO stuck at the rate-1 default.
+  // Resets to the neutral 1:1 default whenever the currency changes back
+  // to the business's own - a foreign-currency PO still needs the rate
+  // typed in manually below.
   useEffect(() => {
     if (currency === businessCurrency) {
       setExchangeRate(1);
-    } else if (savedExchangeRates[currency]) {
-      setExchangeRate(savedExchangeRates[currency]);
     }
-  }, [currency, savedExchangeRates, businessCurrency]);
+  }, [currency, businessCurrency]);
 
   useEffect(() => {
     let cancelled = false;

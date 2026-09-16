@@ -25,7 +25,6 @@ export const ANNOUNCEMENT_TARGET_SCREENS = [
   "stock",
   "purchaseOrders",
   "team",
-  "exchangeRates",
   "reports",
   "ai",
   "monetize",

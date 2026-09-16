@@ -30,7 +30,6 @@ const CHAPTERS: { id: ChapterId; label: string; desc: string; icon: any; flag: s
     flag: [
       "purchase_orders",
       "team_memberships_invite_ui",
-      "exchange_rate_live_switching",
       "signature_capture",
       "business_partners_shareholders",
       "brand_kit_advanced_fields",
@@ -662,17 +661,6 @@ export default function AppGuide() {
                     </h5>
                     <p className="text-slate-500 text-[11px] font-light">
                       Invite staff with scoped roles — cashier, bookkeeper, manager — so your team can help run the books without seeing everything you see.
-                    </p>
-                  </div>
-                  )}
-                  {isEnabled("exchange_rate_live_switching") && (
-                  <div className="p-4 border border-slate-150 rounded-2xl space-y-2">
-                    <h5 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
-                      <Globe className="w-4 h-4 text-indigo-600" />
-                      Live Exchange Rates
-                    </h5>
-                    <p className="text-slate-500 text-[11px] font-light">
-                      Bill in a foreign currency and let Aziiki convert it at a live rate, so multi-currency deals reconcile correctly against your home-currency ledger.
                     </p>
                   </div>
                   )}

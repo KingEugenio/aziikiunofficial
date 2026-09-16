@@ -262,14 +262,6 @@ export const api = {
     markAllRead: () => request<void>("/notifications/read-all", { method: "POST" }),
   },
 
-  exchangeRates: {
-    list: (businessId: string) =>
-      request<{ data: any[] }>(`/exchange-rates?businessId=${encodeURIComponent(businessId)}`).then((r) => r.data),
-    upsert: (payload: { businessId: string; currency: string; rateToBusinessCurrency: number }) =>
-      request<{ data: any }>("/exchange-rates", { method: "PUT", body: JSON.stringify(payload) }).then((r) => r.data),
-    remove: (id: string) => request<void>(`/exchange-rates/${id}`, { method: "DELETE" }),
-  },
-
   businessMemberships: {
     list: (businessId: string) =>
       request<{ data: any[] }>(`/business-memberships?businessId=${encodeURIComponent(businessId)}`).then((r) => r.data),

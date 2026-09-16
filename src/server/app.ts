@@ -50,7 +50,6 @@ import { notificationsRouter } from "./routes/notifications";
 import { profileRouter } from "./routes/profile";
 import { signaturesRouter } from "./routes/signatures";
 import { businessMembershipsRouter } from "./routes/businessMemberships";
-import { exchangeRatesRouter } from "./routes/exchangeRates";
 import { announcementsRouter, publicAnnouncementsRouter } from "./routes/announcements";
 import { surveysRouter } from "./routes/surveys";
 import { adminRouter } from "./routes/admin";
@@ -143,7 +142,6 @@ export function createApp(): express.Express {
   app.use("/api/profile", requireAuth, profileRouter);
   app.use("/api/signatures", requireAuth, signaturesRouter);
   app.use("/api/business-memberships", requireAuth, businessMembershipsRouter);
-  app.use("/api/exchange-rates", requireAuth, exchangeRatesRouter);
   app.use("/api/announcements", requireAuth, announcementsRouter);
   app.use("/api/surveys", requireAuth, surveysRouter);
 

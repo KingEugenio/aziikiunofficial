@@ -428,23 +428,6 @@ export default function InvoiceReceiptBuilder({
   const [documentCurrency, setDocumentCurrency] = useState<string>(currentBusiness.currency);
   const [exchangeRate, setExchangeRate] = useState<number>(1);
 
-  // Saved manual rates (see ExchangeRateSettings/"currencies" pane) - keyed
-  // by currency code - auto-fill the rate field below instead of leaving a
-  // foreign-currency document stuck at the rate-1 default.
-  const [savedExchangeRates, setSavedExchangeRates] = useState<Record<string, number>>({});
-
-  useEffect(() => {
-    if (!currentBusiness.id) return;
-    api.exchangeRates
-      .list(currentBusiness.id)
-      .then((rates: any[]) => {
-        const map: Record<string, number> = {};
-        for (const r of rates) map[r.currency] = r.rateToBusinessCurrency;
-        setSavedExchangeRates(map);
-      })
-      .catch(() => {});
-  }, [currentBusiness.id]);
-
   useEffect(() => {
     if (customerId === "custom") return;
     const selectedCustomer = customers.find((c) => c.id === customerId);
@@ -453,13 +436,14 @@ export default function InvoiceReceiptBuilder({
     }
   }, [customerId, customers]);
 
+  // Resets to the neutral 1:1 default whenever the currency changes back
+  // to the business's own - a foreign-currency document still needs the
+  // rate typed in manually below.
   useEffect(() => {
     if (documentCurrency === currentBusiness.currency) {
       setExchangeRate(1);
-    } else if (savedExchangeRates[documentCurrency]) {
-      setExchangeRate(savedExchangeRates[documentCurrency]);
     }
-  }, [documentCurrency, savedExchangeRates, currentBusiness.currency]);
+  }, [documentCurrency, currentBusiness.currency]);
 
   // Phase F of the currency/localization redesign: the printed/exported
   // document (the "Print Sheet" - window.print() of this same preview) used

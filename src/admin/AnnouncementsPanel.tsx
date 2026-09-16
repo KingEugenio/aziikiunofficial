@@ -50,7 +50,6 @@ const TARGET_SCREEN_OPTIONS: { value: string; label: string }[] = [
   { value: "stock", label: "Warehouse Stock" },
   { value: "purchaseOrders", label: "Purchase Orders" },
   { value: "team", label: "Team" },
-  { value: "exchangeRates", label: "Exchange Rates" },
   { value: "reports", label: "Reports & Wisdom" },
   { value: "ai", label: "CFO AI Advisor" },
   { value: "monetize", label: "Updates & Growth" },

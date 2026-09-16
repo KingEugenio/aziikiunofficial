@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, Suspense, lazy } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Buildings as Building2, Stack as Layers2, Coins, Users, Target, Warehouse, Brain as BrainCircuit, MagicWand as Sparkles, CurrencyDollar as DollarSign, DeviceMobile as Smartphone, CheckCircle, TrendUp as TrendingUp, WarningCircle as AlertCircle, Database, ShieldCheck, SignOut as LogOut, UserCheck, ChartLine as LineChart, BookOpen, ArrowsClockwise, Lock, GearSix, Plus, X, Globe, ArrowRight, User, UsersThree, ChartBar, LockKey, CaretDown, CaretUp, Package, CurrencyCircleDollar, Question as HelpCircle } from "@phosphor-icons/react";
+import { Buildings as Building2, Stack as Layers2, Coins, Users, Target, Warehouse, Brain as BrainCircuit, MagicWand as Sparkles, CurrencyDollar as DollarSign, DeviceMobile as Smartphone, CheckCircle, TrendUp as TrendingUp, WarningCircle as AlertCircle, Database, ShieldCheck, SignOut as LogOut, UserCheck, ChartLine as LineChart, BookOpen, ArrowsClockwise, Lock, GearSix, Plus, X, Globe, ArrowRight, User, UsersThree, ChartBar, LockKey, CaretDown, CaretUp, Package, Question as HelpCircle } from "@phosphor-icons/react";
 import { Business, Customer, Transaction, Invoice, Receipt, Quotation, Investment, Asset, Goal, Debt, InventoryItem, Partner, Shareholder, UserRole, AuditLog } from "./types";
 import BusinessDashboard from "./components/BusinessDashboard";
 
@@ -19,6 +19,7 @@ import MfaOnboardingNudge from "./components/MfaOnboardingNudge";
 import { ONBOARDING_COMPLETE_KEY } from "./components/onboarding/onboardingStorage";
 import { useFeatureFlags } from "./lib/featureFlags";
 import { clearCachePrefix } from "./lib/sessionCache";
+import { useRealtimeConfigSync } from "./lib/realtimeConfigSync";
 
 // Code-split the heaviest views: each is only downloaded when the user
 // actually navigates to that tab, instead of bloating the initial bundle.
@@ -49,7 +50,6 @@ const CustomerCRM = lazy(() => import("./components/CustomerCRM"));
 const InventoryManager = lazy(() => import("./components/InventoryManager"));
 const PurchaseOrderManager = lazy(() => import("./components/PurchaseOrderManager"));
 const TeamManager = lazy(() => import("./components/TeamManager"));
-const ExchangeRateSettings = lazy(() => import("./components/ExchangeRateSettings"));
 
 // Supabase imports
 import { supabase } from "./lib/supabaseClient";
@@ -86,6 +86,10 @@ export default function App() {
 
   // Authentication, Firestore Loading list and sync markers
   const [user, setUser] = useState<any>(null);
+  // Pushes a cache-clear the instant an admin changes a flag or this
+  // account's plan, instead of waiting up to 15 minutes for the normal
+  // stale-while-revalidate window - see realtimeConfigSync.ts.
+  useRealtimeConfigSync(user?.id);
   const [isGuest, setIsGuest] = useState<boolean>(() => {
     return localStorage.getItem("aziiki_is_guest") === "true";
   });
@@ -126,7 +130,6 @@ export default function App() {
     stock: "Warehouse Stock",
     purchaseOrders: "Purchase Orders",
     team: "Team",
-    exchangeRates: "Exchange Rates",
     reports: "Reports & Wisdom",
     ai: "CFO AI Advisor",
     monetize: "Updates & Growth",
@@ -164,7 +167,6 @@ export default function App() {
       stock: "inventory_management",
       purchaseOrders: "purchase_orders",
       team: "team_memberships_invite_ui",
-      exchangeRates: "exchange_rate_live_switching",
       settings: "core_settings",
       helpSupport: "core_help_support",
       ...CORE_TAB_FLAGS,
@@ -1969,20 +1971,6 @@ export default function App() {
             </button>
             )}
 
-            {isEnabled("exchange_rate_live_switching") && (
-            <button
-              id="tab-exchangeRates-btn"
-              onClick={() => changeTab("exchangeRates")}
-              className={`px-4 py-2.5 rounded-xl font-bold font-sans transition-all flex items-center gap-2 cursor-pointer shrink-0 md:w-full md:justify-start ${
- activeTab === "exchangeRates"
- ? "bg-brand-navy text-white shadow-sm shadow-brand-navy/15"
- : "text-slate-600 hover:bg-slate-100"
- }`}
-            >
-              <CurrencyCircleDollar className="w-4 h-4 shrink-0" /> Exchange Rates
-            </button>
-            )}
-
             {isEnabled("core_reports") && (
             <button
               id="tab-reports-btn"
@@ -3046,12 +3034,6 @@ export default function App() {
                 {isEnabled("team_memberships_invite_ui") && activeTab === "team" && (
                   <Suspense fallback={<SkeletonTable rows={4} cols={3} />}>
                     <TeamManager businessId={currentBusiness.id} />
-                  </Suspense>
-                )}
-
-                {isEnabled("exchange_rate_live_switching") && activeTab === "exchangeRates" && (
-                  <Suspense fallback={<SkeletonForm />}>
-                    <ExchangeRateSettings businessId={currentBusiness.id} businessCurrency={currentBusiness.currency} />
                   </Suspense>
                 )}
 

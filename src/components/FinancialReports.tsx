@@ -19,7 +19,6 @@ import {
   Area
 } from "recharts";
 import { Business, Transaction, Goal, Investment } from "../types";
-import { getCurrencySymbol, SUPPORTED_CURRENCY_CODES } from "../lib/currency";
 import { api } from "../lib/api";
 
 interface FinancialReportsProps {
@@ -174,23 +173,7 @@ export default function FinancialReports({
   // - "original": no conversion - what was actually recorded. Only sound
   //   when every transaction shares one currency; a mixed-currency
   //   breakdown note is shown instead of a blended (meaningless) total.
-  // - "custom": converted to business currency, then re-scaled to a chosen
-  //   display currency using a saved exchange rate (pivoting through the
-  //   business currency, since that's the only rate relationship we store).
-  const [reportCurrencyMode, setReportCurrencyMode] = useState<"business" | "original" | "custom">("business");
-  const [customDisplayCurrency, setCustomDisplayCurrency] = useState<string>(currentBusiness.currency);
-  const [savedRates, setSavedRates] = useState<Record<string, number>>({});
-
-  useEffect(() => {
-    api.exchangeRates
-      .list(currentBusiness.id)
-      .then((rates: any[]) => {
-        const map: Record<string, number> = {};
-        for (const r of rates) map[r.currency] = r.rateToBusinessCurrency;
-        setSavedRates(map);
-      })
-      .catch(() => {});
-  }, [currentBusiness.id]);
+  const [reportCurrencyMode, setReportCurrencyMode] = useState<"business" | "original">("business");
 
   const currenciesPresent = useMemo(() => {
     const set = new Set<string>();
@@ -203,23 +186,13 @@ export default function FinancialReports({
   const toBusinessCurrency = (t: Transaction): number =>
     t.currency && t.currency !== currentBusiness.currency ? t.amount * (t.exchangeRateToBusinessCurrency ?? 1) : t.amount;
 
-  const businessToDisplay = (amountInBusinessCurrency: number): number => {
-    if (customDisplayCurrency === currentBusiness.currency) return amountInBusinessCurrency;
-    const rate = savedRates[customDisplayCurrency];
-    return rate ? amountInBusinessCurrency / rate : amountInBusinessCurrency;
-  };
-
   const transactions = useMemo(() => {
     if (reportCurrencyMode === "original") return rawTransactions;
-    return rawTransactions.map((t) => {
-      const businessAmount = toBusinessCurrency(t);
-      const finalAmount = reportCurrencyMode === "custom" ? businessToDisplay(businessAmount) : businessAmount;
-      return { ...t, amount: finalAmount };
-    });
+    return rawTransactions.map((t) => ({ ...t, amount: toBusinessCurrency(t) }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rawTransactions, reportCurrencyMode, customDisplayCurrency, savedRates, currentBusiness.currency]);
+  }, [rawTransactions, reportCurrencyMode, currentBusiness.currency]);
 
-  const currencySymbol = reportCurrencyMode === "custom" ? getCurrencySymbol(customDisplayCurrency) : businessCurrencySymbol;
+  const currencySymbol = businessCurrencySymbol;
   
   // Selected Date parameters
   const [selectedDate, setSelectedDate] = useState<string>("2026-06-28");
@@ -731,31 +704,7 @@ export default function FinancialReports({
           >
             Original Currency
           </button>
-          <button
-            onClick={() => setReportCurrencyMode("custom")}
-            className={`px-3 py-1.5 rounded-lg text-[11px] font-bold font-sans transition-all cursor-pointer ${
-              reportCurrencyMode === "custom" ? "bg-indigo-600 text-white" : "text-slate-600 hover:bg-white"
-            }`}
-          >
-            Choose Currency
-          </button>
         </div>
-        {reportCurrencyMode === "custom" && (
-          <select
-            value={customDisplayCurrency}
-            onChange={(e) => setCustomDisplayCurrency(e.target.value)}
-            className="bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-2.5 py-1.5 outline-none text-xs font-mono cursor-pointer"
-          >
-            {SUPPORTED_CURRENCY_CODES.map((code) => (
-              <option key={code} value={code}>{code}</option>
-            ))}
-          </select>
-        )}
-        {reportCurrencyMode === "custom" && customDisplayCurrency !== currentBusiness.currency && !savedRates[customDisplayCurrency] && (
-          <span className="text-[10px] text-amber-600 font-sans">
-            No saved rate for {customDisplayCurrency} yet - showing 1:1 with {currentBusiness.currency}. Add one in the "Exchange Rates" pane for an accurate conversion.
-          </span>
-        )}
         {reportCurrencyMode === "original" && currenciesPresent.length > 1 && (
           <div className="w-full mt-1 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl p-2.5 text-[11px]">
             <span className="font-bold">Heads up:</span> transactions in this period span {currenciesPresent.length} currencies
