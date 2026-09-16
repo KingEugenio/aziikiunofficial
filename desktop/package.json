@@ -1,0 +1,60 @@
+{
+  "name": "aziiki-desktop",
+  "version": "1.0.0",
+  "description": "Aziiki — Your Business. Organized. (desktop shell)",
+  "main": "main.cjs",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "build:mac": "electron-builder --mac --x64 --arm64",
+    "build:win": "electron-builder --win --x64",
+    "build:all": "electron-builder --mac --x64 --arm64 --win --x64"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "dependencies": {
+    "express": "^4.21.1"
+  },
+  "build": {
+    "appId": "com.aziiki.desktop",
+    "productName": "Aziiki",
+    "directories": {
+      "output": "release",
+      "buildResources": "resources"
+    },
+    "files": [
+      "main.cjs",
+      "preload.cjs",
+      "settings.html",
+      "app/**/*",
+      "resources/**/*"
+    ],
+    "extraMetadata": {
+      "main": "main.cjs"
+    },
+    "mac": {
+      "icon": "resources/icon.png",
+      "category": "public.app-category.business",
+      "target": [
+        { "target": "dmg", "arch": ["x64"] },
+        { "target": "dmg", "arch": ["arm64"] }
+      ],
+      "identity": null
+    },
+    "win": {
+      "icon": "resources/icon.png",
+      "target": [{ "target": "nsis", "arch": ["x64"] }]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "dmg": {
+      "sign": false
+    }
+  }
+}

@@ -8,3 +8,11 @@ coverage/
 !.env.example
 supabase/.temp/
 .claude/
+
+# Desktop app (Electron shell, see desktop/README.md): node_modules and the
+# packaged installers are regenerable build output, same reasoning as
+# dist/ above. desktop/app is a copy of the web build's dist/ output,
+# placed there right before packaging - also regenerable, never hand-edited.
+desktop/node_modules/
+desktop/release/
+desktop/app/

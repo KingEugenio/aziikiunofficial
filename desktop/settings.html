@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Aziiki Settings</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f8faf9;
+    margin: 0;
+    padding: 24px;
+    color: #0f172a;
+  }
+  h1 { font-size: 15px; margin: 0 0 4px; }
+  p.hint { font-size: 12px; color: #64748b; line-height: 1.5; margin: 0 0 16px; }
+  label { font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 6px; }
+  input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    font-size: 13px;
+    outline: none;
+  }
+  input:focus { border-color: #059669; }
+  button {
+    margin-top: 16px;
+    background: #059669;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  button:hover { background: #047857; }
+  #status { margin-top: 10px; font-size: 11px; color: #059669; display: none; }
+  .example { font-size: 10px; color: #94a3b8; margin-top: 6px; font-family: monospace; }
+</style>
+</head>
+<body>
+  <h1>Aziiki server address</h1>
+  <p class="hint">
+    This is the same Aziiki deployment your web browser and admin portal use.
+    Every change made in the admin portal (feature flags, branding, plans) reaches
+    this app through this address whenever it's online.
+  </p>
+  <label for="url">Server URL</label>
+  <input id="url" type="text" placeholder="https://your-aziiki-app.vercel.app" />
+  <div class="example">Example: https://aziiki.yourcompany.com or your Vercel deployment URL</div>
+  <button id="save">Save &amp; Reload</button>
+  <div id="status">Saved. Reloading Aziiki...</div>
+
+  <script>
+    async function init() {
+      const config = await window.aziikiDesktop.getConfig();
+      document.getElementById("url").value = config.apiBaseUrl || "";
+    }
+    document.getElementById("save").addEventListener("click", async () => {
+      const url = document.getElementById("url").value.trim();
+      await window.aziikiDesktop.setConfig({ apiBaseUrl: url });
+      const status = document.getElementById("status");
+      status.style.display = "block";
+      setTimeout(() => window.close(), 900);
+    });
+    init();
+  </script>
+</body>
+</html>
