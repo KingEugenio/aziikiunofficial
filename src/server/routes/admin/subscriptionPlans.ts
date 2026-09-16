@@ -36,7 +36,10 @@ adminSubscriptionPlansRouter.get("/", async (req: Request, res: Response) => {
   }
 
   const rows = data ?? [];
-  for (const tier of ["standard", "pro"]) {
+  // Basic gets a GHS placeholder too, same as the paid tiers, so the price
+  // is ready to fill in whenever Basic stops being free - nothing reads
+  // or enforces this row today (see migration 0055).
+  for (const tier of ["basic", "standard", "pro"]) {
     if (!rows.some((r) => r.tier === tier && r.currency === "GHS")) {
       rows.push({ tier, currency: "GHS", paystack_link: null, price_minor_units: null, provider: "paystack" });
     }
@@ -48,8 +51,8 @@ adminSubscriptionPlansRouter.get("/", async (req: Request, res: Response) => {
 
 adminSubscriptionPlansRouter.put("/:tier/:currency", async (req: Request, res: Response) => {
   const tier = req.params.tier;
-  if (tier !== "standard" && tier !== "pro") {
-    res.status(400).json({ error: "tier must be 'standard' or 'pro'." });
+  if (tier !== "basic" && tier !== "standard" && tier !== "pro") {
+    res.status(400).json({ error: "tier must be 'basic', 'standard', or 'pro'." });
     return;
   }
   const currency = req.params.currency.toUpperCase();

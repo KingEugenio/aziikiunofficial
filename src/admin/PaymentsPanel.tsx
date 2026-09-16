@@ -12,7 +12,7 @@ interface PlanRow {
   provider: "paystack" | "stripe";
 }
 
-const TIER_LABEL: Record<string, string> = { standard: "Standard", pro: "Pro" };
+const TIER_LABEL: Record<string, string> = { basic: "Basic", standard: "Standard", pro: "Pro" };
 
 function CurrencyRow({
   plan,
@@ -232,7 +232,7 @@ export default function PaymentsPanel() {
     }
   };
 
-  const byTier: Record<string, PlanRow[]> = { standard: [], pro: [] };
+  const byTier: Record<string, PlanRow[]> = { basic: [], standard: [], pro: [] };
   for (const row of plans) {
     if (byTier[row.tier]) byTier[row.tier].push(row);
   }
@@ -242,16 +242,18 @@ export default function PaymentsPanel() {
       <div className="flex items-start gap-2">
         <CreditCard className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
         <p className="text-[11px] text-slate-500 leading-relaxed">
-          Basic accounts get the Phase 1 core loop for free. Standard unlocks everything through Phase 2; Pro unlocks
+          Basic accounts get the Phase 1 core loop for free today. Standard unlocks everything through Phase 2; Pro unlocks
           everything. Price each tier per currency - a visitor sees the row matching their business's currency, falling back
           to USD if theirs isn't configured. A successful Paystack payment upgrades the account automatically via webhook;
-          Stripe payments need a manual "Set plan" below until that's wired up too.
+          Stripe payments need a manual "Set plan" below until that's wired up too. Basic's price below is purely a
+          placeholder for when it stops being free - nothing charges Basic accounts yet, and nobody sees this price
+          anywhere in the app until that's built and switched on deliberately.
         </p>
       </div>
 
       <LoadingSwap isLoading={loading} skeleton={<SkeletonAdminBranding />}>
         <div className="space-y-4">
-          {(["standard", "pro"] as const).map((tier) => (
+          {(["basic", "standard", "pro"] as const).map((tier) => (
             <TierGroup key={tier} tier={tier} rows={byTier[tier]} onChange={(rows) => setPlans((prev) => [...prev.filter((p) => p.tier !== tier), ...rows])} />
           ))}
         </div>

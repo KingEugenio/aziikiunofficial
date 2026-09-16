@@ -29,6 +29,7 @@ import {
 } from "./routes/businessChildren";
 import { personalAccountsRouter, personalBudgetsRouter } from "./routes/personal";
 import { customersRouter } from "./routes/customers";
+import { enforceCustomerLimits } from "./routes/customerLimits";
 import { transactionsRouter } from "./routes/transactions";
 import { invoicesRouter } from "./routes/invoices";
 import { receiptsRouter } from "./routes/receipts";
@@ -122,7 +123,7 @@ export function createApp(): express.Express {
   app.use("/api/business-audit-logs", requireAuth, businessAuditLogsRouter);
   app.use("/api/personal-accounts", requireAuth, personalAccountsRouter);
   app.use("/api/personal-budgets", requireAuth, personalBudgetsRouter);
-  app.use("/api/customers", requireAuth, customersRouter);
+  app.use("/api/customers", requireAuth, enforceCustomerLimits, customersRouter);
   app.use("/api/transactions", requireAuth, transactionsRouter);
   app.use("/api/invoices", requireAuth, invoicesRouter);
   app.use("/api/receipts", requireAuth, receiptsRouter);
