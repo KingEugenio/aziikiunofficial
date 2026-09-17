@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FileText, Receipt as ReceiptIcon, Plus, Trash as Trash2, ShareNetwork as Share2, Printer, ArrowsClockwise as RefreshCw, Check, Palette, CheckCircle, WarningCircle as AlertCircle, UploadSimple as Upload, FileArrowUp as FileUp, FileArrowDown, Sliders, TextT as Type, FileCsv as FileSpreadsheet, Certificate as Award, Image as ImageIcon, Percent as BadgePercent, Barcode, MagnifyingGlass as Search, CheckSquare, MagicWand as Sparkles, Envelope as Mail, CircleNotch as Loader2, CreditCard, PencilSimple, Tag, Buildings, Lock, User, Wrench, ClockCounterClockwise as History, Warning, XCircle, ArrowBendUpRight, Signature } from "@phosphor-icons/react";
+import { FileText, Receipt as ReceiptIcon, Plus, Trash as Trash2, ShareNetwork as Share2, Printer, ArrowsClockwise as RefreshCw, Check, Palette, CheckCircle, WarningCircle as AlertCircle, UploadSimple as Upload, FileArrowUp as FileUp, FileArrowDown, Sliders, TextT as Type, FileCsv as FileSpreadsheet, Certificate as Award, Image as ImageIcon, Percent as BadgePercent, Barcode, MagnifyingGlass as Search, CheckSquare, MagicWand as Sparkles, Envelope as Mail, CircleNotch as Loader2, CreditCard, PencilSimple, Tag, Buildings, Lock, User, Wrench, ClockCounterClockwise as History, Warning, XCircle, ArrowBendUpRight, Signature, Info } from "@phosphor-icons/react";
 import { Invoice, Receipt, Quotation, Customer, Business, InvoiceItem } from "../types";
 import { calculateInvoiceTotals, subtractMoney } from "../lib/money";
 import { compressImageForStorage } from "../lib/imageCompress";
@@ -3081,6 +3081,13 @@ export default function InvoiceReceiptBuilder({
             <Printer className="w-3.5 h-3.5 text-slate-600" /> Print Sheet
           </button>
         </div>
+
+        {mode === "invoice" && paystackEnabled && (
+          <p className="text-[10px] text-slate-500 leading-relaxed flex items-start gap-1.5 -mt-2 font-sans">
+            <Info className="w-3 h-3 shrink-0 mt-0.5 text-slate-400" />
+            <span>Payments made via "Request Payment" go directly to your own Paystack account - Aziiki never holds, touches, or has access to this money at any point.</span>
+          </p>
+        )}
 
         {/* Dynamic Estimate proposal Convert block */}
         {mode === "quotation" && quotations.length > 0 && (
