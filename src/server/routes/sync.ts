@@ -195,6 +195,7 @@ async function loadAll(supabase: SupabaseClient) {
       taxRate: Number(inv.tax_rate),
       status: inv.status,
       partialPaidAmount: Number(inv.partial_paid_amount),
+      sourceQuotationId: inv.source_quotation_id ?? undefined,
     })),
     receipts: (receipts.data ?? []).map((r: any) => ({
       id: r.id,

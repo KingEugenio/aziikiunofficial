@@ -269,9 +269,9 @@ export default function InvoiceReceiptBuilder({
   // fabricated numbers. Removed rather than relabeled - a disclaimer
   // wouldn't fix the underlying risk of a "Populate Editor fields using
   // OCR" button writing fake data into a real financial document.
-  const [activePaneTab, setActivePaneTab] = useState<"builder" | "style" | "history" | "documents" | "brandKit">("builder");
+  const [activePaneTab, setActivePaneTab] = useState<"builder" | "style" | "history" | "documents" | "numbering" | "brandKit">("builder");
 
-  const changePaneTab = (tab: "builder" | "style" | "history" | "documents" | "brandKit") => {
+  const changePaneTab = (tab: "builder" | "style" | "history" | "documents" | "numbering" | "brandKit") => {
     setActivePaneTab(tab);
   };
 
@@ -279,8 +279,23 @@ export default function InvoiceReceiptBuilder({
   const [docCenterSearch, setDocCenterSearch] = useState("");
   const [docCenterType, setDocCenterType] = useState<"all" | "invoice" | "receipt" | "quotation">("all");
 
+  // Numbering Settings pane state.
+  const [numberingSettings, setNumberingSettings] = useState<
+    Array<{ documentType: string; prefix: string; padding: number; resetPeriod: "never" | "yearly"; nextNumber: number }>
+  >([]);
+  const [numberingLoaded, setNumberingLoaded] = useState(false);
+  const [savingNumberingType, setSavingNumberingType] = useState<string | null>(null);
+  const [numberingAuditLog, setNumberingAuditLog] = useState<
+    Array<{ id: string; documentType: string; action: "reserved" | "settings_changed"; formattedNumber?: string; details?: Record<string, unknown>; createdAt: string }>
+  >([]);
+
   // Document status selection inside builder form
   const [invoiceStatus, setInvoiceStatus] = useState<Invoice["status"]>("Sent");
+
+  // Set only when loading a saved invoice that was converted from an
+  // estimate (Invoice.sourceQuotationId, migration 0059) - drives the
+  // "Created from Estimate EST-0012" line in the builder form.
+  const [loadedInvoiceSourceQuotationId, setLoadedInvoiceSourceQuotationId] = useState<string | undefined>(undefined);
 
   // "Send by Email" feature state - degrades gracefully when RESEND_API_KEY
   // isn't configured on the server, rather than showing a broken button.
@@ -294,6 +309,39 @@ export default function InvoiceReceiptBuilder({
   useEffect(() => {
     setEmailSendingEnabled(configFlags?.emailSendingEnabled ?? false);
   }, [configFlags]);
+
+  // Numbering Settings pane: loaded on demand (not on every mount) since
+  // it's a rarely-visited settings screen, not part of the normal
+  // document-creation flow.
+  useEffect(() => {
+    if (activePaneTab !== "numbering" || !currentBusiness.id) return;
+    setNumberingLoaded(false);
+    Promise.all([api.documentNumbering.settings(currentBusiness.id), api.documentNumbering.auditLog(currentBusiness.id)])
+      .then(([settings, auditLog]) => {
+        setNumberingSettings(settings);
+        setNumberingAuditLog(auditLog);
+      })
+      .catch(() => {
+        setNumberingSettings([]);
+        setNumberingAuditLog([]);
+      })
+      .finally(() => setNumberingLoaded(true));
+  }, [activePaneTab, currentBusiness.id]);
+
+  const handleUpdateNumberingSetting = async (documentType: string, updates: { prefix: string; padding: number; resetPeriod: "never" | "yearly" }) => {
+    setSavingNumberingType(documentType);
+    try {
+      const updated = await api.documentNumbering.updateSettings({ businessId: currentBusiness.id, documentType, ...updates });
+      setNumberingSettings((prev) => prev.map((s) => (s.documentType === documentType ? updated : s)));
+      const auditLog = await api.documentNumbering.auditLog(currentBusiness.id);
+      setNumberingAuditLog(auditLog);
+      triggerToast(`${documentType[0].toUpperCase()}${documentType.slice(1)} numbering format updated.`);
+    } catch (err) {
+      triggerToast(err instanceof ApiError ? err.message : "Couldn't update that numbering format. Please try again.");
+    } finally {
+      setSavingNumberingType(null);
+    }
+  };
 
   // Document mode
   const [mode, setMode] = useState<"invoice" | "receipt" | "quotation">("invoice");
@@ -578,6 +626,7 @@ export default function InvoiceReceiptBuilder({
     setInvoiceNumber(inv.invoiceNumber);
     setDocumentCurrency(inv.currency || currentBusiness.currency);
     setExchangeRate(inv.exchangeRateToBusinessCurrency || 1);
+    setLoadedInvoiceSourceQuotationId(inv.sourceQuotationId);
     setActivePaneTab("builder");
     triggerToast(`Loaded Invoice ${inv.invoiceNumber} - preview updated on the right.`);
   };
@@ -592,6 +641,7 @@ export default function InvoiceReceiptBuilder({
     setReceiptNumber(rec.receiptNumber);
     setDocumentCurrency(rec.currency || currentBusiness.currency);
     setExchangeRate(rec.exchangeRateToBusinessCurrency || 1);
+    setLoadedInvoiceSourceQuotationId(undefined);
     setActivePaneTab("builder");
     triggerToast(`Loaded Receipt ${rec.receiptNumber} - preview updated on the right.`);
   };
@@ -606,6 +656,7 @@ export default function InvoiceReceiptBuilder({
     setQuoteNumber(q.quoteNumber);
     setDocumentCurrency(q.currency || currentBusiness.currency);
     setExchangeRate(q.exchangeRateToBusinessCurrency || 1);
+    setLoadedInvoiceSourceQuotationId(undefined);
     setActivePaneTab("builder");
     triggerToast(`Loaded Estimate ${q.quoteNumber} - preview updated on the right.`);
   };
@@ -840,7 +891,13 @@ export default function InvoiceReceiptBuilder({
         {/* Action Type Toggle */}
         <div className="grid grid-cols-3 gap-1 bg-slate-50 p-1 rounded-xl border border-slate-200">
           <button
-            onClick={() => setMode("invoice")}
+            onClick={() => {
+              setMode("invoice");
+              // Only a loaded (saved) invoice can genuinely have a source
+              // estimate - switching modes manually means whatever's about
+              // to be edited/created next is not that loaded invoice.
+              setLoadedInvoiceSourceQuotationId(undefined);
+            }}
             className={`py-2 text-[10px] font-bold font-sans rounded-lg transition-all cursor-pointer ${
               mode === "invoice" ? "bg-emerald-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-700"
             }`}
@@ -864,6 +921,18 @@ export default function InvoiceReceiptBuilder({
             Estimate
           </button>
         </div>
+
+        {mode === "invoice" && loadedInvoiceSourceQuotationId && (() => {
+          const sourceQuote = quotations.find((q) => q.id === loadedInvoiceSourceQuotationId);
+          return (
+            <div className="bg-indigo-50 border border-indigo-150 rounded-xl px-3 py-2 flex items-center gap-1.5 text-[11px] text-indigo-700 font-sans">
+              <ArrowBendUpRight className="w-3.5 h-3.5 shrink-0" />
+              <span>
+                Created from Estimate <strong className="font-mono">{sourceQuote?.quoteNumber ?? "(deleted)"}</strong>
+              </span>
+            </div>
+          );
+        })()}
 
         {/* Tab Controls for the Side Panel */}
         <div className="flex border-b border-slate-100 pb-1 gap-1">
@@ -898,6 +967,14 @@ export default function InvoiceReceiptBuilder({
             }`}
           >
             <span className="inline-flex items-center gap-1"><FileText className="w-3.5 h-3.5" /> Documents</span>
+          </button>
+          <button
+            onClick={() => changePaneTab("numbering")}
+            className={`flex-1 pb-2 text-[10px] font-bold font-sans border-b-2 text-center cursor-pointer transition-colors ${
+              activePaneTab === "numbering" ? "border-emerald-600 text-emerald-600 font-extrabold" : "border-transparent text-slate-455 hover:text-slate-700"
+            }`}
+          >
+            <span className="inline-flex items-center gap-1"><Wrench className="w-3.5 h-3.5" /> Numbering</span>
           </button>
           <button
             onClick={() => changePaneTab("brandKit")}
@@ -2159,6 +2236,130 @@ export default function InvoiceReceiptBuilder({
           );
         })()}
 
+        {/* Numbering Settings: per-document-type prefix/padding/yearly-reset
+            config, plus a read-only audit trail of every number reserved
+            and every settings change (migration 0059). next_document_number()
+            already supported arbitrary prefix/padding server-side since
+            migration 0017 - this is the UI to actually configure it,
+            flagged as missing since the v1.11.0 CHANGELOG entry. */}
+        {activePaneTab === "numbering" && (
+          <div className="space-y-5 text-xs font-sans">
+            <div>
+              <span className="text-[10px] font-mono font-bold text-indigo-650 flex items-center gap-1 uppercase tracking-wider mb-1">
+                <Wrench className="w-3.5 h-3.5" /> Numbering Settings
+              </span>
+              <p className="text-[11px] text-slate-500 leading-relaxed font-sans">
+                Controls what the NEXT invoice, receipt, or estimate number looks like - already-issued documents keep their existing numbers.
+              </p>
+            </div>
+
+            {!numberingLoaded ? (
+              <p className="text-[11px] text-slate-400 italic">Loading...</p>
+            ) : (
+              <div className="space-y-3">
+                {numberingSettings.map((setting) => (
+                  <div key={setting.documentType} className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-700">
+                        {setting.documentType === "quotation" ? "Estimate" : setting.documentType}
+                      </span>
+                      <span className="text-[10px] font-mono text-slate-400">
+                        Next: {setting.prefix}-{String(setting.nextNumber).padStart(setting.padding, "0")}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <div>
+                        <label className="text-[9px] font-mono text-slate-400 uppercase tracking-widest block mb-1">Prefix</label>
+                        <input
+                          type="text"
+                          value={setting.prefix}
+                          maxLength={10}
+                          onChange={(e) =>
+                            setNumberingSettings((prev) =>
+                              prev.map((s) => (s.documentType === setting.documentType ? { ...s, prefix: e.target.value.toUpperCase() } : s))
+                            )
+                          }
+                          className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 outline-none font-mono text-[11px] focus:border-emerald-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9px] font-mono text-slate-400 uppercase tracking-widest block mb-1">Padding</label>
+                        <input
+                          type="number"
+                          min={1}
+                          max={10}
+                          value={setting.padding}
+                          onChange={(e) =>
+                            setNumberingSettings((prev) =>
+                              prev.map((s) => (s.documentType === setting.documentType ? { ...s, padding: Number(e.target.value) } : s))
+                            )
+                          }
+                          className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 outline-none font-mono text-[11px] focus:border-emerald-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9px] font-mono text-slate-400 uppercase tracking-widest block mb-1">Yearly Reset</label>
+                        <select
+                          value={setting.resetPeriod}
+                          onChange={(e) =>
+                            setNumberingSettings((prev) =>
+                              prev.map((s) =>
+                                s.documentType === setting.documentType ? { ...s, resetPeriod: e.target.value as "never" | "yearly" } : s
+                              )
+                            )
+                          }
+                          className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 outline-none font-mono text-[11px] focus:border-emerald-500"
+                        >
+                          <option value="never">Never</option>
+                          <option value="yearly">Every year</option>
+                        </select>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() =>
+                        handleUpdateNumberingSetting(setting.documentType, {
+                          prefix: setting.prefix,
+                          padding: setting.padding,
+                          resetPeriod: setting.resetPeriod,
+                        })
+                      }
+                      disabled={savingNumberingType === setting.documentType}
+                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] py-2 rounded-lg transition-all cursor-pointer uppercase tracking-wider disabled:opacity-60 disabled:cursor-wait flex items-center justify-center gap-1.5"
+                    >
+                      {savingNumberingType === setting.documentType && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                      {savingNumberingType === setting.documentType ? "Saving..." : "Save Format"}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="border-t border-slate-100 pt-4">
+              <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1 mb-2">
+                <History className="w-3.5 h-3.5" /> Audit Trail
+              </span>
+              {numberingLoaded && numberingAuditLog.length === 0 ? (
+                <p className="text-[11px] text-slate-400 italic">No numbering activity logged yet.</p>
+              ) : (
+                <div className="space-y-1.5 max-h-[240px] overflow-y-auto pr-1">
+                  {numberingAuditLog.map((entry) => (
+                    <div key={entry.id} className="flex items-center justify-between bg-slate-50 border border-slate-150 rounded-lg px-2.5 py-1.5 text-[10px]">
+                      <span className="text-slate-600">
+                        {entry.action === "reserved" ? (
+                          <>Reserved <strong className="font-mono text-slate-800">{entry.formattedNumber}</strong></>
+                        ) : (
+                          <>Format changed for <strong className="capitalize">{entry.documentType}</strong></>
+                        )}
+                      </span>
+                      <span className="text-slate-400 font-mono shrink-0 ml-2">{new Date(entry.createdAt).toLocaleString()}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* PANE 5: Brand Kit (colors, tax info, footer text used on every document) — kept in MVP */}
         {activePaneTab === "brandKit" && <BrandKitSettings businessId={currentBusiness.id} />}
         </div>
@@ -3002,6 +3203,7 @@ export default function InvoiceReceiptBuilder({
                 try {
                   await onConvertQuote(quotations[0].id);
                   setMode("invoice");
+                  setLoadedInvoiceSourceQuotationId(quotations[0].id);
                   triggerToast(`Extracted estimate variables successfully from Quote #${quotations[0].quoteNumber}`);
                 } catch (err) {
                   triggerToast(err instanceof Error ? err.message : "Couldn't convert this estimate to an invoice. Please try again.");

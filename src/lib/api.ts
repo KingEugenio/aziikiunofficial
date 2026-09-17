@@ -257,6 +257,26 @@ export const api = {
       if (defaultPrefix) query.set("defaultPrefix", defaultPrefix);
       return request<{ preview: string }>(`/document-numbering/peek?${query.toString()}`).then((r) => r.preview);
     },
+    settings: (businessId: string) =>
+      request<{
+        data: Array<{ documentType: string; prefix: string; padding: number; resetPeriod: "never" | "yearly"; nextNumber: number }>;
+      }>(`/document-numbering/settings?businessId=${encodeURIComponent(businessId)}`).then((r) => r.data),
+    updateSettings: (payload: { businessId: string; documentType: string; prefix: string; padding: number; resetPeriod: "never" | "yearly" }) =>
+      request<{ data: { documentType: string; prefix: string; padding: number; resetPeriod: "never" | "yearly"; nextNumber: number } }>(
+        "/document-numbering/settings",
+        { method: "PUT", body: JSON.stringify(payload) }
+      ).then((r) => r.data),
+    auditLog: (businessId: string) =>
+      request<{
+        data: Array<{
+          id: string;
+          documentType: string;
+          action: "reserved" | "settings_changed";
+          formattedNumber?: string;
+          details?: Record<string, unknown>;
+          createdAt: string;
+        }>;
+      }>(`/document-numbering/audit-log?businessId=${encodeURIComponent(businessId)}`).then((r) => r.data),
   },
 
   notifications: {

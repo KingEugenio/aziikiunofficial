@@ -36,6 +36,7 @@ export interface Invoice {
   businessId: string;
   currency?: string;
   exchangeRateToBusinessCurrency?: number;
+  sourceQuotationId?: string;
 }
 
 export interface Receipt {

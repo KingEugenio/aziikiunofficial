@@ -31,6 +31,7 @@ function fromRow(row: any, items: any[]) {
     logoUrl: row.logo_url ?? undefined,
     currency: row.currency,
     exchangeRateToBusinessCurrency: Number(row.exchange_rate_to_business_currency),
+    sourceQuotationId: row.source_quotation_id ?? undefined,
   };
 }
 

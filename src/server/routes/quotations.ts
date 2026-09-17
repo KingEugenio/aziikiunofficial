@@ -325,6 +325,7 @@ quotationsRouter.post("/:id/convert-to-invoice", async (req: Request, res: Respo
       partial_paid_amount: 0,
       currency: quotation.currency,
       exchange_rate_to_business_currency: quotation.exchange_rate_to_business_currency,
+      source_quotation_id: quotation.id,
     })
     .select("*")
     .single();
