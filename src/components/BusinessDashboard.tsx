@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ArrowUpRight, ArrowDownRight, Coins, Calculator, TrendUp as TrendingUp, Pulse as Activity, Plus, Trash as Trash2, CheckCircle, DeviceMobile as Smartphone, Wallet, Buildings as Building, WarningCircle as AlertCircle, DownloadSimple as Download, UploadSimple as Upload, Database, MagicWand as Sparkles, ShieldWarning as ShieldAlert, Users, Briefcase, ClockCounterClockwise as History, TrendDown as TrendingDown, UserCheck, Lightning, FileCsv as FileSpreadsheetIcon } from "@phosphor-icons/react";
+import { ArrowUpRight, ArrowDownRight, Coins, Calculator, TrendUp as TrendingUp, Pulse as Activity, Plus, Trash as Trash2, CheckCircle, DeviceMobile as Smartphone, Wallet, Buildings as Building, WarningCircle as AlertCircle, DownloadSimple as Download, UploadSimple as Upload, Database, MagicWand as Sparkles, ShieldWarning as ShieldAlert, Users, Briefcase, ClockCounterClockwise as History, TrendDown as TrendingDown, UserCheck, Lightning, FileCsv as FileSpreadsheetIcon, Info } from "@phosphor-icons/react";
 import { Transaction, Customer, Business, Invoice, Debt, Partner, Shareholder, AuditLog, UserRole } from "../types";
 
 interface BusinessDashboardProps {
@@ -701,6 +701,11 @@ export default function BusinessDashboard({
               </div>
             </>
           )}
+
+          <p className="text-[10px] text-slate-500 leading-relaxed flex items-start gap-1.5 text-left">
+            <Info className="w-3 h-3 shrink-0 mt-0.5 text-slate-400" />
+            <span>Based entirely on the transactions and figures you've logged in Aziiki - not independently verified or audited.</span>
+          </p>
         </div>
 
         {/* Rapid Ledger Cashbook trigger panel */}
