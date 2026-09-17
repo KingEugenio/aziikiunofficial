@@ -44,6 +44,11 @@ describe("recordFailedAttempt", () => {
     expect(status.retryAfterSeconds).toBeLessThanOrEqual(60);
   });
 
+  // 10 sequential recordFailedAttempt calls, each a real round-trip to
+  // Postgres - the default 5s per-test timeout is tight for that even
+  // alone, and flakes when other test files' own real DB round-trips run
+  // concurrently against the same project (vitest runs files in parallel
+  // by default). A longer timeout here is the honest fix, not a mock.
   it("escalates the cooldown on a repeat lockout of the same account", async () => {
     // First lockout cycle - stage 1, 60s cooldown.
     for (let i = 0; i < 5; i++) {
@@ -67,7 +72,7 @@ describe("recordFailedAttempt", () => {
     expect(status.locked).toBe(true);
     expect(status.retryAfterSeconds).toBeGreaterThan(60);
     expect(status.retryAfterSeconds).toBeLessThanOrEqual(5 * 60);
-  });
+  }, 15_000);
 });
 
 describe("clearLockout", () => {
