@@ -32,7 +32,7 @@ export function getUserScopedClient(accessToken: string): SupabaseClient {
 
 /**
  * Service-role client. This BYPASSES Row Level Security entirely, so its use
- * is deliberately restricted to three narrow, audited purposes in this
+ * is deliberately restricted to five narrow, audited purposes in this
  * codebase:
  *   1. writing to security_events (src/server/security/logSecurityEvent.ts),
  *      because failed-login events happen pre-authentication.
@@ -44,6 +44,13 @@ export function getUserScopedClient(accessToken: string): SupabaseClient {
  *      privileged Auth API that only the service role can call at all - the
  *      route itself checks the caller's own role (Owner/Admin) before ever
  *      reaching this client, since RLS has no way to gate an Auth API call.
+ *   4. rate limiting (src/server/rateLimitStorePostgres.ts), because a
+ *      rate-limit counter isn't a signed-in user's own data - there's no
+ *      user token to scope it to at all for most of the routes it guards
+ *      (login, signup, password reset).
+ *   5. progressive account lockout (src/server/security/loginLockout.ts),
+ *      same reasoning as #4 - tracked pre-authentication, by email, not by
+ *      an authenticated user's own session.
  *
  * Do NOT use this client for ordinary business data CRUD - that would defeat
  * the RLS guarantee that is the core security property of this app.

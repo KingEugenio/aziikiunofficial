@@ -14,6 +14,7 @@ import { createServer as createViteServer } from "vite";
 
 import { createApp } from "./src/server/app";
 import { runOverdueInvoiceSweep } from "./src/server/notifications/overdueInvoiceSweep";
+import { getServiceRoleClient } from "./src/server/supabaseClients";
 
 async function startServer() {
   const app = createApp();
@@ -88,6 +89,19 @@ async function startServer() {
   setInterval(() => {
     runOverdueInvoiceSweep().catch((err) => console.error("[overdue sweep] failed:", err));
   }, OVERDUE_SWEEP_INTERVAL_MS);
+
+  // Same local-timer-vs-Vercel-Cron split as the overdue sweep above (see
+  // api/cron/rate-limit-cleanup.ts for the Vercel side).
+  const RATE_LIMIT_CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000;
+  const runRateLimitCleanup = () => {
+    getServiceRoleClient()
+      .rpc("rate_limit_cleanup_expired")
+      .then(({ error }: { error: unknown }) => {
+        if (error) console.error("[rate limit cleanup] failed:", error);
+      });
+  };
+  setTimeout(runRateLimitCleanup, 60_000);
+  setInterval(runRateLimitCleanup, RATE_LIMIT_CLEANUP_INTERVAL_MS);
 }
 
 startServer();

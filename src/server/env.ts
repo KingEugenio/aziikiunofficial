@@ -12,8 +12,15 @@ const envSchema = z.object({
   SUPABASE_ANON_KEY: z.string().min(20, "SUPABASE_ANON_KEY is missing or looks truncated"),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(20, "SUPABASE_SERVICE_ROLE_KEY is missing or looks truncated"),
 
-  UPSTASH_REDIS_REST_URL: z.string().url("UPSTASH_REDIS_REST_URL must be a valid URL"),
-  UPSTASH_REDIS_REST_TOKEN: z.string().min(10, "UPSTASH_REDIS_REST_TOKEN is missing or looks truncated"),
+  // Optional: rate limiting runs on Postgres by default now (see
+  // rateLimitStorePostgres.ts / migration 0056), no external service
+  // required. These only matter if you specifically want the
+  // /api/sync short-TTL read-through cache (redis.ts's cached()) backed
+  // by Upstash instead of hitting Postgres directly every time - missing
+  // this never blocks startup, the cache just no-ops (every read falls
+  // straight through to its loader).
+  UPSTASH_REDIS_REST_URL: z.string().url("UPSTASH_REDIS_REST_URL must be a valid URL").optional(),
+  UPSTASH_REDIS_REST_TOKEN: z.string().min(10, "UPSTASH_REDIS_REST_TOKEN is missing or looks truncated").optional(),
 
   // Feature-flagged rather than fatal: the AI routes check for this at request
   // time and return a clear 503 if it's absent, so a missing key degrades one

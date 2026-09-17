@@ -1,6 +1,6 @@
 import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 import type { Request } from "express";
-import { UpstashRateLimitStore } from "./rateLimitStore";
+import { PostgresRateLimitStore } from "./rateLimitStorePostgres";
 
 /** Key by IP + the email in the request body, when present. Combining both
  * stops two different attacks at once: rotating IPs against one victim
@@ -28,7 +28,7 @@ export const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
   keyGenerator: ipAndEmailKey,
-  store: new UpstashRateLimitStore("login"),
+  store: new PostgresRateLimitStore("login"),
   message: { error: "Too many login attempts. Please wait a few minutes and try again." },
 });
 
@@ -42,7 +42,7 @@ export const signupLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 5,
   keyGenerator: (req) => ipKeyGenerator(req.ip ?? "unknown"),
-  store: new UpstashRateLimitStore("signup"),
+  store: new PostgresRateLimitStore("signup"),
   message: { error: "Too many signup attempts from this network. Please try again later." },
 });
 
@@ -58,7 +58,7 @@ export const passwordResetLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 3,
   keyGenerator: ipAndEmailKey,
-  store: new UpstashRateLimitStore("pwreset"),
+  store: new PostgresRateLimitStore("pwreset"),
   message: { error: "Too many password reset requests. Please check your inbox or try again later." },
 });
 
@@ -72,7 +72,7 @@ export const magicLinkLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 5,
   keyGenerator: ipAndEmailKey,
-  store: new UpstashRateLimitStore("magiclink"),
+  store: new PostgresRateLimitStore("magiclink"),
   message: { error: "Too many sign-in link requests. Please check your inbox or try again later." },
 });
 
@@ -87,7 +87,7 @@ export const otpLimiter = rateLimit({
   windowMs: 10 * 60 * 1000,
   max: 5,
   keyGenerator: ipAndEmailKey,
-  store: new UpstashRateLimitStore("otp"),
+  store: new PostgresRateLimitStore("otp"),
   message: { error: "Too many one-time code attempts. Please request a new code shortly." },
 });
 
@@ -102,7 +102,7 @@ export const paystackInitializeLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,
   keyGenerator: (req) => `${ipKeyGenerator(req.ip ?? "unknown")}:${req.user?.id ?? "anon"}`,
-  store: new UpstashRateLimitStore("paystack-init"),
+  store: new PostgresRateLimitStore("paystack-init"),
   message: { error: "Too many payment requests. Please wait a few minutes and try again." },
 });
 
@@ -119,7 +119,7 @@ export const paystackWebhookLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 120,
   keyGenerator: (req) => ipKeyGenerator(req.ip ?? "unknown"),
-  store: new UpstashRateLimitStore("paystack-webhook"),
+  store: new PostgresRateLimitStore("paystack-webhook"),
   message: { error: "Too many requests." },
 });
 
@@ -134,7 +134,7 @@ export const apiLimiter = rateLimit({
   windowMs: 5 * 60 * 1000,
   max: 300,
   keyGenerator: (req) => ipKeyGenerator(req.ip ?? "unknown"),
-  store: new UpstashRateLimitStore("api"),
+  store: new PostgresRateLimitStore("api"),
 });
 
 /** Hourly AI request ceiling per plan tier - a real but noticeably tighter
@@ -169,6 +169,6 @@ export const geminiLimiter = rateLimit({
     }
   },
   keyGenerator: (req) => (req.user?.id ? `user:${req.user.id}` : `ip:${ipKeyGenerator(req.ip ?? "unknown")}`),
-  store: new UpstashRateLimitStore("gemini"),
+  store: new PostgresRateLimitStore("gemini"),
   message: { error: "You've reached the hourly limit for AI features. Please try again in a bit." },
 });
