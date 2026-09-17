@@ -47,6 +47,36 @@ const CORE_FLAG_DEFAULTS: Record<string, boolean> = {
  */
 export const configRouter = Router();
 
+// This table barely changes (admins toggle a flag maybe a few times a
+// month) but was being re-fetched from Supabase on every single call to
+// this route - which fires on nearly every page load, even before login.
+// Stress testing surfaced this as a real bottleneck (~10 req/sec, multi-
+// second p99 latency under 30 concurrent hits). A short in-process TTL
+// cache fixes the load without meaningfully hurting freshness: an admin's
+// flag toggle already reaches open tabs via realtimeConfigSync.ts's
+// Supabase Realtime push (~seconds), which re-calls this route - if that
+// re-call lands inside this cache's window, it can still get the
+// pre-toggle value for up to CACHE_TTL_MS longer. That's an acceptable,
+// bounded tradeoff for a non-security-critical settings table (nothing
+// like this applies to the tier/override lookup below, which stays a
+// live, per-request read since a plan change should reflect immediately).
+// Module-level state, not Redis/Postgres: this runs identically in the
+// long-lived server.ts process and in each warm Vercel function instance,
+// and correctness never depends on two instances agreeing within the
+// window.
+const CACHE_TTL_MS = 10_000;
+let flagRowsCache: { rows: { key: string; enabled_default: boolean; phase: number }[]; expiresAt: number } | null = null;
+
+async function getFlagRowsCached(): Promise<{ key: string; enabled_default: boolean; phase: number }[]> {
+  if (flagRowsCache && flagRowsCache.expiresAt > Date.now()) return flagRowsCache.rows;
+  const anonClient = getAnonClient();
+  const { data, error } = await anonClient.from("feature_flags").select("key, enabled_default, phase");
+  if (error) throw error;
+  const rows = data ?? [];
+  flagRowsCache = { rows, expiresAt: Date.now() + CACHE_TTL_MS };
+  return rows;
+}
+
 configRouter.get("/features", async (req: Request, res: Response) => {
   // Deliberately never lets a feature-flags read failure take down this
   // whole endpoint - emailSendingEnabled/paystackEnabled are load-bearing
@@ -61,9 +91,7 @@ configRouter.get("/features", async (req: Request, res: Response) => {
   // Phase-2+ flag behind a "basic" ceiling nobody configured yet.
   let maxPhase = Infinity;
   try {
-    const anonClient = getAnonClient();
-    const { data: flagRows, error: flagsError } = await anonClient.from("feature_flags").select("key, enabled_default, phase");
-    if (flagsError) throw flagsError;
+    const flagRows = await getFlagRowsCached();
 
     const authHeader = req.headers.authorization;
     let overrides: Record<string, boolean> = {};
