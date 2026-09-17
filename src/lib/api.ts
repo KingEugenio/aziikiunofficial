@@ -1,9 +1,9 @@
 import { supabase } from "./supabaseClient";
 import { getCachedResponse, setCachedResponse, enqueueWrite } from "./offlineDb";
 
-async function getAccessToken(): Promise<string | null> {
+async function getSessionInfo(): Promise<{ token: string | null; userId: string | null }> {
   const { data } = await supabase.auth.getSession();
-  return data.session?.access_token ?? null;
+  return { token: data.session?.access_token ?? null, userId: data.session?.user?.id ?? null };
 }
 
 class ApiError extends Error {
@@ -45,12 +45,22 @@ const CACHEABLE_GET_PREFIXES = ["/sync", "/config/features", "/config/branding"]
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const method = (options.method ?? "GET").toUpperCase();
-  const token = await getAccessToken();
+  const { token, userId } = await getSessionInfo();
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...(options.headers as Record<string, string> | undefined),
   };
   if (token) headers.Authorization = `Bearer ${token}`;
+
+  // Scoped by whoever's actually signed in, not just the path - /sync
+  // returns one account's entire business/customer/invoice/financial data,
+  // and this cache lives in IndexedDB (a-per-browser, not per-account,
+  // store). An unscoped key meant a stale cache written for one account
+  // could be replayed for a completely different account signed into the
+  // same browser afterward, if a fetch happened to fail at the wrong
+  // moment. "anon" covers the pre-login config reads, which aren't
+  // account-specific and are safe to share.
+  const cacheKey = `${userId ?? "anon"}:${path}`;
 
   let response: Response;
   try {
@@ -60,7 +70,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     // connection refused, ...) - a real HTTP error status (400, 500, ...)
     // still resolves normally and is handled below, not here.
     if (method === "GET") {
-      const cached = await getCachedResponse(path);
+      const cached = await getCachedResponse(cacheKey);
       if (cached !== undefined) return cached as T;
       throw new ApiError("You're offline, and this hasn't been loaded before on this device.", 0);
     }
@@ -76,7 +86,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   }
 
   if (method === "GET" && CACHEABLE_GET_PREFIXES.some((prefix) => path.startsWith(prefix))) {
-    setCachedResponse(path, body);
+    setCachedResponse(cacheKey, body);
   }
 
   return body as T;
