@@ -770,24 +770,25 @@ export default function App() {
       setTransactions([newTx, ...transactions]);
       return;
     }
-    try {
-      const created = await api.transactions.create({
-        businessId: newTx.businessId,
-        date: newTx.date,
-        type: newTx.type,
-        category: newTx.category,
-        amount: newTx.amount,
-        description: newTx.description,
-        paymentMethod: newTx.paymentMethod,
-        customerId: newTx.customerId,
-        proofUri: newTx.proofUri,
-        currency: newTx.currency,
-        exchangeRateToBusinessCurrency: newTx.exchangeRateToBusinessCurrency,
-      });
-      setTransactions(prev => [created, ...prev]);
-    } catch (err) {
-      console.error("Failed to save transaction:", err);
-    }
+    // Deliberately no try/catch here (matching handleAddCustomer/
+    // handleAddInvoice/etc. above) - the caller (BusinessDashboard's Ledger
+    // Book Drawer) awaits this and needs the rejection to actually reach it
+    // to show a real error and keep the form's values instead of resetting
+    // on a failed save.
+    const created = await api.transactions.create({
+      businessId: newTx.businessId,
+      date: newTx.date,
+      type: newTx.type,
+      category: newTx.category,
+      amount: newTx.amount,
+      description: newTx.description,
+      paymentMethod: newTx.paymentMethod,
+      customerId: newTx.customerId,
+      proofUri: newTx.proofUri,
+      currency: newTx.currency,
+      exchangeRateToBusinessCurrency: newTx.exchangeRateToBusinessCurrency,
+    });
+    setTransactions(prev => [created, ...prev]);
   };
 
   const handleDeleteTransaction = async (id: string) => {

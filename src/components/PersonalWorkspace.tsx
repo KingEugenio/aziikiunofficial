@@ -33,7 +33,7 @@ interface PersonalWorkspaceProps {
   debts: Debt[];
   investments: Investment[];
   currencySymbol: string;
-  onAddTransaction: (tx: Transaction) => void;
+  onAddTransaction: (tx: Transaction) => void | Promise<void>;
   onDeleteTransaction: (id: string) => void;
   onAddGoal: (goal: Goal) => void;
   onAddDebt: (debt: Debt) => void;
@@ -408,7 +408,7 @@ export default function PersonalWorkspace({
       businessId: currentBusiness.id
     };
 
-    onAddTransaction(newTx);
+    Promise.resolve(onAddTransaction(newTx)).catch((err) => console.error("Failed to log transaction:", err));
     setTxAmount(100);
     setTxDescription("");
   };
@@ -479,7 +479,7 @@ export default function PersonalWorkspace({
       businessId: currentBusiness.id
     };
 
-    onAddTransaction(newTx);
+    Promise.resolve(onAddTransaction(newTx)).catch((err) => console.error("Failed to log transaction:", err));
 
     // 2. Add current Amount to goal
     onContributeToGoal(contributingGoalId, Number(contributionAmount));
@@ -546,7 +546,7 @@ export default function PersonalWorkspace({
       businessId: currentBusiness.id
     };
 
-    onAddTransaction(newTx);
+    Promise.resolve(onAddTransaction(newTx)).catch((err) => console.error("Failed to log transaction:", err));
     onRepayDebt(repayingDebtId, Number(repayAmount), repayAccountName);
     setRepayingDebtId(null);
   };

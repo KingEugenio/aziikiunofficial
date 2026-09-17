@@ -28,7 +28,7 @@ interface FinancialReportsProps {
   investments: Investment[];
   currencySymbol: string;
   onContributeToGoal: (goalId: string, amount: number) => void;
-  onAddTransaction: (newTx: any) => void;
+  onAddTransaction: (newTx: any) => void | Promise<void>;
 }
 
 // investment books data
@@ -364,7 +364,7 @@ export default function FinancialReports({
         paymentMethod: "Cash",
         businessId: currentBusiness.id
       };
-      onAddTransaction(extraTx);
+      Promise.resolve(onAddTransaction(extraTx)).catch((err) => console.error("Failed to log self-payment transaction:", err));
       setPaySuccessMsg(`Success! Registered self-payment of ${currencySymbol}${payVal.toLocaleString()} into your ledger sandbox ledger!`);
     }
 

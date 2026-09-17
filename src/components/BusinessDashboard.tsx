@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ArrowUpRight, ArrowDownRight, Coins, Calculator, TrendUp as TrendingUp, Pulse as Activity, Plus, Trash as Trash2, CheckCircle, DeviceMobile as Smartphone, Wallet, Buildings as Building, WarningCircle as AlertCircle, DownloadSimple as Download, UploadSimple as Upload, Database, MagicWand as Sparkles, ShieldWarning as ShieldAlert, Users, Briefcase, ClockCounterClockwise as History, TrendDown as TrendingDown, UserCheck, Lightning, FileCsv as FileSpreadsheetIcon, Info } from "@phosphor-icons/react";
+import { ArrowUpRight, ArrowDownRight, Coins, Calculator, TrendUp as TrendingUp, Pulse as Activity, Plus, Trash as Trash2, CheckCircle, DeviceMobile as Smartphone, Wallet, Buildings as Building, WarningCircle as AlertCircle, DownloadSimple as Download, UploadSimple as Upload, Database, MagicWand as Sparkles, ShieldWarning as ShieldAlert, Users, Briefcase, ClockCounterClockwise as History, TrendDown as TrendingDown, UserCheck, Lightning, FileCsv as FileSpreadsheetIcon, Info, CircleNotch as Loader2 } from "@phosphor-icons/react";
 import { Transaction, Customer, Business, Invoice, Debt, Partner, Shareholder, AuditLog, UserRole } from "../types";
 
 interface BusinessDashboardProps {
@@ -8,7 +8,7 @@ interface BusinessDashboardProps {
   customers: Customer[];
   invoices: Invoice[];
   currencySymbol: string;
-  onAddTransaction: (trans: Transaction) => void;
+  onAddTransaction: (trans: Transaction) => void | Promise<void>;
   onDeleteTransaction: (id: string) => void;
   onRestoreBackup?: (backup: any) => void;
   debts: Debt[];
@@ -74,6 +74,7 @@ export default function BusinessDashboard({
     }
   ]);
   const [approvalAlert, setApprovalAlert] = useState<string | null>(null);
+  const [isSavingTransaction, setIsSavingTransaction] = useState(false);
 
   // Keep localPartners state in sync with currentBusiness object
   useEffect(() => {
@@ -298,7 +299,9 @@ export default function BusinessDashboard({
             : "Couldn't find a usable Amount column - check the file has a Date/Amount/Type header row."
         );
       } else {
-        transactions.forEach((t) => onAddTransaction(t));
+        transactions.forEach((t) => {
+          Promise.resolve(onAddTransaction(t)).catch((err) => console.error("Failed to import a transaction row:", err));
+        });
         setDbStatus(
           skippedRows > 0
             ? `Imported ${transactions.length} transaction${transactions.length === 1 ? "" : "s"}, skipped ${skippedRows} row${skippedRows === 1 ? "" : "s"} with no valid amount.`
@@ -338,7 +341,7 @@ export default function BusinessDashboard({
     reader.readAsText(file);
   };
 
-  const handleSaveTransaction = (e: React.FormEvent) => {
+  const handleSaveTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
     if (amount <= 0) return;
 
@@ -380,12 +383,24 @@ export default function BusinessDashboard({
       businessId: currentBusiness.id
     };
 
-    onAddTransaction(newTx);
-    
-    // Reset Form values
-    setAmount(100);
-    setDescription("");
-    setCustomerId("");
+    // Was previously fire-and-forget (no await, no error surfaced beyond a
+    // console.log in App.tsx) - the form reset and looked like a success
+    // regardless of whether the save actually reached the server. This is
+    // the app's single most-used quick-entry form, so it's worth the same
+    // "await, disable, show a real error" treatment CRM/Inventory/Brand
+    // config already got.
+    setIsSavingTransaction(true);
+    try {
+      await onAddTransaction(newTx);
+      setAmount(100);
+      setDescription("");
+      setCustomerId("");
+    } catch (err) {
+      setDbStatus(err instanceof Error ? `Err: ${err.message}` : "Err: Couldn't log that transaction. Please try again.");
+      setTimeout(() => setDbStatus(null), 6000);
+    } finally {
+      setIsSavingTransaction(false);
+    }
   };
 
   return (
@@ -878,9 +893,11 @@ export default function BusinessDashboard({
 
               <button
                 type="submit"
-                className="w-full bg-emerald-600 hover:bg-emerald-700 py-2 rounded-lg text-white font-semibold font-sans mt-2 cursor-pointer transition-colors shadow-sm"
+                disabled={isSavingTransaction}
+                className="w-full bg-emerald-600 hover:bg-emerald-700 py-2 rounded-lg text-white font-semibold font-sans mt-2 cursor-pointer transition-colors shadow-sm disabled:opacity-60 disabled:cursor-wait flex items-center justify-center gap-1.5"
               >
-                Log Transaction
+                {isSavingTransaction && <Loader2 className="w-4 h-4 animate-spin" />}
+                {isSavingTransaction ? "Saving..." : "Log Transaction"}
               </button>
             </form>
           )}
