@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FileText, Receipt as ReceiptIcon, Plus, Trash as Trash2, ShareNetwork as Share2, Printer, ArrowsClockwise as RefreshCw, Check, Palette, CheckCircle, WarningCircle as AlertCircle, UploadSimple as Upload, FileArrowUp as FileUp, FileArrowDown, Sliders, TextT as Type, FileCsv as FileSpreadsheet, Certificate as Award, Image as ImageIcon, Percent as BadgePercent, Barcode, MagnifyingGlass as Search, CheckSquare, MagicWand as Sparkles, Envelope as Mail, CircleNotch as Loader2, CreditCard, PencilSimple, Tag, Buildings, Lock, User, Wrench, ClockCounterClockwise as History, Warning, XCircle, ArrowBendUpRight, Signature, Info } from "@phosphor-icons/react";
+import { FileText, Receipt as ReceiptIcon, Plus, Trash as Trash2, ShareNetwork as Share2, Printer, ArrowsClockwise as RefreshCw, Check, Palette, CheckCircle, WarningCircle as AlertCircle, UploadSimple as Upload, FileArrowUp as FileUp, FileArrowDown, Sliders, TextT as Type, FileCsv as FileSpreadsheet, Certificate as Award, Image as ImageIcon, Percent as BadgePercent, Barcode, MagnifyingGlass as Search, CheckSquare, MagicWand as Sparkles, Envelope as Mail, CircleNotch as Loader2, PencilSimple, Tag, Buildings, Lock, User, Wrench, ClockCounterClockwise as History, Warning, ArrowBendUpRight, Signature } from "@phosphor-icons/react";
 import { Invoice, Receipt, Quotation, Customer, Business, InvoiceItem } from "../types";
 import { calculateInvoiceTotals, subtractMoney } from "../lib/money";
 import { compressImageForStorage } from "../lib/imageCompress";
@@ -287,43 +287,13 @@ export default function InvoiceReceiptBuilder({
   const [emailSendingEnabled, setEmailSendingEnabled] = useState<boolean>(false);
   const [isSendingEmail, setIsSendingEmail] = useState<boolean>(false);
 
-  // "Request Payment" (Paystack) feature state - same graceful-degradation
-  // pattern: hidden/disabled rather than broken when PAYSTACK_SECRET_KEY
-  // isn't configured on the server yet.
-  const [paystackEnabled, setPaystackEnabled] = useState<boolean>(false);
-  const [isRequestingPayment, setIsRequestingPayment] = useState<boolean>(false);
-
   // Same cache key as useFeatureFlags() (featureFlags.ts) - shares its
   // 15-minute stale-while-revalidate cache rather than issuing a second,
   // independent request for the exact same /config/features response.
   const { data: configFlags } = useCachedResource("aziiki_cache_features", () => api.config.features());
   useEffect(() => {
     setEmailSendingEnabled(configFlags?.emailSendingEnabled ?? false);
-    setPaystackEnabled(configFlags?.paystackEnabled ?? false);
   }, [configFlags]);
-
-  // Payment attempts (Paystack) for this business, so the Past Invoices
-  // Ledger can show a failed/pending payment even though the invoice's own
-  // status never changes on a failed attempt (only a successful one marks
-  // it Paid - see the webhook in paymentsWebhook.ts).
-  const [paymentTransactions, setPaymentTransactions] = useState<any[]>([]);
-
-  useEffect(() => {
-    if (!paystackEnabled || !currentBusiness.id) return;
-    api.payments.list(currentBusiness.id).then(setPaymentTransactions).catch(() => setPaymentTransactions([]));
-  }, [currentBusiness.id, paystackEnabled, activePaneTab]);
-
-  // Most recent payment attempt per invoice - only surfaced when it did NOT
-  // succeed, since a successful one already shows as the invoice's own
-  // "PAID" badge below.
-  const latestFailedOrPendingPaymentByInvoice = new Map<string, any>();
-  for (const tx of paymentTransactions) {
-    if (!tx.invoiceId || tx.status === "success") continue;
-    const existing = latestFailedOrPendingPaymentByInvoice.get(tx.invoiceId);
-    if (!existing || new Date(tx.createdAt) > new Date(existing.createdAt)) {
-      latestFailedOrPendingPaymentByInvoice.set(tx.invoiceId, tx);
-    }
-  }
 
   // Document mode
   const [mode, setMode] = useState<"invoice" | "receipt" | "quotation">("invoice");
@@ -757,31 +727,6 @@ export default function InvoiceReceiptBuilder({
       triggerToast(err instanceof ApiError ? err.message : "Failed to send the email. Please try again.");
     } finally {
       setIsSendingEmail(false);
-    }
-  };
-
-  // Starts a Paystack checkout for the currently-saved invoice and opens it
-  // in a new tab. Payment confirmation itself never happens here - it's the
-  // server-side webhook (paystack/webhook) that later marks the invoice
-  // Paid once Paystack actually confirms the charge.
-  const handleRequestPayment = async () => {
-    if (!savedDocumentId || mode !== "invoice") return;
-    setIsRequestingPayment(true);
-    try {
-      const result = await api.payments.initializePaystack({
-        businessId: currentBusiness.id,
-        invoiceId: savedDocumentId,
-        customerId: resolvedDocCustomer?.id,
-        email: resolvedDocCustomer?.email,
-        amount: getTotal(),
-        currency: currentBusiness.currency,
-      });
-      window.open(result.authorizationUrl, "_blank", "noreferrer");
-      triggerToast(`Payment link opened - share it with ${resolvedDocCustomer?.name || "your customer"} to collect payment.`);
-    } catch (err) {
-      triggerToast(err instanceof ApiError ? err.message : "Failed to start the payment. Please try again.");
-    } finally {
-      setIsRequestingPayment(false);
     }
   };
 
@@ -1883,24 +1828,6 @@ export default function InvoiceReceiptBuilder({
                         </span>
                       )}
                     </div>
-
-                    {latestFailedOrPendingPaymentByInvoice.has(inv.id) && (
-                      <div
-                        className={`text-[9px] font-mono font-bold px-2 py-1 rounded-md border flex items-center gap-1 w-fit ${
-                          latestFailedOrPendingPaymentByInvoice.get(inv.id).status === "failed"
-                            ? "bg-rose-50 text-rose-600 border-rose-150"
-                            : latestFailedOrPendingPaymentByInvoice.get(inv.id).status === "abandoned"
-                            ? "bg-amber-50 text-amber-700 border-amber-150"
-                            : "bg-slate-100 text-slate-500 border-slate-200"
-                        }`}
-                      >
-                        {latestFailedOrPendingPaymentByInvoice.get(inv.id).status === "failed"
-                          ? (<><XCircle className="w-3 h-3 inline" /> Last payment attempt failed</>)
-                          : latestFailedOrPendingPaymentByInvoice.get(inv.id).status === "abandoned"
-                          ? (<><Loader2 className="w-3 h-3 inline" /> Payment link opened, not completed</>)
-                          : (<><Loader2 className="w-3 h-3 inline" /> Payment in progress</>)}
-                      </div>
-                    )}
 
                     <div className="grid grid-cols-2 gap-2 text-[11px] leading-tight text-slate-600 font-sans">
                       <div>
@@ -3012,30 +2939,6 @@ export default function InvoiceReceiptBuilder({
             )}
             {isDownloadingPdf ? "Preparing PDF..." : "Download PDF"}
           </button>
-          {mode === "invoice" && (
-            <button
-              type="button"
-              onClick={handleRequestPayment}
-              disabled={!paystackEnabled || !resolvedDocCustomer?.email || !savedDocumentId || isRequestingPayment}
-              title={
-                !paystackEnabled
-                  ? "Card/Mobile Money payments are not configured for this workspace yet."
-                  : !resolvedDocCustomer?.email
-                  ? "Add an email address to this customer's profile to request payment."
-                  : !savedDocumentId
-                  ? "Save this invoice first to request payment."
-                  : `Request payment of ${currencySymbol}${getTotal().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} via Paystack`
-              }
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] px-3.5 py-2.5 rounded-lg transition-all flex items-center gap-1.5 shadow-sm uppercase tracking-wider cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-emerald-600"
-            >
-              {isRequestingPayment ? (
-                <Loader2 className="w-3.5 h-3.5 text-white animate-spin" />
-              ) : (
-                <CreditCard className="w-3.5 h-3.5 text-white" />
-              )}
-              Request Payment
-            </button>
-          )}
           {(mode === "invoice" || mode === "receipt") && (
             <button
               type="button"
@@ -3081,13 +2984,6 @@ export default function InvoiceReceiptBuilder({
             <Printer className="w-3.5 h-3.5 text-slate-600" /> Print Sheet
           </button>
         </div>
-
-        {mode === "invoice" && paystackEnabled && (
-          <p className="text-[10px] text-slate-500 leading-relaxed flex items-start gap-1.5 -mt-2 font-sans">
-            <Info className="w-3 h-3 shrink-0 mt-0.5 text-slate-400" />
-            <span>Payments made via "Request Payment" go directly to your own Paystack account - Aziiki never holds, touches, or has access to this money at any point.</span>
-          </p>
-        )}
 
         {/* Dynamic Estimate proposal Convert block */}
         {mode === "quotation" && quotations.length > 0 && (

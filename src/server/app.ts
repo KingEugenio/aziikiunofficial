@@ -46,7 +46,6 @@ import { configRouter } from "./routes/config";
 import { brandKitsRouter } from "./routes/brandKits";
 import { documentTemplatesRouter } from "./routes/documentTemplates";
 import { documentNumberingRouter } from "./routes/documentNumbering";
-import { paymentsRouter } from "./routes/payments";
 import { paymentsWebhookRouter } from "./routes/paymentsWebhook";
 import { notificationsRouter } from "./routes/notifications";
 import { profileRouter } from "./routes/profile";
@@ -140,7 +139,6 @@ export function createApp(): express.Express {
   app.use("/api/brand-kits", requireAuth, brandKitsRouter);
   app.use("/api/document-templates", requireAuth, documentTemplatesRouter);
   app.use("/api/document-numbering", requireAuth, documentNumberingRouter);
-  app.use("/api/payments", requireAuth, paymentsRouter);
   app.use("/api/notifications", requireAuth, notificationsRouter);
   app.use("/api/profile", requireAuth, profileRouter);
   app.use("/api/signatures", requireAuth, signaturesRouter);

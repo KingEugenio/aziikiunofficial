@@ -249,23 +249,6 @@ export const api = {
     },
   },
 
-  payments: {
-    list: (businessId?: string) =>
-      request<{ data: any[] }>(`/payments${businessId ? `?businessId=${encodeURIComponent(businessId)}` : ""}`).then((r) => r.data),
-    initializePaystack: (payload: {
-      businessId: string;
-      invoiceId?: string;
-      customerId?: string;
-      email?: string;
-      amount: number;
-      currency?: string;
-    }) =>
-      request<{ data: any; authorizationUrl: string }>("/payments/paystack/initialize", {
-        method: "POST",
-        body: JSON.stringify(payload),
-      }),
-  },
-
   notifications: {
     list: () => request<{ data: any[] }>("/notifications").then((r) => r.data),
     markRead: (id: string) => request<{ data: any }>(`/notifications/${id}/read`, { method: "POST" }).then((r) => r.data),

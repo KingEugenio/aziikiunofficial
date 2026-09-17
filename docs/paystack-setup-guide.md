@@ -2,15 +2,14 @@
 
 Paystack already works end-to-end in this codebase — nothing new needs to
 be built. This guide is just "where do I get the values, and where do I
-put them," for the two separate things Paystack does in Aziiki:
+put them."
 
-1. **Collecting payment on an invoice** ("Request Payment" button — money
-   from your customers to you).
-2. **Upgrading someone's plan** (Basic → Standard/Pro — money from your
-   users to you, for using Aziiki itself).
-
-Both use the same Paystack account and the same secret key. You only need
-to do the setup below once.
+Aziiki never collects payment on a business's behalf — it's a
+records/reminders tool (track who owes you, nudge them), not a payment
+collector. The only money that ever flows through Paystack here is a
+business paying **its own Aziiki subscription** (Basic → Standard/Pro),
+which is Aziiki collecting its own fee, not standing between a business
+and its customers' money.
 
 ---
 
@@ -23,7 +22,7 @@ to do the setup below once.
 3. Copy your **Secret Key**. Paystack gives you a **Test** key and a
    **Live** key — use the Test key first while you're trying everything
    out (it won't move real money), then switch to the Live key when you're
-   ready for real customers.
+   ready for real subscribers.
 
 **Where it goes:**
 
@@ -31,14 +30,10 @@ to do the setup below once.
 - Production (Vercel): **Project → Settings → Environment Variables**, same
   variable name, same value (use your Live key here once you're ready).
 
-That single key is what makes both invoice payments and plan upgrades work
-— once it's set, `isPaystackConfigured()` returns true everywhere in the
-app and the "Request Payment" button stops being hidden.
-
 ## Step 2: Point Paystack's webhook at your app
 
-Paystack needs to tell Aziiki when a payment actually succeeds — that's
-what confirms an invoice as paid, or upgrades someone's plan.
+Paystack needs to tell Aziiki when a subscription payment actually
+succeeds — that's what upgrades someone's plan.
 
 1. Still in **Settings → API Keys & Webhooks**, find the **Webhook URL**
    field.
@@ -49,9 +44,6 @@ what confirms an invoice as paid, or upgrades someone's plan.
    verifies Paystack's signature on every event (`verifyWebhookSignature`
    in `src/server/payments/paystackClient.ts`), so nothing further to
    configure here.
-
-That's it for invoice payments — a customer paying an invoice through the
-"Request Payment" link now gets tracked automatically.
 
 ## Step 3: Set up plan pricing (for the Basic → Standard/Pro upgrade path)
 
@@ -94,8 +86,6 @@ your Live secret key and real Payment Page links.
 
 ## What's already built, so you don't need to ask for it again
 
-- Invoice payment collection, with its own rate limit so it can't be
-  abused as a free API proxy (`paystackInitializeLimiter`)
 - Webhook signature verification (rejects anything not actually from
   Paystack)
 - Idempotency — Paystack can and does resend the same webhook event;

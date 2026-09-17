@@ -92,21 +92,6 @@ export const otpLimiter = rateLimit({
 });
 
 /**
- * Paystack checkout initialization: 20 / 15 min per IP+user. A legitimate
- * user rarely starts more than a couple of checkouts back to back; this
- * mainly bounds someone scripting repeated transaction-initialize calls
- * against the Paystack API using our server as a proxy.
- */
-export const paystackInitializeLimiter = rateLimit({
-  ...standardOptions,
-  windowMs: 15 * 60 * 1000,
-  max: 20,
-  keyGenerator: (req) => `${ipKeyGenerator(req.ip ?? "unknown")}:${req.user?.id ?? "anon"}`,
-  store: new PostgresRateLimitStore("paystack-init"),
-  message: { error: "Too many payment requests. Please wait a few minutes and try again." },
-});
-
-/**
  * Paystack webhook: 120 / min per IP. This endpoint is public (Paystack
  * calls it directly with no user session), so it needs its own cap
  * independent of the general apiLimiter - generous enough for legitimate
