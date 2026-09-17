@@ -27,7 +27,7 @@ interface FinancialReportsProps {
   goals: Goal[];
   investments: Investment[];
   currencySymbol: string;
-  onContributeToGoal: (goalId: string, amount: number) => void;
+  onContributeToGoal: (goalId: string, amount: number) => void | Promise<void>;
   onAddTransaction: (newTx: any) => void | Promise<void>;
 }
 
@@ -349,7 +349,7 @@ export default function FinancialReports({
 
     if (selectedGoalId) {
       // Call standard goal contribution handler
-      onContributeToGoal(selectedGoalId, payVal);
+      Promise.resolve(onContributeToGoal(selectedGoalId, payVal)).catch((err) => console.error("Failed to contribute to goal:", err));
       const chosenGoal = goals.find(g => g.id === selectedGoalId);
       setPaySuccessMsg(`Success! Contributed ${currencySymbol}${payVal.toLocaleString()} into your "${chosenGoal?.name || "Savings"}" gold purse!`);
     } else {

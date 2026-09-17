@@ -1088,24 +1088,24 @@ export default function App() {
       trackFeatureUsage("netWorthUpdates");
       return;
     }
-    try {
-      const created = await api.investments.create({
-        businessId: newInv.businessId,
-        type: newInv.type,
-        name: newInv.name,
-        institution: newInv.institution,
-        value: newInv.value,
-        amountInvested: newInv.amountInvested,
-        maturityDate: newInv.maturityDate,
-        expectedReturnRate: newInv.expectedReturnRate,
-        dateAcquired: newInv.dateAcquired,
-        notes: newInv.notes,
-      });
-      setInvestments(prev => [created, ...prev]);
-      trackFeatureUsage("netWorthUpdates");
-    } catch (err) {
-      console.error("Failed to save investment:", err);
-    }
+    // No try/catch here (matching handleAddCustomer/handleAddInvoice/etc.) -
+    // the caller (NetWorthInvestments' Add Investment form) awaits this and
+    // needs the rejection to actually reach it to show a real error instead
+    // of resetting the form on a failed save.
+    const created = await api.investments.create({
+      businessId: newInv.businessId,
+      type: newInv.type,
+      name: newInv.name,
+      institution: newInv.institution,
+      value: newInv.value,
+      amountInvested: newInv.amountInvested,
+      maturityDate: newInv.maturityDate,
+      expectedReturnRate: newInv.expectedReturnRate,
+      dateAcquired: newInv.dateAcquired,
+      notes: newInv.notes,
+    });
+    setInvestments(prev => [created, ...prev]);
+    trackFeatureUsage("netWorthUpdates");
   };
 
   const handleAddGoal = async (newGoal: Goal) => {
@@ -1114,21 +1114,17 @@ export default function App() {
       trackFeatureUsage("netWorthUpdates");
       return;
     }
-    try {
-      const created = await api.goals.create({
-        businessId: newGoal.businessId,
-        type: newGoal.type,
-        name: newGoal.name,
-        currentAmount: newGoal.currentAmount,
-        targetAmount: newGoal.targetAmount,
-        deadline: newGoal.deadline,
-        currency: newGoal.currency,
-      });
-      setGoals(prev => [created, ...prev]);
-      trackFeatureUsage("netWorthUpdates");
-    } catch (err) {
-      console.error("Failed to save goal:", err);
-    }
+    const created = await api.goals.create({
+      businessId: newGoal.businessId,
+      type: newGoal.type,
+      name: newGoal.name,
+      currentAmount: newGoal.currentAmount,
+      targetAmount: newGoal.targetAmount,
+      deadline: newGoal.deadline,
+      currency: newGoal.currency,
+    });
+    setGoals(prev => [created, ...prev]);
+    trackFeatureUsage("netWorthUpdates");
   };
 
   const handleContributeToGoal = async (goalId: string, amount: number, currency?: string) => {
@@ -1155,14 +1151,10 @@ export default function App() {
       return;
     }
 
-    try {
-      const updatedGoal = await api.goals.contribute(goalId, amount, currency);
-      setGoals(prev => prev.map(g => (g.id === goalId ? updatedGoal : g)));
-      const allTransactions = await api.transactions.list();
-      setTransactions(allTransactions);
-    } catch (err) {
-      console.error("Failed to contribute to goal:", err);
-    }
+    const updatedGoal = await api.goals.contribute(goalId, amount, currency);
+    setGoals(prev => prev.map(g => (g.id === goalId ? updatedGoal : g)));
+    const allTransactions = await api.transactions.list();
+    setTransactions(allTransactions);
   };
 
   const handleRestoreBackup = (backup: {
@@ -1189,21 +1181,17 @@ export default function App() {
       trackFeatureUsage("netWorthUpdates");
       return;
     }
-    try {
-      const created = await api.debts.create({
-        businessId: newDebt.businessId,
-        creditor: newDebt.creditor,
-        amount: newDebt.amount,
-        interestRate: newDebt.interestRate,
-        dueDate: newDebt.dueDate,
-        type: newDebt.type,
-        currency: newDebt.currency,
-      });
-      setDebts(prev => [created, ...prev]);
-      trackFeatureUsage("netWorthUpdates");
-    } catch (err) {
-      console.error("Failed to save debt:", err);
-    }
+    const created = await api.debts.create({
+      businessId: newDebt.businessId,
+      creditor: newDebt.creditor,
+      amount: newDebt.amount,
+      interestRate: newDebt.interestRate,
+      dueDate: newDebt.dueDate,
+      type: newDebt.type,
+      currency: newDebt.currency,
+    });
+    setDebts(prev => [created, ...prev]);
+    trackFeatureUsage("netWorthUpdates");
   };
 
   const handleAddInventoryItem = async (newItem: InventoryItem): Promise<InventoryItem> => {
@@ -1283,29 +1271,25 @@ export default function App() {
       trackFeatureUsage("netWorthUpdates");
       return;
     }
-    try {
-      const created = await api.assets.create({
-        businessId: newAsset.businessId,
-        name: newAsset.name,
-        category: newAsset.category,
-        purchaseDate: newAsset.purchaseDate,
-        purchasePrice: newAsset.purchasePrice,
-        currentValue: newAsset.currentValue,
-        depreciationMethod: newAsset.depreciationMethod,
-        usefulLifeYears: newAsset.usefulLifeYears,
-        salvageValue: newAsset.salvageValue,
-        maintenanceLastDate: newAsset.maintenanceLastDate,
-        maintenanceNextDate: newAsset.maintenanceNextDate,
-        maintenanceStatus: newAsset.maintenanceStatus,
-        maintenanceNotes: newAsset.maintenanceNotes,
-        documentsNotes: newAsset.documentsNotes,
-        notes: newAsset.notes,
-      });
-      setAssets(prev => [created, ...prev]);
-      trackFeatureUsage("netWorthUpdates");
-    } catch (err) {
-      console.error("Failed to save asset:", err);
-    }
+    const created = await api.assets.create({
+      businessId: newAsset.businessId,
+      name: newAsset.name,
+      category: newAsset.category,
+      purchaseDate: newAsset.purchaseDate,
+      purchasePrice: newAsset.purchasePrice,
+      currentValue: newAsset.currentValue,
+      depreciationMethod: newAsset.depreciationMethod,
+      usefulLifeYears: newAsset.usefulLifeYears,
+      salvageValue: newAsset.salvageValue,
+      maintenanceLastDate: newAsset.maintenanceLastDate,
+      maintenanceNextDate: newAsset.maintenanceNextDate,
+      maintenanceStatus: newAsset.maintenanceStatus,
+      maintenanceNotes: newAsset.maintenanceNotes,
+      documentsNotes: newAsset.documentsNotes,
+      notes: newAsset.notes,
+    });
+    setAssets(prev => [created, ...prev]);
+    trackFeatureUsage("netWorthUpdates");
   };
 
   const handleDeleteAsset = async (id: string) => {

@@ -35,10 +35,10 @@ interface PersonalWorkspaceProps {
   currencySymbol: string;
   onAddTransaction: (tx: Transaction) => void | Promise<void>;
   onDeleteTransaction: (id: string) => void;
-  onAddGoal: (goal: Goal) => void;
-  onAddDebt: (debt: Debt) => void;
-  onAddInvestment: (inv: Investment) => void;
-  onContributeToGoal: (goalId: string, amount: number) => void;
+  onAddGoal: (goal: Goal) => void | Promise<void>;
+  onAddDebt: (debt: Debt) => void | Promise<void>;
+  onAddInvestment: (inv: Investment) => void | Promise<void>;
+  onContributeToGoal: (goalId: string, amount: number) => void | Promise<void>;
   onUpdateBusiness: (updated: Business) => void;
   onDeleteDebt: (id: string) => void;
   onDeleteGoal: (id: string) => void;
@@ -453,7 +453,7 @@ export default function PersonalWorkspace({
       businessId: currentBusiness.id
     };
 
-    onAddGoal(newG);
+    Promise.resolve(onAddGoal(newG)).catch((err) => console.error("Failed to save goal:", err));
     setNewGoalName("");
     setNewGoalCurrent(0);
     setNewGoalTarget(1000);
@@ -482,7 +482,9 @@ export default function PersonalWorkspace({
     Promise.resolve(onAddTransaction(newTx)).catch((err) => console.error("Failed to log transaction:", err));
 
     // 2. Add current Amount to goal
-    onContributeToGoal(contributingGoalId, Number(contributionAmount));
+    Promise.resolve(onContributeToGoal(contributingGoalId, Number(contributionAmount))).catch((err) =>
+      console.error("Failed to contribute to goal:", err)
+    );
     setContributingGoalId(null);
   };
 
@@ -521,7 +523,7 @@ export default function PersonalWorkspace({
       businessId: currentBusiness.id
     };
 
-    onAddDebt(newD);
+    Promise.resolve(onAddDebt(newD)).catch((err) => console.error("Failed to save debt:", err));
     setDebtCreditor("");
     setDebtAmount(500);
     setDebtInterest(0);
@@ -569,7 +571,7 @@ export default function PersonalWorkspace({
       businessId: currentBusiness.id
     };
 
-    onAddInvestment(newI);
+    Promise.resolve(onAddInvestment(newI)).catch((err) => console.error("Failed to save investment:", err));
     setInvName("");
     setInvInst("");
     setInvValue(1000);

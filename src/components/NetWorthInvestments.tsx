@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Briefcase, Plus, TrendUp as TrendingUp, Pulse as Activity, CaretRight as ChevronRight, Trash as Trash2, Target, Coins, Scales as Scale, Warning as AlertTriangle, CalendarDots as CalendarDays, Percent, MagicWand as Sparkles, ArrowsClockwise as RefreshCw, Globe, MagnifyingGlass as Search, TrendDown as TrendingDown, Wrench, FileText, Clock, ShieldCheck, Calculator, Stack as Layers, Question as HelpCircle, SealCheck as FileCheck, CheckCircle, BookOpen, Lightbulb, ChartBar, HandCoins, Info } from "@phosphor-icons/react";
+import { Briefcase, Plus, TrendUp as TrendingUp, Pulse as Activity, CaretRight as ChevronRight, Trash as Trash2, Target, Coins, Scales as Scale, Warning as AlertTriangle, CalendarDots as CalendarDays, Percent, MagicWand as Sparkles, ArrowsClockwise as RefreshCw, Globe, MagnifyingGlass as Search, TrendDown as TrendingDown, Wrench, FileText, Clock, ShieldCheck, Calculator, Stack as Layers, Question as HelpCircle, SealCheck as FileCheck, CheckCircle, BookOpen, Lightbulb, ChartBar, HandCoins, Info, CircleNotch as Loader2 } from "@phosphor-icons/react";
 import { Investment, Goal, Debt, Business, Asset } from "../types";
 import { SUPPORTED_CURRENCY_CODES, getCurrencySymbol } from "../lib/currency";
 import { useFeatureFlags } from "../lib/featureFlags";
@@ -125,16 +125,16 @@ interface NetWorthInvestmentsProps {
   debts: Debt[];
   currencySymbol: string;
   totalCash: number;
-  onAddInvestment: (inv: Investment) => void;
+  onAddInvestment: (inv: Investment) => void | Promise<void>;
   onDeleteInvestment?: (id: string) => void;
-  onAddAsset: (asset: Asset) => void;
+  onAddAsset: (asset: Asset) => void | Promise<void>;
   onDeleteAsset?: (id: string) => void;
   onUpdateAsset?: (asset: Asset) => void;
-  onAddGoal: (goal: Goal) => void;
+  onAddGoal: (goal: Goal) => void | Promise<void>;
   onDeleteGoal?: (id: string) => void;
-  onAddDebt: (debt: Debt) => void;
+  onAddDebt: (debt: Debt) => void | Promise<void>;
   onDeleteDebt?: (id: string) => void;
-  onContributeToGoal?: (goalId: string, amount: number, currency?: string) => void;
+  onContributeToGoal?: (goalId: string, amount: number, currency?: string) => void | Promise<void>;
   currentBusiness?: Business;
 }
 
@@ -182,6 +182,11 @@ export default function NetWorthInvestments({
 
   // Success state alert messages
   const [alertMessage, setAlertMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
+  const [isSavingAsset, setIsSavingAsset] = useState(false);
+  const [isSavingInvestment, setIsSavingInvestment] = useState(false);
+  const [isSavingGoal, setIsSavingGoal] = useState(false);
+  const [isSavingDebt, setIsSavingDebt] = useState(false);
+  const [isSavingContribution, setIsSavingContribution] = useState(false);
 
   // Asset Form States
   const [isAddingAsset, setIsAddingAsset] = useState<boolean>(false);
@@ -427,35 +432,41 @@ export default function NetWorthInvestments({
   const netWorthValue = totalAssetsAggregate - totalDebtValue;
 
   // Add Asset Submission
-  const handleSaveAsset = (e: React.FormEvent) => {
+  const handleSaveAsset = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!assetName.trim()) return;
 
     const isPlanned = assetOwnershipStatus === "planned";
 
-    onAddAsset({
-      id: "asset-" + Math.random().toString(36).substr(2, 9),
-      name: assetName,
-      category: assetCategory,
-      purchaseDate: assetPurchaseDate,
-      purchasePrice: assetPurchasePrice,
-      currentValue: assetCurrentValue,
-      depreciationMethod: isPlanned ? "None" : assetDepreciationMethod,
-      usefulLifeYears: isPlanned ? undefined : assetUsefulLife,
-      salvageValue: isPlanned ? undefined : assetSalvageValue,
-      maintenanceLastDate: isPlanned ? undefined : (assetMaintenanceLast || undefined),
-      maintenanceNextDate: isPlanned ? undefined : (assetMaintenanceNext || undefined),
-      maintenanceStatus: isPlanned ? undefined : assetMaintenanceStatus,
-      maintenanceNotes: isPlanned ? undefined : (assetMaintenanceNotes || undefined),
-      documentsNotes: assetDocsNotes || undefined,
-      notes: isPlanned ? `[Planned] ${assetNotes}` : assetNotes || undefined,
-      businessId: activeBusinessId
-    });
+    setIsSavingAsset(true);
+    try {
+      await onAddAsset({
+        id: "asset-" + Math.random().toString(36).substr(2, 9),
+        name: assetName,
+        category: assetCategory,
+        purchaseDate: assetPurchaseDate,
+        purchasePrice: assetPurchasePrice,
+        currentValue: assetCurrentValue,
+        depreciationMethod: isPlanned ? "None" : assetDepreciationMethod,
+        usefulLifeYears: isPlanned ? undefined : assetUsefulLife,
+        salvageValue: isPlanned ? undefined : assetSalvageValue,
+        maintenanceLastDate: isPlanned ? undefined : (assetMaintenanceLast || undefined),
+        maintenanceNextDate: isPlanned ? undefined : (assetMaintenanceNext || undefined),
+        maintenanceStatus: isPlanned ? undefined : assetMaintenanceStatus,
+        maintenanceNotes: isPlanned ? undefined : (assetMaintenanceNotes || undefined),
+        documentsNotes: assetDocsNotes || undefined,
+        notes: isPlanned ? `[Planned] ${assetNotes}` : assetNotes || undefined,
+        businessId: activeBusinessId
+      });
 
-    // Reset Form
-    setAssetName("");
-    setIsAddingAsset(false);
-    triggerAlert(`Asset "${assetName}" registered as ${isPlanned ? "planned acquisition" : "owned equipment"} in ledger successfully.`);
+      triggerAlert(`Asset "${assetName}" registered as ${isPlanned ? "planned acquisition" : "owned equipment"} in ledger successfully.`);
+      setAssetName("");
+      setIsAddingAsset(false);
+    } catch (err) {
+      triggerAlert(err instanceof Error ? err.message : "Couldn't save that asset. Please try again.", "error");
+    } finally {
+      setIsSavingAsset(false);
+    }
   };
 
   const handleConfirmPurchaseAsset = (asset: Asset, actualPrice?: number, docNotes?: string) => {
@@ -477,78 +488,99 @@ export default function NetWorthInvestments({
   };
 
   // Add Investment Submission
-  const handleSaveInvestment = (e: React.FormEvent) => {
+  const handleSaveInvestment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!invName.trim()) return;
 
-    onAddInvestment({
-      id: "inv-" + Math.random().toString(36).substr(2, 9),
-      type: invType,
-      name: invName,
-      institution: invIns || "Local Issuer",
-      amountInvested: invAmountInvested,
-      value: invValue,
-      expectedReturnRate: invExpectedRate,
-      dateAcquired: new Date().toISOString().split("T")[0],
-      maturityDate: invMaturity || undefined,
-      notes: invNotes || undefined,
-      businessId: activeBusinessId
-    });
+    setIsSavingInvestment(true);
+    try {
+      await onAddInvestment({
+        id: "inv-" + Math.random().toString(36).substr(2, 9),
+        type: invType,
+        name: invName,
+        institution: invIns || "Local Issuer",
+        amountInvested: invAmountInvested,
+        value: invValue,
+        expectedReturnRate: invExpectedRate,
+        dateAcquired: new Date().toISOString().split("T")[0],
+        maturityDate: invMaturity || undefined,
+        notes: invNotes || undefined,
+        businessId: activeBusinessId
+      });
 
-    setInvName("");
-    setInvIns("");
-    setInvNotes("");
-    setIsAddingInv(false);
-    triggerAlert(`Investment position "${invName}" logged successfully in tracker.`);
+      triggerAlert(`Investment position "${invName}" logged successfully in tracker.`);
+      setInvName("");
+      setInvIns("");
+      setInvNotes("");
+      setIsAddingInv(false);
+    } catch (err) {
+      triggerAlert(err instanceof Error ? err.message : "Couldn't save that investment. Please try again.", "error");
+    } finally {
+      setIsSavingInvestment(false);
+    }
   };
 
   // Add Capital Goals Submission
-  const handleSaveGoal = (e: React.FormEvent) => {
+  const handleSaveGoal = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!goalName.trim()) return;
 
-    onAddGoal({
-      id: "goal-" + Math.random().toString(36).substr(2, 9),
-      type: goalType as any,
-      name: goalName,
-      currentAmount: goalCurrent,
-      targetAmount: goalTarget,
-      deadline: goalDeadline,
-      businessId: activeBusinessId,
-      currency: goalCurrency,
-    });
+    setIsSavingGoal(true);
+    try {
+      await onAddGoal({
+        id: "goal-" + Math.random().toString(36).substr(2, 9),
+        type: goalType as any,
+        name: goalName,
+        currentAmount: goalCurrent,
+        targetAmount: goalTarget,
+        deadline: goalDeadline,
+        businessId: activeBusinessId,
+        currency: goalCurrency,
+      });
 
-    setGoalName("");
-    setIsAddingGoal(false);
-    triggerAlert(`Business growth goal "${goalName}" established in milestones.`);
+      triggerAlert(`Business growth goal "${goalName}" established in milestones.`);
+      setGoalName("");
+      setIsAddingGoal(false);
+    } catch (err) {
+      triggerAlert(err instanceof Error ? err.message : "Couldn't save that goal. Please try again.", "error");
+    } finally {
+      setIsSavingGoal(false);
+    }
   };
 
   // Add Debt Liability Submission
-  const handleSaveDebt = (e: React.FormEvent) => {
+  const handleSaveDebt = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!creditor.trim()) return;
 
-    onAddDebt({
-      id: "debt-" + Math.random().toString(36).substr(2, 9),
-      creditor,
-      amount: debtAmount,
-      interestRate,
-      dueDate: debtDueDate,
-      type: debtType as any,
-      businessId: activeBusinessId,
-      currency: debtCurrency,
-    });
+    setIsSavingDebt(true);
+    try {
+      await onAddDebt({
+        id: "debt-" + Math.random().toString(36).substr(2, 9),
+        creditor,
+        amount: debtAmount,
+        interestRate,
+        dueDate: debtDueDate,
+        type: debtType as any,
+        businessId: activeBusinessId,
+        currency: debtCurrency,
+      });
 
-    setCreditor("");
-    setIsAddingDebt(false);
-    triggerAlert(`Short-term credit liability from "${creditor}" registered successfully.`);
+      triggerAlert(`Short-term credit liability from "${creditor}" registered successfully.`);
+      setCreditor("");
+      setIsAddingDebt(false);
+    } catch (err) {
+      triggerAlert(err instanceof Error ? err.message : "Couldn't save that debt. Please try again.", "error");
+    } finally {
+      setIsSavingDebt(false);
+    }
   };
 
   // Fund allocation transfer to goal. The available-cash check only applies
   // when contributing in the business's own currency - totalCash is tracked
   // in that currency, so comparing it against an amount in a different
   // currency would be meaningless.
-  const handleContributeSubmit = (goalId: string) => {
+  const handleContributeSubmit = async (goalId: string) => {
     if (contributionAmount <= 0) return;
     const isBusinessCurrency = contributionCurrency === (currentBusiness?.currency || "GHS");
     if (isBusinessCurrency && contributionAmount > totalCash) {
@@ -557,11 +589,19 @@ export default function NetWorthInvestments({
       return;
     }
     if (onContributeToGoal) {
-      onContributeToGoal(goalId, contributionAmount, contributionCurrency);
-      setActiveGoalFormId(null);
-      setContributionAmount(100);
-      setContributionError(null);
-      triggerAlert(`${getCurrencySymbol(contributionCurrency)}${contributionAmount} allocated into goal reserves from cash balance.`);
+      setIsSavingContribution(true);
+      try {
+        await onContributeToGoal(goalId, contributionAmount, contributionCurrency);
+        triggerAlert(`${getCurrencySymbol(contributionCurrency)}${contributionAmount} allocated into goal reserves from cash balance.`);
+        setActiveGoalFormId(null);
+        setContributionAmount(100);
+        setContributionError(null);
+      } catch (err) {
+        setContributionError(err instanceof Error ? err.message : "Couldn't allocate that contribution. Please try again.");
+        setTimeout(() => setContributionError(null), 5000);
+      } finally {
+        setIsSavingContribution(false);
+      }
     }
   };
 
@@ -980,9 +1020,11 @@ export default function NetWorthInvestments({
 
                 <button
                   type="submit"
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 py-3 rounded-xl text-white font-extrabold uppercase tracking-wider cursor-pointer transition-colors shadow-md shadow-emerald-600/10"
+                  disabled={isSavingAsset}
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 py-3 rounded-xl text-white font-extrabold uppercase tracking-wider cursor-pointer transition-colors shadow-md shadow-emerald-600/10 disabled:opacity-60 disabled:cursor-wait flex items-center justify-center gap-1.5"
                 >
-                  Confirm Asset Placement
+                  {isSavingAsset && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {isSavingAsset ? "Saving..." : "Confirm Asset Placement"}
                 </button>
               </form>
             ) : (
@@ -1565,9 +1607,11 @@ export default function NetWorthInvestments({
 
                     <button
                       type="submit"
-                      className="w-full bg-emerald-600 hover:bg-emerald-700 py-3 rounded-xl text-white font-extrabold uppercase tracking-wider cursor-pointer transition-colors shadow-md shadow-emerald-600/10"
+                      disabled={isSavingInvestment}
+                      className="w-full bg-emerald-600 hover:bg-emerald-700 py-3 rounded-xl text-white font-extrabold uppercase tracking-wider cursor-pointer transition-colors shadow-md shadow-emerald-600/10 disabled:opacity-60 disabled:cursor-wait flex items-center justify-center gap-1.5"
                     >
-                      Confirm Ledger Record
+                      {isSavingInvestment && <Loader2 className="w-4 h-4 animate-spin" />}
+                      {isSavingInvestment ? "Saving..." : "Confirm Ledger Record"}
                     </button>
                   </form>
                 ) : (
@@ -2678,9 +2722,11 @@ export default function NetWorthInvestments({
 
                 <button
                   type="submit"
-                  className="w-full bg-rose-600 hover:bg-rose-700 py-3 rounded-xl text-white font-extrabold uppercase tracking-wider cursor-pointer transition-colors"
+                  disabled={isSavingDebt}
+                  className="w-full bg-rose-600 hover:bg-rose-700 py-3 rounded-xl text-white font-extrabold uppercase tracking-wider cursor-pointer transition-colors disabled:opacity-60 disabled:cursor-wait flex items-center justify-center gap-1.5"
                 >
-                  Confirm Debt Allocation
+                  {isSavingDebt && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {isSavingDebt ? "Saving..." : "Confirm Debt Allocation"}
                 </button>
               </form>
             ) : (
@@ -2830,9 +2876,11 @@ export default function NetWorthInvestments({
 
                 <button
                   type="submit"
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 py-3 rounded-xl text-white font-extrabold uppercase tracking-wider cursor-pointer transition-colors shadow-md shadow-emerald-600/10"
+                  disabled={isSavingGoal}
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 py-3 rounded-xl text-white font-extrabold uppercase tracking-wider cursor-pointer transition-colors shadow-md shadow-emerald-600/10 disabled:opacity-60 disabled:cursor-wait flex items-center justify-center gap-1.5"
                 >
-                  Create Capital Benchmark
+                  {isSavingGoal && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {isSavingGoal ? "Saving..." : "Create Capital Benchmark"}
                 </button>
               </form>
             ) : (
@@ -2944,9 +2992,11 @@ export default function NetWorthInvestments({
                             <button
                               type="button"
                               onClick={() => handleContributeSubmit(goal.id)}
-                              className="bg-emerald-650 hover:bg-emerald-700 text-white font-bold px-4 py-1.5 rounded-xl text-xs cursor-pointer transition-all shrink-0 font-sans"
+                              disabled={isSavingContribution}
+                              className="bg-emerald-650 hover:bg-emerald-700 text-white font-bold px-4 py-1.5 rounded-xl text-xs cursor-pointer transition-all shrink-0 font-sans disabled:opacity-60 disabled:cursor-wait flex items-center gap-1"
                             >
-                              Transfer
+                              {isSavingContribution && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                              {isSavingContribution ? "Saving..." : "Transfer"}
                             </button>
                           </div>
 
