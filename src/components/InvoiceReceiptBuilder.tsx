@@ -269,11 +269,15 @@ export default function InvoiceReceiptBuilder({
   // fabricated numbers. Removed rather than relabeled - a disclaimer
   // wouldn't fix the underlying risk of a "Populate Editor fields using
   // OCR" button writing fake data into a real financial document.
-  const [activePaneTab, setActivePaneTab] = useState<"builder" | "style" | "history" | "brandKit">("builder");
+  const [activePaneTab, setActivePaneTab] = useState<"builder" | "style" | "history" | "documents" | "brandKit">("builder");
 
-  const changePaneTab = (tab: "builder" | "style" | "history" | "brandKit") => {
+  const changePaneTab = (tab: "builder" | "style" | "history" | "documents" | "brandKit") => {
     setActivePaneTab(tab);
   };
+
+  // Document Center (all-document-types view) filter state.
+  const [docCenterSearch, setDocCenterSearch] = useState("");
+  const [docCenterType, setDocCenterType] = useState<"all" | "invoice" | "receipt" | "quotation">("all");
 
   // Document status selection inside builder form
   const [invoiceStatus, setInvoiceStatus] = useState<Invoice["status"]>("Sent");
@@ -941,6 +945,14 @@ export default function InvoiceReceiptBuilder({
             }`}
           >
             <span className="inline-flex items-center gap-1"><History className="w-3.5 h-3.5" /> Past Ledger</span>
+          </button>
+          <button
+            onClick={() => changePaneTab("documents")}
+            className={`flex-1 pb-2 text-[10px] font-bold font-sans border-b-2 text-center cursor-pointer transition-colors ${
+              activePaneTab === "documents" ? "border-emerald-600 text-emerald-600 font-extrabold" : "border-transparent text-slate-455 hover:text-slate-700"
+            }`}
+          >
+            <span className="inline-flex items-center gap-1"><FileText className="w-3.5 h-3.5" /> Documents</span>
           </button>
           <button
             onClick={() => changePaneTab("brandKit")}
@@ -2049,6 +2061,176 @@ export default function InvoiceReceiptBuilder({
             )}
           </div>
         )}
+
+        {/* Document Center: unlike Past Ledger (one document type at a
+            time, matching whichever mode is selected up top), this shows
+            every invoice, receipt, and estimate for the business together
+            in one searchable, filterable, chronological list - the gap
+            flagged in the v1.11.0 CHANGELOG entry as "not done this
+            pass." Clicking a row reuses the exact same load*IntoBuilder
+            functions Past Ledger already uses, so opening a document
+            behaves identically either way - this is a second way to find
+            one, not a second way to view one. */}
+        {activePaneTab === "documents" && (() => {
+          type DocRow = {
+            id: string;
+            kind: "invoice" | "receipt" | "quotation";
+            number: string;
+            date: string;
+            customerName: string;
+            amount: number;
+            status: string;
+            statusTone: "paid" | "overdue" | "draft" | "pending" | "neutral";
+            onOpen: () => void;
+          };
+
+          const customerName = (customerId: string) => {
+            if (customerId?.startsWith("custom-")) return customerId.replace("custom-", "");
+            return customers.find((c) => c.id === customerId)?.name || "Direct Buyer";
+          };
+
+          const allDocs: DocRow[] = [
+            ...invoices
+              .filter((inv) => inv.businessId === currentBusiness.id)
+              .map((inv): DocRow => ({
+                id: inv.id,
+                kind: "invoice",
+                number: inv.invoiceNumber,
+                date: inv.date,
+                customerName: customerName(inv.customerId),
+                amount: calculateInvoiceTotals(inv.items, inv.discount, inv.taxRate).total,
+                status: inv.status,
+                statusTone: inv.status === "Paid" ? "paid" : inv.status === "Overdue" ? "overdue" : inv.status === "Draft" ? "draft" : "pending",
+                onOpen: () => loadInvoiceIntoBuilder(inv),
+              })),
+            ...receipts
+              .filter((rec) => rec.businessId === currentBusiness.id)
+              .map((rec): DocRow => ({
+                id: rec.id,
+                kind: "receipt",
+                number: rec.receiptNumber,
+                date: rec.date,
+                customerName: customerName(rec.customerId),
+                amount: rec.amountPaid,
+                status: "Paid",
+                statusTone: "paid",
+                onOpen: () => loadReceiptIntoBuilder(rec),
+              })),
+            ...quotations
+              .filter((q) => q.businessId === currentBusiness.id)
+              .map((q): DocRow => ({
+                id: q.id,
+                kind: "quotation",
+                number: q.quoteNumber,
+                date: q.date,
+                customerName: customerName(q.customerId),
+                amount: q.totalAmount,
+                status: q.status,
+                statusTone: q.status === "Converted" || q.status === "Accepted" ? "paid" : q.status === "Draft" ? "draft" : "pending",
+                onOpen: () => loadQuotationIntoBuilder(q),
+              })),
+          ].sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+
+          const searchLower = docCenterSearch.trim().toLowerCase();
+          const filteredDocs = allDocs.filter((d) => {
+            if (docCenterType !== "all" && d.kind !== docCenterType) return false;
+            if (!searchLower) return true;
+            return d.number.toLowerCase().includes(searchLower) || d.customerName.toLowerCase().includes(searchLower);
+          });
+
+          const KIND_LABEL: Record<DocRow["kind"], string> = { invoice: "Invoice", receipt: "Receipt", quotation: "Estimate" };
+          const KIND_ICON: Record<DocRow["kind"], React.ReactNode> = {
+            invoice: <FileText className="w-3 h-3" />,
+            receipt: <ReceiptIcon className="w-3 h-3" />,
+            quotation: <FileSpreadsheet className="w-3 h-3" />,
+          };
+          const STATUS_STYLE: Record<DocRow["statusTone"], string> = {
+            paid: "bg-emerald-50 text-emerald-700 border-emerald-200",
+            overdue: "bg-red-50 text-red-600 border-red-150",
+            draft: "bg-slate-100/80 text-slate-600 border-slate-200",
+            pending: "bg-amber-50 text-amber-700 border-amber-150",
+            neutral: "bg-slate-100 text-slate-500 border-slate-200",
+          };
+
+          return (
+            <div className="space-y-3 text-xs font-sans">
+              <div>
+                <span className="text-[10px] font-mono font-bold text-indigo-650 flex items-center gap-1 uppercase tracking-wider mb-1">
+                  <FileText className="w-3.5 h-3.5" /> Document Center
+                </span>
+                <p className="text-[11px] text-slate-500 leading-relaxed font-sans mb-3">
+                  Every invoice, receipt, and estimate for this business, all in one searchable list. Click any document to open it.
+                </p>
+              </div>
+
+              <div className="relative">
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Search by document number or customer..."
+                  value={docCenterSearch}
+                  onChange={(e) => setDocCenterSearch(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-8 pr-3 py-2 outline-none text-[11px] focus:border-emerald-500"
+                />
+              </div>
+
+              <div className="flex flex-wrap gap-1.5">
+                {(["all", "invoice", "receipt", "quotation"] as const).map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => setDocCenterType(t)}
+                    className={`px-2.5 py-1 rounded-lg text-[10px] font-bold cursor-pointer border transition-colors ${
+                      docCenterType === t ? "bg-emerald-600 text-white border-emerald-600" : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
+                    }`}
+                  >
+                    {t === "all" ? "All" : t === "invoice" ? "Invoices" : t === "receipt" ? "Receipts" : "Estimates"}
+                  </button>
+                ))}
+              </div>
+
+              <p className="text-[10px] text-slate-400">
+                {filteredDocs.length} document{filteredDocs.length === 1 ? "" : "s"}
+              </p>
+
+              <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1">
+                {filteredDocs.map((d) => (
+                  <div
+                    key={`${d.kind}-${d.id}`}
+                    onClick={d.onOpen}
+                    className="bg-slate-50 border border-slate-200 hover:border-slate-300 hover:shadow-sm rounded-xl p-3 flex items-center justify-between gap-3 cursor-pointer transition-all"
+                  >
+                    <div className="min-w-0 flex items-center gap-2.5">
+                      <span className="w-7 h-7 rounded-lg bg-white border border-slate-200 text-slate-500 flex items-center justify-center shrink-0">
+                        {KIND_ICON[d.kind]}
+                      </span>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[9px] font-mono uppercase tracking-wider text-slate-400">{KIND_LABEL[d.kind]}</span>
+                          <span className="font-mono font-bold text-slate-900 text-[11px] truncate">{d.number}</span>
+                        </div>
+                        <p className="text-[10px] text-slate-500 truncate">{d.customerName} · {d.date}</p>
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="font-mono font-bold text-slate-900 text-[11px]">
+                        {currencySymbol}{d.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </p>
+                      <span className={`text-[8px] font-mono font-bold px-1.5 py-0.5 rounded border inline-block mt-0.5 ${STATUS_STYLE[d.statusTone]}`}>
+                        {d.status.toUpperCase()}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+
+                {filteredDocs.length === 0 && (
+                  <div className="bg-slate-50/50 border border-slate-200/60 rounded-xl p-8 text-center text-slate-400 italic text-[11px] font-sans">
+                    {allDocs.length === 0 ? "No documents yet - create an invoice, receipt, or estimate to see it here." : "No documents match your search."}
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })()}
 
         {/* PANE 5: Brand Kit (colors, tax info, footer text used on every document) — kept in MVP */}
         {activePaneTab === "brandKit" && <BrandKitSettings businessId={currentBusiness.id} />}
