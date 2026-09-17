@@ -2901,7 +2901,12 @@ export default function App() {
 
         <AnimatePresence mode="wait">
           <motion.div
-            key={activeTab}
+            // Also keyed on currentBusinessId (not just activeTab) so
+            // switching businesses while staying on the same tab gets the
+            // same fade transition - previously that switch was an instant,
+            // silent hard-cut of every number on screen with no visual
+            // acknowledgment at all, since only a tab change remounted this.
+            key={`${activeTab}:${currentBusinessId}`}
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -15 }}
