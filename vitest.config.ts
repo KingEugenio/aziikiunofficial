@@ -15,5 +15,10 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["src/**/*.test.ts"],
+    // src/server/env.ts throws at import time if the required Supabase
+    // vars aren't set - loading .env here (not auto-loaded by vitest
+    // itself) is what lets the loginLockout/rate-limit tests import that
+    // module at all, same as server.ts's own "import dotenv/config" first line.
+    setupFiles: ["dotenv/config"],
   },
 });
