@@ -41,6 +41,7 @@ import { goalsRouter } from "./routes/goals";
 import { debtsRouter } from "./routes/debts";
 import { inventoryRouter } from "./routes/inventory";
 import { feedbackRouter } from "./routes/feedback";
+import { analyticsRouter } from "./routes/analytics";
 import { configRouter } from "./routes/config";
 import { brandKitsRouter } from "./routes/brandKits";
 import { documentTemplatesRouter } from "./routes/documentTemplates";
@@ -135,6 +136,7 @@ export function createApp(): express.Express {
   app.use("/api/debts", requireAuth, debtsRouter);
   app.use("/api/inventory", requireAuth, inventoryRouter);
   app.use("/api/feedback", requireAuth, feedbackRouter);
+  app.use("/api/analytics", requireAuth, analyticsRouter);
   app.use("/api/brand-kits", requireAuth, brandKitsRouter);
   app.use("/api/document-templates", requireAuth, documentTemplatesRouter);
   app.use("/api/document-numbering", requireAuth, documentNumberingRouter);

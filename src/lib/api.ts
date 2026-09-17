@@ -186,6 +186,16 @@ export const api = {
       request<{ message: string }>("/feedback", { method: "POST", body: JSON.stringify(payload) }),
   },
 
+  analytics: {
+    logEvent: (payload: {
+      eventName: string;
+      eventCategory: string;
+      sessionId: string;
+      businessId?: string;
+      properties?: Record<string, unknown>;
+    }) => request<void>("/analytics/events", { method: "POST", body: JSON.stringify(payload) }),
+  },
+
   config: {
     features: () =>
       request<{ emailSendingEnabled: boolean; paystackEnabled: boolean; flags: Record<string, boolean>; tier: string }>(
@@ -496,6 +506,15 @@ export const api = {
             businessCount: number;
           }>;
         }>("/admin/users").then((r) => r.data),
+    },
+
+    analytics: {
+      featureUsage: (days?: number) =>
+        request<{
+          data: Array<{ eventName: string; eventCategory: string; count: number }>;
+          totalEvents: number;
+          windowDays: number;
+        }>(`/admin/analytics/feature-usage${days ? `?days=${days}` : ""}`),
     },
 
     assets: {

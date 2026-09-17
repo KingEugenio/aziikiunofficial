@@ -16,6 +16,7 @@ import {
   X as CloseIcon,
   ChatText as MessageSquare,
   Users,
+  ChartBar,
 } from "@phosphor-icons/react";
 import { supabase } from "../lib/supabaseClient";
 import { api } from "../lib/api";
@@ -31,14 +32,16 @@ import AdminsPanel from "./AdminsPanel";
 import SiteContentPanel from "./SiteContentPanel";
 import FeedbackPanel from "./FeedbackPanel";
 import UsersPanel from "./UsersPanel";
+import FeatureAnalyticsPanel from "./FeatureAnalyticsPanel";
 
 const AuthPortal = lazy(() => import("../components/AuthPortal"));
 
 type AdminStatus = "checking" | "authorized" | "unauthorized";
-type Tab = "dashboard" | "flags" | "announcements" | "surveys" | "branding" | "payments" | "content" | "guides" | "admins" | "feedback" | "users";
+type Tab = "dashboard" | "flags" | "announcements" | "surveys" | "branding" | "payments" | "content" | "guides" | "admins" | "feedback" | "users" | "analytics";
 
 const NAV: { id: Tab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "analytics", label: "Feature Analytics", icon: ChartBar },
   { id: "flags", label: "Feature Flags", icon: ToggleLeft },
   { id: "users", label: "Users", icon: Users },
   { id: "announcements", label: "Announcements", icon: Megaphone },
@@ -275,6 +278,7 @@ export default function AdminApp() {
         <main className="flex-1 p-4 sm:p-8 max-w-4xl w-full">
           <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6">
             {activeTab === "dashboard" && <AdminDashboardHome />}
+            {activeTab === "analytics" && <FeatureAnalyticsPanel />}
             {activeTab === "flags" && <FeatureFlagsPanel />}
             {activeTab === "users" && <UsersPanel />}
             {activeTab === "announcements" && <AnnouncementsPanel />}
