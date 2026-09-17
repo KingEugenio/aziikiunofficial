@@ -1,5 +1,6 @@
 // Aziiki Feature Usage Analytics Tracker
 // Used during the Launch Promotion to record background usage metrics for future monetization plans.
+import { track } from "@vercel/analytics";
 
 export interface FeatureUsage {
   invoicesCreated: number;
@@ -59,9 +60,23 @@ export function trackFeatureUsage(feature: keyof FeatureUsage): FeatureUsage {
   const current = getFeatureAnalytics();
   current[feature] = (current[feature] || 0) + 1;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
-  
+
   // Also log to console in development
   console.log(`[Aziiki Analytics] Background Tracking Feature: "${feature}" - Total: ${current[feature]}`);
+
+  // Real, cross-user tracking: the counter above is per-browser localStorage
+  // (seeded with fake demo numbers for AdMonetizationHub's own display) and
+  // was never visible to the app's operator. track() sends this same event
+  // to Vercel Analytics instead, viewable at vercel.com -> this project ->
+  // Analytics - aggregated across every real user. No-ops outside an actual
+  // Vercel deployment, no env var or signup needed. Wrapped in try/catch so
+  // an analytics failure can never break the feature it's describing.
+  try {
+    track(feature);
+  } catch {
+    // Ignore - see comment above.
+  }
+
   return current;
 }
 

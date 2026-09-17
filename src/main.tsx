@@ -1,6 +1,7 @@
 import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
 import {IconContext} from '@phosphor-icons/react';
+import {Analytics} from '@vercel/analytics/react';
 import App from './App.tsx';
 import AdminApp from './admin/AdminApp.tsx';
 import { ErrorBoundary } from './components/ErrorBoundary.tsx';
@@ -60,6 +61,11 @@ createRoot(document.getElementById('root')!).render(
       <ErrorBoundary>
         <RootApp />
       </ErrorBoundary>
+      {/* No-ops outside a real Vercel deployment (local dev, other hosts) -
+          nothing to configure, no env var, no signup. Page views are
+          automatic; feature-level events are sent via track() at the
+          specific action points that matter (see lib/analytics.ts). */}
+      <Analytics />
     </IconContext.Provider>
   </StrictMode>,
 );

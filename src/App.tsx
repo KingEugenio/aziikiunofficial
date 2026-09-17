@@ -800,6 +800,7 @@ export default function App() {
   const handleAddCustomer = async (newCust: Customer): Promise<Customer> => {
     if (isGuest) {
       setCustomers([newCust, ...customers]);
+      trackFeatureUsage("crmProfilesAdded");
       return newCust;
     }
     if (!isUuid(newCust.businessId)) {
@@ -827,6 +828,7 @@ export default function App() {
       preferredCurrency: newCust.preferredCurrency,
     });
     setCustomers(prev => [created, ...prev]);
+    trackFeatureUsage("crmProfilesAdded");
     return created;
   };
 
@@ -907,6 +909,7 @@ export default function App() {
     if (isGuest) {
       setInvoices([newInv, ...invoices]);
       if (newInv.status === "Paid") triggerInvoicePaidWorkflow(newInv);
+      trackFeatureUsage("invoicesCreated");
       return newInv;
     }
     const { customerId, customClientName } = splitCustomerRef(newInv.customerId);
@@ -936,6 +939,7 @@ export default function App() {
     });
     setInvoices(prev => [created, ...prev]);
     if (created.status === "Paid") triggerInvoicePaidWorkflow(created);
+    trackFeatureUsage("invoicesCreated");
     return created;
   };
 
@@ -972,6 +976,7 @@ export default function App() {
         businessId: currentBusiness.id
       };
       setTransactions(prev => [resolvedTx, ...prev]);
+      trackFeatureUsage("receiptsCreated");
       return newRec;
     }
     const { customerId, customClientName } = splitCustomerRef(newRec.customerId);
@@ -996,12 +1001,14 @@ export default function App() {
     // picks up that server-generated row instead of inventing our own.
     const allTransactions = await api.transactions.list();
     setTransactions(allTransactions);
+    trackFeatureUsage("receiptsCreated");
     return created;
   };
 
   const handleAddQuotation = async (newQuote: Quotation): Promise<Quotation> => {
     if (isGuest) {
       setQuotations([newQuote, ...quotations]);
+      trackFeatureUsage("estimatesCreated");
       return newQuote;
     }
     const { customerId, customClientName } = splitCustomerRef(newQuote.customerId);
@@ -1019,6 +1026,7 @@ export default function App() {
       exchangeRateToBusinessCurrency: newQuote.exchangeRateToBusinessCurrency,
     });
     setQuotations(prev => [created, ...prev]);
+    trackFeatureUsage("estimatesCreated");
     return created;
   };
 
@@ -1076,6 +1084,7 @@ export default function App() {
   const handleAddInvestment = async (newInv: Investment) => {
     if (isGuest) {
       setInvestments([newInv, ...investments]);
+      trackFeatureUsage("netWorthUpdates");
       return;
     }
     try {
@@ -1092,6 +1101,7 @@ export default function App() {
         notes: newInv.notes,
       });
       setInvestments(prev => [created, ...prev]);
+      trackFeatureUsage("netWorthUpdates");
     } catch (err) {
       console.error("Failed to save investment:", err);
     }
@@ -1100,6 +1110,7 @@ export default function App() {
   const handleAddGoal = async (newGoal: Goal) => {
     if (isGuest) {
       setGoals([newGoal, ...goals]);
+      trackFeatureUsage("netWorthUpdates");
       return;
     }
     try {
@@ -1113,6 +1124,7 @@ export default function App() {
         currency: newGoal.currency,
       });
       setGoals(prev => [created, ...prev]);
+      trackFeatureUsage("netWorthUpdates");
     } catch (err) {
       console.error("Failed to save goal:", err);
     }
@@ -1173,6 +1185,7 @@ export default function App() {
   const handleAddDebt = async (newDebt: Debt) => {
     if (isGuest) {
       setDebts([newDebt, ...debts]);
+      trackFeatureUsage("netWorthUpdates");
       return;
     }
     try {
@@ -1186,6 +1199,7 @@ export default function App() {
         currency: newDebt.currency,
       });
       setDebts(prev => [created, ...prev]);
+      trackFeatureUsage("netWorthUpdates");
     } catch (err) {
       console.error("Failed to save debt:", err);
     }
@@ -1194,6 +1208,7 @@ export default function App() {
   const handleAddInventoryItem = async (newItem: InventoryItem): Promise<InventoryItem> => {
     if (isGuest) {
       setInventory([newItem, ...inventory]);
+      trackFeatureUsage("inventoryAdjusted");
       return newItem;
     }
     if (!isUuid(newItem.businessId)) {
@@ -1211,6 +1226,7 @@ export default function App() {
       supplierContact: newItem.supplierContact,
     });
     setInventory(prev => [created, ...prev]);
+    trackFeatureUsage("inventoryAdjusted");
     return created;
   };
 
@@ -1263,6 +1279,7 @@ export default function App() {
   const handleAddAsset = async (newAsset: Asset) => {
     if (isGuest) {
       setAssets([newAsset, ...assets]);
+      trackFeatureUsage("netWorthUpdates");
       return;
     }
     try {
@@ -1284,6 +1301,7 @@ export default function App() {
         notes: newAsset.notes,
       });
       setAssets(prev => [created, ...prev]);
+      trackFeatureUsage("netWorthUpdates");
     } catch (err) {
       console.error("Failed to save asset:", err);
     }
