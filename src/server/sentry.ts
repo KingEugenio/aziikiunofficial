@@ -18,6 +18,17 @@ export function initSentry(): void {
     // Conservative default - only error reporting for now, no tracing
     // volume/cost decision has been made yet.
     tracesSampleRate: 0,
+    // This app calls Sentry.init() inline in app.ts rather than via a
+    // separate --import'd file, so Sentry's auto-instrumentation (which
+    // needs to patch Express before it's ever imported) never applies here
+    // - harmless given tracesSampleRate: 0 (no spans to instrument anyway)
+    // and error capture already works via setupSentryErrorHandler's
+    // explicit middleware below, not auto-instrumentation. This just
+    // silences the resulting "Express is not instrumented" warning rather
+    // than chasing a --import restructure across three different run
+    // contexts (tsx dev, the esbuild-bundled CJS start script, and
+    // Vercel's dynamic import) for a warning with nothing missing to fix.
+    disableInstrumentationWarnings: true,
   });
 }
 
