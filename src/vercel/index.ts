@@ -35,7 +35,7 @@ let appPromise: Promise<Express> | null = null;
 
 function getApp(): Promise<Express> {
   if (!appPromise) {
-    appPromise = import("../src/server/app")
+    appPromise = import("../server/app")
       .then(({ createApp }) => createApp())
       .catch((err) => {
         // Let the next request try again too, in case env vars get fixed

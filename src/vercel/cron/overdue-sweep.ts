@@ -10,7 +10,7 @@
 // which is what the check below verifies - this stops anyone who finds this
 // URL from being able to trigger it manually.
 import type { Request, Response } from "express";
-import { runOverdueInvoiceSweep } from "../../src/server/notifications/overdueInvoiceSweep";
+import { runOverdueInvoiceSweep } from "../../server/notifications/overdueInvoiceSweep";
 
 export default async function handler(req: Request, res: Response) {
   const expected = process.env.CRON_SECRET;

@@ -5,7 +5,7 @@
 // the table would grow forever (one row per unique key ever seen: every
 // IP+email combo, every guest IP, etc).
 import type { Request, Response } from "express";
-import { getServiceRoleClient } from "../../src/server/supabaseClients";
+import { getServiceRoleClient } from "../../server/supabaseClients";
 
 export default async function handler(req: Request, res: Response) {
   const expected = process.env.CRON_SECRET;
