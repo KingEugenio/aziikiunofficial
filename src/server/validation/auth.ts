@@ -19,6 +19,10 @@ export const signupSchema = z.object({
   email: emailField,
   password: passwordField,
   displayName: z.string().trim().min(1).max(120).optional(),
+  // "I'm 18 or older and agree to the Terms/Privacy Policy" - required, not
+  // just a client-side checkbox, so it can't be skipped by calling the API
+  // directly.
+  acceptedTerms: z.literal(true, { errorMap: () => ({ message: "You must confirm you're 18 or older and accept the Terms of Service and Privacy Policy." }) }),
   utmSource: utmField,
   utmMedium: utmField,
   utmCampaign: utmField,

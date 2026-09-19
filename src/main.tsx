@@ -9,6 +9,7 @@ import { api } from './lib/api.ts';
 import { captureUtmParams } from './lib/utm.ts';
 import { initSentry } from './lib/sentry.ts';
 import { primeCache } from './lib/sessionCache.ts';
+import { supabaseConfigured } from './lib/supabaseClient.ts';
 import './index.css';
 
 // No-ops entirely until VITE_SENTRY_DSN is set - see lib/sentry.ts.
@@ -40,6 +41,13 @@ api.config
     // Keep the static default favicon already in index.html.
   });
 
+// Vercel Analytics only means anything on a real https deployment. On
+// localhost, the desktop app (127.0.0.1) or plain-http hosts it can't record
+// anything - and it would still reach out to va.vercel-scripts.com from the
+// user's machine for nothing, which is a needless third-party request.
+const analyticsEnabled =
+  window.location.protocol === 'https:' && !['localhost', '127.0.0.1'].includes(window.location.hostname);
+
 // /admin is a second, separate root component (its own auth/admin check,
 // its own bundle) rather than a route within <App/> - this app has no
 // client-side router at all (single-page, tab-state only), and the admin
@@ -47,7 +55,7 @@ api.config
 const isAdminPath = window.location.pathname.startsWith('/admin');
 const RootApp = isAdminPath ? AdminApp : App;
 
-createRoot(document.getElementById('root')!).render(
+const renderApp = () => createRoot(document.getElementById('root')!).render(
   <StrictMode>
     {/* Every Phosphor icon in the app defaults to the solid "fill" weight
         from here, so individual call sites never need to pass weight="fill"
@@ -65,7 +73,29 @@ createRoot(document.getElementById('root')!).render(
           nothing to configure, no env var, no signup. Page views are
           automatic; feature-level events are sent via track() at the
           specific action points that matter (see lib/analytics.ts). */}
-      <Analytics />
+      {analyticsEnabled && <Analytics />}
     </IconContext.Provider>
   </StrictMode>,
 );
+
+if (!supabaseConfigured) {
+  createRoot(document.getElementById('root')!).render(
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-6 py-12">
+      <div className="max-w-lg w-full rounded-3xl border border-amber-200 bg-white p-8 shadow-sm text-center">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 text-lg font-black text-amber-700">
+          !
+        </div>
+        <h1 className="text-xl font-black text-slate-900">Aziiki needs configuration</h1>
+        <p className="mt-3 text-sm leading-6 text-slate-600">
+          The browser app is missing the required Supabase environment variables.
+          Copy .env.example to .env and set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY before reloading the page.
+        </p>
+        <p className="mt-4 text-xs font-mono text-amber-700 break-words bg-amber-50 border border-amber-200 rounded-xl p-3">
+          Missing VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY
+        </p>
+      </div>
+    </div>
+  );
+} else {
+  renderApp();
+}

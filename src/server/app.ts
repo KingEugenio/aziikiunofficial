@@ -80,10 +80,10 @@ export function createApp(): express.Express {
               directives: {
                 defaultSrc: ["'self'"],
                 scriptSrc: ["'self'"],
-                styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-                fontSrc: ["'self'", "https://fonts.gstatic.com"],
+                styleSrc: ["'self'", "'unsafe-inline'"],
+                fontSrc: ["'self'", "data:"],
                 imgSrc: ["'self'", "data:", "blob:"],
-                connectSrc: ["'self'", supabaseHttpsOrigin, supabaseWssOrigin],
+                connectSrc: ["'self'", supabaseHttpsOrigin, supabaseWssOrigin, "https://*.ingest.sentry.io", "https://*.ingest.us.sentry.io"],
                 objectSrc: ["'none'"],
                 baseUri: ["'self'"],
                 formAction: ["'self'"],

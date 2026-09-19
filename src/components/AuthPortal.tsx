@@ -7,6 +7,7 @@ import { api, ApiError } from "../lib/api";
 import { ShieldCheck, Lock, Envelope as Mail, DeviceMobile as Smartphone, Monitor, Database, WarningCircle as AlertCircle, CheckCircle, CaretRight as ChevronRight, ArrowRight, Key as KeyRound, Eye, EyeSlash } from "@phosphor-icons/react";
 import { useFeatureFlags } from "../lib/featureFlags";
 import { getStoredUtmParams } from "../lib/utm";
+import { pickReusableSession } from "../lib/reusableSession";
 
 interface AuthPortalProps {
   onAuthSuccess: (info: { user: any; isNewUser: boolean; businessName?: string; currency?: string; seedDemoData?: boolean }) => void;
@@ -33,6 +34,8 @@ interface AuthPortalProps {
   initialTab?: "signin" | "create";
   /** Shows the Privacy Policy page instead of this one. */
   onShowPrivacyPolicy?: () => void;
+  /** Shows the Terms of Service page instead of this one. */
+  onShowTermsOfService?: () => void;
   /** Hides the "Skip as Guest" option - used by the admin portal, where
    * guest mode has no meaning (there's nothing to see without an admin
    * account). */
@@ -52,7 +55,7 @@ type Mode = "password" | "magic-link" | "otp" | "reset-request" | "otp-code" | "
 // server-side behavior.
 const GENERIC_LOGIN_ERROR = "Incorrect email or password.";
 
-export default function AuthPortal({ onAuthSuccess, onEnterGuest, recoveryMode, linkErrorMessage, onDismissLinkError, prefillEmail, initialTab, onShowPrivacyPolicy, hideGuestOption }: AuthPortalProps) {
+export default function AuthPortal({ onAuthSuccess, onEnterGuest, recoveryMode, linkErrorMessage, onDismissLinkError, prefillEmail, initialTab, onShowPrivacyPolicy, onShowTermsOfService, hideGuestOption }: AuthPortalProps) {
   const { isEnabled } = useFeatureFlags();
   const [isSignUp, setIsSignUp] = useState(initialTab === "create");
   const [mode, setMode] = useState<Mode>(recoveryMode ? "recovery" : linkErrorMessage ? "reset-request" : "password");
@@ -67,6 +70,11 @@ export default function AuthPortal({ onAuthSuccess, onEnterGuest, recoveryMode, 
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  // Required to create an account: confirms the person is an adult (Aziiki is
+  // a business tool, not built for or directed at children - collecting an
+  // account from a minor would trigger child-privacy rules like COPPA) and has
+  // accepted the Terms/Privacy Policy. Also enforced server-side.
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [otpCode, setOtpCode] = useState("");
   const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
   const [mfaChallengeId, setMfaChallengeId] = useState<string | null>(null);
@@ -97,6 +105,19 @@ export default function AuthPortal({ onAuthSuccess, onEnterGuest, recoveryMode, 
     const t = setTimeout(() => setResendCooldown((s) => s - 1), 1000);
     return () => clearTimeout(t);
   }, [resendCooldown]);
+
+  // If this device already holds a still-valid session for the SAME email
+  // that was just typed, reuse it instead of POSTing /api/auth/login (several
+  // database round-trips) - see pickReusableSession for the exact, deliberately
+  // conservative rules. Anything doubtful falls through to the normal login.
+  async function getReusableSession(typedEmail: string) {
+    try {
+      const { data } = await supabase.auth.getSession();
+      return pickReusableSession(data.session, typedEmail);
+    } catch {
+      return null;
+    }
+  }
 
   async function establishSessionAndContinue(session: any, isNewUser: boolean) {
     await supabase.auth.setSession({ access_token: session.access_token, refresh_token: session.refresh_token });
@@ -131,14 +152,29 @@ export default function AuthPortal({ onAuthSuccess, onEnterGuest, recoveryMode, 
       setErrorMsg("Passwords do not match.");
       return;
     }
+    if (isSignUp && !acceptedTerms) {
+      setErrorMsg("Please confirm you're 18 or older and agree to the Terms of Service and Privacy Policy to create an account.");
+      return;
+    }
 
     setIsLoading(true);
     try {
       if (isSignUp) {
-        await api.auth.signup({ email, password, ...getStoredUtmParams() });
+        await api.auth.signup({ email, password, acceptedTerms: true, ...getStoredUtmParams() });
         setSuccessMsg("Account created! Check your inbox for a verification link before signing in.");
         setIsSignUp(false);
       } else {
+        const reusable = await getReusableSession(email);
+        if (reusable) {
+          onAuthSuccess({
+            user: reusable.user,
+            isNewUser: false,
+            businessName: initialBusinessName,
+            currency: initialCurrency,
+            seedDemoData,
+          });
+          return;
+        }
         const result = await api.auth.login({ email, password });
         if (result.mfaRequired) {
           await supabase.auth.setSession({
@@ -575,6 +611,33 @@ export default function AuthPortal({ onAuthSuccess, onEnterGuest, recoveryMode, 
                     </div>
                   </div>
                 )}
+
+                {isSignUp && (
+                  <label className="flex items-start gap-2 text-[11px] text-slate-600 leading-relaxed cursor-pointer animate-fade-in">
+                    <input
+                      type="checkbox"
+                      checked={acceptedTerms}
+                      onChange={(e) => setAcceptedTerms(e.target.checked)}
+                      className="mt-0.5 w-3.5 h-3.5 accent-emerald-600 shrink-0"
+                    />
+                    <span>
+                      I'm 18 or older and I agree to the{" "}
+                      {onShowTermsOfService ? (
+                        <button type="button" onClick={onShowTermsOfService} className="font-bold text-emerald-700 hover:underline cursor-pointer">Terms of Service</button>
+                      ) : (
+                        "Terms of Service"
+                      )}{" "}
+                      and{" "}
+                      {onShowPrivacyPolicy ? (
+                        <button type="button" onClick={onShowPrivacyPolicy} className="font-bold text-emerald-700 hover:underline cursor-pointer">Privacy Policy</button>
+                      ) : (
+                        "Privacy Policy"
+                      )}
+                      .
+                    </span>
+                  </label>
+                )}
+
 
                 {isSignUp && (
                   <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-3.5 animate-fade-in">

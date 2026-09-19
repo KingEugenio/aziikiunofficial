@@ -400,22 +400,49 @@ export default function App() {
       localStorage.setItem("aziiki_is_guest", "false");
       setIsAuthLoading(true);
       setCriticalSyncError(null);
+
+      // Loads one /sync payload into state. Used for both the instant
+      // cached paint and the fresh server response that follows it.
+      const applyWorkspace = (d: any) => {
+        setBusinesses(d.businesses || []);
+        setTransactions(d.transactions || []);
+        setCustomers(d.customers || []);
+        setInvoices(d.invoices || []);
+        setReceipts(d.receipts || []);
+        setQuotations(d.quotations || []);
+        setInvestments(d.investments || []);
+        setAssets(d.assets || []);
+        setGoals(d.goals || []);
+        setDebts(d.debts || []);
+        setInventory(d.inventory || []);
+        // Keep whichever business the person already switched to if it
+        // still exists (the background refresh must not yank them back to
+        // the first one); otherwise fall back to the first.
+        setCurrentBusinessId((prev) => (d.businesses.some((b: any) => b.id === prev) ? prev : d.businesses[0].id));
+      };
+
+      // 1. Returning user: paint the workspace this device already has
+      // straight away - no waiting on the database to open the app.
+      let paintedFromCache = false;
+      try {
+        const cachedWorkspace = await api.sync.readCached();
+        if (!cancelled && cachedWorkspace?.businesses?.length > 0) {
+          applyWorkspace(cachedWorkspace);
+          setIsAuthLoading(false);
+          paintedFromCache = true;
+        }
+      } catch {
+        // No/unreadable cache (first sign-in on this device) - just do the
+        // normal full load below.
+      }
+
+      // 2. Always refresh from the server (in the background if we already
+      // painted from cache) so nothing stays stale.
       try {
         const remoteData = await api.sync.fetchAll();
         if (cancelled) return;
         if (remoteData && remoteData.businesses && remoteData.businesses.length > 0) {
-          setBusinesses(remoteData.businesses || []);
-          setTransactions(remoteData.transactions || []);
-          setCustomers(remoteData.customers || []);
-          setInvoices(remoteData.invoices || []);
-          setReceipts(remoteData.receipts || []);
-          setQuotations(remoteData.quotations || []);
-          setInvestments(remoteData.investments || []);
-          setAssets(remoteData.assets || []);
-          setGoals(remoteData.goals || []);
-          setDebts(remoteData.debts || []);
-          setInventory(remoteData.inventory || []);
-          setCurrentBusinessId(remoteData.businesses[0].id);
+          applyWorkspace(remoteData);
         } else {
           // No remote data exists yet for this account - create one real,
           // persisted business row rather than a local-only placeholder.
@@ -445,18 +472,16 @@ export default function App() {
         }
       } catch (e) {
         console.error("Failed to fetch this account's dashboard data:", e);
-        // This used to be silent - businesses stayed at whatever the
-        // hardcoded seed data initializer provided (fake demo businesses),
-        // so a real failure here was invisible: the app just looked fine
-        // with fake data. Now that there's no seed data to fall back on,
-        // a failure here means NO business exists at all, which cascades
-        // into "Apply Brand Changes does nothing" (silently can't find a
-        // business to update) and "still syncing to the cloud" on every
-        // subsequent save (there's no valid businessId to attach anything
-        // to). Surface it for real instead of hiding it again.
-        setCriticalSyncError(
-          e instanceof Error ? e.message : "Couldn't load your workspace. Please check your connection and try again."
-        );
+        // Already showing this device's saved copy: a failed refresh (slow
+        // or no connection) shouldn't throw a red error over a working
+        // screen - the offline banner covers connectivity, and the next
+        // refresh fixes it. Only a first-ever load with nothing to show is a
+        // real, blocking error (businesses stay empty, so nothing can save).
+        if (!paintedFromCache) {
+          setCriticalSyncError(
+            e instanceof Error ? e.message : "Couldn't load your workspace. Please check your connection and try again."
+          );
+        }
       } finally {
         if (!cancelled) setIsAuthLoading(false);
       }
@@ -1691,6 +1716,13 @@ export default function App() {
         </Suspense>
       );
     }
+    if (showTermsOfService) {
+      return (
+        <Suspense fallback={fullScreenFallback}>
+          <LegalTextPage title="Terms of Service" settingKey="legal_terms_of_service" onBack={() => setShowTermsOfService(false)} />
+        </Suspense>
+      );
+    }
     return (
       <Suspense fallback={fullScreenFallback}>
         <AuthPortal
@@ -1705,6 +1737,7 @@ export default function App() {
           prefillEmail={onboardingPrefillEmail}
           initialTab={onboardingPrefillEmail ? "create" : undefined}
           onShowPrivacyPolicy={() => setShowPrivacyPolicy(true)}
+          onShowTermsOfService={() => setShowTermsOfService(true)}
         />
       </Suspense>
     );

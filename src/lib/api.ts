@@ -107,7 +107,7 @@ function makeResource<T>(basePath: string) {
 
 export const api = {
   auth: {
-    signup: (payload: { email: string; password: string; displayName?: string; utmSource?: string; utmMedium?: string; utmCampaign?: string }) =>
+    signup: (payload: { email: string; password: string; acceptedTerms: true; displayName?: string; utmSource?: string; utmMedium?: string; utmCampaign?: string }) =>
       request<{ message: string }>("/auth/signup", { method: "POST", body: JSON.stringify(payload) }),
     login: (payload: { email: string; password: string }) =>
       request<{ session: any; user: { id: string; email: string }; mfaRequired: boolean }>("/auth/login", {
@@ -148,6 +148,17 @@ export const api = {
 
   sync: {
     fetchAll: () => request<{ data: any }>("/sync").then((r) => r.data),
+    // The last /sync response saved on THIS device for the signed-in
+    // account (see the per-user cacheKey in request()), or null. Lets the app
+    // paint a returning user's workspace instantly on reopen and refresh in
+    // the background, instead of a full-screen wait on the database every
+    // single time it opens.
+    readCached: async (): Promise<any | null> => {
+      const { userId } = await getSessionInfo();
+      if (!userId) return null;
+      const cached = (await getCachedResponse(`${userId}:/sync`)) as { data?: any } | undefined;
+      return cached?.data ?? null;
+    },
   },
 
   businesses: makeResource<any>("/businesses"),

@@ -27,7 +27,20 @@ const EVENT_CATEGORY: Record<keyof FeatureUsage, string> = {
 
 // A stable id for this tab's lifetime (not persisted) - enough to group
 // events into a session without needing browser storage for it.
-const sessionId = crypto.randomUUID();
+// crypto.randomUUID() only exists in secure contexts (https/localhost) - on
+// a plain-http LAN address or an older embedded browser it's undefined, and
+// since this line runs at import time (before anything renders) a throw here
+// took down the WHOLE app to a white screen. Analytics must never be able to
+// do that, so it falls back to a random string.
+function makeSessionId(): string {
+  try {
+    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") return crypto.randomUUID();
+  } catch {
+    // fall through
+  }
+  return `s-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+}
+const sessionId = makeSessionId();
 
 export interface FeatureUsage {
   invoicesCreated: number;

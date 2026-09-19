@@ -19,7 +19,7 @@
 // from it — it forwards the signed-in user's own access token, same as
 // any browser would, and the real backend does its own auth/authz.
 
-const { app, BrowserWindow, Menu, ipcMain, shell } = require("electron");
+const { app, BrowserWindow, Menu, ipcMain, shell, dialog } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const express = require("express");
@@ -78,6 +78,9 @@ function writeConfig(config) {
  * OfflineQueuedError in the web app's own src/lib/api.ts).
  */
 function startLocalServer() {
+  // Idempotent: on macOS the app outlives its last window, so this can be
+  // called again on reopen - never start a second listener on the same port.
+  if (server && server.listening) return;
   const expressApp = express();
 
   expressApp.use(express.raw({ type: "*/*", limit: "20mb" }));
@@ -122,6 +125,15 @@ function startLocalServer() {
   });
 
   server = expressApp.listen(LOCAL_PORT, "127.0.0.1");
+  server.on("error", (err) => {
+    // Port already taken by something else - without this the window just
+    // loaded nothing and stayed blank white with no explanation.
+    dialog.showErrorBox(
+      "Aziiki couldn't start",
+      `Aziiki needs port ${LOCAL_PORT} on this computer but it's already in use (${err.code || err.message}). Close the other program using it, or restart your computer, then open Aziiki again.`
+    );
+    app.quit();
+  });
 }
 
 function createMainWindow() {
@@ -139,6 +151,22 @@ function createMainWindow() {
   });
 
   mainWindow.loadURL(`http://127.0.0.1:${LOCAL_PORT}`);
+
+  // If the page ever fails to load (server not up yet, or it went away),
+  // don't leave a blank white window: make sure the server is running and
+  // retry a couple of times, then show a readable message with a Retry link.
+  let retries = 0;
+  mainWindow.webContents.on("did-fail-load", (_event, errorCode, errorDescription, validatedURL, isMainFrame) => {
+    if (!isMainFrame || errorCode === -3) return; // -3 = aborted (normal during reloads)
+    startLocalServer();
+    if (retries < 3) {
+      retries += 1;
+      setTimeout(() => mainWindow && mainWindow.loadURL(`http://127.0.0.1:${LOCAL_PORT}`), 600 * retries);
+      return;
+    }
+    const html = `<html><body style="font-family:-apple-system,Segoe UI,sans-serif;background:#f8fafc;color:#0f172a;display:flex;align-items:center;justify-content:center;height:100vh;margin:0"><div style="max-width:420px;text-align:center"><h2>Aziiki couldn't load</h2><p style="color:#475569">${String(errorDescription).replace(/</g, "&lt;")}</p><a href="http://127.0.0.1:${LOCAL_PORT}" style="display:inline-block;margin-top:12px;padding:10px 18px;background:#059669;color:white;border-radius:10px;text-decoration:none;font-weight:600">Try again</a></div></body></html>`;
+    mainWindow && mainWindow.loadURL("data:text/html;charset=utf-8," + encodeURIComponent(html));
+  });
 
   mainWindow.on("closed", () => {
     mainWindow = null;
@@ -216,22 +244,48 @@ function buildMenu() {
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
 
-app.whenReady().then(() => {
-  startLocalServer();
-  buildMenu();
-  createMainWindow();
-
-  const { apiBaseUrl } = readConfig();
-  if (!apiBaseUrl) {
-    createSettingsWindow();
-  }
-
-  app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
+// Only one Aziiki at a time - a second launch would fight the first over the
+// local port (and its saved login), which also showed up as a blank window.
+if (!app.requestSingleInstanceLock()) {
+  app.quit();
+} else {
+  app.on("second-instance", () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
+    } else if (app.isReady()) {
+      startLocalServer();
+      createMainWindow();
+    }
   });
-});
 
-app.on("window-all-closed", () => {
-  if (server) server.close();
-  if (!isMac) app.quit();
-});
+  app.whenReady().then(() => {
+    startLocalServer();
+    buildMenu();
+    createMainWindow();
+
+    const { apiBaseUrl } = readConfig();
+    if (!apiBaseUrl) {
+      createSettingsWindow();
+    }
+
+    app.on("activate", () => {
+      // macOS keeps the app alive after the last window closes; clicking the
+      // Dock icon lands here. The server must be running BEFORE the window
+      // loads it - it used to be closed on window-all-closed, so this opened
+      // a window pointing at a dead server (the blank white screen).
+      startLocalServer();
+      if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
+    });
+  });
+
+  app.on("window-all-closed", () => {
+    // Deliberately do NOT close the server here: on macOS the app stays
+    // running and will be reopened from the Dock. It's closed on real quit.
+    if (!isMac) app.quit();
+  });
+
+  app.on("before-quit", () => {
+    if (server) server.close();
+  });
+}

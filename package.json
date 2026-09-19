@@ -16,6 +16,8 @@
     "desktop:win": "npm run desktop:prep && cd desktop && npm install && npm run build:win"
   },
   "dependencies": {
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@fontsource/montserrat": "^5.3.0",
     "@google/genai": "^2.4.0",
     "@phosphor-icons/react": "^2.1.10",
     "@sentry/node": "^10.74.0",

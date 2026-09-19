@@ -1,4 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+/* Fonts are self-hosted (bundled from @fontsource) instead of loaded from
+   fonts.googleapis.com: a remote font request sends every visitor's IP to
+   Google (a GDPR problem - a German court fined a site for exactly this),
+   contradicts the "no third-party tracking" promise on the privacy notice,
+   and left text unstyled/invisible offline and in the desktop app. Latin
+   subset only, which is all this app's copy uses. */
+@import "@fontsource/montserrat/latin-300.css";
+@import "@fontsource/montserrat/latin-400.css";
+@import "@fontsource/montserrat/latin-500.css";
+@import "@fontsource/montserrat/latin-600.css";
+@import "@fontsource/montserrat/latin-700.css";
+@import "@fontsource/montserrat/latin-800.css";
+@import "@fontsource/montserrat/latin-900.css";
+@import "@fontsource/jetbrains-mono/latin-400.css";
+@import "@fontsource/jetbrains-mono/latin-500.css";
+@import "@fontsource/jetbrains-mono/latin-600.css";
 @import "tailwindcss";
 
 @theme {
