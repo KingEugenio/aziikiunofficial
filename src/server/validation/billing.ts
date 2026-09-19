@@ -64,8 +64,10 @@ export const invoiceCreateSchema = z.object({
 
 export const invoiceUpdateSchema = z.object({
   invoiceNumber: nonEmptyString.max(60).optional(),
-  customerId: uuidField.optional(),
-  customClientName: z.string().trim().max(200).optional(),
+  // nullable: an amendment can switch a document from a saved customer to a
+  // typed client name (or back), which must clear the other field.
+  customerId: uuidField.nullable().optional(),
+  customClientName: z.string().trim().max(200).nullable().optional(),
   date: isoDateField.optional(),
   dueDate: isoDateField.optional(),
   items: z.array(invoiceItemSchema).min(1).optional(),
@@ -76,6 +78,10 @@ export const invoiceUpdateSchema = z.object({
   logoUrl: z.string().trim().max(2000).optional(),
   currency: currencyField.optional(),
   exchangeRateToBusinessCurrency: exchangeRateField.optional(),
+  // Required (>= 10 chars) to change a saved document - checked in the route,
+  // not here, so the API can answer 428 with a specific message. See
+  // documentIntegrity.ts.
+  changeReason: z.string().max(2000).optional(),
 });
 
 export const receiptSchema = z.object({
@@ -97,8 +103,10 @@ export const receiptSchema = z.object({
 });
 
 export const receiptUpdateSchema = z.object({
-  customerId: uuidField.optional(),
-  customClientName: z.string().trim().max(200).optional(),
+  // nullable: an amendment can switch a document from a saved customer to a
+  // typed client name (or back), which must clear the other field.
+  customerId: uuidField.nullable().optional(),
+  customClientName: z.string().trim().max(200).nullable().optional(),
   invoiceId: uuidField.optional(),
   receiptNumber: nonEmptyString.max(60).optional(),
   date: isoDateField.optional(),
@@ -107,6 +115,10 @@ export const receiptUpdateSchema = z.object({
   paymentMethod: paymentMethodField.optional(),
   currency: currencyField.optional(),
   exchangeRateToBusinessCurrency: exchangeRateField.optional(),
+  // Required (>= 10 chars) to change a saved document - checked in the route,
+  // not here, so the API can answer 428 with a specific message. See
+  // documentIntegrity.ts.
+  changeReason: z.string().max(2000).optional(),
 });
 
 export const quotationCreateSchema = z.object({

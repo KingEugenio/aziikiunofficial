@@ -2184,8 +2184,10 @@ var init_billing = __esm({
     });
     invoiceUpdateSchema = z7.object({
       invoiceNumber: nonEmptyString.max(60).optional(),
-      customerId: uuidField.optional(),
-      customClientName: z7.string().trim().max(200).optional(),
+      // nullable: an amendment can switch a document from a saved customer to a
+      // typed client name (or back), which must clear the other field.
+      customerId: uuidField.nullable().optional(),
+      customClientName: z7.string().trim().max(200).nullable().optional(),
       date: isoDateField.optional(),
       dueDate: isoDateField.optional(),
       items: z7.array(invoiceItemSchema).min(1).optional(),
@@ -2195,7 +2197,11 @@ var init_billing = __esm({
       partialPaidAmount: moneyField.optional(),
       logoUrl: z7.string().trim().max(2e3).optional(),
       currency: currencyField.optional(),
-      exchangeRateToBusinessCurrency: exchangeRateField.optional()
+      exchangeRateToBusinessCurrency: exchangeRateField.optional(),
+      // Required (>= 10 chars) to change a saved document - checked in the route,
+      // not here, so the API can answer 428 with a specific message. See
+      // documentIntegrity.ts.
+      changeReason: z7.string().max(2e3).optional()
     });
     receiptSchema = z7.object({
       id: uuidField.optional(),
@@ -2215,8 +2221,10 @@ var init_billing = __esm({
       path: ["customerId"]
     });
     receiptUpdateSchema = z7.object({
-      customerId: uuidField.optional(),
-      customClientName: z7.string().trim().max(200).optional(),
+      // nullable: an amendment can switch a document from a saved customer to a
+      // typed client name (or back), which must clear the other field.
+      customerId: uuidField.nullable().optional(),
+      customClientName: z7.string().trim().max(200).nullable().optional(),
       invoiceId: uuidField.optional(),
       receiptNumber: nonEmptyString.max(60).optional(),
       date: isoDateField.optional(),
@@ -2224,7 +2232,11 @@ var init_billing = __esm({
       amountPaid: moneyField.optional(),
       paymentMethod: paymentMethodField.optional(),
       currency: currencyField.optional(),
-      exchangeRateToBusinessCurrency: exchangeRateField.optional()
+      exchangeRateToBusinessCurrency: exchangeRateField.optional(),
+      // Required (>= 10 chars) to change a saved document - checked in the route,
+      // not here, so the API can answer 428 with a specific message. See
+      // documentIntegrity.ts.
+      changeReason: z7.string().max(2e3).optional()
     });
     quotationCreateSchema = z7.object({
       id: uuidField.optional(),
@@ -2735,6 +2747,84 @@ var init_lowStockCheck = __esm({
   }
 });
 
+// src/server/documentIntegrity.ts
+function parseReason(raw) {
+  if (typeof raw !== "string") return null;
+  const trimmed = raw.trim();
+  if (trimmed.length < REASON_MIN_LENGTH) return null;
+  return trimmed.slice(0, REASON_MAX_LENGTH);
+}
+function evaluateInvoiceChange(existing, fields) {
+  const locked = existing.status !== "Draft";
+  const keys = Object.keys(fields).filter((k) => fields[k] !== void 0);
+  const numberChangeBlocked = locked && fields.invoiceNumber !== void 0 && fields.invoiceNumber !== existing.invoice_number;
+  if (!locked) {
+    return { locked, needsReason: false, numberChangeBlocked, workflowOnly: false };
+  }
+  const materialKeys = keys.filter((k) => k !== "status" && k !== "partialPaidAmount");
+  let workflowOnly = materialKeys.length === 0 && keys.length > 0;
+  if (workflowOnly && fields.status !== void 0 && fields.status !== existing.status) {
+    const allowed = FORWARD_STATUS[existing.status] ?? [];
+    if (!allowed.includes(fields.status)) workflowOnly = false;
+  }
+  if (workflowOnly && fields.partialPaidAmount !== void 0) {
+    if (Number(fields.partialPaidAmount) < Number(existing.partial_paid_amount)) workflowOnly = false;
+  }
+  return { locked, needsReason: !workflowOnly, numberChangeBlocked, workflowOnly };
+}
+function respondReasonRequired(res, what) {
+  res.status(428).json({
+    error: `This ${what} is locked to protect your records. To change or delete it, give a reason (at least ${REASON_MIN_LENGTH} characters) - it is saved permanently in the change history.`,
+    code: "REASON_REQUIRED",
+    minLength: REASON_MIN_LENGTH
+  });
+}
+function respondNumberLocked(res, what) {
+  res.status(403).json({
+    error: `A saved ${what}'s number can't be changed - it identifies the record. Issue a new one instead.`,
+    code: "NUMBER_LOCKED"
+  });
+}
+function diffFields(pairs) {
+  const changes = {};
+  for (const [key, from, to] of pairs) {
+    if (JSON.stringify(from ?? null) !== JSON.stringify(to ?? null)) changes[key] = { from: from ?? null, to: to ?? null };
+  }
+  return changes;
+}
+async function logDocumentChange(supabase2, entry) {
+  const { error } = await supabase2.from("document_change_log").insert({
+    business_id: entry.businessId,
+    user_id: entry.userId,
+    document_type: entry.documentType,
+    document_id: entry.documentId,
+    document_number: entry.documentNumber ?? null,
+    action: entry.action,
+    reason: entry.reason ?? null,
+    changes: entry.changes
+  });
+  if (error) throw new Error(`Couldn't save the change history, so nothing was changed: ${error.message}`);
+}
+async function logAmendmentFailed(supabase2, entry, message) {
+  try {
+    await logDocumentChange(supabase2, { ...entry, action: "amendment_failed", reason: null, changes: { error: message } });
+  } catch {
+  }
+}
+var REASON_MIN_LENGTH, REASON_MAX_LENGTH, FORWARD_STATUS;
+var init_documentIntegrity = __esm({
+  "src/server/documentIntegrity.ts"() {
+    REASON_MIN_LENGTH = 10;
+    REASON_MAX_LENGTH = 500;
+    FORWARD_STATUS = {
+      Draft: ["Sent", "Paid", "Overdue"],
+      Sent: ["Paid", "Overdue"],
+      Overdue: ["Paid"],
+      Paid: []
+    };
+  }
+});
+
 // src/server/routes/invoices.ts
 import { Router as Router6 } from "express";
 function fromRow(row, items) {
@@ -2824,6 +2914,7 @@ var init_invoices = __esm({
     init_documentTemplates();
     init_lowStockCheck();
     init_crudFactory();
+    init_documentIntegrity();
     LIST_CACHE_TTL_SECONDS2 = 45;
     invoicesRouter = Router6();
     invoicesRouter.get("/", async (req, res) => {
@@ -2921,6 +3012,56 @@ var init_invoices = __esm({
         res.status(404).json({ error: "Not found" });
         return;
       }
+      const { changeReason, ...fields } = input;
+      const verdict = evaluateInvoiceChange(existing, fields);
+      if (verdict.numberChangeBlocked) {
+        respondNumberLocked(res, "invoice");
+        return;
+      }
+      const reason = parseReason(changeReason);
+      if (verdict.needsReason && !reason) {
+        respondReasonRequired(res, "invoice");
+        return;
+      }
+      const { data: itemsBefore } = await supabase2.from("invoice_items").select("*").eq("invoice_id", existing.id);
+      const itemList = (list) => [...list].sort((a, b) => (a.position ?? 0) - (b.position ?? 0)).map((i) => ({ description: i.description, quantity: Number(i.quantity), rate: Number(i.rate) }));
+      let loggedChange = false;
+      if (verdict.locked) {
+        const pairs = [];
+        const track = (key, before, after) => {
+          if (after !== void 0) pairs.push([key, before, after]);
+        };
+        track("customerId", existing.customer_id, fields.customerId);
+        track("customClientName", existing.custom_client_name, fields.customClientName);
+        track("date", existing.date, fields.date);
+        track("dueDate", existing.due_date, fields.dueDate);
+        track("discount", Number(existing.discount), fields.discount);
+        track("taxRate", Number(existing.tax_rate), fields.taxRate);
+        track("status", existing.status, fields.status);
+        track("partialPaidAmount", Number(existing.partial_paid_amount), fields.partialPaidAmount);
+        track("currency", existing.currency, fields.currency);
+        track("exchangeRateToBusinessCurrency", Number(existing.exchange_rate_to_business_currency), fields.exchangeRateToBusinessCurrency);
+        track("items", itemList(itemsBefore ?? []), fields.items ? itemList(fields.items) : void 0);
+        const changes = diffFields(pairs);
+        if (Object.keys(changes).length > 0) {
+          try {
+            await logDocumentChange(supabase2, {
+              businessId: existing.business_id,
+              userId,
+              documentType: "invoice",
+              documentId: existing.id,
+              documentNumber: existing.invoice_number,
+              action: verdict.needsReason ? "amended" : "status_changed",
+              reason: verdict.needsReason ? reason : null,
+              changes
+            });
+            loggedChange = true;
+          } catch (err) {
+            res.status(500).json({ error: err instanceof Error ? err.message : "Couldn't save the change history." });
+            return;
+          }
+        }
+      }
       const row = {};
       if (input.invoiceNumber !== void 0) row.invoice_number = input.invoiceNumber;
       if (input.customerId !== void 0) row.customer_id = input.customerId ?? null;
@@ -2935,6 +3076,13 @@ var init_invoices = __esm({
       if (input.exchangeRateToBusinessCurrency !== void 0) row.exchange_rate_to_business_currency = input.exchangeRateToBusinessCurrency;
       const { data: updated, error: updateError } = Object.keys(row).length > 0 ? await supabase2.from("invoices").update(row).eq("id", existing.id).select("*").single() : { data: existing, error: null };
       if (updateError) {
+        if (loggedChange) {
+          await logAmendmentFailed(
+            supabase2,
+            { businessId: existing.business_id, userId, documentType: "invoice", documentId: existing.id, documentNumber: existing.invoice_number },
+            updateError.message
+          );
+        }
         res.status(400).json({ error: updateError.message });
         return;
       }
@@ -2956,8 +3104,7 @@ var init_invoices = __esm({
         }
         items = insertedItems ?? [];
       } else {
-        const { data: existingItems } = await supabase2.from("invoice_items").select("*").eq("invoice_id", existing.id);
-        items = existingItems ?? [];
+        items = itemsBefore ?? [];
       }
       if (input.status === "Paid" && existing.status !== "Paid") {
         await runPaidWorkflow(
@@ -2974,6 +3121,38 @@ var init_invoices = __esm({
     invoicesRouter.delete("/:id", async (req, res) => {
       const userId = req.user.id;
       const supabase2 = req.supabase;
+      const { data: existing, error: existingError } = await supabase2.from("invoices").select("*").eq("id", req.params.id).maybeSingle();
+      if (existingError) {
+        res.status(400).json({ error: existingError.message });
+        return;
+      }
+      if (!existing) {
+        res.status(404).json({ error: "Not found" });
+        return;
+      }
+      if (existing.status !== "Draft") {
+        const reason = parseReason(req.body?.changeReason);
+        if (!reason) {
+          respondReasonRequired(res, "invoice");
+          return;
+        }
+        const { data: snapshotItems } = await supabase2.from("invoice_items").select("*").eq("invoice_id", existing.id);
+        try {
+          await logDocumentChange(supabase2, {
+            businessId: existing.business_id,
+            userId,
+            documentType: "invoice",
+            documentId: existing.id,
+            documentNumber: existing.invoice_number,
+            action: "deleted",
+            reason,
+            changes: { snapshot: fromRow(existing, snapshotItems ?? []) }
+          });
+        } catch (err) {
+          res.status(500).json({ error: err instanceof Error ? err.message : "Couldn't save the change history." });
+          return;
+        }
+      }
       const { data, error } = await supabase2.from("invoices").delete().eq("id", req.params.id).select("id").maybeSingle();
       if (error) {
         res.status(400).json({ error: error.message });
@@ -3064,6 +3243,7 @@ var init_receipts = __esm({
     init_resendClient();
     init_documentTemplates();
     init_crudFactory();
+    init_documentIntegrity();
     LIST_CACHE_TTL_SECONDS3 = 45;
     receiptsRouter = Router7();
     receiptsRouter.get("/", async (req, res) => {
@@ -3148,7 +3328,25 @@ var init_receipts = __esm({
       }
       const userId = req.user.id;
       const supabase2 = req.supabase;
-      const input = parsed.data;
+      const { changeReason, ...input } = parsed.data;
+      const { data: existing, error: existingError } = await supabase2.from("receipts").select("*").eq("id", req.params.id).maybeSingle();
+      if (existingError) {
+        res.status(400).json({ error: existingError.message });
+        return;
+      }
+      if (!existing) {
+        res.status(404).json({ error: "Not found" });
+        return;
+      }
+      if (input.receiptNumber !== void 0 && input.receiptNumber !== existing.receipt_number) {
+        respondNumberLocked(res, "receipt");
+        return;
+      }
+      const reason = parseReason(changeReason);
+      if (!reason) {
+        respondReasonRequired(res, "receipt");
+        return;
+      }
       const row = {};
       if (input.customerId !== void 0) row.customer_id = input.customerId ?? null;
       if (input.customClientName !== void 0) row.custom_client_name = input.customClientName ?? null;
@@ -3164,8 +3362,46 @@ var init_receipts = __esm({
         res.status(400).json({ error: "No updatable fields provided" });
         return;
       }
+      const pairs = [];
+      const track = (key, before, after) => {
+        if (after !== void 0) pairs.push([key, before, after]);
+      };
+      track("customerId", existing.customer_id, input.customerId);
+      track("customClientName", existing.custom_client_name, input.customClientName);
+      track("invoiceId", existing.invoice_id, input.invoiceId);
+      track("date", existing.date, input.date);
+      track("description", existing.description, input.description);
+      track("amountPaid", Number(existing.amount_paid), input.amountPaid);
+      track("paymentMethod", existing.payment_method, input.paymentMethod);
+      track("currency", existing.currency, input.currency);
+      track("exchangeRateToBusinessCurrency", Number(existing.exchange_rate_to_business_currency), input.exchangeRateToBusinessCurrency);
+      const changes = diffFields(pairs);
+      if (Object.keys(changes).length === 0) {
+        res.status(400).json({ error: "Nothing was changed." });
+        return;
+      }
+      try {
+        await logDocumentChange(supabase2, {
+          businessId: existing.business_id,
+          userId,
+          documentType: "receipt",
+          documentId: existing.id,
+          documentNumber: existing.receipt_number,
+          action: "amended",
+          reason,
+          changes
+        });
+      } catch (err) {
+        res.status(500).json({ error: err instanceof Error ? err.message : "Couldn't save the change history." });
+        return;
+      }
       const { data, error } = await supabase2.from("receipts").update(row).eq("id", req.params.id).select("*").maybeSingle();
       if (error) {
+        await logAmendmentFailed(
+          supabase2,
+          { businessId: existing.business_id, userId, documentType: "receipt", documentId: existing.id, documentNumber: existing.receipt_number },
+          error.message
+        );
         res.status(400).json({ error: error.message });
         return;
       }
@@ -3179,6 +3415,35 @@ var init_receipts = __esm({
     receiptsRouter.delete("/:id", async (req, res) => {
       const userId = req.user.id;
       const supabase2 = req.supabase;
+      const { data: existing, error: existingError } = await supabase2.from("receipts").select("*").eq("id", req.params.id).maybeSingle();
+      if (existingError) {
+        res.status(400).json({ error: existingError.message });
+        return;
+      }
+      if (!existing) {
+        res.status(404).json({ error: "Not found" });
+        return;
+      }
+      const reason = parseReason(req.body?.changeReason);
+      if (!reason) {
+        respondReasonRequired(res, "receipt");
+        return;
+      }
+      try {
+        await logDocumentChange(supabase2, {
+          businessId: existing.business_id,
+          userId,
+          documentType: "receipt",
+          documentId: existing.id,
+          documentNumber: existing.receipt_number,
+          action: "deleted",
+          reason,
+          changes: { snapshot: fromRow2(existing) }
+        });
+      } catch (err) {
+        res.status(500).json({ error: err instanceof Error ? err.message : "Couldn't save the change history." });
+        return;
+      }
       const { data, error } = await supabase2.from("receipts").delete().eq("id", req.params.id).select("id").maybeSingle();
       if (error) {
         res.status(400).json({ error: error.message });
@@ -5028,8 +5293,49 @@ var init_documentNumbering = __esm({
   }
 });
 
+// src/server/routes/documentChangeLog.ts
+import { Router as Router16 } from "express";
+import { z as z16 } from "zod";
+var querySchema, documentChangeLogRouter;
+var init_documentChangeLog = __esm({
+  "src/server/routes/documentChangeLog.ts"() {
+    querySchema = z16.object({
+      businessId: z16.string().uuid(),
+      documentId: z16.string().uuid().optional()
+    });
+    documentChangeLogRouter = Router16();
+    documentChangeLogRouter.get("/", async (req, res) => {
+      const parsed = querySchema.safeParse(req.query);
+      if (!parsed.success) {
+        res.status(400).json({ error: "businessId is required" });
+        return;
+      }
+      let query = req.supabase.from("document_change_log").select("id, user_id, document_type, document_id, document_number, action, reason, changes, created_at").eq("business_id", parsed.data.businessId).order("created_at", { ascending: false }).limit(200);
+      if (parsed.data.documentId) query = query.eq("document_id", parsed.data.documentId);
+      const { data, error } = await query;
+      if (error) {
+        res.status(400).json({ error: error.message });
+        return;
+      }
+      res.json({
+        data: (data ?? []).map((row) => ({
+          id: row.id,
+          changedByMe: row.user_id === req.user.id,
+          documentType: row.document_type,
+          documentId: row.document_id,
+          documentNumber: row.document_number ?? void 0,
+          action: row.action,
+          reason: row.reason ?? void 0,
+          changes: row.changes ?? {},
+          createdAt: row.created_at
+        }))
+      });
+    });
+  }
+});
+
 // src/server/routes/paymentsWebhook.ts
-import express, { Router as Router16 } from "express";
+import express, { Router as Router17 } from "express";
 async function handleSubscriptionPayment(supabase2, reference, data) {
   const { data: existing } = await supabase2.from("subscription_payment_events").select("id").eq("paystack_reference", reference).maybeSingle();
   if (existing) return;
@@ -5070,7 +5376,7 @@ var init_paymentsWebhook = __esm({
   "src/server/routes/paymentsWebhook.ts"() {
     init_paystackClient();
     init_supabaseClients();
-    paymentsWebhookRouter = Router16();
+    paymentsWebhookRouter = Router17();
     TIER_RANK = { basic: 0, standard: 1, pro: 2 };
     paymentsWebhookRouter.post("/", express.raw({ type: "application/json" }), async (req, res) => {
       if (!isPaystackConfigured()) {
@@ -5102,7 +5408,7 @@ var init_paymentsWebhook = __esm({
 });
 
 // src/server/routes/notifications.ts
-import { Router as Router17 } from "express";
+import { Router as Router18 } from "express";
 function fromRow7(row) {
   return {
     id: row.id,
@@ -5119,7 +5425,7 @@ function fromRow7(row) {
 var notificationsRouter;
 var init_notifications = __esm({
   "src/server/routes/notifications.ts"() {
-    notificationsRouter = Router17();
+    notificationsRouter = Router18();
     notificationsRouter.get("/", async (req, res) => {
       const userId = req.user.id;
       const supabase2 = req.supabase;
@@ -5158,12 +5464,12 @@ var init_notifications = __esm({
 });
 
 // src/server/routes/profile.ts
-import { Router as Router18 } from "express";
-import { z as z16 } from "zod";
+import { Router as Router19 } from "express";
+import { z as z17 } from "zod";
 var profileRouter, updateSchema;
 var init_profile = __esm({
   "src/server/routes/profile.ts"() {
-    profileRouter = Router18();
+    profileRouter = Router19();
     profileRouter.get("/", async (req, res) => {
       const supabase2 = req.supabase;
       const { data, error } = await supabase2.from("profiles").select("marketing_emails_enabled").eq("id", req.user.id).maybeSingle();
@@ -5173,8 +5479,8 @@ var init_profile = __esm({
       }
       res.json({ data: { marketingEmailsEnabled: data?.marketing_emails_enabled ?? false } });
     });
-    updateSchema = z16.object({
-      marketingEmailsEnabled: z16.boolean()
+    updateSchema = z17.object({
+      marketingEmailsEnabled: z17.boolean()
     });
     profileRouter.patch("/", async (req, res) => {
       const parsed = updateSchema.safeParse(req.body);
@@ -5194,30 +5500,30 @@ var init_profile = __esm({
 });
 
 // src/server/validation/signatures.ts
-import { z as z17 } from "zod";
+import { z as z18 } from "zod";
 var fullNameField, signatureCreateSchema;
 var init_signatures = __esm({
   "src/server/validation/signatures.ts"() {
     init_common();
-    fullNameField = z17.string().trim().min(1, "A signer name is required").max(200).refine((name) => name.split(/\s+/).filter(Boolean).length >= 2, {
+    fullNameField = z18.string().trim().min(1, "A signer name is required").max(200).refine((name) => name.split(/\s+/).filter(Boolean).length >= 2, {
       message: "Enter the business representative's full name (first and last), not just one word."
     });
-    signatureCreateSchema = z17.object({
+    signatureCreateSchema = z18.object({
       businessId: uuidField,
-      documentType: z17.enum(["invoice", "receipt", "quotation"]),
+      documentType: z18.enum(["invoice", "receipt", "quotation"]),
       documentId: uuidField,
       signerName: fullNameField,
       // "drawn" is accepted for schema stability but SignatureCapture.tsx no
       // longer offers hand-drawing - every new signature is "typed" (the full
       // name itself, rendered in a script font at display time).
-      signatureKind: z17.enum(["drawn", "typed"]),
-      signatureData: z17.string().trim().min(1).max(5e4)
+      signatureKind: z18.enum(["drawn", "typed"]),
+      signatureData: z18.string().trim().min(1).max(5e4)
     });
   }
 });
 
 // src/server/routes/signatures.ts
-import { Router as Router19 } from "express";
+import { Router as Router20 } from "express";
 function fromRow8(row) {
   return {
     id: row.id,
@@ -5234,7 +5540,7 @@ var signaturesRouter;
 var init_signatures2 = __esm({
   "src/server/routes/signatures.ts"() {
     init_signatures();
-    signaturesRouter = Router19();
+    signaturesRouter = Router20();
     signaturesRouter.get("/", async (req, res) => {
       const userId = req.user.id;
       const supabase2 = req.supabase;
@@ -5292,18 +5598,18 @@ var init_signatures2 = __esm({
 });
 
 // src/server/validation/businessMemberships.ts
-import { z as z18 } from "zod";
+import { z as z19 } from "zod";
 var membershipRoleField, membershipInviteSchema, membershipUpdateSchema;
 var init_businessMemberships = __esm({
   "src/server/validation/businessMemberships.ts"() {
     init_common();
-    membershipRoleField = z18.enum(["Admin", "Accountant", "Staff"]);
-    membershipInviteSchema = z18.object({
+    membershipRoleField = z19.enum(["Admin", "Accountant", "Staff"]);
+    membershipInviteSchema = z19.object({
       businessId: uuidField,
-      email: z18.string().trim().toLowerCase().email("Must be a valid email address"),
+      email: z19.string().trim().toLowerCase().email("Must be a valid email address"),
       role: membershipRoleField
     });
-    membershipUpdateSchema = z18.object({
+    membershipUpdateSchema = z19.object({
       role: membershipRoleField
     });
   }
@@ -5331,7 +5637,7 @@ var init_findUserByEmail = __esm({
 });
 
 // src/server/routes/businessMemberships.ts
-import { Router as Router20 } from "express";
+import { Router as Router21 } from "express";
 function fromRow9(row) {
   return {
     id: row.id,
@@ -5348,7 +5654,7 @@ var init_businessMemberships2 = __esm({
     init_businessMemberships();
     init_supabaseClients();
     init_findUserByEmail();
-    businessMembershipsRouter = Router20();
+    businessMembershipsRouter = Router21();
     businessMembershipsRouter.get("/", async (req, res) => {
       const supabase2 = req.supabase;
       const businessId = typeof req.query.businessId === "string" ? req.query.businessId : void 0;
@@ -5457,12 +5763,12 @@ var init_businessMemberships2 = __esm({
 });
 
 // src/server/routes/announcements.ts
-import { Router as Router21 } from "express";
+import { Router as Router22 } from "express";
 var announcementsRouter, publicAnnouncementsRouter;
 var init_announcements = __esm({
   "src/server/routes/announcements.ts"() {
     init_supabaseClients();
-    announcementsRouter = Router21();
+    announcementsRouter = Router22();
     announcementsRouter.get("/", async (req, res) => {
       const userId = req.user.id;
       const supabase2 = req.supabase;
@@ -5498,7 +5804,7 @@ var init_announcements = __esm({
         }))
       });
     });
-    publicAnnouncementsRouter = Router21();
+    publicAnnouncementsRouter = Router22();
     publicAnnouncementsRouter.get("/", async (_req, res) => {
       const supabase2 = getAnonClient();
       const { data: announcements, error } = await supabase2.from("admin_announcements").select("*").eq("is_active", true).in("target_screen", ["all", "auth_signin", "auth_signup"]).order("created_at", { ascending: false }).limit(10);
@@ -5530,17 +5836,17 @@ var init_announcements = __esm({
 });
 
 // src/server/validation/admin.ts
-import { z as z19 } from "zod";
+import { z as z20 } from "zod";
 var flagUpdateSchema, flagOverrideSchema, ANNOUNCEMENT_TARGET_SCREENS, ANNOUNCEMENT_TARGET_TIERS, ANNOUNCEMENT_TARGET_ACTIVITY, announcementCreateSchema, surveyQuestionSchema, surveyCreateSchema, surveyResponseSchema, siteAssetCreateSchema;
 var init_admin = __esm({
   "src/server/validation/admin.ts"() {
     init_auth();
-    flagUpdateSchema = z19.object({
-      enabledDefault: z19.boolean()
+    flagUpdateSchema = z20.object({
+      enabledDefault: z20.boolean()
     });
-    flagOverrideSchema = z19.object({
+    flagOverrideSchema = z20.object({
       email: emailField,
-      enabled: z19.boolean()
+      enabled: z20.boolean()
     });
     ANNOUNCEMENT_TARGET_SCREENS = [
       "all",
@@ -5560,45 +5866,45 @@ var init_admin = __esm({
     ];
     ANNOUNCEMENT_TARGET_TIERS = ["all", "basic", "standard", "pro"];
     ANNOUNCEMENT_TARGET_ACTIVITY = ["all", "new", "active"];
-    announcementCreateSchema = z19.object({
-      title: z19.string().trim().min(1).max(200),
-      message: z19.string().trim().min(1).max(2e3),
-      targetScreen: z19.enum(ANNOUNCEMENT_TARGET_SCREENS).optional(),
-      targetTier: z19.enum(ANNOUNCEMENT_TARGET_TIERS).optional(),
-      targetActivity: z19.enum(ANNOUNCEMENT_TARGET_ACTIVITY).optional()
+    announcementCreateSchema = z20.object({
+      title: z20.string().trim().min(1).max(200),
+      message: z20.string().trim().min(1).max(2e3),
+      targetScreen: z20.enum(ANNOUNCEMENT_TARGET_SCREENS).optional(),
+      targetTier: z20.enum(ANNOUNCEMENT_TARGET_TIERS).optional(),
+      targetActivity: z20.enum(ANNOUNCEMENT_TARGET_ACTIVITY).optional()
     });
-    surveyQuestionSchema = z19.object({
-      id: z19.string().trim().min(1).max(100),
-      type: z19.enum(["text", "choice"]),
-      prompt: z19.string().trim().min(1).max(500),
-      options: z19.array(z19.string().trim().min(1).max(200)).max(10).optional()
+    surveyQuestionSchema = z20.object({
+      id: z20.string().trim().min(1).max(100),
+      type: z20.enum(["text", "choice"]),
+      prompt: z20.string().trim().min(1).max(500),
+      options: z20.array(z20.string().trim().min(1).max(200)).max(10).optional()
     });
-    surveyCreateSchema = z19.object({
-      title: z19.string().trim().min(1).max(200),
-      description: z19.string().trim().max(1e3).optional(),
-      questions: z19.array(surveyQuestionSchema).min(1).max(20)
+    surveyCreateSchema = z20.object({
+      title: z20.string().trim().min(1).max(200),
+      description: z20.string().trim().max(1e3).optional(),
+      questions: z20.array(surveyQuestionSchema).min(1).max(20)
     });
-    surveyResponseSchema = z19.object({
-      answers: z19.record(z19.string(), z19.string().trim().max(2e3))
+    surveyResponseSchema = z20.object({
+      answers: z20.record(z20.string(), z20.string().trim().max(2e3))
     });
-    siteAssetCreateSchema = z19.object({
-      kind: z19.enum(["logo", "favicon", "document"]),
-      fileName: z19.string().trim().min(1).max(255),
-      storagePath: z19.string().trim().min(1).max(500),
-      contentType: z19.string().trim().min(1).max(100),
-      sizeBytes: z19.number().int().positive().max(20 * 1024 * 1024)
+    siteAssetCreateSchema = z20.object({
+      kind: z20.enum(["logo", "favicon", "document"]),
+      fileName: z20.string().trim().min(1).max(255),
+      storagePath: z20.string().trim().min(1).max(500),
+      contentType: z20.string().trim().min(1).max(100),
+      sizeBytes: z20.number().int().positive().max(20 * 1024 * 1024)
       // 20MB cap
     });
   }
 });
 
 // src/server/routes/surveys.ts
-import { Router as Router22 } from "express";
+import { Router as Router23 } from "express";
 var surveysRouter;
 var init_surveys = __esm({
   "src/server/routes/surveys.ts"() {
     init_admin();
-    surveysRouter = Router22();
+    surveysRouter = Router23();
     surveysRouter.get("/", async (req, res) => {
       const userId = req.user.id;
       const supabase2 = req.supabase;
@@ -5643,7 +5949,7 @@ var init_surveys = __esm({
 });
 
 // src/server/routes/admin/featureFlags.ts
-import { Router as Router23 } from "express";
+import { Router as Router24 } from "express";
 function fromFlagRow(row) {
   return {
     key: row.key,
@@ -5659,7 +5965,7 @@ var init_featureFlags = __esm({
   "src/server/routes/admin/featureFlags.ts"() {
     init_admin();
     init_findUserByEmail();
-    adminFeatureFlagsRouter = Router23();
+    adminFeatureFlagsRouter = Router24();
     adminFeatureFlagsRouter.get("/", async (req, res) => {
       const supabase2 = req.supabase;
       const { data: flags, error: flagsError } = await supabase2.from("feature_flags").select("*").order("phase", { ascending: true }).order("name", { ascending: true });
@@ -5759,7 +6065,7 @@ var init_featureFlags = __esm({
 });
 
 // src/server/routes/admin/announcements.ts
-import { Router as Router24 } from "express";
+import { Router as Router25 } from "express";
 function fromRow10(row) {
   return {
     id: row.id,
@@ -5776,7 +6082,7 @@ var adminAnnouncementsRouter;
 var init_announcements2 = __esm({
   "src/server/routes/admin/announcements.ts"() {
     init_admin();
-    adminAnnouncementsRouter = Router24();
+    adminAnnouncementsRouter = Router25();
     adminAnnouncementsRouter.get("/", async (req, res) => {
       const supabase2 = req.supabase;
       const { data: announcements, error } = await supabase2.from("admin_announcements").select("*").order("created_at", { ascending: false });
@@ -5847,7 +6153,7 @@ var init_announcements2 = __esm({
 });
 
 // src/server/routes/admin/surveys.ts
-import { Router as Router25 } from "express";
+import { Router as Router26 } from "express";
 function fromRow11(row) {
   return {
     id: row.id,
@@ -5862,7 +6168,7 @@ var adminSurveysRouter;
 var init_surveys2 = __esm({
   "src/server/routes/admin/surveys.ts"() {
     init_admin();
-    adminSurveysRouter = Router25();
+    adminSurveysRouter = Router26();
     adminSurveysRouter.get("/", async (req, res) => {
       const supabase2 = req.supabase;
       const { data: surveys, error } = await supabase2.from("surveys").select("*").order("created_at", { ascending: false });
@@ -5951,7 +6257,7 @@ var init_surveys2 = __esm({
 });
 
 // src/server/routes/admin/assets.ts
-import { Router as Router26 } from "express";
+import { Router as Router27 } from "express";
 function publicUrlFor(storagePath) {
   return `${env.SUPABASE_URL}/storage/v1/object/public/site-assets/${storagePath}`;
 }
@@ -5973,7 +6279,7 @@ var init_assets2 = __esm({
   "src/server/routes/admin/assets.ts"() {
     init_admin();
     init_env();
-    adminAssetsRouter = Router26();
+    adminAssetsRouter = Router27();
     adminAssetsRouter.get("/", async (req, res) => {
       const supabase2 = req.supabase;
       const { data, error } = await supabase2.from("site_assets").select("*").order("created_at", { ascending: false });
@@ -6031,11 +6337,11 @@ var init_assets2 = __esm({
 });
 
 // src/server/routes/admin/stats.ts
-import { Router as Router27 } from "express";
+import { Router as Router28 } from "express";
 var adminStatsRouter;
 var init_stats = __esm({
   "src/server/routes/admin/stats.ts"() {
-    adminStatsRouter = Router27();
+    adminStatsRouter = Router28();
     adminStatsRouter.get("/", async (req, res) => {
       const supabase2 = req.supabase;
       const [users, businesses, activeAnnouncements, activeSurveys, flags] = await Promise.all([
@@ -6064,8 +6370,8 @@ var init_stats = __esm({
 });
 
 // src/server/routes/admin/subscriptionPlans.ts
-import { Router as Router28 } from "express";
-import { z as z20 } from "zod";
+import { Router as Router29 } from "express";
+import { z as z21 } from "zod";
 function fromRow13(row) {
   return {
     tier: row.tier,
@@ -6079,11 +6385,11 @@ function fromRow13(row) {
 var adminSubscriptionPlansRouter, planUpsertSchema, CURRENCY_RE;
 var init_subscriptionPlans = __esm({
   "src/server/routes/admin/subscriptionPlans.ts"() {
-    adminSubscriptionPlansRouter = Router28();
-    planUpsertSchema = z20.object({
-      paystackLink: z20.string().trim().url().max(500).optional().nullable(),
-      priceMinorUnits: z20.number().int().nonnegative().optional().nullable(),
-      provider: z20.enum(["paystack", "stripe"]).optional()
+    adminSubscriptionPlansRouter = Router29();
+    planUpsertSchema = z21.object({
+      paystackLink: z21.string().trim().url().max(500).optional().nullable(),
+      priceMinorUnits: z21.number().int().nonnegative().optional().nullable(),
+      provider: z21.enum(["paystack", "stripe"]).optional()
     });
     CURRENCY_RE = /^[A-Z]{3}$/;
     adminSubscriptionPlansRouter.get("/", async (req, res) => {
@@ -6174,8 +6480,8 @@ var init_subscriptionPlans = __esm({
 });
 
 // src/server/routes/admin/guideItems.ts
-import { Router as Router29 } from "express";
-import { z as z21 } from "zod";
+import { Router as Router30 } from "express";
+import { z as z22 } from "zod";
 function fromRow14(row) {
   return {
     id: row.id,
@@ -6188,10 +6494,10 @@ function fromRow14(row) {
 var adminGuideItemsRouter, createSchema;
 var init_guideItems = __esm({
   "src/server/routes/admin/guideItems.ts"() {
-    adminGuideItemsRouter = Router29();
-    createSchema = z21.object({
-      title: z21.string().trim().min(1).max(200),
-      description: z21.string().trim().max(2e3).optional()
+    adminGuideItemsRouter = Router30();
+    createSchema = z22.object({
+      title: z22.string().trim().min(1).max(200),
+      description: z22.string().trim().max(2e3).optional()
     });
     adminGuideItemsRouter.get("/", async (req, res) => {
       const supabase2 = req.supabase;
@@ -6247,8 +6553,8 @@ var init_guideItems = __esm({
 });
 
 // src/server/routes/admin/admins.ts
-import { Router as Router30 } from "express";
-import { z as z22 } from "zod";
+import { Router as Router31 } from "express";
+import { z as z23 } from "zod";
 function requireSuperAdmin(req, res) {
   if (!req.isSuperAdmin) {
     res.status(403).json({ error: "Only a superadmin can manage other admins." });
@@ -6259,7 +6565,7 @@ function requireSuperAdmin(req, res) {
 var adminAdminsRouter, ALL_SECTIONS, grantSchema, updateSchema2;
 var init_admins = __esm({
   "src/server/routes/admin/admins.ts"() {
-    adminAdminsRouter = Router30();
+    adminAdminsRouter = Router31();
     ALL_SECTIONS = ["dashboard", "flags", "announcements", "surveys", "payments", "branding", "content", "guides", "admins"];
     adminAdminsRouter.get("/", async (req, res) => {
       if (!requireSuperAdmin(req, res)) return;
@@ -6280,9 +6586,9 @@ var init_admins = __esm({
         }))
       });
     });
-    grantSchema = z22.object({
-      email: z22.string().trim().email(),
-      sections: z22.array(z22.enum(ALL_SECTIONS)).default([])
+    grantSchema = z23.object({
+      email: z23.string().trim().email(),
+      sections: z23.array(z23.enum(ALL_SECTIONS)).default([])
     });
     adminAdminsRouter.post("/", async (req, res) => {
       if (!requireSuperAdmin(req, res)) return;
@@ -6313,8 +6619,8 @@ var init_admins = __esm({
       }
       res.status(201).json({ data: { id: profile.id, email: parsed.data.email, sections: parsed.data.sections } });
     });
-    updateSchema2 = z22.object({
-      sections: z22.array(z22.enum(ALL_SECTIONS))
+    updateSchema2 = z23.object({
+      sections: z23.array(z23.enum(ALL_SECTIONS))
     });
     adminAdminsRouter.put("/:userId/sections", async (req, res) => {
       if (!requireSuperAdmin(req, res)) return;
@@ -6356,12 +6662,12 @@ var init_admins = __esm({
 });
 
 // src/server/routes/admin/siteSettings.ts
-import { Router as Router31 } from "express";
-import { z as z23 } from "zod";
+import { Router as Router32 } from "express";
+import { z as z24 } from "zod";
 var adminSiteSettingsRouter, KNOWN_KEYS, updateSchema3;
 var init_siteSettings = __esm({
   "src/server/routes/admin/siteSettings.ts"() {
-    adminSiteSettingsRouter = Router31();
+    adminSiteSettingsRouter = Router32();
     KNOWN_KEYS = [
       "support_email",
       "support_phone",
@@ -6382,9 +6688,9 @@ var init_siteSettings = __esm({
       const byKey = new Map((data ?? []).map((row) => [row.key, row.value]));
       res.json({ data: KNOWN_KEYS.map((key) => ({ key, value: byKey.get(key) ?? "" })) });
     });
-    updateSchema3 = z23.object({
-      key: z23.enum(KNOWN_KEYS),
-      value: z23.string().max(2e4)
+    updateSchema3 = z24.object({
+      key: z24.enum(KNOWN_KEYS),
+      value: z24.string().max(2e4)
     });
     adminSiteSettingsRouter.put("/", async (req, res) => {
       const parsed = updateSchema3.safeParse(req.body);
@@ -6404,8 +6710,8 @@ var init_siteSettings = __esm({
 });
 
 // src/server/routes/admin/faqItems.ts
-import { Router as Router32 } from "express";
-import { z as z24 } from "zod";
+import { Router as Router33 } from "express";
+import { z as z25 } from "zod";
 function fromRow15(row) {
   return {
     id: row.id,
@@ -6419,7 +6725,7 @@ function fromRow15(row) {
 var adminFaqItemsRouter, createSchema2, updateSchema4;
 var init_faqItems = __esm({
   "src/server/routes/admin/faqItems.ts"() {
-    adminFaqItemsRouter = Router32();
+    adminFaqItemsRouter = Router33();
     adminFaqItemsRouter.get("/", async (req, res) => {
       const supabase2 = req.supabase;
       const { data, error } = await supabase2.from("faq_items").select("*").order("sort_order").order("created_at");
@@ -6429,10 +6735,10 @@ var init_faqItems = __esm({
       }
       res.json({ data: (data ?? []).map(fromRow15) });
     });
-    createSchema2 = z24.object({
-      question: z24.string().trim().min(1).max(300),
-      answer: z24.string().trim().min(1).max(3e3),
-      sortOrder: z24.number().int().default(0)
+    createSchema2 = z25.object({
+      question: z25.string().trim().min(1).max(300),
+      answer: z25.string().trim().min(1).max(3e3),
+      sortOrder: z25.number().int().default(0)
     });
     adminFaqItemsRouter.post("/", async (req, res) => {
       const parsed = createSchema2.safeParse(req.body);
@@ -6448,11 +6754,11 @@ var init_faqItems = __esm({
       }
       res.status(201).json({ data: fromRow15(data) });
     });
-    updateSchema4 = z24.object({
-      question: z24.string().trim().min(1).max(300).optional(),
-      answer: z24.string().trim().min(1).max(3e3).optional(),
-      sortOrder: z24.number().int().optional(),
-      isActive: z24.boolean().optional()
+    updateSchema4 = z25.object({
+      question: z25.string().trim().min(1).max(300).optional(),
+      answer: z25.string().trim().min(1).max(3e3).optional(),
+      sortOrder: z25.number().int().optional(),
+      isActive: z25.boolean().optional()
     });
     adminFaqItemsRouter.patch("/:id", async (req, res) => {
       const parsed = updateSchema4.safeParse(req.body);
@@ -6490,7 +6796,7 @@ var init_faqItems = __esm({
 });
 
 // src/server/routes/admin/feedback.ts
-import { Router as Router33 } from "express";
+import { Router as Router34 } from "express";
 function fromRow16(row) {
   return {
     id: row.id,
@@ -6503,7 +6809,7 @@ function fromRow16(row) {
 var adminFeedbackRouter;
 var init_feedback3 = __esm({
   "src/server/routes/admin/feedback.ts"() {
-    adminFeedbackRouter = Router33();
+    adminFeedbackRouter = Router34();
     adminFeedbackRouter.get("/", async (req, res) => {
       const supabase2 = req.supabase;
       const { data, error } = await supabase2.from("feedback_submissions").select("id, name, email, message, created_at").order("created_at", { ascending: false }).limit(200);
@@ -6517,11 +6823,11 @@ var init_feedback3 = __esm({
 });
 
 // src/server/routes/admin/users.ts
-import { Router as Router34 } from "express";
+import { Router as Router35 } from "express";
 var adminUsersRouter;
 var init_users = __esm({
   "src/server/routes/admin/users.ts"() {
-    adminUsersRouter = Router34();
+    adminUsersRouter = Router35();
     adminUsersRouter.get("/", async (req, res) => {
       const supabase2 = req.supabase;
       const [{ data: profiles, error: profilesError }, { data: businesses, error: businessesError }] = await Promise.all([
@@ -6559,11 +6865,11 @@ var init_users = __esm({
 });
 
 // src/server/routes/admin/analytics.ts
-import { Router as Router35 } from "express";
+import { Router as Router36 } from "express";
 var adminAnalyticsRouter;
 var init_analytics2 = __esm({
   "src/server/routes/admin/analytics.ts"() {
-    adminAnalyticsRouter = Router35();
+    adminAnalyticsRouter = Router36();
     adminAnalyticsRouter.get("/feature-usage", async (req, res) => {
       const supabase2 = req.supabase;
       const requestedDays = Number(req.query.days);
@@ -6590,7 +6896,7 @@ var init_analytics2 = __esm({
 });
 
 // src/server/routes/admin/index.ts
-import { Router as Router36 } from "express";
+import { Router as Router37 } from "express";
 var adminRouter, ALL_SECTIONS2;
 var init_admin2 = __esm({
   "src/server/routes/admin/index.ts"() {
@@ -6608,7 +6914,7 @@ var init_admin2 = __esm({
     init_feedback3();
     init_users();
     init_analytics2();
-    adminRouter = Router36();
+    adminRouter = Router37();
     ALL_SECTIONS2 = ["dashboard", "flags", "announcements", "surveys", "payments", "branding", "content", "guides", "admins", "feedback", "users", "analytics"];
     adminRouter.get("/me", (req, res) => {
       res.json({
@@ -6701,6 +7007,7 @@ function createApp() {
   app.use("/api/brand-kits", requireAuth, brandKitsRouter);
   app.use("/api/document-templates", requireAuth, documentTemplatesRouter);
   app.use("/api/document-numbering", requireAuth, documentNumberingRouter);
+  app.use("/api/document-change-log", requireAuth, documentChangeLogRouter);
   app.use("/api/notifications", requireAuth, notificationsRouter);
   app.use("/api/profile", requireAuth, profileRouter);
   app.use("/api/signatures", requireAuth, signaturesRouter);
@@ -6748,6 +7055,7 @@ var init_app = __esm({
     init_brandKits();
     init_documentTemplates3();
     init_documentNumbering();
+    init_documentChangeLog();
     init_paymentsWebhook();
     init_notifications();
     init_profile();

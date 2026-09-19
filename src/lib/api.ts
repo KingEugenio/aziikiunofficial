@@ -169,6 +169,32 @@ export const api = {
   receipts: {
     ...makeResource<any>("/receipts"),
     sendEmail: (id: string) => request<{ message: string }>(`/receipts/${id}/send-email`, { method: "POST" }),
+    // Receipts are locked from creation: every change/delete needs a reason.
+    amend: (id: string, payload: unknown, changeReason: string) =>
+      request<{ data: any }>(`/receipts/${id}`, { method: "PATCH", body: JSON.stringify({ ...(payload as object), changeReason }) }).then(
+        (r) => r.data
+      ),
+    removeWithReason: (id: string, changeReason: string) =>
+      request<void>(`/receipts/${id}`, { method: "DELETE", body: JSON.stringify({ changeReason }) }),
+  },
+
+  documentChangeLog: {
+    list: (businessId: string, documentId?: string) =>
+      request<{
+        data: Array<{
+          id: string;
+          changedByMe: boolean;
+          documentType: "invoice" | "receipt";
+          documentId: string;
+          documentNumber?: string;
+          action: "amended" | "deleted" | "status_changed" | "amendment_failed";
+          reason?: string;
+          changes: Record<string, any>;
+          createdAt: string;
+        }>;
+      }>(`/document-change-log?businessId=${encodeURIComponent(businessId)}${documentId ? `&documentId=${encodeURIComponent(documentId)}` : ""}`).then(
+        (r) => r.data
+      ),
   },
   investments: makeResource<any>("/investments"),
   assets: makeResource<any>("/assets"),
@@ -192,6 +218,15 @@ export const api = {
   invoices: {
     ...makeResource<any>("/invoices"),
     sendEmail: (id: string) => request<{ message: string }>(`/invoices/${id}/send-email`, { method: "POST" }),
+    // Changing or deleting a saved (past-Draft) invoice needs a written
+    // reason - the server answers 428 REASON_REQUIRED without one. See
+    // server/documentIntegrity.ts.
+    amend: (id: string, payload: unknown, changeReason: string) =>
+      request<{ data: any }>(`/invoices/${id}`, { method: "PATCH", body: JSON.stringify({ ...(payload as object), changeReason }) }).then(
+        (r) => r.data
+      ),
+    removeWithReason: (id: string, changeReason: string) =>
+      request<void>(`/invoices/${id}`, { method: "DELETE", body: JSON.stringify({ changeReason }) }),
   },
   quotations: {
     ...makeResource<any>("/quotations"),

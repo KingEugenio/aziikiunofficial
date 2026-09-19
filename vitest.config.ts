@@ -20,5 +20,10 @@ export default defineConfig({
     // itself) is what lets the loginLockout/rate-limit tests import that
     // module at all, same as server.ts's own "import dotenv/config" first line.
     setupFiles: ["dotenv/config"],
+    // Most server tests are real integration tests against the live
+    // database (deliberately not mocked), where a single test can make a
+    // dozen network round-trips - vitest's 5s default flakes on that.
+    testTimeout: 30_000,
+    hookTimeout: 60_000,
   },
 });

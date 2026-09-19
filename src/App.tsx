@@ -987,6 +987,57 @@ export default function App() {
     }
   };
 
+  // Changing or deleting a SAVED invoice/receipt is deliberately hard (see
+  // server/documentIntegrity.ts): past Draft (and always for receipts) it
+  // needs a written reason, which the server records in the document's
+  // permanent change history before anything is touched. `reason` is null
+  // only for a Draft invoice, which is still a free working copy.
+  // Guest mode has no server or history, so it just edits local state.
+  const handleAmendInvoice = async (id: string, patch: any, reason: string | null): Promise<Invoice> => {
+    if (isGuest) {
+      const existing = invoices.find(i => i.id === id)!;
+      const updated: Invoice = {
+        ...existing,
+        ...patch,
+        customerId: patch.customerId ?? (patch.customClientName ? `custom-${patch.customClientName}` : existing.customerId),
+      };
+      setInvoices(prev => prev.map(i => (i.id === id ? updated : i)));
+      return updated;
+    }
+    const updated: Invoice = reason ? await api.invoices.amend(id, patch, reason) : await api.invoices.update(id, patch);
+    setInvoices(prev => prev.map(i => (i.id === id ? updated : i)));
+    return updated;
+  };
+
+  const handleAmendReceipt = async (id: string, patch: any, reason: string): Promise<Receipt> => {
+    if (isGuest) {
+      const existing = receipts.find(r => r.id === id)!;
+      const updated: Receipt = {
+        ...existing,
+        ...patch,
+        customerId: patch.customerId ?? (patch.customClientName ? `custom-${patch.customClientName}` : existing.customerId),
+      };
+      setReceipts(prev => prev.map(r => (r.id === id ? updated : r)));
+      return updated;
+    }
+    const updated: Receipt = await api.receipts.amend(id, patch, reason);
+    setReceipts(prev => prev.map(r => (r.id === id ? updated : r)));
+    return updated;
+  };
+
+  const handleDeleteInvoice = async (id: string, reason: string | null): Promise<void> => {
+    if (!isGuest) {
+      if (reason) await api.invoices.removeWithReason(id, reason);
+      else await api.invoices.remove(id);
+    }
+    setInvoices(prev => prev.filter(i => i.id !== id));
+  };
+
+  const handleDeleteReceipt = async (id: string, reason: string): Promise<void> => {
+    if (!isGuest) await api.receipts.removeWithReason(id, reason);
+    setReceipts(prev => prev.filter(r => r.id !== id));
+  };
+
   const handleAddReceipt = async (newRec: Receipt): Promise<Receipt> => {
     if (isGuest) {
       setReceipts([newRec, ...receipts]);
@@ -2999,6 +3050,10 @@ export default function App() {
                       onAddQuotation={handleAddQuotation}
                       onConvertQuote={handleConvertQuoteToInvoice}
                       onUpdateInvoiceStatus={handleUpdateInvoiceStatus}
+                      onAmendInvoice={handleAmendInvoice}
+                      onAmendReceipt={handleAmendReceipt}
+                      onDeleteInvoice={handleDeleteInvoice}
+                      onDeleteReceipt={handleDeleteReceipt}
                     />
                   </Suspense>
                 )}

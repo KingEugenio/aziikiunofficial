@@ -13,6 +13,8 @@ import { CustomBlockLayout } from "../lib/documentBlocks";
 import { useFeatureFlags } from "../lib/featureFlags";
 import { useCachedResource } from "../lib/sessionCache";
 import { getInitials } from "../lib/businessLogo";
+import DocumentReasonModal from "./DocumentReasonModal";
+import DocumentHistoryList from "./DocumentHistoryList";
 
 // Spells out a monetary amount for the "Amount in Words" line on the
 // Diagonal Ribbon receipt design (market-trader receipt books traditionally
@@ -62,6 +64,14 @@ interface InvoiceReceiptBuilderProps {
   onAddQuotation: (quotation: Quotation) => Promise<Quotation>;
   onConvertQuote: (quoteId: string) => Promise<void>;
   onUpdateInvoiceStatus?: (id: string, nextStatus: string) => void;
+  // Saved-document integrity (see server/documentIntegrity.ts): amending or
+  // deleting anything past Draft needs a written reason, kept permanently
+  // in the document's change history. `reason` is null only for a Draft
+  // invoice, which is still a free working copy.
+  onAmendInvoice?: (id: string, patch: any, reason: string | null) => Promise<Invoice>;
+  onAmendReceipt?: (id: string, patch: any, reason: string) => Promise<Receipt>;
+  onDeleteInvoice?: (id: string, reason: string | null) => Promise<void>;
+  onDeleteReceipt?: (id: string, reason: string) => Promise<void>;
 }
 
 // 10 distinct, beautifully designed templates
@@ -256,7 +266,11 @@ export default function InvoiceReceiptBuilder({
   onAddReceipt,
   onAddQuotation,
   onConvertQuote,
-  onUpdateInvoiceStatus
+  onUpdateInvoiceStatus,
+  onAmendInvoice,
+  onAmendReceipt,
+  onDeleteInvoice,
+  onDeleteReceipt
 }: InvoiceReceiptBuilderProps) {
   const { isEnabled, tier } = useFeatureFlags();
   // Navigation tabs: "builder" (Form Info) | "style" (10 Designs + Customs) | "history" (Past Invoices Ledger)
@@ -499,6 +513,11 @@ export default function InvoiceReceiptBuilder({
   // Global Toast notifier
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [showIssuerConfig, setShowIssuerConfig] = useState<boolean>(false);
+  // Saved-document integrity UI: which saved record is being amended, the
+  // pending "give a reason" prompt, and a counter that reloads the history.
+  const [amendingId, setAmendingId] = useState<string | null>(null);
+  const [reasonPrompt, setReasonPrompt] = useState<{ kind: "amend" | "delete"; patch?: any } | null>(null);
+  const [historyRefresh, setHistoryRefresh] = useState(0);
 
   // Toast trigger helper
   const triggerToast = (msg: string) => {
@@ -627,6 +646,7 @@ export default function InvoiceReceiptBuilder({
     setDocumentCurrency(inv.currency || currentBusiness.currency);
     setExchangeRate(inv.exchangeRateToBusinessCurrency || 1);
     setLoadedInvoiceSourceQuotationId(inv.sourceQuotationId);
+    setAmendingId(null);
     setActivePaneTab("builder");
     triggerToast(`Loaded Invoice ${inv.invoiceNumber} - preview updated on the right.`);
   };
@@ -642,6 +662,7 @@ export default function InvoiceReceiptBuilder({
     setDocumentCurrency(rec.currency || currentBusiness.currency);
     setExchangeRate(rec.exchangeRateToBusinessCurrency || 1);
     setLoadedInvoiceSourceQuotationId(undefined);
+    setAmendingId(null);
     setActivePaneTab("builder");
     triggerToast(`Loaded Receipt ${rec.receiptNumber} - preview updated on the right.`);
   };
@@ -670,6 +691,29 @@ export default function InvoiceReceiptBuilder({
     }
 
     const resolvedCustId = customerId === "custom" ? ("custom-" + customClientName.trim()) : customerId;
+
+    // A saved invoice is never re-created (that would issue a duplicate
+    // number) - saving edits it in place. Past Draft that needs the person to
+    // be amending on purpose, plus a written reason.
+    if (savedInvoice) {
+      if (isLockedRecord && !isAmending) {
+        return triggerToast(`Invoice ${savedInvoice.invoiceNumber} is locked. Choose "Amend with a reason" to change it.`);
+      }
+      const patch: Record<string, unknown> = {
+        customerId: customerId === "custom" ? null : customerId,
+        customClientName: customerId === "custom" ? customClientName.trim() : null,
+        date,
+        dueDate,
+        items,
+        discount,
+        taxRate,
+        currency: documentCurrency,
+        exchangeRateToBusinessCurrency: exchangeRate,
+      };
+      if (invoiceStatus !== savedInvoice.status) patch.status = invoiceStatus;
+      if (isLockedRecord) return setReasonPrompt({ kind: "amend", patch });
+      return runAmendment(patch, null);
+    }
 
     const newInv: Invoice = {
       id: "inv-" + Math.random().toString(36).substr(2, 9),
@@ -714,6 +758,26 @@ export default function InvoiceReceiptBuilder({
 
     const resolvedCustId = customerId === "custom" ? ("custom-" + customClientName.trim()) : customerId;
 
+    // A receipt is proof of payment: locked from the moment it's saved.
+    if (savedReceipt) {
+      if (!isAmending) {
+        return triggerToast(`Receipt ${savedReceipt.receiptNumber} is locked. Choose "Amend with a reason" to change it.`);
+      }
+      return setReasonPrompt({
+        kind: "amend",
+        patch: {
+          customerId: customerId === "custom" ? null : customerId,
+          customClientName: customerId === "custom" ? customClientName.trim() : null,
+          date,
+          description: receiptDesc,
+          amountPaid: receiptAmount,
+          paymentMethod,
+          currency: documentCurrency,
+          exchangeRateToBusinessCurrency: exchangeRate,
+        },
+      });
+    }
+
     const newRec: Receipt = {
       id: "rec-" + Math.random().toString(36).substr(2, 9),
       receiptNumber, // display-only hint - see handleAddReceipt in App.tsx
@@ -750,6 +814,78 @@ export default function InvoiceReceiptBuilder({
       : mode === "receipt"
       ? receipts.find((r) => r.receiptNumber === receiptNumber && r.businessId === currentBusiness.id)?.id
       : quotations.find((q) => q.quoteNumber === quoteNumber && q.businessId === currentBusiness.id)?.id;
+
+  const savedInvoice = mode === "invoice" ? invoices.find((inv) => inv.id === savedDocumentId) : undefined;
+  const savedReceipt = mode === "receipt" ? receipts.find((r) => r.id === savedDocumentId) : undefined;
+  const savedRecord = savedInvoice ?? savedReceipt;
+  // Invoices are a free working copy only while Draft; receipts are locked
+  // from the start. Must match server/documentIntegrity.ts.
+  const isLockedRecord = savedInvoice ? savedInvoice.status !== "Draft" : !!savedReceipt;
+  const isAmending = !!savedRecord && amendingId === savedRecord.id;
+  const savedNumber = savedInvoice?.invoiceNumber ?? savedReceipt?.receiptNumber;
+
+  // Applies an edit to the saved record. `reason` is null only for a Draft.
+  const runAmendment = async (patch: Record<string, unknown>, reason: string | null) => {
+    if (!savedRecord) return;
+    setIsSavingDocument(true);
+    try {
+      if (savedInvoice) {
+        if (!onAmendInvoice) throw new Error("Editing saved invoices isn't available here.");
+        await onAmendInvoice(savedInvoice.id, patch, reason);
+        triggerToast(reason ? `Invoice ${savedInvoice.invoiceNumber} amended. Your reason is saved in its change history.` : `Draft ${savedInvoice.invoiceNumber} saved.`);
+      } else if (savedReceipt) {
+        if (!onAmendReceipt || !reason) throw new Error("Editing saved receipts isn't available here.");
+        await onAmendReceipt(savedReceipt.id, patch, reason);
+        triggerToast(`Receipt ${savedReceipt.receiptNumber} amended. Your reason is saved in its change history.`);
+      }
+      setAmendingId(null);
+      setReasonPrompt(null);
+      setHistoryRefresh((n) => n + 1);
+    } catch (err) {
+      setReasonPrompt(null);
+      triggerToast(err instanceof ApiError || err instanceof Error ? err.message : "Couldn't save the change. Please try again.");
+    } finally {
+      setIsSavingDocument(false);
+    }
+  };
+
+  const runDeletion = async (reason: string | null) => {
+    if (!savedRecord) return;
+    setIsSavingDocument(true);
+    try {
+      if (savedInvoice) {
+        if (!onDeleteInvoice) throw new Error("Deleting saved invoices isn't available here.");
+        await onDeleteInvoice(savedInvoice.id, reason);
+        triggerToast(`Invoice ${savedInvoice.invoiceNumber} deleted.`);
+        api.documentNumbering.peek(currentBusiness.id, "invoice", "INV").then(setInvoiceNumber).catch(() => {});
+      } else if (savedReceipt) {
+        if (!onDeleteReceipt || !reason) throw new Error("Deleting saved receipts isn't available here.");
+        await onDeleteReceipt(savedReceipt.id, reason);
+        triggerToast(`Receipt ${savedReceipt.receiptNumber} deleted.`);
+        api.documentNumbering.peek(currentBusiness.id, "receipt", "REC").then(setReceiptNumber).catch(() => {});
+      }
+      setAmendingId(null);
+      setReasonPrompt(null);
+    } catch (err) {
+      setReasonPrompt(null);
+      triggerToast(err instanceof ApiError || err instanceof Error ? err.message : "Couldn't delete this document. Please try again.");
+    } finally {
+      setIsSavingDocument(false);
+    }
+  };
+
+  // Keeps what's on screen as the starting point for a brand-new document
+  // (with a freshly reserved number) instead of editing the saved one.
+  const startNewFromThis = () => {
+    setAmendingId(null);
+    if (mode === "invoice") {
+      setInvoiceStatus("Sent");
+      api.documentNumbering.peek(currentBusiness.id, "invoice", "INV").then(setInvoiceNumber).catch(() => {});
+    } else if (mode === "receipt") {
+      api.documentNumbering.peek(currentBusiness.id, "receipt", "REC").then(setReceiptNumber).catch(() => {});
+    }
+    triggerToast("Started a new document from this one - it will get its own number when you save.");
+  };
 
   const resolvedDocCustomer = customerId && customerId !== "custom" ? customers.find((c) => c.id === customerId) : undefined;
 
@@ -994,13 +1130,95 @@ export default function InvoiceReceiptBuilder({
           </div>
         )}
 
+        {reasonPrompt && savedRecord && (
+          <DocumentReasonModal
+            title={reasonPrompt.kind === "delete" ? `Delete ${savedNumber}?` : `Save your amendment to ${savedNumber}`}
+            message={
+              reasonPrompt.kind === "delete"
+                ? `Deleting removes this ${mode} from your records. A full copy of it is kept in the change history along with your reason.`
+                : `${savedNumber} is locked. Tell us why it's being changed - what changed is recorded next to your reason.`
+            }
+            confirmLabel={reasonPrompt.kind === "delete" ? "Delete with this reason" : "Save amendment"}
+            danger={reasonPrompt.kind === "delete"}
+            isWorking={isSavingDocument}
+            onCancel={() => setReasonPrompt(null)}
+            onConfirm={(reason) => (reasonPrompt.kind === "delete" ? runDeletion(reason) : runAmendment(reasonPrompt.patch ?? {}, reason))}
+          />
+        )}
+
         {/* key={activePaneTab} forces a remount on every pane switch so the
             fade-in animation replays instead of only firing once. */}
         <div key={activePaneTab} className="animate-fade-in">
             {/* PANE 1: Standard Document Info Form */}
             {activePaneTab === "builder" && (
           <form onSubmit={mode === "invoice" ? handleSaveInvoice : mode === "receipt" ? handleSaveReceipt : handleSaveQuotation} className="space-y-3.5 text-xs">
-            
+
+            {/* Saved-document lock panel: what's locked, how to change it, and the history */}
+            {savedRecord && (isLockedRecord || isAmending) && (
+              <div className={`rounded-2xl border p-4 space-y-3 text-left ${isAmending ? "bg-amber-50 border-amber-200" : "bg-slate-50 border-slate-200"}`}>
+                <div className="flex items-start gap-2.5">
+                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${isAmending ? "bg-amber-100 text-amber-700" : "bg-slate-200 text-slate-600"}`}>
+                    <Lock className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-black text-slate-900">
+                      {isAmending ? `Amending ${savedNumber}` : `${savedNumber} is locked`}
+                    </p>
+                    <p className="text-[11px] text-slate-500 leading-relaxed mt-0.5">
+                      {isAmending
+                        ? "Make your changes, then save. You'll be asked for a reason, which is kept permanently in the change history."
+                        : `Saved ${mode}s are locked so your records stay trustworthy. Changing or deleting one needs a written reason, kept permanently in its change history.`}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  {isAmending ? (
+                    <button
+                      type="button"
+                      onClick={() => setAmendingId(null)}
+                      className="bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-[11px] font-bold px-3 py-2 rounded-xl cursor-pointer transition-colors"
+                    >
+                      Cancel amending
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setAmendingId(savedRecord.id)}
+                        className="bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold px-3 py-2 rounded-xl cursor-pointer transition-colors inline-flex items-center gap-1.5"
+                      >
+                        <PencilSimple className="w-3.5 h-3.5" /> Amend with a reason
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setReasonPrompt({ kind: "delete" })}
+                        className="bg-white hover:bg-rose-50 border border-rose-200 text-rose-600 text-[11px] font-bold px-3 py-2 rounded-xl cursor-pointer transition-colors inline-flex items-center gap-1.5"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" /> Delete with a reason
+                      </button>
+                      <button
+                        type="button"
+                        onClick={startNewFromThis}
+                        className="bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-[11px] font-bold px-3 py-2 rounded-xl cursor-pointer transition-colors inline-flex items-center gap-1.5"
+                      >
+                        <Plus className="w-3.5 h-3.5" /> Start a new one from this
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Change history for any saved invoice/receipt */}
+            {savedRecord && (
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 text-left">
+                <p className="text-[10px] font-mono font-bold text-slate-450 tracking-wider uppercase flex items-center gap-1.5 mb-2">
+                  <History className="w-3.5 h-3.5" /> Change history
+                </p>
+                <DocumentHistoryList businessId={currentBusiness.id} documentId={savedRecord.id} refreshKey={historyRefresh} />
+              </div>
+            )}
+
             {/* COLLAPSIBLE ISSUER DETAILS BRAND CARD (Issued By) */}
             <div className="bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden shadow-sm text-left">
               <button
@@ -1190,7 +1408,9 @@ export default function InvoiceReceiptBuilder({
                   type="text"
                   value={mode === "invoice" ? invoiceNumber : mode === "receipt" ? receiptNumber : quoteNumber}
                   onChange={(e) => mode === "invoice" ? setInvoiceNumber(e.target.value) : mode === "receipt" ? setReceiptNumber(e.target.value) : setQuoteNumber(e.target.value)}
-                  className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 font-mono"
+                  readOnly={!!savedRecord}
+                  title={savedRecord ? "A saved document's number identifies the record and can't be changed." : undefined}
+                  className={`w-full border border-slate-200 rounded-xl px-3 py-2.5 outline-none font-mono ${savedRecord ? "bg-slate-100 text-slate-500 cursor-not-allowed" : "bg-white text-slate-800 focus:border-emerald-500"}`}
                 />
               </div>
               <div>
@@ -1374,7 +1594,8 @@ export default function InvoiceReceiptBuilder({
               </div>
             )}
 
-            {/* Save Buttons */}
+            {/* Save Buttons - hidden for a locked saved document until "Amend with a reason" is chosen */}
+            {!(savedRecord && isLockedRecord && !isAmending) && (
             <button
               type="submit"
               disabled={isSavingDocument}
@@ -1385,8 +1606,9 @@ export default function InvoiceReceiptBuilder({
               ) : (
                 <Check className="w-4 h-4" />
               )}
-              {isSavingDocument ? "Saving..." : `Save & Register ${mode}`}
+              {isSavingDocument ? "Saving..." : isAmending ? "Save amendment" : savedRecord ? "Save changes" : `Save & Register ${mode}`}
             </button>
+            )}
           </form>
         )}
 

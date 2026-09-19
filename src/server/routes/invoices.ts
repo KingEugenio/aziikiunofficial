@@ -8,6 +8,15 @@ import { isEmailConfigured, sendTransactionalEmail } from "../email/resendClient
 import { renderInvoiceEmailHtml } from "../email/documentTemplates";
 import { checkLowStockAndNotify } from "../notifications/lowStockCheck";
 import { resolveBusinessCurrency } from "./crudFactory";
+import {
+  diffFields,
+  evaluateInvoiceChange,
+  logAmendmentFailed,
+  logDocumentChange,
+  parseReason,
+  respondNumberLocked,
+  respondReasonRequired,
+} from "../documentIntegrity";
 
 const LIST_CACHE_TTL_SECONDS = 45;
 
@@ -251,6 +260,66 @@ invoicesRouter.patch("/:id", async (req: Request, res: Response) => {
     return;
   }
 
+  // Record integrity (see documentIntegrity.ts): past Draft, an invoice can
+  // still move through its normal life without ceremony, but any other change
+  // needs a written reason, which is logged BEFORE anything is changed.
+  const { changeReason, ...fields } = input;
+  const verdict = evaluateInvoiceChange(existing, fields);
+  if (verdict.numberChangeBlocked) {
+    respondNumberLocked(res, "invoice");
+    return;
+  }
+  const reason = parseReason(changeReason);
+  if (verdict.needsReason && !reason) {
+    respondReasonRequired(res, "invoice");
+    return;
+  }
+
+  const { data: itemsBefore } = await supabase.from("invoice_items").select("*").eq("invoice_id", existing.id);
+  const itemList = (list: any[]) =>
+    [...list]
+      .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+      .map((i) => ({ description: i.description, quantity: Number(i.quantity), rate: Number(i.rate) }));
+
+  let loggedChange = false;
+  if (verdict.locked) {
+    const pairs: Array<[string, unknown, unknown]> = [];
+    const track = (key: string, before: unknown, after: unknown) => {
+      if (after !== undefined) pairs.push([key, before, after]);
+    };
+    track("customerId", existing.customer_id, fields.customerId);
+    track("customClientName", existing.custom_client_name, fields.customClientName);
+    track("date", existing.date, fields.date);
+    track("dueDate", existing.due_date, fields.dueDate);
+    track("discount", Number(existing.discount), fields.discount);
+    track("taxRate", Number(existing.tax_rate), fields.taxRate);
+    track("status", existing.status, fields.status);
+    track("partialPaidAmount", Number(existing.partial_paid_amount), fields.partialPaidAmount);
+    track("currency", existing.currency, fields.currency);
+    track("exchangeRateToBusinessCurrency", Number(existing.exchange_rate_to_business_currency), fields.exchangeRateToBusinessCurrency);
+    track("items", itemList(itemsBefore ?? []), fields.items ? itemList(fields.items as any[]) : undefined);
+    const changes = diffFields(pairs);
+
+    if (Object.keys(changes).length > 0) {
+      try {
+        await logDocumentChange(supabase, {
+          businessId: existing.business_id,
+          userId,
+          documentType: "invoice",
+          documentId: existing.id,
+          documentNumber: existing.invoice_number,
+          action: verdict.needsReason ? "amended" : "status_changed",
+          reason: verdict.needsReason ? reason : null,
+          changes,
+        });
+        loggedChange = true;
+      } catch (err) {
+        res.status(500).json({ error: err instanceof Error ? err.message : "Couldn't save the change history." });
+        return;
+      }
+    }
+  }
+
   const row: Record<string, unknown> = {};
   if (input.invoiceNumber !== undefined) row.invoice_number = input.invoiceNumber;
   if (input.customerId !== undefined) row.customer_id = input.customerId ?? null;
@@ -270,6 +339,13 @@ invoicesRouter.patch("/:id", async (req: Request, res: Response) => {
       : { data: existing, error: null };
 
   if (updateError) {
+    if (loggedChange) {
+      await logAmendmentFailed(
+        supabase,
+        { businessId: existing.business_id, userId, documentType: "invoice", documentId: existing.id, documentNumber: existing.invoice_number },
+        updateError.message
+      );
+    }
     res.status(400).json({ error: updateError.message });
     return;
   }
@@ -295,8 +371,7 @@ invoicesRouter.patch("/:id", async (req: Request, res: Response) => {
     }
     items = insertedItems ?? [];
   } else {
-    const { data: existingItems } = await supabase.from("invoice_items").select("*").eq("invoice_id", existing.id);
-    items = existingItems ?? [];
+    items = itemsBefore ?? [];
   }
 
   if (input.status === "Paid" && existing.status !== "Paid") {
@@ -316,6 +391,47 @@ invoicesRouter.patch("/:id", async (req: Request, res: Response) => {
 invoicesRouter.delete("/:id", async (req: Request, res: Response) => {
   const userId = req.user!.id;
   const supabase = req.supabase!;
+
+  const { data: existing, error: existingError } = await supabase
+    .from("invoices")
+    .select("*")
+    .eq("id", req.params.id)
+    .maybeSingle();
+  if (existingError) {
+    res.status(400).json({ error: existingError.message });
+    return;
+  }
+  if (!existing) {
+    res.status(404).json({ error: "Not found" });
+    return;
+  }
+
+  // A Draft was never issued, so it can simply be thrown away. Anything past
+  // Draft is a record: deleting it needs a reason, and the log keeps a full
+  // snapshot (the entry outlives the invoice - see migration 0060).
+  if (existing.status !== "Draft") {
+    const reason = parseReason(req.body?.changeReason);
+    if (!reason) {
+      respondReasonRequired(res, "invoice");
+      return;
+    }
+    const { data: snapshotItems } = await supabase.from("invoice_items").select("*").eq("invoice_id", existing.id);
+    try {
+      await logDocumentChange(supabase, {
+        businessId: existing.business_id,
+        userId,
+        documentType: "invoice",
+        documentId: existing.id,
+        documentNumber: existing.invoice_number,
+        action: "deleted",
+        reason,
+        changes: { snapshot: fromRow(existing, snapshotItems ?? []) },
+      });
+    } catch (err) {
+      res.status(500).json({ error: err instanceof Error ? err.message : "Couldn't save the change history." });
+      return;
+    }
+  }
 
   const { data, error } = await supabase
     .from("invoices")

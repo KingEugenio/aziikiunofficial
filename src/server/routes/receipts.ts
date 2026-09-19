@@ -5,6 +5,14 @@ import { cached, invalidate } from "../redis";
 import { isEmailConfigured, sendTransactionalEmail } from "../email/resendClient";
 import { renderReceiptEmailHtml } from "../email/documentTemplates";
 import { resolveBusinessCurrency } from "./crudFactory";
+import {
+  diffFields,
+  logAmendmentFailed,
+  logDocumentChange,
+  parseReason,
+  respondNumberLocked,
+  respondReasonRequired,
+} from "../documentIntegrity";
 
 const LIST_CACHE_TTL_SECONDS = 45;
 
@@ -134,7 +142,34 @@ receiptsRouter.patch("/:id", async (req: Request, res: Response) => {
 
   const userId = req.user!.id;
   const supabase = req.supabase!;
-  const input = parsed.data;
+  const { changeReason, ...input } = parsed.data;
+
+  // A receipt is proof of payment, so it is locked from the moment it exists
+  // (see documentIntegrity.ts): any change needs a written reason, is logged
+  // BEFORE it is applied, and the receipt number can never change.
+  const { data: existing, error: existingError } = await supabase
+    .from("receipts")
+    .select("*")
+    .eq("id", req.params.id)
+    .maybeSingle();
+  if (existingError) {
+    res.status(400).json({ error: existingError.message });
+    return;
+  }
+  if (!existing) {
+    res.status(404).json({ error: "Not found" });
+    return;
+  }
+  if (input.receiptNumber !== undefined && input.receiptNumber !== existing.receipt_number) {
+    respondNumberLocked(res, "receipt");
+    return;
+  }
+  const reason = parseReason(changeReason);
+  if (!reason) {
+    respondReasonRequired(res, "receipt");
+    return;
+  }
+
   const row: Record<string, unknown> = {};
   if (input.customerId !== undefined) row.customer_id = input.customerId ?? null;
   if (input.customClientName !== undefined) row.custom_client_name = input.customClientName ?? null;
@@ -152,6 +187,41 @@ receiptsRouter.patch("/:id", async (req: Request, res: Response) => {
     return;
   }
 
+  const pairs: Array<[string, unknown, unknown]> = [];
+  const track = (key: string, before: unknown, after: unknown) => {
+    if (after !== undefined) pairs.push([key, before, after]);
+  };
+  track("customerId", existing.customer_id, input.customerId);
+  track("customClientName", existing.custom_client_name, input.customClientName);
+  track("invoiceId", existing.invoice_id, input.invoiceId);
+  track("date", existing.date, input.date);
+  track("description", existing.description, input.description);
+  track("amountPaid", Number(existing.amount_paid), input.amountPaid);
+  track("paymentMethod", existing.payment_method, input.paymentMethod);
+  track("currency", existing.currency, input.currency);
+  track("exchangeRateToBusinessCurrency", Number(existing.exchange_rate_to_business_currency), input.exchangeRateToBusinessCurrency);
+  const changes = diffFields(pairs);
+  if (Object.keys(changes).length === 0) {
+    res.status(400).json({ error: "Nothing was changed." });
+    return;
+  }
+
+  try {
+    await logDocumentChange(supabase, {
+      businessId: existing.business_id,
+      userId,
+      documentType: "receipt",
+      documentId: existing.id,
+      documentNumber: existing.receipt_number,
+      action: "amended",
+      reason,
+      changes,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Couldn't save the change history." });
+    return;
+  }
+
   const { data, error } = await supabase
     .from("receipts")
     .update(row)
@@ -160,6 +230,11 @@ receiptsRouter.patch("/:id", async (req: Request, res: Response) => {
     .maybeSingle();
 
   if (error) {
+    await logAmendmentFailed(
+      supabase,
+      { businessId: existing.business_id, userId, documentType: "receipt", documentId: existing.id, documentNumber: existing.receipt_number },
+      error.message
+    );
     res.status(400).json({ error: error.message });
     return;
   }
@@ -175,6 +250,41 @@ receiptsRouter.patch("/:id", async (req: Request, res: Response) => {
 receiptsRouter.delete("/:id", async (req: Request, res: Response) => {
   const userId = req.user!.id;
   const supabase = req.supabase!;
+
+  const { data: existing, error: existingError } = await supabase
+    .from("receipts")
+    .select("*")
+    .eq("id", req.params.id)
+    .maybeSingle();
+  if (existingError) {
+    res.status(400).json({ error: existingError.message });
+    return;
+  }
+  if (!existing) {
+    res.status(404).json({ error: "Not found" });
+    return;
+  }
+
+  const reason = parseReason(req.body?.changeReason);
+  if (!reason) {
+    respondReasonRequired(res, "receipt");
+    return;
+  }
+  try {
+    await logDocumentChange(supabase, {
+      businessId: existing.business_id,
+      userId,
+      documentType: "receipt",
+      documentId: existing.id,
+      documentNumber: existing.receipt_number,
+      action: "deleted",
+      reason,
+      changes: { snapshot: fromRow(existing) },
+    });
+  } catch (err) {
+    res.status(500).json({ error: err instanceof Error ? err.message : "Couldn't save the change history." });
+    return;
+  }
 
   const { data, error } = await supabase
     .from("receipts")
