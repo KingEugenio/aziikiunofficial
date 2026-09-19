@@ -6,7 +6,14 @@ import { z } from "zod";
 // an insecure or empty value.
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
-  PORT: z.coerce.number().int().positive().default(5173),
+  // Only server.ts (the long-running process) listens on a port. On Vercel the
+  // API is a serverless function that never does, and the platform can hand
+  // it an empty or "0" PORT - which must not stop the API from starting. So
+  // anything that isn't a positive whole number just falls back to the default.
+  PORT: z.preprocess((value) => {
+    const n = Number(value);
+    return value !== undefined && value !== "" && Number.isInteger(n) && n > 0 ? n : undefined;
+  }, z.number().default(5173)),
 
   SUPABASE_URL: z.string().url("SUPABASE_URL must be a valid URL"),
   SUPABASE_ANON_KEY: z.string().min(20, "SUPABASE_ANON_KEY is missing or looks truncated"),
