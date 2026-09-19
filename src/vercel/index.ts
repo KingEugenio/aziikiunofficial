@@ -35,15 +35,13 @@ let appPromise: Promise<Express> | null = null;
 
 function getApp(): Promise<Express> {
   if (!appPromise) {
-    appPromise = import("../server/app")
-      .then(({ createApp }) => createApp())
-      .catch((err) => {
-        // Let the next request try again too, in case env vars get fixed
-        // without a redeploy (e.g. a platform that hot-reloads env changes) -
-        // don't permanently cache a failure.
-        appPromise = null;
-        throw err;
-      });
+    // A failure is cached on purpose: retrying is worse than useless. In the
+    // bundled function a module whose top level threw is marked as already
+    // initialised, so a second attempt would hand back an empty `env` and
+    // answer with a baffling "Cannot read properties of undefined" instead of
+    // the real cause. Vercel only applies changed env vars on a redeploy
+    // (a fresh function), so the original message stays accurate until then.
+    appPromise = import("../server/app").then(({ createApp }) => createApp());
   }
   return appPromise;
 }

@@ -7079,10 +7079,7 @@ import "dotenv/config";
 var appPromise = null;
 function getApp() {
   if (!appPromise) {
-    appPromise = Promise.resolve().then(() => (init_app(), app_exports)).then(({ createApp: createApp2 }) => createApp2()).catch((err) => {
-      appPromise = null;
-      throw err;
-    });
+    appPromise = Promise.resolve().then(() => (init_app(), app_exports)).then(({ createApp: createApp2 }) => createApp2());
   }
   return appPromise;
 }
