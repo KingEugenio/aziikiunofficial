@@ -14,7 +14,7 @@ const smartBot: Bot = (s) => {
   switch (c.kind) {
     case "opportunity":
       return has("buy") && (c.cashflow! / c.cost!) >= 0.02 ? "buy" : "pass";
-    case "doodad": return "pass";
+    case "splurge": return "pass";
     case "emergency": return has("pay") ? "pay" : "loan";
     case "learn": return has("take") ? "take" : "pass";
     case "scam": return has("ask") ? "ask" : "pass";
@@ -26,7 +26,7 @@ const smartBot: Bot = (s) => {
 const spenderBot: Bot = (s) => {
   const c = s.pending!;
   const ids = availableChoices(s).map((x) => x.id);
-  if (c.kind === "doodad") return ids.includes("credit") ? "credit" : ids.includes("buy") ? "buy" : "pass";
+  if (c.kind === "splurge") return ids.includes("credit") ? "credit" : ids.includes("buy") ? "buy" : "pass";
   if (c.kind === "scam") return ids.includes("invest") ? "invest" : "pass";
   if (c.kind === "opportunity") return "pass";
   if (c.kind === "emergency") return ids.includes("pay") ? "pay" : "loan";
@@ -46,7 +46,7 @@ function play(professionId: string, seed: number, bot: Bot): GameState {
   return s;
 }
 
-describe("Cashflow Quadrant Challenge engine", () => {
+describe("Four Ways to Earn engine", () => {
   it("is deterministic: the same seed and choices give the same game", () => {
     const a = play("teacher", 42, smartBot);
     const b = play("teacher", 42, smartBot);
@@ -81,7 +81,7 @@ describe("Cashflow Quadrant Challenge engine", () => {
     }
   });
 
-  it("a deal discount grows with financial IQ and is capped", () => {
+  it("a deal discount grows with money smarts and is capped", () => {
     expect(dealDiscount(0)).toBe(0);
     expect(dealDiscount(2)).toBeCloseTo(0.06);
     expect(dealDiscount(50)).toBe(0.15);

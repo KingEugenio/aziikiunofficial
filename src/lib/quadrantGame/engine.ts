@@ -1,10 +1,10 @@
-// The Cashflow Quadrant Challenge: a single-player money game, one month per
-// turn. It is an original Aziiki learning game built around the idea from
-// Robert Kiyosaki's "Rich Dad's CASHFLOW Quadrant": people earn as an
-// Employee (E), Self-employed (S), Business owner (B) or Investor (I), and you
-// reach financial freedom when income from your assets (the B and I side)
-// covers your monthly expenses. It is not the CASHFLOW board game and is not
-// affiliated with Robert Kiyosaki or The Rich Dad Company.
+// Four Ways to Earn: a single-player money game, one month per turn. It is an
+// original Aziiki learning game. The idea it teaches (people earn as an
+// employee, on their own account, as the owner of a business, or as an
+// investor, and you are financially free when income from assets covers your
+// expenses) is a general money-education idea explored in several books; the
+// rules, cards, names and numbers here are all Aziiki's own. It is not based on
+// any board game and uses no one's brand names, card names or artwork.
 //
 // Everything here is pure: the same seed and the same choices always give the
 // same game, and a game state is plain JSON so it can be saved and restored.
@@ -36,7 +36,7 @@ export const BANKRUPTCY_MULTIPLE = 8;
 const IQ_DISCOUNT_PER_POINT = 0.03;
 const IQ_DISCOUNT_CAP = 0.15;
 
-export type CardKind = "opportunity" | "doodad" | "emergency" | "learn" | "windfall" | "scam" | "illness" | "raise" | "setback";
+export type CardKind = "opportunity" | "splurge" | "emergency" | "learn" | "windfall" | "scam" | "illness" | "raise" | "setback";
 
 export interface Card {
   id: string;
@@ -48,12 +48,12 @@ export interface Card {
   /** Monthly cash it pays (opportunity). */
   cashflow?: number;
   quadrant?: "B" | "I";
-  /** Monthly payment and length if bought on credit (doodad). */
+  /** Monthly payment and length if bought on credit (splurge). */
   creditMonthly?: number;
   creditMonths?: number;
   /** Learn cards. */
   incomeBoost?: number;
-  iq?: number;
+  smarts?: number;
   /** Windfall amount. */
   amount?: number;
 }
@@ -82,8 +82,8 @@ export interface LogEntry {
 
 export interface Stats {
   assetsBought: number;
-  doodadsBought: number;
-  doodadsSkipped: number;
+  splurgesBought: number;
+  splurgesSkipped: number;
   scamsLost: number;
   scamsAvoided: number;
   loansTaken: number;
@@ -99,7 +99,7 @@ export interface GameState {
   cash: number;
   jobIncome: number;
   livingExpenses: number;
-  iq: number;
+  smarts: number;
   holdings: Holding[];
   liabilities: Liability[];
   loan: number;
@@ -131,14 +131,14 @@ const OPPORTUNITIES: OpportunityDef[] = [
   { id: "op-land", title: "Land lease", text: "Buy a plot and lease it to a farmer for a fixed monthly fee.", cost: 8000, cashflow: 290, quadrant: "I" },
 ];
 
-interface DoodadDef { id: string; title: string; text: string; cost: number; creditMonthly?: number; creditMonths?: number }
+interface SplurgeDef { id: string; title: string; text: string; cost: number; creditMonthly?: number; creditMonths?: number }
 
-const DOODADS: DoodadDef[] = [
-  { id: "dd-phone", title: "The newest phone", text: "Everyone has the latest model. Yours works fine, but this one has a better camera.", cost: 900, creditMonthly: 80, creditMonths: 12 },
-  { id: "dd-car", title: "Nicer car on finance", text: "Your car runs, but a newer one would look better outside the office.", cost: 6000, creditMonthly: 260, creditMonths: 30 },
-  { id: "dd-clothes", title: "Designer outfit", text: "A sale on expensive clothes you don't need.", cost: 450 },
-  { id: "dd-party", title: "Lavish family event", text: "Relatives expect a big celebration, and you'd like to impress them.", cost: 1600 },
-  { id: "dd-tv", title: "Giant TV on credit", text: "A bigger screen, with small monthly payments and no money down.", cost: 1400, creditMonthly: 90, creditMonths: 18 },
+const SPLURGES: SplurgeDef[] = [
+  { id: "sp-phone", title: "The newest phone", text: "Everyone has the latest model. Yours works fine, but this one has a better camera.", cost: 900, creditMonthly: 80, creditMonths: 12 },
+  { id: "sp-car", title: "Nicer car on finance", text: "Your car runs, but a newer one would look better outside the office.", cost: 6000, creditMonthly: 260, creditMonths: 30 },
+  { id: "sp-clothes", title: "Designer outfit", text: "A sale on expensive clothes you don't need.", cost: 450 },
+  { id: "sp-party", title: "Lavish family event", text: "Relatives expect a big celebration, and you'd like to impress them.", cost: 1600 },
+  { id: "sp-tv", title: "Giant TV on credit", text: "A bigger screen, with small monthly payments and no money down.", cost: 1400, creditMonthly: 90, creditMonths: 18 },
 ];
 
 const EMERGENCIES: Array<{ id: string; title: string; text: string; cost: number }> = [
@@ -147,10 +147,10 @@ const EMERGENCIES: Array<{ id: string; title: string; text: string; cost: number
   { id: "em-fees", title: "School fees due", text: "Fees are due this week and they can't wait.", cost: 750 },
 ];
 
-const LEARN: Array<{ id: string; title: string; text: string; cost: number; incomeBoost: number; iq: number }> = [
-  { id: "ln-sales", title: "Sales skills course", text: "A short course on selling and negotiating. It pays off in whatever you do.", cost: 600, incomeBoost: 0.08, iq: 1 },
-  { id: "ln-books", title: "Library book on money", text: "You borrow a book about how money works. It's free, and it's good.", cost: 0, incomeBoost: 0, iq: 1 },
-  { id: "ln-statements", title: "Financial statements workshop", text: "You learn to read an income statement and a balance sheet.", cost: 450, incomeBoost: 0, iq: 2 },
+const LEARN: Array<{ id: string; title: string; text: string; cost: number; incomeBoost: number; smarts: number }> = [
+  { id: "ln-sales", title: "Sales skills course", text: "A short course on selling and negotiating. It pays off in whatever you do.", cost: 600, incomeBoost: 0.08, smarts: 1 },
+  { id: "ln-books", title: "Library book on money", text: "You borrow a book about how money works. It's free, and it's good.", cost: 0, incomeBoost: 0, smarts: 1 },
+  { id: "ln-statements", title: "Financial statements workshop", text: "You learn to read an income statement and a balance sheet.", cost: 450, incomeBoost: 0, smarts: 2 },
 ];
 
 const WINDFALLS: Array<{ id: string; title: string; text: string; amount: number }> = [
@@ -181,8 +181,8 @@ export function professionOf(state: GameState): Profession {
   return PROFESSIONS.find((p) => p.id === state.professionId) ?? PROFESSIONS[0];
 }
 
-export function dealDiscount(iq: number): number {
-  return Math.min(IQ_DISCOUNT_CAP, iq * IQ_DISCOUNT_PER_POINT);
+export function dealDiscount(smarts: number): number {
+  return Math.min(IQ_DISCOUNT_CAP, smarts * IQ_DISCOUNT_PER_POINT);
 }
 
 export interface Summary {
@@ -229,7 +229,7 @@ export function summarize(state: GameState): Summary {
     freedom: totalExpenses > 0 ? passiveIncome / totalExpenses : 0,
     assetsTotal: state.cash + state.holdings.reduce((n, h) => n + h.cost, 0),
     liabilitiesTotal: state.loan + state.liabilities.reduce((n, l) => n + l.monthly * l.monthsLeft, 0),
-    discount: dealDiscount(state.iq),
+    discount: dealDiscount(state.smarts),
   };
 }
 
@@ -237,7 +237,7 @@ export function summarize(state: GameState): Summary {
 type Weighted = Array<[CardKind, number]>;
 const WEIGHTS: Weighted = [
   ["opportunity", 38],
-  ["doodad", 18],
+  ["splurge", 18],
   ["emergency", 14],
   ["learn", 10],
   ["windfall", 6],
@@ -282,11 +282,11 @@ function buildCard(draft: GameState, kind: CardKind): Card {
   switch (kind) {
     case "opportunity": {
       const d = pick(draft, OPPORTUNITIES);
-      const discount = dealDiscount(draft.iq);
+      const discount = dealDiscount(draft.smarts);
       return { id: d.id, kind, title: d.title, text: d.text, cost: roundTo10(d.cost * (1 - discount)), cashflow: d.cashflow, quadrant: d.quadrant };
     }
-    case "doodad": {
-      const d = pick(draft, DOODADS);
+    case "splurge": {
+      const d = pick(draft, SPLURGES);
       return { id: d.id, kind, title: d.title, text: d.text, cost: d.cost, creditMonthly: d.creditMonthly, creditMonths: d.creditMonths };
     }
     case "emergency": {
@@ -295,7 +295,7 @@ function buildCard(draft: GameState, kind: CardKind): Card {
     }
     case "learn": {
       const d = pick(draft, LEARN);
-      return { id: d.id, kind, title: d.title, text: d.text, cost: d.cost, incomeBoost: d.incomeBoost, iq: d.iq };
+      return { id: d.id, kind, title: d.title, text: d.text, cost: d.cost, incomeBoost: d.incomeBoost, smarts: d.smarts };
     }
     case "windfall": {
       const d = pick(draft, WINDFALLS);
@@ -336,7 +336,7 @@ export function availableChoices(state: GameState): AvailableChoice[] {
           : { id: "borrow", label: `Borrow ${cost - state.cash} to buy it`, hint: `Loans cost ${Math.round(LOAN_RATE * 100)}% a month`, tone: "danger" },
         { id: "pass", label: "Pass on it", tone: "neutral" },
       ];
-    case "doodad": {
+    case "splurge": {
       const out: AvailableChoice[] = [];
       if (canPay) out.push({ id: "buy", label: `Buy it for ${cost}`, tone: "danger" });
       if (c.creditMonthly) out.push({ id: "credit", label: `Buy on credit: ${c.creditMonthly} a month for ${c.creditMonths} months`, tone: "danger" });
@@ -404,9 +404,9 @@ export function respond(state: GameState, choiceId: string): GameState {
       say(d, `You bought "${card.title}". It pays you ${card.cashflow} a month.`, "good");
       break;
     }
-    case "doodad": {
-      if (choiceId === "pass") { d.stats.doodadsSkipped += 1; say(d, `You skipped "${card.title}" and kept your money.`, "good"); break; }
-      d.stats.doodadsBought += 1;
+    case "splurge": {
+      if (choiceId === "pass") { d.stats.splurgesSkipped += 1; say(d, `You skipped "${card.title}" and kept your money.`, "good"); break; }
+      d.stats.splurgesBought += 1;
       if (choiceId === "credit") {
         d.liabilities.push({ uid: d.nextUid++, name: card.title, monthly: card.creditMonthly!, monthsLeft: card.creditMonths! });
         say(d, `You bought "${card.title}" on credit. It takes ${card.creditMonthly} out of your pocket every month.`, "bad");
@@ -429,7 +429,7 @@ export function respond(state: GameState, choiceId: string): GameState {
     case "learn": {
       if (choiceId === "pass") { say(d, `You passed on "${card.title}".`, "info"); break; }
       d.cash -= cost;
-      d.iq += card.iq ?? 0;
+      d.smarts += card.smarts ?? 0;
       d.stats.coursesTaken += 1;
       if (card.incomeBoost) d.jobIncome = Math.round(d.jobIncome * (1 + card.incomeBoost));
       say(d, `You learned something from "${card.title}". You'll spot better deals now.`, "good");
@@ -445,7 +445,7 @@ export function respond(state: GameState, choiceId: string): GameState {
         d.stats.scamsLost += 1;
         say(d, `You sent ${cost} and never heard back. Promises of guaranteed fast returns are usually scams.`, "bad");
       } else if (choiceId === "ask") {
-        d.iq += 1;
+        d.smarts += 1;
         d.stats.scamsAvoided += 1;
         say(d, SCAM_ASK_FEEDBACK, "good");
       } else {
@@ -527,7 +527,7 @@ export function newGame(professionId: string, seed: number): GameState {
     cash: p.savings,
     jobIncome: p.income,
     livingExpenses: p.expenses,
-    iq: 0,
+    smarts: 0,
     holdings: [],
     liabilities: [],
     loan: 0,
@@ -538,7 +538,7 @@ export function newGame(professionId: string, seed: number): GameState {
     sickThisMonth: false,
     status: "playing",
     log: [],
-    stats: { assetsBought: 0, doodadsBought: 0, doodadsSkipped: 0, scamsLost: 0, scamsAvoided: 0, loansTaken: 0, coursesTaken: 0 },
+    stats: { assetsBought: 0, splurgesBought: 0, splurgesSkipped: 0, scamsLost: 0, scamsAvoided: 0, loansTaken: 0, coursesTaken: 0 },
   };
   d.pending = drawCard(d);
   return d;
@@ -563,10 +563,10 @@ export function reflections(state: GameState): Reflection[] {
   } else {
     out.push({ text: "None of your income came from assets, so it all depended on you showing up. Getting even one asset early makes every later month easier.", lessonId: "rd-assets-liabilities" });
   }
-  if (state.stats.doodadsBought >= 3) {
-    out.push({ text: `You bought ${state.stats.doodadsBought} things that took money out of your pocket. Each one delayed the day your assets covered your expenses.`, lessonId: "rd-assets-liabilities" });
-  } else if (state.stats.doodadsSkipped >= 3) {
-    out.push({ text: `You skipped ${state.stats.doodadsSkipped} tempting purchases. That kept money working for you instead.`, lessonId: "pm-wealth-you-dont-see" });
+  if (state.stats.splurgesBought >= 3) {
+    out.push({ text: `You bought ${state.stats.splurgesBought} things that took money out of your pocket. Each one delayed the day your assets covered your expenses.`, lessonId: "rd-assets-liabilities" });
+  } else if (state.stats.splurgesSkipped >= 3) {
+    out.push({ text: `You skipped ${state.stats.splurgesSkipped} tempting purchases. That kept money working for you instead.`, lessonId: "pm-wealth-you-dont-see" });
   }
   if (state.stats.scamsLost > 0) {
     out.push({ text: "You lost money to an offer that promised fast, guaranteed returns. Ask how it makes money and who has done it before, every time.", lessonId: "bb-guard-treasure" });
@@ -584,7 +584,7 @@ export function reflections(state: GameState): Reflection[] {
   } else if (state.holdings.length > 0) {
     out.push({ text: "All your assets came from one side. Businesses pay more but carry risk, investments pay less but are steadier. A mix is safer.", lessonId: "cq-four-quadrants" });
   }
-  if (state.stats.coursesTaken === 0 && state.iq === 0) {
+  if (state.stats.coursesTaken === 0 && state.smarts === 0) {
     out.push({ text: "You never learned anything new. Even free lessons gave better deals to people who took them.", lessonId: "rd-work-to-learn" });
   }
   return out.slice(0, 5);

@@ -31,7 +31,7 @@ import { useRealtimeConfigSync } from "./lib/realtimeConfigSync";
 const PersonalWorkspace = lazy(() => import("./components/PersonalWorkspace"));
 const InvoiceReceiptBuilder = lazy(() => import("./components/InvoiceReceiptBuilder"));
 const NetWorthInvestments = lazy(() => import("./components/NetWorthInvestments"));
-const CashflowQuadrantGame = lazy(() => import("./components/CashflowQuadrantGame"));
+const FourWaysToEarnGame = lazy(() => import("./components/FourWaysToEarnGame"));
 const FinancialReports = lazy(() => import("./components/FinancialReports"));
 const AppGuide = lazy(() => import("./components/AppGuide"));
 const AdMonetizationHub = lazy(() => import("./components/AdMonetizationHub"));
@@ -133,7 +133,7 @@ export default function App() {
     billing: "Billing & PDFs",
     crm: "Customer CRM",
     wealth: "Wealth & Goals",
-    game: "Cashflow Game",
+    game: "Money Game",
     stock: "Warehouse Stock",
     purchaseOrders: "Purchase Orders",
     team: "Team",
@@ -170,7 +170,7 @@ export default function App() {
     // stale deep links / persisted state, not just hidden nav buttons).
     const flagForTab: Record<string, string> = {
       wealth: "net_worth_investments",
-      game: "cashflow_quadrant_game",
+      game: "four_ways_game",
       monetize: "ad_monetization_hub",
       stock: "inventory_management",
       purchaseOrders: "purchase_orders",
@@ -2028,8 +2028,8 @@ export default function App() {
             </button>
             )}
 
-            {/* Cashflow Quadrant Challenge: Phase 2 learning game. Toggle via admin portal -> cashflow_quadrant_game. */}
-            {isEnabled("cashflow_quadrant_game") && (
+            {/* Four Ways to Earn: Phase 2 learning game. Toggle via admin portal -> four_ways_game. */}
+            {isEnabled("four_ways_game") && (
             <button
               id="tab-game-btn"
               onClick={() => changeTab("game")}
@@ -2039,7 +2039,7 @@ export default function App() {
  : "text-slate-600 hover:bg-slate-100"
  }`}
             >
-              <GameController className="w-4 h-4 shrink-0" /> Cashflow Game
+              <GameController className="w-4 h-4 shrink-0" /> Money Game
             </button>
             )}
 
@@ -3182,14 +3182,14 @@ export default function App() {
                       focusLessonId={focusLessonId}
                       onFocusLessonHandled={() => setFocusLessonId(null)}
                       onGoToTab={goToLessonTab}
-                      gameEnabled={isEnabled("cashflow_quadrant_game")}
+                      gameEnabled={isEnabled("four_ways_game")}
                     />
                   </Suspense>
                 )}
 
-                {isEnabled("cashflow_quadrant_game") && activeTab === "game" && (
+                {isEnabled("four_ways_game") && activeTab === "game" && (
                   <Suspense fallback={<SkeletonDashboard />}>
-                    <CashflowQuadrantGame currencySymbol={currencySymbol} onOpenLesson={openLesson} />
+                    <FourWaysToEarnGame currencySymbol={currencySymbol} onOpenLesson={openLesson} />
                   </Suspense>
                 )}
 

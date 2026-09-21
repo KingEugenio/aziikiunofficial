@@ -8,7 +8,7 @@ interface BookLibraryProps {
   onFocusHandled?: () => void;
   /** Sends the person to a screen a lesson suggests trying. */
   onGoToTab?: (tab: LessonTab) => void;
-  /** The Cashflow Quadrant Challenge is a Phase 2 feature; hide links to it when it's off. */
+  /** The Four Ways to Earn game is a Phase 2 feature; hide links to it when it's off. */
   gameEnabled?: boolean;
 }
 
@@ -20,7 +20,7 @@ const TAB_LABEL: Record<LessonTab, string> = {
   stock: "Warehouse Stock",
   purchaseOrders: "Purchase Orders",
   reports: "Reports",
-  game: "the Cashflow Quadrant Challenge",
+  game: "Four Ways to Earn",
 };
 
 export default function BookLibrary({ focusLessonId, onFocusHandled, onGoToTab, gameEnabled = false }: BookLibraryProps) {
@@ -180,7 +180,7 @@ export default function BookLibrary({ focusLessonId, onFocusHandled, onGoToTab, 
       </ul>
 
       <p className="text-[10px] text-slate-400 leading-relaxed">
-        These are short summaries in Aziiki's own words, not excerpts, and they're no substitute for reading the books themselves. They are learning notes, not financial, tax or legal advice.
+        Each lesson is written by Aziiki in its own words to explain an idea, and names the book the idea comes from so you can read it for yourself. The books are not reproduced here, and their authors and publishers are not affiliated with or endorsing Aziiki. Book titles belong to their owners. These are learning notes, not financial, tax or legal advice.
       </p>
     </div>
   );

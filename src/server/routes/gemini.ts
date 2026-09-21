@@ -3,6 +3,7 @@ import { z } from "zod";
 import { hasGeminiKeyConfigured, generateContentWithFailover } from "../geminiClient";
 import { geminiLimiter } from "../rateLimiters";
 import { optionalAuth } from "../middleware/optionalAuth";
+import { UNAVAILABLE_MESSAGES, buildPrompt, extractGroundedSources, getCached, resolveMarket, setCached, shapeMarketAnswer, type MarketUnavailable } from "../marketData";
 
 export const geminiRouter = Router();
 
@@ -201,145 +202,47 @@ const liveInvestmentsSchema = z.object({
   countryCode: z.string().trim().length(2).toUpperCase().optional(),
 });
 
-const FALLBACKS: Record<string, { rates: unknown[]; inflation: string; source: string; advisory: string }> = {
-  USD: {
-    rates: [
-      { asset: "US 3-Month Treasury Bill", rate: "5.12%", trend: "flat", safety: "Risk-Free Sovereign", source: "US Treasury" },
-      { asset: "S&P 500 Stock Market Index", rate: "+15.2% YTD", trend: "up", safety: "Market Equity Risk", source: "Wall Street / NYSE" },
-      { asset: "High-Yield Savings / MMF", rate: "4.45%", trend: "flat", safety: "High (FDIC Insured)", source: "SME Checking" },
-      { asset: "NASDAQ Stock Index", rate: "+18.9% YTD", trend: "up", safety: "Market Equity Risk", source: "NASDAQ Exchange" },
-    ],
-    inflation: "3.1%",
-    source: "US Federal Reserve & Wall Street Index (Estimated Fallback)",
-    advisory: "Steady economic trends present strong public market growth.",
-  },
-  CAD: {
-    rates: [
-      { asset: "Canada 3-Month T-Bill", rate: "4.70%", trend: "down", safety: "Risk-Free Sovereign", source: "Bank of Canada" },
-      { asset: "S&P/TSX Composite Stock Index", rate: "+9.8% YTD", trend: "up", safety: "Market Equity Risk", source: "Toronto Stock Exchange" },
-      { asset: "High-Interest Savings Account (HISA)", rate: "3.95%", trend: "flat", safety: "High (CDIC Insured)", source: "Canadian Banks" },
-      { asset: "TSX Blue-Chip Dividend Stocks", rate: "5.5% (yield)", trend: "flat", safety: "Medium-High Risk", source: "Dividend Portfolios" },
-    ],
-    inflation: "2.6%",
-    source: "Bank of Canada & Toronto Stock Exchange (Estimated Fallback)",
-    advisory: "Stable inflation and lower policy rates support equity capitalizations.",
-  },
-  NGN: {
-    rates: [
-      { asset: "Nigeria 90-Day NTB (T-Bill)", rate: "16.8%", trend: "up", safety: "Risk-Free Sovereign", source: "Central Bank of Nigeria" },
-      { asset: "NGX All-Share Stock Index", rate: "+27.5% YTD", trend: "up", safety: "Market Equity Risk", source: "Nigerian Exchange Group" },
-      { asset: "Commercial Term Deposits", rate: "14.5%", trend: "flat", safety: "High (NDIC Shielded)", source: "Tier-1 Commercial Banks" },
-      { asset: "Coronation Premium Mutual Fund", rate: "17.0%", trend: "up", safety: "Medium-High Risk", source: "Asset Management" },
-    ],
-    inflation: "32.1%",
-    source: "Central Bank of Nigeria & NGX Stock Exchange (Estimated Fallback)",
-    advisory: "Strong local inflation highlights the premium of real high-growth assets.",
-  },
-  KES: {
-    rates: [
-      { asset: "Kenya 91-Day Sovereign T-Bill", rate: "15.85%", trend: "up", safety: "Risk-Free Sovereign", source: "Central Bank of Kenya" },
-      { asset: "NSE 20 Stock Indices", rate: "+11.2% YTD", trend: "up", safety: "Market Equity Risk", source: "Nairobi Securities Exchange" },
-      { asset: "Local Money Market Fund (MMF)", rate: "14.2%", trend: "flat", safety: "High", source: "Telco Trust Pool" },
-      { asset: "NSE All-Share Index (NASI)", rate: "+8.5% YTD", trend: "up", safety: "Market Equity Risk", source: "Nairobi Securities Exchange" },
-    ],
-    inflation: "5.6%",
-    source: "Central Bank of Kenya & Nairobi Securities Exchange (Estimated Fallback)",
-    advisory: "Kenya's money market registers remarkable interest yield options.",
-  },
-  GHS: {
-    rates: [
-      { asset: "91-Day Government T-Bill", rate: "24.2%", trend: "up", safety: "Risk-Free Sovereign", source: "Bank of Ghana" },
-      { asset: "GSE Composite Stocks Index", rate: "+19.5% YTD", trend: "up", safety: "Market Equity Risk", source: "Ghana Stock Exchange" },
-      { asset: "Corporate Fixed Deposits", rate: "18.5%", trend: "flat", safety: "High (Commercial Bank)", source: "SME Treasury" },
-      { asset: "Equity Growth Mutual Fund", rate: "15.0%", trend: "up", safety: "Medium-High Risk", source: "SME Fund Desk" },
-    ],
-    inflation: "22.8%",
-    source: "Bank of Ghana & Ghana Stock Exchange (Estimated Fallback)",
-    advisory: "Inflation limits operational margins. Maintain standard reserves in secure 91-day sovereign treasuries.",
-  },
-};
-
 geminiRouter.post("/live-investments", optionalAuth, geminiLimiter, async (req: Request, res: Response) => {
   const parsed = liveInvestmentsSchema.safeParse(req.body ?? {});
   const currency = parsed.success ? parsed.data.currency : "GHS";
   const countryCode = parsed.success ? parsed.data.countryCode : undefined;
-  const apiKey = hasGeminiKeyConfigured();
 
-  const respondWithFallback = () => {
-    const fallback = FALLBACKS[currency] ?? FALLBACKS.GHS;
-    res.json({
-      sourceName: fallback.source,
-      localInflation: fallback.inflation,
-      rates: fallback.rates,
-      lastChecked: "June 2026",
-      marketAdvisory: fallback.advisory,
-    });
-  };
+  const unavailable = (reason: MarketUnavailable["reason"]) =>
+    res.json({ available: false, reason, message: UNAVAILABLE_MESSAGES[reason] } satisfies MarketUnavailable);
 
-  if (!apiKey) {
-    respondWithFallback();
-    return;
-  }
+  // Deliberately no built-in "estimated" numbers to fall back on: figures that
+  // aren't backed by a live search result are never shown (see marketData.ts).
+  if (!hasGeminiKeyConfigured()) return unavailable("not_configured");
+
+  const profile = resolveMarket(countryCode, currency);
+  const cacheKey = profile.code ?? `currency:${currency.toUpperCase()}`;
+  const cached = getCached(cacheKey);
+  if (cached) return res.json(cached);
 
   try {
-    // Client instantiation moved into generateContentWithFailover() below.
-
-    const sysPrompt = `
-        You are an elite research analyst specializing in global asset management, sovereign treasuries, and public stock exchange indices as of mid-2026.
-        Your task is to search real-time global and local financial indices online (using Google Search) to find the absolute LATEST yield figures, year-over-year inflation rates, central bank monetary policy interest rates, and major public stock indices performance for the user's business.
-
-        ${
-          countryCode
-            ? `The user's business is registered in the country with ISO 3166-1 alpha-2 code "${countryCode}" - use THIS as the primary signal for which country's central bank, treasury, and stock exchange to research (their base currency is ${currency}, which is a secondary signal only - some currencies like XOF/XAF are shared across several countries, so the country code takes priority whenever the two would suggest different markets).`
-            : `The user's business has no country on file, so infer the target country from their base currency: ${currency}.`
-        }
-
-        Reference examples for mapping a country/currency to its market (use the same reasoning for any country/currency not listed here):
-        - USD: United States (latest US Federal Reserve policy rates, US Treasury Bills yields, and stock market indices like S&P 500, NASDAQ, or Dow Jones)
-        - CAD: Canada (latest Bank of Canada policy rates, Canadian Treasury Bills, and stock market indices like S&P/TSX Composite Index)
-        - GHS: Ghana (latest Bank of Ghana policy rates, GoG 91-Day & 182-Day treasury bill yields, and GSE Composite Stock Index)
-        - NGN: Nigeria (latest Central Bank of Nigeria policy rates, Nigerian Treasury Bills, and Nigerian Exchange Group - NGX All-Share / 30 Index)
-        - KES: Kenya (latest Central Bank of Kenya treasury bill yields, and NSE All-Share / NSE 20 Index)
-        - ZAR: South Africa (latest South African Reserve Bank repo rate, RSA Treasury Bills, and JSE All Share Index)
-        - EGP: Egypt (latest Central Bank of Egypt rates, Egyptian Treasury Bills, and EGX 30 Index)
-        - XOF: West African Economic and Monetary Union (BCEAO/UEMOA policy rates, regional treasury bills, and BRVM Composite Index) - if the country code narrows this to a specific member country (e.g. Senegal, Côte d'Ivoire), mention that country by name too
-        - XAF: Central African Economic and Monetary Community (BEAC policy rates, regional treasury bills, and BVMAC/Douala Stock Exchange where applicable) - if the country code narrows this to a specific member country, mention that country by name too
-        - TZS: Tanzania (latest Bank of Tanzania rates, Tanzanian Treasury Bills, and Dar es Salaam Stock Exchange - DSE All Share Index)
-        - UGX: Uganda (latest Bank of Uganda rates, Ugandan Treasury Bills, and Uganda Securities Exchange - USE All Share Index)
-        - ETB: Ethiopia (latest National Bank of Ethiopia rates and Ethiopian Treasury Bills - note Ethiopia's stock exchange, ESX, only recently launched; note this if equity data is thin)
-        - ZMW: Zambia (latest Bank of Zambia rates, Zambian Treasury Bills, and Lusaka Securities Exchange - LuSE All Share Index)
-        - RWF: Rwanda (latest National Bank of Rwanda rates, Rwandan Treasury Bills, and Rwanda Stock Exchange - RSE All Share Index)
-        - EUR: Eurozone (latest ECB interest rates, German Bund yields, and STOXX Europe 600 stock index)
-        - GBP: United Kingdom (latest Bank of England base rates, UK Government Gilt/T-bill yields, and FTSE 100 stock index)
-        - Any other country/currency: identify its own central bank, its own government treasury-bill/bond instrument, and its own primary stock exchange index using the same pattern as the examples above.
-
-        You MUST include a mix of BOTH Risk-Free sovereign paper (Treasury Bills / Government Bonds) AND Equity assets (Major Stock Exchange Indices or Blue-chip Stocks index tracker) in the rates array.
-
-        Return a pristine, parsed JSON format EXACTLY matching these keys:
-        {
-          "sourceName": "Name of local Central Bank & primary Stock Exchange (e.g. US Federal Reserve & Wall Street / Toronto Stock Exchange & BOC / Bank of Ghana & GSE)",
-          "localInflation": "percentage string like '2.8%', '3.1%', '22.8%' or '31.5%'",
-          "rates": [
-            { "asset": "Treasury Bill Yield", "rate": "Percentage yield string", "trend": "up" | "down" | "flat", "safety": "Risk-Free Sovereign Credit", "source": "Central Bank" },
-            { "asset": "Stock Market Index", "rate": "Latest year-to-date performance percentage string", "trend": "up" | "down" | "flat", "safety": "Market Equity Risk", "source": "Exchange" },
-            { "asset": "Commercial Fixed Deposit", "rate": "Percentage yield string", "trend": "up" | "down" | "flat", "safety": "High", "source": "Banks" },
-            { "asset": "Equity Mutual Fund", "rate": "Annualized percentage return string", "trend": "up" | "down" | "flat", "safety": "Medium-High Risk", "source": "Fund Desk" }
-          ],
-          "lastChecked": "Current Date string in 2026",
-          "marketAdvisory": "A very concise 2-sentence expert advice on current local market inflation vectors, high-growth stock hedging portfolios, and smart balance allocations between government yield credits and public equity markets."
-        }
-      `;
-
+    const now = new Date();
     const response = await generateContentWithFailover({
       model: "gemini-3.5-flash",
-      contents: `${sysPrompt}\nPerform a live web search for the latest mid-2026 financial and stock indices for ${countryCode ? `country code: "${countryCode}" (base currency: "${currency}")` : `base currency code: "${currency}"`} and generate a formatted JSON object.`,
-      config: { responseMimeType: "application/json", tools: [{ googleSearch: {} }], temperature: 0.15 },
+      contents: buildPrompt(profile, now),
+      // Search grounding and a JSON mime type can't be combined on every model,
+      // so the JSON is requested in the prompt and parsed defensively below.
+      config: { tools: [{ googleSearch: {} }], temperature: 0 },
     });
 
-    const parsedResponse = JSON.parse(stripJsonFence(response.text || "{}"));
-    res.json(parsedResponse);
+    let raw: unknown = null;
+    try {
+      raw = JSON.parse(stripJsonFence(response.text || "{}"));
+    } catch {
+      return unavailable("unverified");
+    }
+
+    const answer = shapeMarketAnswer(profile, raw, extractGroundedSources(response), now);
+    if (!answer) return unavailable("unverified");
+
+    setCached(cacheKey, answer);
+    res.json(answer);
   } catch (err) {
     console.error("Live investments error:", err);
-    respondWithFallback();
+    unavailable(err instanceof Error && /429|quota|rate/i.test(err.message) ? "busy" : "error");
   }
 });

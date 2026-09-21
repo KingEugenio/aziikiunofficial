@@ -1,7 +1,17 @@
 // The lessons behind Aziiki's "Book Library" and the small nudges that appear
-// through the app. Every lesson is a short summary of an idea in the author's
-// own book, written in Aziiki's words - not an excerpt - and each one ends
-// with something the person can actually do inside Aziiki.
+// through the app.
+//
+// COPYRIGHT RULES for this file (see docs/content-and-copyright.md, and
+// bookLibrary.test.ts, which enforces the mechanical ones):
+//  - Only IDEAS are used, never the books' wording. Every lesson is written
+//    fresh, short, and in Aziiki's own voice. No quotations, no excerpts, no
+//    stories or characters lifted from a book, no chapter titles.
+//  - A book is named only to say where an idea comes from (with the author),
+//    and the person is pointed to the book itself. No covers, logos or
+//    brand names are used, and nothing implies an author or publisher
+//    endorses Aziiki.
+//  - Each lesson ends with something the person can do inside Aziiki, so the
+//    content is Aziiki's own teaching, not a substitute for the book.
 //
 // These are learning notes, not financial, tax or legal advice.
 
@@ -97,7 +107,7 @@ export const LESSONS: Lesson[] = [
   {
     id: "rd-work-to-learn",
     book: "richdad",
-    title: "Work to learn, not only to earn",
+    title: "Skills first, pay second",
     idea: "Early on, the skills you pick up (selling, leading people, handling money, explaining things clearly) can be worth more over time than a slightly higher wage today.",
     forYourBusiness: "Every customer conversation is practice. The owners who grow fastest keep getting better at selling and at reading their numbers, not just at their craft.",
     tryIt: { text: "After your next big sale, note in the customer's record what worked in the conversation.", tab: "crm" },
@@ -106,7 +116,7 @@ export const LESSONS: Lesson[] = [
   {
     id: "rd-mind-your-business",
     book: "richdad",
-    title: "Mind your own business (your asset column)",
+    title: "Build your own asset column",
     idea: "Your job or trade pays the bills, but your real business is the collection of assets you keep building on the side. Don't spend a whole career making other people's assets grow while yours stays empty.",
     forYourBusiness: "Decide a fixed share of every good month's profit that goes into something that will pay you later, before it can be spent on anything else.",
     tryIt: { text: "Set a goal in Wealth & Goals and move a fixed share of this month's profit into it.", tab: "wealth" },
@@ -116,7 +126,7 @@ export const LESSONS: Lesson[] = [
     id: "rd-emotions",
     book: "richdad",
     title: "Fear and excitement steer your money",
-    idea: "Most people react to money with fear (\"I can't afford to lose this job\") or excitement (\"I deserve this\"). Neither feeling is wrong, but acting on it without thinking is how people stay stuck.",
+    idea: "Most people react to money with fear of running short or excitement about treating themselves. Neither feeling is wrong, but acting on it without thinking is how people stay stuck.",
     forYourBusiness: "When you feel a strong urge to spend, or to hold on to something that isn't working, pause and write down the number first. Numbers are calmer than feelings.",
     tryIt: { text: "Before your next non-essential purchase, check your Scorecard to see what it does to your cash." , tab: "dashboard" },
     contexts: ["personal", "dashboard"],
@@ -140,14 +150,14 @@ export const LESSONS: Lesson[] = [
     contexts: ["billing"],
   },
 
-  // ─── CASHFLOW Quadrant ───────────────────────────────────────────────
+  // ─── Four ways to earn ───────────────────────────────────────────────
   {
     id: "cq-four-quadrants",
     book: "quadrant",
-    title: "The four quadrants: E, S, B, I",
-    idea: "People earn money in four ways. Employees (E) and the self-employed (S) trade their time. Business owners (B) build systems and teams that earn without them, and investors (I) have money that earns for them. Neither side is wrong, but they feel very different.",
-    forYourBusiness: "Ask which quadrant most of your income comes from today, and which one you want more of. Most small business owners begin in S and move toward B by writing down how things are done so others can do them.",
-    tryIt: { text: "Play the Cashflow Quadrant Challenge and watch how income shifts from the left side to the right.", tab: "game" },
+    title: "Four ways to earn",
+    idea: "People earn money in four ways: as an employee, on their own account, as the owner of a business that runs without them, or as an investor whose money earns for them. The first two trade your time for money. The last two are built on systems and assets. Neither side is wrong, but they feel very different.",
+    forYourBusiness: "Ask which of the four most of your income comes from today, and which one you want more of. Most small business owners start out on their own account and move toward owning a system by writing down how things are done so others can do them.",
+    tryIt: { text: "Play Four Ways to Earn and watch how your income shifts from working for money to money working for you.", tab: "game" },
     contexts: ["dashboard", "team"],
   },
   {
@@ -163,9 +173,9 @@ export const LESSONS: Lesson[] = [
     id: "cq-freedom-formula",
     book: "quadrant",
     title: "Freedom is passive income above expenses",
-    idea: "You reach financial freedom when the income from your assets (not from your labour) covers your monthly expenses. It has nothing to do with how big your salary is, and everything to do with how much of your income doesn't need you to show up.",
+    idea: "One way to define financial freedom is when the income from your assets (not from your labour) covers your monthly expenses. It has nothing to do with how big your salary is, and everything to do with how much of your income doesn't need you to show up.",
     forYourBusiness: "Track two numbers: your monthly expenses, and the part of your income that arrives without new work from you. Watch the gap close.",
-    tryIt: { text: "Add up your monthly expenses, then try the game to see how fast passive income can close the gap.", tab: "game" },
+    tryIt: { text: "Add up your monthly expenses, then play Four Ways to Earn to see how fast income from assets can close the gap.", tab: "game" },
     contexts: ["dashboard", "wealth"],
   },
   {
@@ -183,7 +193,7 @@ export const LESSONS: Lesson[] = [
     id: "bb-pay-yourself-first",
     book: "babylon",
     title: "Pay yourself first: keep a tenth",
-    idea: "Before you pay anyone else, set aside at least a tenth of everything you earn. It's the seed of every later investment, and it works because it happens automatically, not when there's \"something left\".",
+    idea: "Before you pay anyone else, set aside at least a tenth of everything you earn. It becomes the seed of every later investment, and it works because it happens automatically instead of waiting for whatever is left over.",
     forYourBusiness: "Treat your savings like a bill that has to be paid first. Even a small share, moved the day money arrives, builds faster than a big share you only save when you remember.",
     tryIt: { text: "Use the Pay Myself First tool in Reports & Wisdom this week.", tab: "reports" },
     contexts: ["dashboard", "personal", "reports"],
@@ -247,8 +257,8 @@ export const LESSONS: Lesson[] = [
   {
     id: "ig-mr-market",
     book: "intelligent",
-    title: "Meet Mr. Market: prices are moody",
-    idea: "Imagine a business partner who offers to buy or sell you his share every day at a different price, sometimes wildly high and sometimes very low. You don't have to accept his price. Use his mood when it helps you and ignore it when it doesn't.",
+    title: "Prices swing with moods, not just facts",
+    idea: "Market prices move with mood as well as facts: excitement pushes them up too far and fear pushes them down too far. You are never forced to act on today's price, and you can use a very low or very high one when it suits your plan.",
     forYourBusiness: "A price on a screen is not the value of what you own. Don't sell in a panic because prices dropped or buy in a rush because they rose.",
     tryIt: { text: "Review your investments and write down why you own each one, before looking at today's price.", tab: "wealth" },
     contexts: ["wealth"],
@@ -256,8 +266,8 @@ export const LESSONS: Lesson[] = [
   {
     id: "ig-invest-vs-speculate",
     book: "intelligent",
-    title: "Investing is not speculating",
-    idea: "Investing means studying something, protecting your money, and expecting a fair return. Speculating is betting on price moves. Both exist, but don't confuse one for the other, and don't bet money you can't afford to lose.",
+    title: "Know a plan from a bet",
+    idea: "Investing means studying something, protecting your money and expecting a fair return. Speculating is betting that a price will move. Both exist, but don't mistake one for the other, and never bet money you can't afford to lose.",
     forYourBusiness: "If you can't explain how the money is made, it's a bet. If you do bet, keep it to a small amount you could lose without harm.",
     tryIt: { text: "Mark each holding as an investment or a bet, and check the bets aren't too big.", tab: "wealth" },
     contexts: ["wealth", "ai"],
@@ -265,8 +275,8 @@ export const LESSONS: Lesson[] = [
   {
     id: "ig-know-your-type",
     book: "intelligent",
-    title: "Know what kind of investor you are",
-    idea: "A defensive investor wants a simple, low-effort plan. An enterprising investor is willing to spend real time researching. Pick the one that fits your life and stick to it.",
+    title: "Choose a steady or a hands-on style",
+    idea: "Some people want a simple, low-effort plan. Others are willing to spend real time researching each choice. Pick the style that fits your life and stick to it.",
     forYourBusiness: "If running your business already takes all your time, a simple, steady approach beats chasing tips.",
     tryIt: { text: "Decide how many hours a month you'll give to investing, and let that choose your approach.", tab: "wealth" },
     contexts: ["wealth"],
@@ -285,8 +295,8 @@ export const LESSONS: Lesson[] = [
   {
     id: "pm-wealth-you-dont-see",
     book: "psychology",
-    title: "Wealth is what you don't spend",
-    idea: "Spending shows what you bought, not what you have. Real wealth is the part of your income you kept and never turned into stuff.",
+    title: "Money kept beats money shown",
+    idea: "Spending shows what you bought, not what you have. Wealth is the part of your income you kept instead of turning into things people can see.",
     forYourBusiness: "A smart-looking shop with an empty bank balance is fragile. A modest one with strong savings survives bad months.",
     tryIt: { text: "Look at your cash this month: how much did you keep, rather than spend?", tab: "dashboard" },
     contexts: ["dashboard", "personal"],
@@ -294,8 +304,8 @@ export const LESSONS: Lesson[] = [
   {
     id: "pm-getting-vs-staying-rich",
     book: "psychology",
-    title: "Getting rich and staying rich are different skills",
-    idea: "Getting ahead takes risk and optimism. Staying ahead takes the opposite: humility, a healthy fear of losing it, and the habit of not betting everything.",
+    title: "Growing fast and lasting long need different habits",
+    idea: "Getting ahead usually takes risk and optimism. Staying ahead takes different habits: humility, caution and never betting everything on one outcome.",
     forYourBusiness: "Growing fast is exciting. Keep enough back that one bad customer or one slow season can't end the business.",
     tryIt: { text: "Check who owes you the most and how much of your income depends on them.", tab: "crm" },
     contexts: ["crm", "billing"],
@@ -303,8 +313,8 @@ export const LESSONS: Lesson[] = [
   {
     id: "pm-buy-time",
     book: "psychology",
-    title: "Money's best use is buying control of your time",
-    idea: "The most valuable thing money can give you is the ability to decide how you spend your days. Savings mean you can say no to a bad customer or a bad deal.",
+    title: "Savings buy you time and choices",
+    idea: "One of the most valuable things money can give you is a say over how you spend your days. Savings mean you can turn down a bad customer or a bad deal.",
     forYourBusiness: "An emergency fund isn't just for emergencies. It's what lets you walk away from a job that isn't worth it.",
     tryIt: { text: "Set an emergency-fund goal so you have room to say no.", tab: "wealth" },
     contexts: ["wealth", "dashboard"],
@@ -323,15 +333,15 @@ export const LESSONS: Lesson[] = [
     book: "psychology",
     title: "Plan for being wrong",
     idea: "The future will surprise you. Saving without a specific reason, and keeping some slack, is what lets you survive the surprises you couldn't have predicted.",
-    forYourBusiness: "Aim for enough cash to cover a few months of costs. It feels wasteful right up until the day it isn't.",
+    forYourBusiness: "Aim for enough cash to cover a few months of costs. It can feel wasteful right up until the day it isn't.",
     tryIt: { text: "Check how many months of expenses your current cash would cover.", tab: "dashboard" },
     contexts: ["dashboard", "stock", "purchaseOrders"],
   },
   {
     id: "pm-luck-and-risk",
     book: "psychology",
-    title: "Nothing is as good or as bad as it looks",
-    idea: "Luck and risk both play a big part in outcomes. Don't copy someone's success without noticing the luck behind it, and don't blame yourself entirely for a loss that partly wasn't in your control.",
+    title: "Judge decisions, not just results",
+    idea: "Luck and risk shape outcomes more than we like to admit. Don't copy someone's success without asking how much luck was involved, and don't blame yourself entirely for a loss that partly wasn't in your control.",
     forYourBusiness: "Judge decisions by the thinking behind them, not just by how they turned out. A good decision can still lose sometimes.",
     tryIt: { text: "Pick one recent big decision and write down what you knew when you made it.", tab: "dashboard" },
     contexts: ["ai", "wealth"],
@@ -339,10 +349,10 @@ export const LESSONS: Lesson[] = [
   {
     id: "pm-enough",
     book: "psychology",
-    title: "Know when you have enough",
+    title: "Decide what enough looks like",
     idea: "If your goalpost moves every time you reach it, you'll never feel you've arrived, and you'll be tempted to take risks that could cost you what you already have.",
-    forYourBusiness: "Decide what \"enough\" looks like for your business and your life, in numbers. It's easier to protect a target you've written down.",
-    tryIt: { text: "Write down your \"enough\" number as a goal.", tab: "wealth" },
+    forYourBusiness: "Decide what enough looks like for your business and your life, in numbers. It's easier to protect a target you've written down.",
+    tryIt: { text: "Write down your enough number as a goal.", tab: "wealth" },
     contexts: ["wealth", "personal"],
   },
 ];

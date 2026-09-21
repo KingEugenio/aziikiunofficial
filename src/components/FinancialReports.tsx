@@ -247,7 +247,7 @@ export default function FinancialReports({
         type: "expense",
         category: "Savings & Investments",
         amount: payVal,
-        description: `Pay Yourself First: 10% Babylon protocol self allocation`,
+        description: `Pay Yourself First: 10% pay-yourself-first self allocation`,
         paymentMethod: "Cash",
         businessId: currentBusiness.id
       };
@@ -452,7 +452,7 @@ export default function FinancialReports({
       advice.push({
         type: "warning",
         title: "Slightly Off-target Gold Purse",
-        body: `You saved less than 10% of revenue in this period. In 'The Richest Man in Babylon', failure to pay yourself 10% first delays compound wealth.`
+        body: `You saved less than 10% of revenue in this period. Not paying yourself first (a common rule of thumb is 10%) delays how fast savings can grow.`
       });
     } else if (totalIncome > 0) {
       advice.push({
@@ -730,7 +730,7 @@ export default function FinancialReports({
         <div className="bg-amber-50 border border-amber-350 rounded-2xl p-5 text-left shadow-sm">
           <div className="flex justify-between items-center mb-3">
             <span className="text-[10px] font-heavy text-amber-700 uppercase tracking-widest font-mono">
-              10% Babylon Share
+              10% Pay-Yourself-First share
             </span>
             <div className="p-2 rounded-xl bg-amber-500/20 text-amber-600">
               <Sparkles className="w-4 h-4 animate-spin-slow" />
@@ -740,7 +740,7 @@ export default function FinancialReports({
             {currencySymbol}{goldenTenPercent.toLocaleString()}
           </h3>
           <p className="text-[10.5px] text-amber-600 mt-1 font-sans">
-            "Thy gold coins saved are thine own workers."
+            Every coin you save is one more worker for you.
           </p>
         </div>
       </div>
@@ -763,7 +763,7 @@ export default function FinancialReports({
             <div className="flex items-center gap-3 text-[10px] font-bold font-mono">
               <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> Inflow</span>
               <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Outflow</span>
-              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Babylon 10%</span>
+              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Pay yourself 10%</span>
             </div>
           </div>
 
@@ -889,17 +889,17 @@ export default function FinancialReports({
             <div className="flex items-center gap-2">
               <PiggyBank className="w-5 h-5 text-amber-400" />
               <h3 className="text-base font-extrabold tracking-tight text-amber-300 uppercase font-sans">
-                The 10% Gold Share Covenant
+                The 10% Pay-Yourself-First Habit
               </h3>
             </div>
 
             <div className="bg-amber-905/30 border-l-4 border-amber-500 p-4 rounded-r-xl">
-              <blockquote className="italic text-sm text-amber-100 font-sans leading-relaxed">
-                "A part of all you earn is yours to keep. It should be not less than one-tenth no matter how little you earn. Pay yourself first before you pay for food, shoes, and luxury. Let thy gold represent a diligent slave that multiplies in thy treasure drawers."
-              </blockquote>
-              <cite className="block text-[10px] text-amber-400 mt-2 font-mono uppercase tracking-widest font-bold">
-                — Arkad, The Richest Man in Babylon
-              </cite>
+              <p className="text-sm text-amber-100 font-sans leading-relaxed">
+                Keep a tenth of everything you earn, however small the amount, and set it aside before you pay for anything else. Money you keep becomes money that can start working for you.
+              </p>
+              <p className="block text-[10px] text-amber-400 mt-2 font-mono uppercase tracking-widest font-bold">
+                An idea from The Richest Man in Babylon, by George S. Clason
+              </p>
             </div>
 
             <p className="text-xs text-amber-200/80 leading-relaxed font-sans max-w-xl">

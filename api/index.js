@@ -817,6 +817,197 @@ var init_optionalAuth = __esm({
   }
 });
 
+// src/server/marketData.ts
+function regionName(code) {
+  try {
+    return new Intl.DisplayNames(["en"], { type: "region" }).of(code) ?? code;
+  } catch {
+    return code;
+  }
+}
+function resolveMarket(countryCode, currency) {
+  const code = (countryCode && /^[A-Za-z]{2}$/.test(countryCode) ? countryCode.toUpperCase() : null) ?? (currency ? CURRENCY_TO_COUNTRY[currency.toUpperCase()] ?? null : null);
+  if (!code) return { code: null, country: "an unknown country", exchange: "its main stock exchange", indexes: [], centralBank: "its central bank", known: false };
+  const entry = DIRECTORY[code];
+  if (entry) return { code, ...entry, known: true };
+  return { code, country: regionName(code), exchange: "its main stock exchange", indexes: [], centralBank: "its central bank", known: false };
+}
+function buildPrompt(profile, today) {
+  const date = today.toISOString().slice(0, 10);
+  const where = profile.known ? `Country: ${profile.country}. Central bank: ${profile.centralBank}. Stock exchange: ${profile.exchange}${profile.indexes.length ? `. Headline index: ${profile.indexes.join(" / ")}` : ""}.` : `Country: ${profile.country}${profile.code ? ` (ISO code ${profile.code})` : ""}. First identify this country's central bank, its government treasury-bill instrument and its main stock exchange, then research them.`;
+  return `Today's date is ${date}. Use Google Search to find the CURRENT published figures for this market:
+${where}
+
+Find these figures, each from a page you actually found in your search results:
+- "inflation": the latest annual inflation rate.
+- "policy_rate": the central bank's current policy interest rate.
+- "treasury_bill": the latest government treasury-bill yield (for example the 91-day bill). You may give up to two tenors.
+- "stock_index": the latest year-to-date change or level of the exchange's headline index. You may give up to two indexes.
+- "exchange_market_cap": the total market capitalisation of the stock exchange, if it publishes one.
+
+STRICT RULES:
+- Report ONLY figures you found in a search result. Do NOT estimate, round from memory, or fill gaps. If you can't find a figure, leave it out of the list.
+- Every figure MUST include "asOf" (the date the source page gives for that figure, as YYYY-MM-DD or "Month YYYY") and "sourceDomain" (the website's domain it came from, such as "bog.gov.gh").
+- Use the number exactly as the source states it, including its unit and currency (for example "24.6%" or "GHS 80.2 billion").
+- Prefer the central bank, the exchange, or the national statistics office as the source.
+
+Reply with ONLY this JSON:
+{"figures":[{"key":"inflation|policy_rate|treasury_bill|stock_index|exchange_market_cap","label":"short name, e.g. 91-day T-bill","value":"the figure","trend":"up|down|flat","asOf":"date","sourceDomain":"domain"}]}`;
+}
+function extractGroundedSources(response) {
+  const chunks = response?.candidates?.[0]?.groundingMetadata?.groundingChunks;
+  if (!Array.isArray(chunks)) return [];
+  const seen = /* @__PURE__ */ new Set();
+  const out = [];
+  for (const c of chunks) {
+    const title = c?.web?.title?.trim();
+    const url = c?.web?.uri?.trim();
+    if (!title || !url || !/^https:\/\//i.test(url)) continue;
+    const key = title.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push({ title, url });
+  }
+  return out;
+}
+function normalizeHost(value) {
+  return value.trim().toLowerCase().replace(/^https?:\/\//, "").replace(/^www\./, "").split(/[/?#]/)[0];
+}
+function hostsMatch(a, b) {
+  const x = normalizeHost(a);
+  const y = normalizeHost(b);
+  if (!x || !y || !x.includes(".") || !y.includes(".")) return false;
+  return x === y || x.endsWith(`.${y}`) || y.endsWith(`.${x}`);
+}
+function ageInDays(asOf, now) {
+  const t = Date.parse(/^\d{4}-\d{2}$/.test(asOf) ? `${asOf}-28` : asOf);
+  if (Number.isNaN(t)) return null;
+  return (now.getTime() - t) / 864e5;
+}
+function shapeMarketAnswer(profile, raw, sources, now) {
+  const list = raw?.figures;
+  if (!Array.isArray(list) || sources.length === 0) return null;
+  const kept = [];
+  const perKey = {};
+  let dropped = 0;
+  for (const item of list) {
+    const f = item;
+    const key = f?.key;
+    const label = typeof f?.label === "string" ? f.label.trim() : "";
+    const value = typeof f?.value === "string" ? f.value.trim() : "";
+    const asOf = typeof f?.asOf === "string" ? f.asOf.trim() : "";
+    const domain = typeof f?.sourceDomain === "string" ? f.sourceDomain.trim() : "";
+    const valid = FIGURE_KEYS.includes(key) && label.length > 0 && label.length <= 80 && value.length > 0 && value.length <= 60 && /\d/.test(value) && asOf.length > 0 && asOf.length <= 40 && domain.length > 0 && // The model must cite a site Google actually returned.
+    sources.some((s) => hostsMatch(domain, s.title));
+    const age = valid ? ageInDays(asOf, now) : null;
+    const stale = age !== null && age > MAX_FIGURE_AGE_DAYS;
+    if (!valid || stale || (perKey[key] ?? 0) >= MAX_PER_KEY[key]) {
+      dropped += 1;
+      continue;
+    }
+    perKey[key] = (perKey[key] ?? 0) + 1;
+    const trend = f.trend === "up" || f.trend === "down" ? f.trend : "flat";
+    kept.push({ key, label, value, trend, asOf, source: normalizeHost(domain) });
+  }
+  if (kept.length === 0) return null;
+  const inflation = kept.find((f) => f.key === "inflation") ?? null;
+  const marketCap = kept.find((f) => f.key === "exchange_market_cap") ?? null;
+  const rates = kept.filter((f) => f.key === "policy_rate" || f.key === "treasury_bill" || f.key === "stock_index").map((f) => ({
+    asset: f.label,
+    rate: f.value,
+    trend: f.trend,
+    safety: f.key === "stock_index" ? "Stock market risk" : "Government / central bank",
+    source: f.source,
+    asOf: f.asOf
+  }));
+  return {
+    available: true,
+    countryCode: profile.code,
+    country: profile.country,
+    sourceName: profile.known ? `${profile.centralBank} and ${profile.exchange}` : `${profile.country} central bank and stock exchange`,
+    exchange: { name: profile.exchange, marketCap },
+    localInflation: inflation,
+    rates,
+    sources,
+    dropped,
+    retrievedAt: now.toISOString()
+  };
+}
+function getCached(key, now = Date.now()) {
+  const hit = cache.get(key);
+  if (!hit || hit.expiresAt <= now) {
+    cache.delete(key);
+    return null;
+  }
+  return hit.answer;
+}
+function setCached(key, answer, now = Date.now()) {
+  cache.set(key, { answer, expiresAt: now + CACHE_TTL_MS });
+}
+var FIGURE_KEYS, MAX_PER_KEY, MAX_FIGURE_AGE_DAYS, DIRECTORY, BRVM_COUNTRIES, CURRENCY_TO_COUNTRY, UNAVAILABLE_MESSAGES, CACHE_TTL_MS, cache;
+var init_marketData = __esm({
+  "src/server/marketData.ts"() {
+    FIGURE_KEYS = ["inflation", "policy_rate", "treasury_bill", "stock_index", "exchange_market_cap"];
+    MAX_PER_KEY = { inflation: 1, policy_rate: 1, treasury_bill: 2, stock_index: 2, exchange_market_cap: 1 };
+    MAX_FIGURE_AGE_DAYS = 180;
+    DIRECTORY = {
+      GH: { country: "Ghana", exchange: "Ghana Stock Exchange (GSE)", indexes: ["GSE Composite Index"], centralBank: "Bank of Ghana" },
+      NG: { country: "Nigeria", exchange: "Nigerian Exchange (NGX)", indexes: ["NGX All-Share Index"], centralBank: "Central Bank of Nigeria" },
+      KE: { country: "Kenya", exchange: "Nairobi Securities Exchange (NSE)", indexes: ["NSE All Share Index (NASI)", "NSE 20 Share Index"], centralBank: "Central Bank of Kenya" },
+      ZA: { country: "South Africa", exchange: "Johannesburg Stock Exchange (JSE)", indexes: ["FTSE/JSE All Share Index"], centralBank: "South African Reserve Bank" },
+      EG: { country: "Egypt", exchange: "Egyptian Exchange (EGX)", indexes: ["EGX 30 Index"], centralBank: "Central Bank of Egypt" },
+      TZ: { country: "Tanzania", exchange: "Dar es Salaam Stock Exchange (DSE)", indexes: ["DSE All Share Index (DSEI)"], centralBank: "Bank of Tanzania" },
+      UG: { country: "Uganda", exchange: "Uganda Securities Exchange (USE)", indexes: ["USE All Share Index"], centralBank: "Bank of Uganda" },
+      ZM: { country: "Zambia", exchange: "Lusaka Securities Exchange (LuSE)", indexes: ["LuSE All Share Index"], centralBank: "Bank of Zambia" },
+      RW: { country: "Rwanda", exchange: "Rwanda Stock Exchange (RSE)", indexes: ["RSE All Share Index"], centralBank: "National Bank of Rwanda" },
+      ET: { country: "Ethiopia", exchange: "Ethiopian Securities Exchange (ESX)", indexes: [], centralBank: "National Bank of Ethiopia" },
+      BW: { country: "Botswana", exchange: "Botswana Stock Exchange (BSE)", indexes: ["BSE Domestic Company Index"], centralBank: "Bank of Botswana" },
+      NA: { country: "Namibia", exchange: "Namibian Stock Exchange (NSX)", indexes: ["NSX Overall Index"], centralBank: "Bank of Namibia" },
+      MU: { country: "Mauritius", exchange: "Stock Exchange of Mauritius (SEM)", indexes: ["SEMDEX"], centralBank: "Bank of Mauritius" },
+      MA: { country: "Morocco", exchange: "Casablanca Stock Exchange", indexes: ["MASI (Moroccan All Shares Index)"], centralBank: "Bank Al-Maghrib" },
+      CM: { country: "Cameroon", exchange: "Douala Stock Exchange (DSX)", indexes: [], centralBank: "Bank of Central African States (BEAC)" },
+      US: { country: "United States", exchange: "New York Stock Exchange (NYSE) and Nasdaq", indexes: ["S&P 500"], centralBank: "US Federal Reserve" },
+      GB: { country: "United Kingdom", exchange: "London Stock Exchange (LSE)", indexes: ["FTSE 100", "FTSE All-Share"], centralBank: "Bank of England" },
+      CA: { country: "Canada", exchange: "Toronto Stock Exchange (TSX)", indexes: ["S&P/TSX Composite Index"], centralBank: "Bank of Canada" },
+      IN: { country: "India", exchange: "National Stock Exchange of India (NSE) and BSE", indexes: ["Nifty 50", "BSE Sensex"], centralBank: "Reserve Bank of India" },
+      DE: { country: "Germany (Eurozone)", exchange: "Frankfurt Stock Exchange (Deutsche B\xF6rse)", indexes: ["DAX"], centralBank: "European Central Bank" }
+    };
+    BRVM_COUNTRIES = { SN: "Senegal", CI: "C\xF4te d'Ivoire", BJ: "Benin", BF: "Burkina Faso", ML: "Mali", NE: "Niger", TG: "Togo", GW: "Guinea-Bissau" };
+    for (const [code, country] of Object.entries(BRVM_COUNTRIES)) {
+      DIRECTORY[code] = { country, exchange: "Bourse R\xE9gionale des Valeurs Mobili\xE8res (BRVM)", indexes: ["BRVM Composite Index"], centralBank: "Central Bank of West African States (BCEAO)" };
+    }
+    CURRENCY_TO_COUNTRY = {
+      GHS: "GH",
+      NGN: "NG",
+      KES: "KE",
+      ZAR: "ZA",
+      EGP: "EG",
+      TZS: "TZ",
+      UGX: "UG",
+      ZMW: "ZM",
+      RWF: "RW",
+      ETB: "ET",
+      BWP: "BW",
+      NAD: "NA",
+      MUR: "MU",
+      MAD: "MA",
+      USD: "US",
+      GBP: "GB",
+      CAD: "CA",
+      INR: "IN",
+      EUR: "DE"
+    };
+    UNAVAILABLE_MESSAGES = {
+      not_configured: "Live market figures aren't switched on for this Aziiki server yet, so nothing is shown. Aziiki never shows estimated figures.",
+      busy: "The live market service is busy right now. Please try again in a few minutes.",
+      unverified: "Couldn't confirm live figures against Google Search results for your country just now, so nothing is shown. Aziiki never shows estimated figures.",
+      error: "Couldn't reach the live market service just now. Please try again shortly."
+    };
+    CACHE_TTL_MS = 30 * 60 * 1e3;
+    cache = /* @__PURE__ */ new Map();
+  }
+});
+
 // src/server/routes/gemini.ts
 import { Router as Router2 } from "express";
 import { z as z3 } from "zod";
@@ -834,12 +1025,13 @@ function stripJsonFence(text) {
   if (out.endsWith("```")) out = out.slice(0, -3);
   return out.trim();
 }
-var geminiRouter, insightsSchema, chatSchema, AZIIKI_CHAT_SYSTEM_INSTRUCTION, liveInvestmentsSchema, FALLBACKS;
+var geminiRouter, insightsSchema, chatSchema, AZIIKI_CHAT_SYSTEM_INSTRUCTION, liveInvestmentsSchema;
 var init_gemini = __esm({
   "src/server/routes/gemini.ts"() {
     init_geminiClient();
     init_rateLimiters();
     init_optionalAuth();
+    init_marketData();
     geminiRouter = Router2();
     insightsSchema = z3.object({
       businessName: z3.string().trim().max(200).default("General SME"),
@@ -987,135 +1179,38 @@ Give honest, balanced financial guidance - flag real problems as well as progres
       // falls back to currency-based inference.
       countryCode: z3.string().trim().length(2).toUpperCase().optional()
     });
-    FALLBACKS = {
-      USD: {
-        rates: [
-          { asset: "US 3-Month Treasury Bill", rate: "5.12%", trend: "flat", safety: "Risk-Free Sovereign", source: "US Treasury" },
-          { asset: "S&P 500 Stock Market Index", rate: "+15.2% YTD", trend: "up", safety: "Market Equity Risk", source: "Wall Street / NYSE" },
-          { asset: "High-Yield Savings / MMF", rate: "4.45%", trend: "flat", safety: "High (FDIC Insured)", source: "SME Checking" },
-          { asset: "NASDAQ Stock Index", rate: "+18.9% YTD", trend: "up", safety: "Market Equity Risk", source: "NASDAQ Exchange" }
-        ],
-        inflation: "3.1%",
-        source: "US Federal Reserve & Wall Street Index (Estimated Fallback)",
-        advisory: "Steady economic trends present strong public market growth."
-      },
-      CAD: {
-        rates: [
-          { asset: "Canada 3-Month T-Bill", rate: "4.70%", trend: "down", safety: "Risk-Free Sovereign", source: "Bank of Canada" },
-          { asset: "S&P/TSX Composite Stock Index", rate: "+9.8% YTD", trend: "up", safety: "Market Equity Risk", source: "Toronto Stock Exchange" },
-          { asset: "High-Interest Savings Account (HISA)", rate: "3.95%", trend: "flat", safety: "High (CDIC Insured)", source: "Canadian Banks" },
-          { asset: "TSX Blue-Chip Dividend Stocks", rate: "5.5% (yield)", trend: "flat", safety: "Medium-High Risk", source: "Dividend Portfolios" }
-        ],
-        inflation: "2.6%",
-        source: "Bank of Canada & Toronto Stock Exchange (Estimated Fallback)",
-        advisory: "Stable inflation and lower policy rates support equity capitalizations."
-      },
-      NGN: {
-        rates: [
-          { asset: "Nigeria 90-Day NTB (T-Bill)", rate: "16.8%", trend: "up", safety: "Risk-Free Sovereign", source: "Central Bank of Nigeria" },
-          { asset: "NGX All-Share Stock Index", rate: "+27.5% YTD", trend: "up", safety: "Market Equity Risk", source: "Nigerian Exchange Group" },
-          { asset: "Commercial Term Deposits", rate: "14.5%", trend: "flat", safety: "High (NDIC Shielded)", source: "Tier-1 Commercial Banks" },
-          { asset: "Coronation Premium Mutual Fund", rate: "17.0%", trend: "up", safety: "Medium-High Risk", source: "Asset Management" }
-        ],
-        inflation: "32.1%",
-        source: "Central Bank of Nigeria & NGX Stock Exchange (Estimated Fallback)",
-        advisory: "Strong local inflation highlights the premium of real high-growth assets."
-      },
-      KES: {
-        rates: [
-          { asset: "Kenya 91-Day Sovereign T-Bill", rate: "15.85%", trend: "up", safety: "Risk-Free Sovereign", source: "Central Bank of Kenya" },
-          { asset: "NSE 20 Stock Indices", rate: "+11.2% YTD", trend: "up", safety: "Market Equity Risk", source: "Nairobi Securities Exchange" },
-          { asset: "Local Money Market Fund (MMF)", rate: "14.2%", trend: "flat", safety: "High", source: "Telco Trust Pool" },
-          { asset: "NSE All-Share Index (NASI)", rate: "+8.5% YTD", trend: "up", safety: "Market Equity Risk", source: "Nairobi Securities Exchange" }
-        ],
-        inflation: "5.6%",
-        source: "Central Bank of Kenya & Nairobi Securities Exchange (Estimated Fallback)",
-        advisory: "Kenya's money market registers remarkable interest yield options."
-      },
-      GHS: {
-        rates: [
-          { asset: "91-Day Government T-Bill", rate: "24.2%", trend: "up", safety: "Risk-Free Sovereign", source: "Bank of Ghana" },
-          { asset: "GSE Composite Stocks Index", rate: "+19.5% YTD", trend: "up", safety: "Market Equity Risk", source: "Ghana Stock Exchange" },
-          { asset: "Corporate Fixed Deposits", rate: "18.5%", trend: "flat", safety: "High (Commercial Bank)", source: "SME Treasury" },
-          { asset: "Equity Growth Mutual Fund", rate: "15.0%", trend: "up", safety: "Medium-High Risk", source: "SME Fund Desk" }
-        ],
-        inflation: "22.8%",
-        source: "Bank of Ghana & Ghana Stock Exchange (Estimated Fallback)",
-        advisory: "Inflation limits operational margins. Maintain standard reserves in secure 91-day sovereign treasuries."
-      }
-    };
     geminiRouter.post("/live-investments", optionalAuth, geminiLimiter, async (req, res) => {
       const parsed = liveInvestmentsSchema.safeParse(req.body ?? {});
       const currency = parsed.success ? parsed.data.currency : "GHS";
       const countryCode = parsed.success ? parsed.data.countryCode : void 0;
-      const apiKey = hasGeminiKeyConfigured();
-      const respondWithFallback = () => {
-        const fallback = FALLBACKS[currency] ?? FALLBACKS.GHS;
-        res.json({
-          sourceName: fallback.source,
-          localInflation: fallback.inflation,
-          rates: fallback.rates,
-          lastChecked: "June 2026",
-          marketAdvisory: fallback.advisory
-        });
-      };
-      if (!apiKey) {
-        respondWithFallback();
-        return;
-      }
+      const unavailable = (reason) => res.json({ available: false, reason, message: UNAVAILABLE_MESSAGES[reason] });
+      if (!hasGeminiKeyConfigured()) return unavailable("not_configured");
+      const profile = resolveMarket(countryCode, currency);
+      const cacheKey = profile.code ?? `currency:${currency.toUpperCase()}`;
+      const cached2 = getCached(cacheKey);
+      if (cached2) return res.json(cached2);
       try {
-        const sysPrompt = `
-        You are an elite research analyst specializing in global asset management, sovereign treasuries, and public stock exchange indices as of mid-2026.
-        Your task is to search real-time global and local financial indices online (using Google Search) to find the absolute LATEST yield figures, year-over-year inflation rates, central bank monetary policy interest rates, and major public stock indices performance for the user's business.
-
-        ${countryCode ? `The user's business is registered in the country with ISO 3166-1 alpha-2 code "${countryCode}" - use THIS as the primary signal for which country's central bank, treasury, and stock exchange to research (their base currency is ${currency}, which is a secondary signal only - some currencies like XOF/XAF are shared across several countries, so the country code takes priority whenever the two would suggest different markets).` : `The user's business has no country on file, so infer the target country from their base currency: ${currency}.`}
-
-        Reference examples for mapping a country/currency to its market (use the same reasoning for any country/currency not listed here):
-        - USD: United States (latest US Federal Reserve policy rates, US Treasury Bills yields, and stock market indices like S&P 500, NASDAQ, or Dow Jones)
-        - CAD: Canada (latest Bank of Canada policy rates, Canadian Treasury Bills, and stock market indices like S&P/TSX Composite Index)
-        - GHS: Ghana (latest Bank of Ghana policy rates, GoG 91-Day & 182-Day treasury bill yields, and GSE Composite Stock Index)
-        - NGN: Nigeria (latest Central Bank of Nigeria policy rates, Nigerian Treasury Bills, and Nigerian Exchange Group - NGX All-Share / 30 Index)
-        - KES: Kenya (latest Central Bank of Kenya treasury bill yields, and NSE All-Share / NSE 20 Index)
-        - ZAR: South Africa (latest South African Reserve Bank repo rate, RSA Treasury Bills, and JSE All Share Index)
-        - EGP: Egypt (latest Central Bank of Egypt rates, Egyptian Treasury Bills, and EGX 30 Index)
-        - XOF: West African Economic and Monetary Union (BCEAO/UEMOA policy rates, regional treasury bills, and BRVM Composite Index) - if the country code narrows this to a specific member country (e.g. Senegal, C\xF4te d'Ivoire), mention that country by name too
-        - XAF: Central African Economic and Monetary Community (BEAC policy rates, regional treasury bills, and BVMAC/Douala Stock Exchange where applicable) - if the country code narrows this to a specific member country, mention that country by name too
-        - TZS: Tanzania (latest Bank of Tanzania rates, Tanzanian Treasury Bills, and Dar es Salaam Stock Exchange - DSE All Share Index)
-        - UGX: Uganda (latest Bank of Uganda rates, Ugandan Treasury Bills, and Uganda Securities Exchange - USE All Share Index)
-        - ETB: Ethiopia (latest National Bank of Ethiopia rates and Ethiopian Treasury Bills - note Ethiopia's stock exchange, ESX, only recently launched; note this if equity data is thin)
-        - ZMW: Zambia (latest Bank of Zambia rates, Zambian Treasury Bills, and Lusaka Securities Exchange - LuSE All Share Index)
-        - RWF: Rwanda (latest National Bank of Rwanda rates, Rwandan Treasury Bills, and Rwanda Stock Exchange - RSE All Share Index)
-        - EUR: Eurozone (latest ECB interest rates, German Bund yields, and STOXX Europe 600 stock index)
-        - GBP: United Kingdom (latest Bank of England base rates, UK Government Gilt/T-bill yields, and FTSE 100 stock index)
-        - Any other country/currency: identify its own central bank, its own government treasury-bill/bond instrument, and its own primary stock exchange index using the same pattern as the examples above.
-
-        You MUST include a mix of BOTH Risk-Free sovereign paper (Treasury Bills / Government Bonds) AND Equity assets (Major Stock Exchange Indices or Blue-chip Stocks index tracker) in the rates array.
-
-        Return a pristine, parsed JSON format EXACTLY matching these keys:
-        {
-          "sourceName": "Name of local Central Bank & primary Stock Exchange (e.g. US Federal Reserve & Wall Street / Toronto Stock Exchange & BOC / Bank of Ghana & GSE)",
-          "localInflation": "percentage string like '2.8%', '3.1%', '22.8%' or '31.5%'",
-          "rates": [
-            { "asset": "Treasury Bill Yield", "rate": "Percentage yield string", "trend": "up" | "down" | "flat", "safety": "Risk-Free Sovereign Credit", "source": "Central Bank" },
-            { "asset": "Stock Market Index", "rate": "Latest year-to-date performance percentage string", "trend": "up" | "down" | "flat", "safety": "Market Equity Risk", "source": "Exchange" },
-            { "asset": "Commercial Fixed Deposit", "rate": "Percentage yield string", "trend": "up" | "down" | "flat", "safety": "High", "source": "Banks" },
-            { "asset": "Equity Mutual Fund", "rate": "Annualized percentage return string", "trend": "up" | "down" | "flat", "safety": "Medium-High Risk", "source": "Fund Desk" }
-          ],
-          "lastChecked": "Current Date string in 2026",
-          "marketAdvisory": "A very concise 2-sentence expert advice on current local market inflation vectors, high-growth stock hedging portfolios, and smart balance allocations between government yield credits and public equity markets."
-        }
-      `;
+        const now = /* @__PURE__ */ new Date();
         const response = await generateContentWithFailover({
           model: "gemini-3.5-flash",
-          contents: `${sysPrompt}
-Perform a live web search for the latest mid-2026 financial and stock indices for ${countryCode ? `country code: "${countryCode}" (base currency: "${currency}")` : `base currency code: "${currency}"`} and generate a formatted JSON object.`,
-          config: { responseMimeType: "application/json", tools: [{ googleSearch: {} }], temperature: 0.15 }
+          contents: buildPrompt(profile, now),
+          // Search grounding and a JSON mime type can't be combined on every model,
+          // so the JSON is requested in the prompt and parsed defensively below.
+          config: { tools: [{ googleSearch: {} }], temperature: 0 }
         });
-        const parsedResponse = JSON.parse(stripJsonFence(response.text || "{}"));
-        res.json(parsedResponse);
+        let raw = null;
+        try {
+          raw = JSON.parse(stripJsonFence(response.text || "{}"));
+        } catch {
+          return unavailable("unverified");
+        }
+        const answer = shapeMarketAnswer(profile, raw, extractGroundedSources(response), now);
+        if (!answer) return unavailable("unverified");
+        setCached(cacheKey, answer);
+        res.json(answer);
       } catch (err) {
         console.error("Live investments error:", err);
-        respondWithFallback();
+        unavailable(err instanceof Error && /429|quota|rate/i.test(err.message) ? "busy" : "error");
       }
     });
   }
@@ -4659,10 +4754,10 @@ async function getFlagRowsCached() {
   const { data, error } = await anonClient.from("feature_flags").select("key, enabled_default, phase");
   if (error) throw error;
   const rows = data ?? [];
-  flagRowsCache = { rows, expiresAt: Date.now() + CACHE_TTL_MS };
+  flagRowsCache = { rows, expiresAt: Date.now() + CACHE_TTL_MS2 };
   return rows;
 }
-var TIER_MAX_PHASE, CORE_FLAG_DEFAULTS, configRouter, CACHE_TTL_MS, flagRowsCache;
+var TIER_MAX_PHASE, CORE_FLAG_DEFAULTS, configRouter, CACHE_TTL_MS2, flagRowsCache;
 var init_config = __esm({
   "src/server/routes/config.ts"() {
     init_resendClient();
@@ -4681,7 +4776,7 @@ var init_config = __esm({
       core_help_support: true
     };
     configRouter = Router12();
-    CACHE_TTL_MS = 1e4;
+    CACHE_TTL_MS2 = 1e4;
     flagRowsCache = null;
     configRouter.get("/features", async (req, res) => {
       const flags = {};

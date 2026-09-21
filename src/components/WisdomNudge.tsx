@@ -31,7 +31,7 @@ export default function WisdomNudge({ context, onOpenLesson }: WisdomNudgeProps)
     <aside className={`rounded-2xl border p-3.5 mb-4 flex items-start gap-3 text-left ${book.accent.card}`} aria-label="Money lesson">
       <BookOpen className={`w-5 h-5 shrink-0 mt-0.5 ${book.accent.text}`} />
       <div className="flex-1 min-w-0">
-        <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500">From {book.title}</p>
+        <p className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500">Idea from {book.title}</p>
         <p className={`text-xs font-black mt-0.5 ${book.accent.text}`}>{lesson.title}</p>
         <p className="text-[11px] text-slate-700 leading-relaxed mt-1">{lesson.forYourBusiness}</p>
         <button type="button" onClick={() => onOpenLesson(lesson.id)} className={`text-[11px] font-bold mt-1.5 underline cursor-pointer ${book.accent.text}`}>

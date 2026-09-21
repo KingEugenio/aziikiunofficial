@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Briefcase, Plus, TrendUp as TrendingUp, Pulse as Activity, CaretRight as ChevronRight, Trash as Trash2, Target, Coins, Scales as Scale, Warning as AlertTriangle, CalendarDots as CalendarDays, Percent, MagicWand as Sparkles, ArrowsClockwise as RefreshCw, Globe, MagnifyingGlass as Search, TrendDown as TrendingDown, Wrench, FileText, Clock, ShieldCheck, Calculator, Stack as Layers, Question as HelpCircle, SealCheck as FileCheck, CheckCircle, BookOpen, Lightbulb, ChartBar, HandCoins, Info, CircleNotch as Loader2 } from "@phosphor-icons/react";
+import { api } from "../lib/api";
 import { Investment, Goal, Debt, Business, Asset } from "../types";
 import { SUPPORTED_CURRENCY_CODES, getCurrencySymbol } from "../lib/currency";
 import { useFeatureFlags } from "../lib/featureFlags";
@@ -280,19 +281,16 @@ export default function NetWorthInvestments({
     setIsFetchingLive(true);
     setLiveError(null);
     try {
-      const response = await fetch("/api/gemini/live-investments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ currency: activeCurrency, countryCode: currentBusiness?.countryCode })
-      });
-
-      if (!response.ok) {
-        throw new Error("Local limit cap or search grounding parameters shifted.");
+      const data = await api.gemini.liveInvestments({ currency: activeCurrency, countryCode: currentBusiness?.countryCode });
+      // The server never shows estimated numbers: when it can't back figures
+      // with live Google Search results it says so and sends none.
+      if (!data || data.available === false) {
+        setLiveData(null);
+        setLiveError(data?.message || "Live market figures aren't available right now.");
+        return;
       }
-
-      const data = await response.json();
       setLiveData(data);
-      triggerAlert("Live market indicators retrieved successfully via Gemini.");
+      triggerAlert("Live figures retrieved and checked against Google Search results.");
     } catch (err: any) {
       console.error(err);
       setLiveError(err?.message || "Temporarily unable to query market rate grounding index.");
@@ -1837,7 +1835,7 @@ export default function NetWorthInvestments({
                           Investment Indices Sourcing Desk
                         </h4>
                         <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
-                          Sourced central bank policy rates, sovereign treasury yields, and consumer inflation indices from an AI search.
+                          Live inflation, central bank and treasury rates, and your country's stock exchange index and size, read from Google Search for the country your business is set up in. Every figure shows its date and website, and anything that can't be confirmed is left out.
                         </p>
                       </div>
                     </div>
@@ -1925,28 +1923,43 @@ export default function NetWorthInvestments({
                     <div className="space-y-4 animate-fade-in text-xs font-sans">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="bg-slate-950/45 p-3.5 border border-slate-850 rounded-xl leading-relaxed text-left">
-                          <span className="text-[9px] font-mono text-slate-400 uppercase tracking-widest font-bold">Research Source Gateway</span>
-                          <strong className="text-slate-100 font-extrabold text-xs block mt-1">{liveData.sourceName || "Central Bank Spectrum"}</strong>
+                          <span className="text-[9px] font-mono text-slate-400 uppercase tracking-widest font-bold">Market researched</span>
+                          <strong className="text-slate-100 font-extrabold text-xs block mt-1">{liveData.country}</strong>
+                          <span className="text-[10px] text-slate-400 block mt-0.5">{liveData.sourceName}</span>
                         </div>
                         <div className="bg-slate-950/45 p-3.5 border border-slate-850 rounded-xl leading-relaxed text-left">
-                          <span className="text-[9px] font-mono text-slate-400 uppercase tracking-widest font-bold">Locally Sourced Inflation Rate</span>
-                          <strong className="text-rose-400 font-extrabold text-sm font-mono block mt-1">{liveData.localInflation || "N/A"}</strong>
+                          <span className="text-[9px] font-mono text-slate-400 uppercase tracking-widest font-bold">Inflation (annual)</span>
+                          {liveData.localInflation ? (
+                            <>
+                              <strong className="text-rose-400 font-extrabold text-sm font-mono block mt-1">{liveData.localInflation.value}</strong>
+                              <span className="text-[10px] text-slate-400 block mt-0.5">as of {liveData.localInflation.asOf} · {liveData.localInflation.source}</span>
+                            </>
+                          ) : (
+                            <strong className="text-slate-400 font-bold text-xs block mt-1">Not found</strong>
+                          )}
                         </div>
                         <div className="bg-slate-950/45 p-3.5 border border-slate-850 rounded-xl leading-relaxed text-left">
-                          <span className="text-[9px] font-mono text-slate-400 uppercase tracking-widest font-bold">Indices Refresh Range</span>
-                          <strong className="text-slate-100 font-extrabold text-xs block mt-1">Sourced Real-Time ({liveData.lastChecked || "Live"})</strong>
+                          <span className="text-[9px] font-mono text-slate-400 uppercase tracking-widest font-bold">{liveData.exchange?.name || "Stock exchange"} size</span>
+                          {liveData.exchange?.marketCap ? (
+                            <>
+                              <strong className="text-slate-100 font-extrabold text-sm font-mono block mt-1">{liveData.exchange.marketCap.value}</strong>
+                              <span className="text-[10px] text-slate-400 block mt-0.5">total market value, as of {liveData.exchange.marketCap.asOf} · {liveData.exchange.marketCap.source}</span>
+                            </>
+                          ) : (
+                            <strong className="text-slate-400 font-bold text-xs block mt-1">Not published</strong>
+                          )}
                         </div>
                       </div>
 
-                      {/* Sourced Rates Table */}
+                      {/* Sourced figures: each one carries its own date and website */}
                       <div className="bg-slate-950/30 border border-slate-850 rounded-xl overflow-hidden">
                         <div className="grid grid-cols-12 bg-slate-950/60 p-2.5 font-mono text-[9px] text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-850">
-                          <div className="col-span-5 text-left">Sovereign / Escrow Asset Class</div>
-                          <div className="col-span-2 text-center">Live Yield (APY)</div>
+                          <div className="col-span-5 text-left">Figure</div>
+                          <div className="col-span-2 text-center">Latest</div>
                           <div className="col-span-2 text-center">Trend</div>
-                          <div className="col-span-3 text-right">Risk/Institution Spectrum</div>
+                          <div className="col-span-3 text-right">Source and date</div>
                         </div>
-                        
+
                         <div className="divide-y divide-slate-850">
                           {liveData.rates?.map((rateObj: any, idx: number) => {
                             return (
@@ -1969,26 +1982,50 @@ export default function NetWorthInvestments({
                                   )}
                                 </div>
                                 <div className="col-span-3 text-right font-mono text-[10px] text-slate-400 leading-relaxed">
-                                  <span className="block font-bold text-slate-300">{rateObj.source}</span>
-                                  <span className="text-[9px] text-slate-500 italic font-sans block mt-0.5">{rateObj.safety}</span>
+                                  <span className="block font-bold text-slate-300 break-all">{rateObj.source}</span>
+                                  <span className="text-[9px] text-slate-500 italic font-sans block mt-0.5">as of {rateObj.asOf}</span>
                                 </div>
                               </div>
                             );
                           })}
+                          {(!liveData.rates || liveData.rates.length === 0) && (
+                            <div className="p-3 text-slate-400 text-[11px]">No rate or index figures could be confirmed for {liveData.country} right now.</div>
+                          )}
                         </div>
                       </div>
 
-                      {/* Market Advisory Alert */}
+                      {/* Where it came from */}
+                      <div className="bg-slate-950/30 border border-slate-850 rounded-xl p-3.5 text-left space-y-2">
+                        <p className="text-[9px] font-mono text-slate-400 uppercase tracking-widest font-bold">Checked against these Google Search results</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {liveData.sources?.map((src: any) => (
+                            <a
+                              key={src.title}
+                              href={src.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[10px] font-mono text-emerald-300 hover:text-emerald-200 bg-emerald-500/10 border border-emerald-500/20 rounded-md px-2 py-1 underline-offset-2 hover:underline"
+                            >
+                              {src.title}
+                            </a>
+                          ))}
+                        </div>
+                        <p className="text-[10px] text-slate-500 leading-relaxed">
+                          Retrieved {liveData.retrievedAt ? new Date(liveData.retrievedAt).toLocaleString() : "just now"}. Everyone in {liveData.country} sees the same figures for up to 30 minutes.
+                          {liveData.dropped > 0 && ` ${liveData.dropped} figure${liveData.dropped === 1 ? "" : "s"} couldn't be confirmed against a source and ${liveData.dropped === 1 ? "was" : "were"} left out.`}
+                        </p>
+                      </div>
+
                       <div className="bg-emerald-600/10 border border-emerald-500/25 rounded-xl p-4 text-emerald-300 flex items-start gap-3">
                         <div className="bg-emerald-600/20 text-emerald-400 w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border border-emerald-500/30">
                           <Lightbulb className="w-4 h-4" />
                         </div>
                         <div className="space-y-1 text-left">
                           <h5 className="text-[10px] font-mono uppercase tracking-widest font-black text-emerald-250">
-                            SME Portfolio Allocation Tactics
+                            Before you act on these
                           </h5>
                           <p className="text-[11px] leading-relaxed text-slate-300 font-sans">
-                            {liveData.marketAdvisory || "Sovereign bills remain prime safe spaces to offset inflation. Use treasury ladders to maintain healthy cash flow cycles during persistent inflationary pressures."}
+                            Figures are read from public web pages and can lag or be revised. Confirm them with your bank, your broker or the exchange itself before you invest. This is information, not advice.
                           </p>
                         </div>
                       </div>

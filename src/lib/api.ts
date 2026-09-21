@@ -106,6 +106,26 @@ function makeResource<T>(basePath: string) {
 }
 
 export const api = {
+  gemini: {
+    /**
+     * Live market figures for the business's country (see server/marketData.ts).
+     * Sends the login token so the server applies the person's plan limit
+     * instead of the stricter guest limit, and deliberately does NOT go through
+     * request(): that would queue a failed call to be replayed later when the
+     * connection returns, which makes no sense for a one-off lookup.
+     */
+    liveInvestments: async (payload: { currency: string; countryCode?: string }): Promise<any> => {
+      const { token } = await getSessionInfo();
+      const response = await fetch("/api/gemini/live-investments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify(payload),
+      });
+      const body = await response.json().catch(() => null);
+      if (!response.ok) throw new ApiError(body?.error || "Couldn't load live market figures just now. Please try again shortly.", response.status);
+      return body;
+    },
+  },
   auth: {
     signup: (payload: { email: string; password: string; acceptedTerms: true; displayName?: string; utmSource?: string; utmMedium?: string; utmCampaign?: string }) =>
       request<{ message: string }>("/auth/signup", { method: "POST", body: JSON.stringify(payload) }),

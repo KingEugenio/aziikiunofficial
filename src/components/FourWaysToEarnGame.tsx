@@ -6,14 +6,14 @@ import {
 } from "../lib/quadrantGame/engine";
 import { lessonById } from "../lib/bookLibrary";
 
-interface CashflowQuadrantGameProps {
+interface FourWaysToEarnGameProps {
   currencySymbol: string;
   /** Opens a lesson in the Book Library (Reports & Wisdom). */
   onOpenLesson?: (lessonId: string) => void;
 }
 
-const SAVE_KEY = "aziiki_quadrant_game_v1";
-const BEST_KEY = "aziiki_quadrant_game_best_v1";
+const SAVE_KEY = "aziiki_four_ways_game_v1";
+const BEST_KEY = "aziiki_four_ways_game_best_v1";
 
 function loadSaved(): GameState | null {
   try {
@@ -53,7 +53,7 @@ const QUADRANTS: Array<{ id: Quadrant; name: string; blurb: string; Icon: React.
 
 const seedNow = () => (Date.now() ^ Math.floor(Math.random() * 0x7fffffff)) | 0;
 
-export default function CashflowQuadrantGame({ currencySymbol, onOpenLesson }: CashflowQuadrantGameProps) {
+export default function FourWaysToEarnGame({ currencySymbol, onOpenLesson }: FourWaysToEarnGameProps) {
   const [game, setGame] = useState<GameState | null>(() => loadSaved());
   const [best, setBest] = useState<number | null>(() => loadBest());
   const [tab, setTab] = useState<"income" | "balance" | "log">("income");
@@ -80,14 +80,14 @@ export default function CashflowQuadrantGame({ currencySymbol, onOpenLesson }: C
   // ─── Start screen ────────────────────────────────────────────────────────
   if (!game || !summary) {
     return (
-      <div className="space-y-5 text-left" id="cashflow-quadrant-game">
+      <div className="space-y-5 text-left" id="four-ways-game">
         <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-4">
           <div className="flex items-start gap-3">
             <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
               <GameController className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-lg font-black text-slate-900 font-sans">Cashflow Quadrant Challenge</h2>
+              <h2 className="text-lg font-black text-slate-900 font-sans">Four Ways to Earn</h2>
               <p className="text-xs text-slate-500 font-sans mt-0.5 leading-relaxed">
                 A money game about the four ways people earn, and how to reach the point where your assets pay your bills.
               </p>
@@ -99,7 +99,7 @@ export default function CashflowQuadrantGame({ currencySymbol, onOpenLesson }: C
               <div key={id} className={`rounded-2xl border p-3.5 ${tint}`}>
                 <div className="flex items-center gap-2">
                   <Icon className="w-4 h-4 shrink-0" />
-                  <span className="text-[10px] font-mono font-black uppercase tracking-wider">{id}</span>
+                  <span className="sr-only">{name}</span>
                 </div>
                 <p className="text-xs font-bold mt-1.5">{name}</p>
                 <p className="text-[11px] opacity-80 leading-snug mt-0.5">{blurb}</p>
@@ -111,7 +111,7 @@ export default function CashflowQuadrantGame({ currencySymbol, onOpenLesson }: C
             <p className="text-xs font-bold text-slate-800">How to win</p>
             <p className="text-[11px] text-slate-600 leading-relaxed">
               Each turn is one month. You'll be offered businesses and investments to buy, tempting things to spend on, and surprises. Build monthly income from assets
-              (the right-hand side, B and I) until it's bigger than your monthly expenses. You have {MAX_MONTHS} months.
+              (the right-hand side: businesses you own and investments) until it's bigger than your monthly expenses. You have {MAX_MONTHS} months.
             </p>
           </div>
 
@@ -130,7 +130,7 @@ export default function CashflowQuadrantGame({ currencySymbol, onOpenLesson }: C
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-sm font-bold text-slate-900">{p.title}</span>
-                    <span className="text-[10px] font-mono font-black bg-slate-100 text-slate-600 rounded-md px-1.5 py-0.5">{p.quadrant}</span>
+                    <span className="text-[10px] font-mono font-bold bg-slate-100 text-slate-600 rounded-md px-1.5 py-0.5">{p.quadrant === "E" ? "Employee" : "Self-employed"}</span>
                   </div>
                   <p className="text-[11px] text-slate-500 mt-1 leading-snug">{p.blurb}</p>
                   <p className="text-[11px] font-mono text-slate-600 mt-2">
@@ -148,8 +148,8 @@ export default function CashflowQuadrantGame({ currencySymbol, onOpenLesson }: C
           )}
 
           <p className="text-[10px] text-slate-400 leading-relaxed">
-            An original Aziiki learning game inspired by the Cashflow Quadrant idea in Robert Kiyosaki's books. It is not the CASHFLOW board game and isn't affiliated with or
-            endorsed by Robert Kiyosaki or The Rich Dad Company. All amounts are practice money in {currencySymbol} and have no link to your real books. It's for learning, not financial advice.
+            An original Aziiki learning game. The idea that people earn in four different ways is explored in several popular money books, which you can read about in the Book Library. This game
+            isn't based on, and isn't affiliated with or endorsed by, any author, publisher or board game. All amounts are practice money in {currencySymbol} and have no link to your real books. It's for learning, not financial advice.
           </p>
         </div>
       </div>
@@ -163,7 +163,7 @@ export default function CashflowQuadrantGame({ currencySymbol, onOpenLesson }: C
 
   const badge: Record<string, string> = {
     opportunity: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    doodad: "bg-rose-50 text-rose-700 border-rose-200",
+    splurge: "bg-rose-50 text-rose-700 border-rose-200",
     emergency: "bg-amber-50 text-amber-700 border-amber-200",
     learn: "bg-indigo-50 text-indigo-700 border-indigo-200",
     windfall: "bg-emerald-50 text-emerald-700 border-emerald-200",
@@ -173,7 +173,7 @@ export default function CashflowQuadrantGame({ currencySymbol, onOpenLesson }: C
     setback: "bg-amber-50 text-amber-700 border-amber-200",
   };
   const badgeLabel: Record<string, string> = {
-    opportunity: "Opportunity", doodad: "Temptation", emergency: "Emergency", learn: "Learning", windfall: "Windfall",
+    opportunity: "Opportunity", splurge: "Temptation", emergency: "Emergency", learn: "Learning", windfall: "Windfall",
     scam: "Too good to be true?", illness: "Bad luck", raise: "Good news", setback: "Setback",
   };
   const choiceClass = (tone?: string) =>
@@ -184,15 +184,15 @@ export default function CashflowQuadrantGame({ currencySymbol, onOpenLesson }: C
       : "bg-slate-100 hover:bg-slate-200 text-slate-700";
 
   return (
-    <div className="space-y-4 text-left" id="cashflow-quadrant-game">
+    <div className="space-y-4 text-left" id="four-ways-game">
       {/* Header + numbers */}
       <div className="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm space-y-4">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 min-w-0">
             <GameController className="w-5 h-5 text-emerald-700 shrink-0" />
             <div className="min-w-0">
-              <h2 className="text-sm font-black text-slate-900 truncate">Cashflow Quadrant Challenge</h2>
-              <p className="text-[11px] text-slate-500">{p.title} ({p.quadrant}) · practice money</p>
+              <h2 className="text-sm font-black text-slate-900 truncate">Four Ways to Earn</h2>
+              <p className="text-[11px] text-slate-500">{p.title} · practice money</p>
             </div>
           </div>
           <button
@@ -211,7 +211,7 @@ export default function CashflowQuadrantGame({ currencySymbol, onOpenLesson }: C
             { label: "Month", value: `${game.month} / ${MAX_MONTHS}`, icon: <ClockCountdown className="w-3.5 h-3.5" /> },
             { label: "Cash", value: fmt(game.cash) },
             { label: "Loans", value: fmt(game.loan), warn: game.loan > 0 },
-            { label: "Money smarts", value: `${game.iq}`, hint: summary.discount > 0 ? `${Math.round(summary.discount * 100)}% off deals` : "learn to get better deals" },
+            { label: "Money smarts", value: `${game.smarts}`, hint: summary.discount > 0 ? `${Math.round(summary.discount * 100)}% off deals` : "learn to get better deals" },
           ].map((s) => (
             <div key={s.label} className={`rounded-2xl border p-3 ${s.warn ? "bg-rose-50 border-rose-200" : "bg-slate-50 border-slate-200"}`}>
               <p className="text-[9px] font-mono font-bold text-slate-450 uppercase tracking-wider flex items-center gap-1">{s.icon}{s.label}</p>
@@ -249,7 +249,7 @@ export default function CashflowQuadrantGame({ currencySymbol, onOpenLesson }: C
               <div key={id} className={`rounded-2xl border p-3.5 ${tint} ${amount > 0 ? "" : "opacity-60"}`}>
                 <div className="flex items-center gap-1.5">
                   <Icon className="w-4 h-4" />
-                  <span className="text-[10px] font-mono font-black uppercase tracking-wider">{id}</span>
+                  <span className="sr-only">{name}</span>
                   {mine && <span className="text-[9px] font-bold bg-white/70 rounded px-1">you</span>}
                 </div>
                 <p className="text-[11px] font-bold mt-1">{name}</p>
@@ -279,10 +279,10 @@ export default function CashflowQuadrantGame({ currencySymbol, onOpenLesson }: C
             <div className="grid grid-cols-3 gap-2 text-center">
               <div className="bg-slate-50 rounded-xl p-2.5"><p className="text-[9px] font-mono text-slate-400 uppercase">Costs</p><p className="text-xs font-black text-slate-900">{fmt(card.cost ?? 0)}</p></div>
               <div className="bg-emerald-50 rounded-xl p-2.5"><p className="text-[9px] font-mono text-emerald-700 uppercase">Pays you</p><p className="text-xs font-black text-emerald-800">{fmt(card.cashflow ?? 0)}/mo</p></div>
-              <div className="bg-slate-50 rounded-xl p-2.5"><p className="text-[9px] font-mono text-slate-400 uppercase">Type</p><p className="text-xs font-black text-slate-900">{card.quadrant === "B" ? "Business (B)" : "Investment (I)"}</p></div>
+              <div className="bg-slate-50 rounded-xl p-2.5"><p className="text-[9px] font-mono text-slate-400 uppercase">Type</p><p className="text-xs font-black text-slate-900">{card.quadrant === "B" ? "Business" : "Investment"}</p></div>
             </div>
           )}
-          {card.kind === "doodad" && (
+          {card.kind === "splurge" && (
             <p className="text-[11px] text-slate-500 flex items-center gap-1.5"><Lightbulb className="w-3.5 h-3.5 text-amber-500 shrink-0" /> Ask: does this put money into my pocket, or take it out?</p>
           )}
           {card.kind === "scam" && (
@@ -383,7 +383,7 @@ export default function CashflowQuadrantGame({ currencySymbol, onOpenLesson }: C
               <Row label={`${p.title} pay`} value={fmt(summary.earnedIncome)} />
               {game.holdings.length === 0 && <p className="text-[11px] text-slate-400">No assets yet</p>}
               {game.holdings.map((h) => (
-                <Row key={h.uid} label={`${h.name} (${h.quadrant})`} value={fmt(h.cashflow)} />
+                <Row key={h.uid} label={`${h.name} (${h.quadrant === "B" ? "business" : "investment"})`} value={fmt(h.cashflow)} />
               ))}
               <Row label="Total in" value={fmt(summary.totalIncome)} strong />
             </div>

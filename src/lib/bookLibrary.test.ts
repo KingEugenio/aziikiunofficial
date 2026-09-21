@@ -54,4 +54,50 @@ describe("book library", () => {
     expect(ids.length).toBeGreaterThan(5);
     for (const id of ids) expect(lessonById(id), id).toBeDefined();
   });
+
+  describe("copyright guard (see docs/content-and-copyright.md)", () => {
+    const text = (l: (typeof LESSONS)[number]) => [l.title, l.idea, l.forYourBusiness, l.tryIt.text].join(" ");
+
+    it("quotes nothing: no quotation marks anywhere in lesson text", () => {
+      for (const l of LESSONS) expect(/["\u201C\u201D]/.test(text(l)), `${l.id} contains a quotation mark`).toBe(false);
+    });
+
+    it("keeps every lesson a short summary, not a passage", () => {
+      for (const l of LESSONS) {
+        expect(l.title.length, `${l.id} title`).toBeLessThanOrEqual(60);
+        expect(l.idea.length, `${l.id} idea`).toBeLessThanOrEqual(360);
+        expect(l.forYourBusiness.length, `${l.id} forYourBusiness`).toBeLessThanOrEqual(320);
+      }
+    });
+
+    it("reuses none of the books' chapter titles or named characters", () => {
+      const banned = [
+        "wealth is what you don't see", "getting rich vs. staying rich", "getting rich and staying rich", "never enough", "mind your own business",
+        "work to learn", "the rich don't work for money", "mr. market", "investment versus speculation", "start thy purse to fattening",
+        "nothing's as good or as bad as it seems", "the man in the car", "arkad",
+      ];
+      for (const l of LESSONS) {
+        const t = text(l).toLowerCase();
+        for (const b of banned) expect(t.includes(b), `${l.id} reuses "${b}"`).toBe(false);
+      }
+    });
+
+    it("the game and its code use no one else's brand or game terms", () => {
+      const banned = ["cashflow quadrant", "cashflow 101", "cashflow game", "rat race", "fast track", "doodad", "rich dad", "financial iq", "kiyosaki"];
+      for (const file of ["../components/FourWaysToEarnGame.tsx", "quadrantGame/engine.ts"]) {
+        const src = fs.readFileSync(path.resolve(__dirname, file), "utf8").toLowerCase();
+        for (const b of banned) expect(src.includes(b), `${file} mentions "${b}"`).toBe(false);
+      }
+    });
+
+    it("names every book and author only as a source (no covers or logos are bundled)", () => {
+      for (const b of BOOKS) {
+        expect(b.title.length).toBeGreaterThan(3);
+        expect(b.author.length).toBeGreaterThan(3);
+      }
+      const publicDir = path.resolve(__dirname, "../../public");
+      const files = fs.existsSync(publicDir) ? fs.readdirSync(publicDir).join(" ").toLowerCase() : "";
+      expect(/cover|richdad|rich-dad|kiyosaki|babylon|intelligent-investor/.test(files)).toBe(false);
+    });
+  });
 });
