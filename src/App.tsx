@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo, Suspense, lazy } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Buildings as Building2, Stack as Layers2, Coins, Users, Target, Warehouse, Brain as BrainCircuit, MagicWand as Sparkles, CurrencyDollar as DollarSign, DeviceMobile as Smartphone, CheckCircle, TrendUp as TrendingUp, WarningCircle as AlertCircle, Database, ShieldCheck, SignOut as LogOut, UserCheck, ChartLine as LineChart, BookOpen, ArrowsClockwise, Lock, GearSix, Plus, X, Globe, ArrowRight, User, UsersThree, ChartBar, LockKey, CaretDown, CaretUp, Package, Question as HelpCircle } from "@phosphor-icons/react";
+import { Buildings as Building2, Stack as Layers2, Coins, Users, Target, Warehouse, Brain as BrainCircuit, MagicWand as Sparkles, CurrencyDollar as DollarSign, DeviceMobile as Smartphone, CheckCircle, TrendUp as TrendingUp, WarningCircle as AlertCircle, Database, ShieldCheck, SignOut as LogOut, UserCheck, ChartLine as LineChart, BookOpen, ArrowsClockwise, Lock, GearSix, Plus, X, Globe, ArrowRight, User, UsersThree, ChartBar, LockKey, CaretDown, CaretUp, Package, Question as HelpCircle, GameController } from "@phosphor-icons/react";
+import WisdomNudge from "./components/WisdomNudge";
+import type { LessonTab } from "./lib/bookLibrary";
 import { Business, Customer, Transaction, Invoice, Receipt, Quotation, Investment, Asset, Goal, Debt, InventoryItem, Partner, Shareholder, UserRole, AuditLog } from "./types";
 import BusinessDashboard from "./components/BusinessDashboard";
 
@@ -29,6 +31,7 @@ import { useRealtimeConfigSync } from "./lib/realtimeConfigSync";
 const PersonalWorkspace = lazy(() => import("./components/PersonalWorkspace"));
 const InvoiceReceiptBuilder = lazy(() => import("./components/InvoiceReceiptBuilder"));
 const NetWorthInvestments = lazy(() => import("./components/NetWorthInvestments"));
+const CashflowQuadrantGame = lazy(() => import("./components/CashflowQuadrantGame"));
 const FinancialReports = lazy(() => import("./components/FinancialReports"));
 const AppGuide = lazy(() => import("./components/AppGuide"));
 const AdMonetizationHub = lazy(() => import("./components/AdMonetizationHub"));
@@ -118,6 +121,9 @@ export default function App() {
   // Active Navigation Tab
   // Options: "dashboard" | "billing" | "crm" | "wealth" | "stock" | "monetize" | "ai"
   const [activeTab, setActiveTab] = useState<string>("dashboard");
+  // A Book Library lesson to open on arrival at Reports & Wisdom (set by a
+  // nudge or by the game's end-of-game notes).
+  const [focusLessonId, setFocusLessonId] = useState<string | null>(null);
 
   // Unique per-tab browser title (see useDocumentTitle) - Aziiki has no
   // client-side router, so this is the only thing that ever changes
@@ -127,6 +133,7 @@ export default function App() {
     billing: "Billing & PDFs",
     crm: "Customer CRM",
     wealth: "Wealth & Goals",
+    game: "Cashflow Game",
     stock: "Warehouse Stock",
     purchaseOrders: "Purchase Orders",
     team: "Team",
@@ -163,6 +170,7 @@ export default function App() {
     // stale deep links / persisted state, not just hidden nav buttons).
     const flagForTab: Record<string, string> = {
       wealth: "net_worth_investments",
+      game: "cashflow_quadrant_game",
       monetize: "ad_monetization_hub",
       stock: "inventory_management",
       purchaseOrders: "purchase_orders",
@@ -186,6 +194,12 @@ export default function App() {
     if (tab === "ai") trackFeatureUsage("aiQueries");
     if (tab === "guide") trackFeatureUsage("guideViews");
   };
+
+  const openLesson = (lessonId: string) => {
+    setFocusLessonId(lessonId);
+    changeTab("reports");
+  };
+  const goToLessonTab = (tab: LessonTab) => changeTab(tab);
 
   // Safety net: if the currently-active tab's flag goes off after the fact
   // (admin flips it mid-session, or flags finish loading after mount and
@@ -2014,6 +2028,21 @@ export default function App() {
             </button>
             )}
 
+            {/* Cashflow Quadrant Challenge: Phase 2 learning game. Toggle via admin portal -> cashflow_quadrant_game. */}
+            {isEnabled("cashflow_quadrant_game") && (
+            <button
+              id="tab-game-btn"
+              onClick={() => changeTab("game")}
+              className={`px-4 py-2.5 rounded-xl font-bold font-sans transition-all flex items-center gap-2 cursor-pointer shrink-0 md:w-full md:justify-start ${
+ activeTab === "game"
+ ? "bg-brand-navy text-white shadow-sm shadow-brand-navy/15"
+ : "text-slate-600 hover:bg-slate-100"
+ }`}
+            >
+              <GameController className="w-4 h-4 shrink-0" /> Cashflow Game
+            </button>
+            )}
+
             {/* Warehouse Stock: off by default in Phase 1 per the product teardown (Phase 2 - "Inventory Management"), code preserved. Toggle via admin portal -> inventory_management. */}
             {isEnabled("inventory_management") && (
             <button
@@ -2998,6 +3027,7 @@ export default function App() {
             className="w-full"
           >
             <>
+                {isEnabled("core_dashboard") && activeTab === "dashboard" && <WisdomNudge context={currentBusiness.isPersonal ? "personal" : "dashboard"} onOpenLesson={openLesson} />}
                 {isEnabled("core_dashboard") && activeTab === "dashboard" && (
                   currentBusiness.isPersonal ? (
                     <Suspense fallback={<SkeletonDashboard />}>
@@ -3036,6 +3066,7 @@ export default function App() {
                   )
                 )}
 
+                {isEnabled("core_billing") && activeTab === "billing" && <WisdomNudge context={"billing"} onOpenLesson={openLesson} />}
                 {isEnabled("core_billing") && activeTab === "billing" && (
                   <Suspense fallback={<SkeletonBillingBuilder />}>
                     <InvoiceReceiptBuilder
@@ -3058,6 +3089,7 @@ export default function App() {
                   </Suspense>
                 )}
 
+                {isEnabled("core_customers") && activeTab === "crm" && <WisdomNudge context={"crm"} onOpenLesson={openLesson} />}
                 {isEnabled("core_customers") && activeTab === "crm" && (
                   <Suspense fallback={<SkeletonCRM />}>
                     <CustomerCRM
@@ -3074,6 +3106,7 @@ export default function App() {
                 )}
 
                 {/* Off by default in Phase 1, code preserved for the admin portal to turn on later. */}
+                {isEnabled("net_worth_investments") && activeTab === "wealth" && <WisdomNudge context={"wealth"} onOpenLesson={openLesson} />}
                 {isEnabled("net_worth_investments") && activeTab === "wealth" && (
                   <Suspense
                     fallback={
@@ -3106,6 +3139,7 @@ export default function App() {
                 )}
 
                 {/* Off by default in Phase 1 per the product teardown, code preserved for the admin portal to turn on later. */}
+                {isEnabled("inventory_management") && activeTab === "stock" && <WisdomNudge context={"stock"} onOpenLesson={openLesson} />}
                 {isEnabled("inventory_management") && activeTab === "stock" && (
                   <Suspense fallback={<SkeletonInventory />}>
                     <InventoryManager
@@ -3121,12 +3155,14 @@ export default function App() {
                 )}
 
                 {/* Off by default in Phase 1, code preserved for the admin portal to turn on later. Each of these three used to be a cramped sub-tab inside the Billing builder; they're now their own top-level screens. */}
+                {isEnabled("purchase_orders") && activeTab === "purchaseOrders" && <WisdomNudge context={"purchaseOrders"} onOpenLesson={openLesson} />}
                 {isEnabled("purchase_orders") && activeTab === "purchaseOrders" && (
                   <Suspense fallback={<SkeletonTable rows={5} cols={4} />}>
                     <PurchaseOrderManager businessId={currentBusiness.id} businessCurrency={currentBusiness.currency} />
                   </Suspense>
                 )}
 
+                {isEnabled("team_memberships_invite_ui") && activeTab === "team" && <WisdomNudge context={"team"} onOpenLesson={openLesson} />}
                 {isEnabled("team_memberships_invite_ui") && activeTab === "team" && (
                   <Suspense fallback={<SkeletonTable rows={4} cols={3} />}>
                     <TeamManager businessId={currentBusiness.id} />
@@ -3143,10 +3179,21 @@ export default function App() {
                       currencySymbol={currencySymbol}
                       onContributeToGoal={handleContributeToGoal}
                       onAddTransaction={handleAddTransaction}
+                      focusLessonId={focusLessonId}
+                      onFocusLessonHandled={() => setFocusLessonId(null)}
+                      onGoToTab={goToLessonTab}
+                      gameEnabled={isEnabled("cashflow_quadrant_game")}
                     />
                   </Suspense>
                 )}
 
+                {isEnabled("cashflow_quadrant_game") && activeTab === "game" && (
+                  <Suspense fallback={<SkeletonDashboard />}>
+                    <CashflowQuadrantGame currencySymbol={currencySymbol} onOpenLesson={openLesson} />
+                  </Suspense>
+                )}
+
+                {isEnabled("core_ai_advisor") && activeTab === "ai" && <WisdomNudge context={"ai"} onOpenLesson={openLesson} />}
                 {isEnabled("core_ai_advisor") && activeTab === "ai" && (
                   <Suspense fallback={<SkeletonForm />}>
                     <AIFieldAssistant

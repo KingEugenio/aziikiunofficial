@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { TrendUp as TrendingUp, TrendDown as TrendingDown, Calendar, Stack as Layers, Percent, Coins, BookOpen, ArrowRight, MagicWand as Sparkles, Question as HelpCircle, PiggyBank, CaretLeft as ChevronLeft, CaretRight as ChevronRight, Fire as Flame, CheckCircle as CheckCircle2, CurrencyDollar as DollarSign, Warning as AlertTriangle, Lightbulb } from "@phosphor-icons/react";
+import BookLibrary from "./BookLibrary";
+import type { LessonTab } from "../lib/bookLibrary";
 import AziikiWealthCalculator from "./AziikiWealthCalculator";
 import {
   BarChart,
@@ -29,127 +31,11 @@ interface FinancialReportsProps {
   currencySymbol: string;
   onContributeToGoal: (goalId: string, amount: number) => void | Promise<void>;
   onAddTransaction: (newTx: any) => void | Promise<void>;
+  focusLessonId?: string | null;
+  onFocusLessonHandled?: () => void;
+  onGoToTab?: (tab: LessonTab) => void;
+  gameEnabled?: boolean;
 }
-
-// investment books data
-const INVESTMENT_BOOKS = [
-  {
-    title: "The Richest Man in Babylon",
-    author: "George S. Clason",
-    key: "babylon",
-    bgColor: "bg-amber-500/10 border-amber-500/30",
-    textColor: "text-amber-800",
-    iconColor: "text-amber-600",
-    principles: [
-      {
-        title: "Start Thy Purse to Fattening",
-        desc: "Save at least 10% (one-tenth) of all you earn before paying anyone else. This is your seed money."
-      },
-      {
-        title: "Control Thy Expenditures",
-        desc: "Do not confuse necessary expenses with your desires. Budget your expenses so that you may have gold to pay yourself first."
-      },
-      {
-        title: "Make Thy Gold Multiply",
-        desc: "Put your savings to work. Reinvest interest and dividends. The earnings of your gold will earn more gold."
-      },
-      {
-        title: "Guard Thy Treasures from Loss",
-        desc: "Protect your capital. Avoid risky get-rich-quick schemes. Consult wise men who are experienced in handling gold."
-      },
-      {
-        title: "Make of Thy Dwelling a Profitable Investment",
-        desc: "Own your own business and operations site. Owning lowers your cost of living and builds true assets."
-      },
-      {
-        title: "Ensure a Future Income",
-        desc: "Provide in advance for your old age and the protection of your family through long-term compound growth."
-      },
-      {
-        title: "Increase Thy Ability to Earn",
-        desc: "Cultivate your skills, study, and grow wiser. The more knowledge you acquire, the more gold you will be enabled to earn."
-      }
-    ]
-  },
-  {
-    title: "The Intelligent Investor",
-    author: "Benjamin Graham",
-    key: "intelligent",
-    bgColor: "bg-indigo-500/10 border-indigo-500/30",
-    textColor: "text-indigo-800",
-    iconColor: "text-indigo-600",
-    principles: [
-      {
-        title: "A Margin of Safety",
-        desc: "Always pay less than an asset's intrinsic value to hedge against future downturns and unexpected errors."
-      },
-      {
-        title: "Investment vs Speculation",
-        desc: "An investment operation promises safety of principal and an adequate return. Speculating is taking unchecked risks for quick gains."
-      },
-      {
-        title: "Define Your Investor Personae",
-        desc: "Choose between being Defensive (passive indexing, low effort, low risk) or Enterprising (active, seeks undervalued opportunities)."
-      },
-      {
-        title: "Meet Mr. Market",
-        desc: "The market swings between wild optimism and extreme pessimism. Buy when he is depressed, sell when he is overenthusiastic."
-      }
-    ]
-  },
-  {
-    title: "Rich Dad Poor Dad",
-    author: "Robert Kiyosaki",
-    key: "richdad",
-    bgColor: "bg-emerald-500/10 border-emerald-500/30",
-    textColor: "text-emerald-800",
-    iconColor: "text-emerald-600",
-    principles: [
-      {
-        title: "Assets Put Money IN Your Pocket",
-        desc: "An asset is something that generates cash flow (businesses, stocks, real estate). Liabilities (nice cars, high bills) drag money OUT."
-      },
-      {
-        title: "The Rich Do Not Work for Money",
-        desc: "The rich make money work for them by acquiring cash-flowing assets. Do not lock yourself in a perpetual cycle of working for a regular salary."
-      },
-      {
-        title: "Mind Your Own Business",
-        desc: "Build and keep your asset column strong. Don't work your entire life making someone else or your suppliers rich."
-      },
-      {
-        title: "Work to Learn, Don't Work to Earn",
-        desc: "Seek jobs or gigs where you will learn sales, negotiation, management, and systems rather than just searching for a slightly higher wage."
-      }
-    ]
-  },
-  {
-    title: "The Psychology of Money",
-    author: "Morgan Housel",
-    key: "psychology",
-    bgColor: "bg-[color:var(--color-brand-navy)]/10 border-[color:var(--color-brand-navy)]/30",
-    textColor: "text-[color:var(--color-brand-navy)]",
-    iconColor: "text-[color:var(--color-brand-navy)]",
-    principles: [
-      {
-        title: "Wealth is What You Don't See",
-        desc: "Spending money to show people how much money you have is the quickest way to have less money. Real wealth is the assets you haven't spent yet."
-      },
-      {
-        title: "Getting Rich vs. Staying Rich",
-        desc: "Getting rich requires taking risks and being optimistic. Staying rich requires humility, survival instinct, and fearing that it can go away."
-      },
-      {
-        title: "Use Money to Buy Control of Time",
-        desc: "The highest dividend money pays is the ability to do what you want, when you want, with whom you want, for as long as you want."
-      },
-      {
-        title: "The Magic of Compounding Loops",
-        desc: "Good investing isn't necessarily about earning the highest returns. It's about earning pretty good returns that you can stick with for a long time."
-      }
-    ]
-  }
-];
 
 export default function FinancialReports({
   currentBusiness,
@@ -158,7 +44,11 @@ export default function FinancialReports({
   investments,
   currencySymbol: businessCurrencySymbol,
   onContributeToGoal,
-  onAddTransaction
+  onAddTransaction,
+  focusLessonId,
+  onFocusLessonHandled,
+  onGoToTab,
+  gameEnabled
 }: FinancialReportsProps) {
   // Report Period Type selection: "daily" | "weekly" | "monthly" | "quarterly" | "annual"
   const [periodType, setPeriodType] = useState<"daily" | "weekly" | "monthly" | "quarterly" | "annual">("monthly");
@@ -229,9 +119,6 @@ export default function FinancialReports({
   };
 
   // Wisdom Slider state
-  const [wisdomBookIndex, setWisdomBookIndex] = useState<number>(0);
-  const [wisdomPrincipleIndex, setWisdomPrincipleIndex] = useState<number>(0);
-  const [showWisdomPanel, setShowWisdomPanel] = useState<boolean>(false);
 
   // Pay-Yourself-First State
   const [selectedGoalId, setSelectedGoalId] = useState<string>("");
@@ -533,19 +420,6 @@ export default function FinancialReports({
 
   // Elegant distinct theme palette matching standard dashboard looks
   const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#a855f7", "#ec4899", "#6366f1"];
-
-  // Wisdom Book Carousel controls
-  const handleWisdomBookNext = () => {
-    setWisdomPrincipleIndex(0);
-    setWisdomBookIndex((prev) => (prev + 1) % INVESTMENT_BOOKS.length);
-  };
-
-  const handleWisdomBookPrev = () => {
-    setWisdomPrincipleIndex(0);
-    setWisdomBookIndex((prev) => (prev - 1 + INVESTMENT_BOOKS.length) % INVESTMENT_BOOKS.length);
-  };
-
-  const currentBook = INVESTMENT_BOOKS[wisdomBookIndex];
 
   // automated smart analysis recommendations
   const getFinancialAdvice = () => {
@@ -1004,7 +878,7 @@ export default function FinancialReports({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         
         {/* Golden Tablet Pay-Yourself-First panel */}
-        <div className="lg:col-span-7 bg-amber-900 text-amber-50 rounded-3xl p-6 text-left border border-amber-700 shadow-md relative overflow-hidden flex flex-col justify-between min-h-[350px]">
+        <div className="lg:col-span-12 bg-amber-900 text-amber-50 rounded-3xl p-6 text-left border border-amber-700 shadow-md relative overflow-hidden flex flex-col justify-between min-h-[350px]">
           
           {/* Subtle gold coins watermark layer */}
           <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-y-1/4 translate-x-1/6">
@@ -1111,129 +985,10 @@ export default function FinancialReports({
           </form>
         </div>
 
-        {/* Dynamic sliding investment rules panel */}
-        <div className={`lg:col-span-5 bg-white border border-slate-200 rounded-3xl p-6 shadow-sm text-left flex flex-col justify-between transition-all duration-305 ${showWisdomPanel ? "min-h-[350px]" : "min-h-[140px]"}`}>
-          
-          <div className="space-y-4">
-            <div className="flex justify-between items-center border-b border-slate-100 pb-3">
-              <div className="flex items-center gap-1.5">
-                <BookOpen className="w-5 h-5 text-indigo-600" />
-                <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider font-sans">
-                  Sovereign Book Wisdom
-                </h3>
-              </div>
-              
-              <button
-                onClick={() => setShowWisdomPanel(!showWisdomPanel)}
-                className="text-[11px] font-bold text-indigo-600 hover:underline px-3 py-1 bg-indigo-50 rounded-lg cursor-pointer"
-              >
-                {showWisdomPanel ? "Collapse ▴" : "Expand wisdom ▾"}
-              </button>
-            </div>
-
-            {!showWisdomPanel ? (
-              <div 
-                onClick={() => setShowWisdomPanel(true)}
-                className="p-3 bg-indigo-50/40 border border-indigo-100/60 rounded-2xl cursor-pointer hover:bg-indigo-50 transition-all flex items-center gap-3"
-              >
-                <div className="w-9 h-9 rounded-xl bg-indigo-100 flex items-center justify-center shrink-0 text-indigo-600">
-                  <BookOpen className="w-4.5 h-4.5" />
-                </div>
-                <div className="space-y-0.5">
-                  <p className="text-xs font-bold text-slate-800 font-sans">
-                    Read financial guidelines from the experts
-                  </p>
-                  <p className="text-[10px] text-slate-450 font-mono">
-                    Includes {INVESTMENT_BOOKS.length} volumes: {INVESTMENT_BOOKS.map(b => b.title.split(" ")[0]).join(", ")}...
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <>
-                {/* Pagination controls inside */}
-                <div className="flex justify-between items-center pt-1">
-                  <span className="text-[10px] font-heavy text-indigo-600 uppercase tracking-widest font-mono">
-                    Book #{wisdomBookIndex + 1} of {INVESTMENT_BOOKS.length} Summary
-                  </span>
-                  
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={handleWisdomBookPrev}
-                      className="p-1.5 hover:bg-slate-50 border border-slate-250 rounded-xl cursor-pointer text-slate-500"
-                      title="Previous Book" aria-label="Previous Book"
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={handleWisdomBookNext}
-                      className="p-1.5 hover:bg-slate-50 border border-slate-250 rounded-xl cursor-pointer text-slate-500"
-                      title="Next Book" aria-label="Next Book"
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <h4 className="text-base font-black text-slate-900 leading-snug">
-                    {currentBook.title}
-                  </h4>
-                  <p className="text-xs text-slate-400 font-mono italic">
-                    By {currentBook.author}
-                  </p>
-                </div>
-
-                {/* Carousel / sliding principles */}
-                <div className={`p-4 border rounded-2xl ${currentBook.bgColor} transition-all duration-300 min-h-[160px] flex flex-col justify-between`}>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-black text-indigo-600 font-mono">
-                        Rule #{wisdomPrincipleIndex + 1}:
-                      </span>
-                      <span className={`text-xs font-bold ${currentBook.textColor} font-sans`}>
-                        {currentBook.principles[wisdomPrincipleIndex].title}
-                      </span>
-                    </div>
-                    <p className="text-[11.5px] text-slate-650 leading-relaxed">
-                      {currentBook.principles[wisdomPrincipleIndex].desc}
-                    </p>
-                  </div>
-
-                  {/* Principle micro selector beads */}
-                  <div className="flex justify-between items-center mt-3 pt-2 border-t border-slate-200/20">
-                    <span className="text-[10px] text-slate-400 font-mono">
-                      {wisdomPrincipleIndex + 1} of {currentBook.principles.length} core rules
-                    </span>
-                    
-                    <div className="flex gap-1">
-                      {currentBook.principles.map((_, pIdx) => (
-                        <button
-                          key={pIdx}
-                          onClick={() => setWisdomPrincipleIndex(pIdx)}
-                          className={`w-2 h-2 rounded-full transition-all cursor-pointer ${
- wisdomPrincipleIndex === pIdx ? "bg-indigo-600 w-4" : "bg-slate-350"
- }`}
-                        ></button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-
-          {showWisdomPanel && (
-            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3 flex items-center gap-2 mt-4 animate-fade-in">
-              <Lightbulb className="w-4 h-4 text-amber-500 shrink-0" />
-              <p className="text-[10px] text-slate-600 font-sans leading-relaxed">
-                <strong>Study Guide:</strong> High interest premiums (like Sovereign GHS 91-Day Bills) yield up to 21% returns. Double check inflation metrics prior to deploying offline holdings.
-              </p>
-            </div>
-          )}
-
-        </div>
-
       </div>
+
+      {/* Book Library: short lessons from the money books, with something to try in Aziiki for each */}
+      <BookLibrary focusLessonId={focusLessonId} onFocusHandled={onFocusLessonHandled} onGoToTab={onGoToTab} gameEnabled={gameEnabled} />
 
       {/* ANALYSIS AND INTELLIGENT EXECUTIVE ALERTS (Sourced automatically) */}
       <div className="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm text-left">
