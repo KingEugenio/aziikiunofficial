@@ -9,10 +9,6 @@ export default defineConfig(() => {
     plugins: [
       react(),
       tailwindcss(),
-      // Pre-compress production JS/CSS assets at build time so the server
-      // can hand a browser the already-gzipped/brotli'd file instead of
-      // compressing on every request. See server.ts for the Express-side
-      // Accept-Encoding negotiation that serves these.
       viteCompression({ algorithm: 'gzip', ext: '.gz', threshold: 1024 }),
       viteCompression({ algorithm: 'brotliCompress', ext: '.br', threshold: 1024 }),
     ],
@@ -22,13 +18,24 @@ export default defineConfig(() => {
       },
     },
     build: {
+      // Enable minification with Terser for maximum compression
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: true,
+          drop_debugger: true,
+          unused: true,
+          dead_code: true,
+        },
+        mangle: true,
+        output: {
+          comments: false,
+        },
+      },
+      // Optimize chunk size
+      chunkSizeWarningLimit: 1000,
       rollupOptions: {
         output: {
-          // Split vendor code into logical chunks so the browser caches
-          // React/Recharts/Motion/Supabase separately from app code and
-          // from each other - a deploy that only touches app code doesn't
-          // force everyone to re-download these large, rarely-changing
-          // libraries.
           manualChunks(id) {
             if (!id.includes('node_modules')) return undefined;
             if (id.includes('node_modules/react-dom/') || id.includes('node_modules/react/') || id.includes('node_modules/scheduler/')) {
@@ -43,15 +50,28 @@ export default defineConfig(() => {
             if (id.includes('node_modules/@supabase/')) {
               return 'vendor-supabase';
             }
+            // Separate large components
+            if (id.includes('node_modules/html2canvas/')) {
+              return 'vendor-html2canvas';
+            }
             return undefined;
           },
+          // Optimize asset naming and hashing
+          assetFileNames: (assetInfo) => {
+            const info = assetInfo.name.split('.');
+            const ext = info[info.length - 1];
+            if (/png|jpe?g|gif|svg/.test(ext)) {
+              return `assets/images/[name]-[hash][extname]`;
+            }
+            return `assets/[name]-[hash][extname]`;
+          },
+          // Compact output
+          format: 'es',
+          compact: true,
         },
       },
     },
     server: {
-      // Set DISABLE_HMR=true to turn off hot module reload and file
-      // watching entirely - useful when something else is editing files on
-      // disk in bulk and live-reload churn would just be noise.
       hmr: process.env.DISABLE_HMR !== 'true',
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },
