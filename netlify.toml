@@ -1,0 +1,17 @@
+[build]
+command = "npm run build"
+functions = "functions"
+publish = "dist"
+
+# Redirect all API requests to a backend (you need to set up separate backend hosting)
+[[redirects]]
+from = "/api/*"
+to = "/.netlify/functions/api:splat"
+status = 200
+force = false
+
+# Redirect all other requests to index.html for SPA routing
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200

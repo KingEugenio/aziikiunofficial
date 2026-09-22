@@ -9,6 +9,7 @@ import { captureUtmParams } from './lib/utm.ts';
 import { initSentry } from './lib/sentry.ts';
 import { primeCache } from './lib/sessionCache.ts';
 import './index.css';
+import './styles/mobile-modal.css';
 
 // No-ops entirely until VITE_SENTRY_DSN is set - see lib/sentry.ts.
 initSentry();

@@ -16,11 +16,12 @@ import {
   X as CloseIcon,
   ChatText as MessageSquare,
   Users,
-} from "@phosphor-icons/react";
+} from "@phosphor-icons/react", Activity as ActivityIcon;
 import { supabase } from "../lib/supabaseClient";
 import { api } from "../lib/api";
 import BrandLogo from "../components/BrandLogo";
 import AdminDashboardHome from "./AdminDashboardHome";
+import ActivityMonitoringPanel from "./ActivityMonitoringPanel";
 import FeatureFlagsPanel from "./FeatureFlagsPanel";
 import AnnouncementsPanel from "./AnnouncementsPanel";
 import SurveysPanel from "./SurveysPanel";
@@ -35,7 +36,7 @@ import UsersPanel from "./UsersPanel";
 const AuthPortal = lazy(() => import("../components/AuthPortal"));
 
 type AdminStatus = "checking" | "authorized" | "unauthorized";
-type Tab = "dashboard" | "flags" | "announcements" | "surveys" | "branding" | "payments" | "content" | "guides" | "admins" | "feedback" | "users";
+type Tab = "dashboard" | "flags" | "announcements" | "surveys" | "branding" | "payments" | "content" | "guides" | "admins" | "feedback" | "users" | "activity";
 
 const NAV: { id: Tab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -49,6 +50,7 @@ const NAV: { id: Tab; label: string; icon: React.ComponentType<{ className?: str
   { id: "content", label: "Site Content", icon: Notebook },
   { id: "guides", label: "Guides", icon: BookOpen },
   { id: "admins", label: "Admins", icon: UsersThree },
+  { id: "activity", label: "Activity Monitoring", icon: ActivityIcon },
 ];
 
 /**
@@ -285,6 +287,7 @@ export default function AdminApp() {
             {activeTab === "content" && <SiteContentPanel />}
             {activeTab === "guides" && <GuidesPanel />}
             {activeTab === "admins" && <AdminsPanel />}
+            {activeTab === "activity" && <ActivityMonitoringPanel businessId={selectedBusiness.id} />}
           </div>
         </main>
       </div>

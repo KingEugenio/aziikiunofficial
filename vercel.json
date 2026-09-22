@@ -3,7 +3,10 @@
   "outputDirectory": "dist",
   "framework": null,
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api" }
+    {
+      "source": "/api/(.*)",
+      "destination": "/api"
+    }
   ],
   "functions": {
     "api/index.ts": {
@@ -13,7 +16,7 @@
   "crons": [
     {
       "path": "/api/cron/overdue-sweep",
-      "schedule": "0 */6 * * *"
+      "schedule": "0 5 * * *"
     }
   ]
 }

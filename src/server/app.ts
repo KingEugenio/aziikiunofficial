@@ -13,6 +13,7 @@ import "express-async-errors";
 import { env } from "./env";
 import { initSentry, setupSentryErrorHandler } from "./sentry";
 import { apiLimiter, paystackWebhookLimiter } from "./rateLimiters";
+import { activityLoggingMiddleware } from "./middleware/activityLogging";
 import { requireAuth } from "./middleware/requireAuth";
 import { requireAdmin } from "./middleware/requireAdmin";
 
@@ -54,6 +55,7 @@ import { exchangeRatesRouter } from "./routes/exchangeRates";
 import { announcementsRouter, publicAnnouncementsRouter } from "./routes/announcements";
 import { surveysRouter } from "./routes/surveys";
 import { adminRouter } from "./routes/admin";
+import { activityAuditRouter } from "./routes/activityAudit";
 
 export function createApp(): express.Express {
   // Called first, before any middleware/route is registered - no-ops
@@ -115,6 +117,7 @@ export function createApp(): express.Express {
   // ---------------------------------------------------------------------
   // Everything below requires a valid Supabase session.
   // ---------------------------------------------------------------------
+  app.use("/api/", requireAuth, activityLoggingMiddleware());
   app.use("/api/sync", requireAuth, syncRouter);
   app.use("/api/businesses", requireAuth, enforceBusinessLimits, businessesRouter);
   app.use("/api/business-partners", requireAuth, businessPartnersRouter);
@@ -146,6 +149,7 @@ export function createApp(): express.Express {
   app.use("/api/exchange-rates", requireAuth, exchangeRatesRouter);
   app.use("/api/announcements", requireAuth, announcementsRouter);
   app.use("/api/surveys", requireAuth, surveysRouter);
+  app.use("/api/admin/activity-logs", requireAuth, requireAdmin, activityAuditRouter);
 
   // ---------------------------------------------------------------------
   // Admin portal routes - requireAuth then requireAdmin (profiles.is_admin,

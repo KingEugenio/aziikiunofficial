@@ -112,7 +112,7 @@ export default function App() {
   const [onboardingPrefillEmail, setOnboardingPrefillEmail] = useState<string | undefined>(undefined);
 
   // Active Navigation Tab
-  // Options: "dashboard" | "billing" | "crm" | "wealth" | "stock" | "monetize" | "ai"
+  // Options: "dashboard" | "billing" | "crm" | "wealth" | "stock" | "monetize" | "ai" | "game"
   const [activeTab, setActiveTab] = useState<string>("dashboard");
 
   // Unique per-tab browser title (see useDocumentTitle) - Aziiki has no
@@ -123,6 +123,7 @@ export default function App() {
     billing: "Billing & PDFs",
     crm: "Customer CRM",
     wealth: "Wealth & Goals",
+    game: "Money Game",
     stock: "Warehouse Stock",
     purchaseOrders: "Purchase Orders",
     team: "Team",
@@ -160,6 +161,7 @@ export default function App() {
     // stale deep links / persisted state, not just hidden nav buttons).
     const flagForTab: Record<string, string> = {
       wealth: "net_worth_investments",
+      game: "money_game_feature",
       monetize: "ad_monetization_hub",
       stock: "inventory_management",
       purchaseOrders: "purchase_orders",
@@ -3110,6 +3112,9 @@ export default function App() {
                       onShowRefundPolicy={() => setShowRefundPolicy(true)}
                     />
                   </Suspense>
+                )}
+                {isEnabled("money_game_feature") && activeTab === "game" && (
+                  <MoneyGame businessId={business.id} userId={userId} />
                 )}
 
                 {isEnabled("core_settings") && activeTab === "settings" && (
