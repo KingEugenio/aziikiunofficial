@@ -30,7 +30,7 @@ interface UserSummary {
   actionTypeDistribution: Array<{ action_type: string; count: number }>;
 }
 
-export function ActivityMonitoringPanel({ businessId }: { businessId: string }) {
+export function ActivityMonitoringPanel({ businessId }: { businessId?: string }) {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [stats, setStats] = useState<ActivityStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -46,7 +46,9 @@ export function ActivityMonitoringPanel({ businessId }: { businessId: string }) 
   const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
-    loadActivityData();
+    if (businessId) {
+      loadActivityData();
+    }
   }, [businessId, filters, pagination]);
 
   const loadActivityData = async () => {
@@ -105,6 +107,15 @@ export function ActivityMonitoringPanel({ businessId }: { businessId: string }) 
       console.error("Failed to load user summary:", err);
     }
   };
+
+  if (!businessId) {
+    return (
+      <div className="text-center py-12 text-slate-500">
+        <Pulse className="w-8 h-8 mx-auto mb-3 text-slate-400" />
+        <p className="text-sm">Activity monitoring requires a business context. Please select a business or refresh the page.</p>
+      </div>
+    );
+  }
 
   if (loading && logs.length === 0) {
     return <SkeletonAdminFlags />;

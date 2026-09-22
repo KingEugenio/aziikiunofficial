@@ -288,7 +288,7 @@ export default function AdminApp() {
             {activeTab === "content" && <SiteContentPanel />}
             {activeTab === "guides" && <GuidesPanel />}
             {activeTab === "admins" && <AdminsPanel />}
-            {activeTab === "activity" && <ActivityMonitoringPanel businessId={selectedBusiness.id} />}
+            {activeTab === "activity" && <ActivityMonitoringPanel />}
           </div>
         </main>
       </div>
