@@ -363,7 +363,7 @@ export default function SettingsPage({ userEmail, onAccountDeleted }: SettingsPa
       <CollapsibleSection 
         title="Security" 
         icon={Lock}
-        defaultOpen={false}
+        defaultOpen={!isMobile && !isTablet}
       >
         <SecuritySectionContent />
       </CollapsibleSection>
@@ -372,7 +372,7 @@ export default function SettingsPage({ userEmail, onAccountDeleted }: SettingsPa
       <CollapsibleSection 
         title="Email Preferences" 
         icon={Mail}
-        defaultOpen={false}
+        defaultOpen={!isMobile && !isTablet}
       >
         <EmailPreferencesSectionContent />
       </CollapsibleSection>
@@ -381,7 +381,7 @@ export default function SettingsPage({ userEmail, onAccountDeleted }: SettingsPa
       <CollapsibleSection 
         title="Danger Zone" 
         icon={AlertCircle}
-        defaultOpen={false}
+        defaultOpen={!isMobile && !isTablet}
       >
         <DangerZoneSectionContent />
       </CollapsibleSection>

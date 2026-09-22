@@ -6,35 +6,35 @@
 import { useState, useEffect } from 'react';
 
 export function useResponsive() {
-  const [isMobile, setIsMobile] = useState(false);
-  const [isTablet, setIsTablet] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(true);
-  const [windowWidth, setWindowWidth] = useState(0);
+  // Initialize with correct values immediately
+  const getBreakpoints = () => {
+    if (typeof window === 'undefined') {
+      return { isMobile: false, isTablet: false, isDesktop: true, windowWidth: 0 };
+    }
+    
+    const width = window.innerWidth;
+    return {
+      isMobile: width < 768,
+      isTablet: width >= 768 && width < 1024,
+      isDesktop: width >= 1024,
+      windowWidth: width,
+    };
+  };
+
+  const [state, setState] = useState(getBreakpoints());
 
   useEffect(() => {
-    // Set initial values
+    // Update on resize
     const handleResize = () => {
-      const width = window.innerWidth;
-      setWindowWidth(width);
-      
-      // Tailwind breakpoints
-      setIsMobile(width < 768);      // < md
-      setIsTablet(width >= 768 && width < 1024);  // md to < lg
-      setIsDesktop(width >= 1024);    // >= lg
+      setState(getBreakpoints());
     };
 
-    // Initial call
+    // Set initial state (in case it changed before effect ran)
     handleResize();
 
-    // Add listener
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  return {
-    isMobile,
-    isTablet,
-    isDesktop,
-    windowWidth,
-  };
+  return state;
 }
