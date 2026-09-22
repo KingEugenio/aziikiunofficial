@@ -3,6 +3,8 @@ import { Briefcase, Plus, TrendUp as TrendingUp, Pulse as Activity, CaretRight a
 import { Investment, Goal, Debt, Business, Asset } from "../types";
 import { SUPPORTED_CURRENCY_CODES, getCurrencySymbol } from "../lib/currency";
 import { useFeatureFlags } from "../lib/featureFlags";
+import CollapsibleSection from "./CollapsibleSection";
+import { useResponsive } from "../hooks/useResponsive";
 
 interface CountryMarketInfo {
   countryName: string;
@@ -158,6 +160,7 @@ export default function NetWorthInvestments({
   currentBusiness
 }: NetWorthInvestmentsProps) {
   const { isEnabled } = useFeatureFlags();
+  const { isMobile, isTablet } = useResponsive();
 
   // Navigation tabs: "assets" | "investments" | "networth" | "goals"
   const [activeTab, setActiveTab] = useState<"assets" | "investments" | "networth" | "goals">("assets");
