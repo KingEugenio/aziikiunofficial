@@ -45,7 +45,9 @@ export function CollapsibleSection({
         {/* Header Button */}
         <button
           onClick={handleToggle}
-          className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-lg border border-slate-200 transition-colors"
+          aria-expanded={isOpen}
+          aria-label={`${isOpen ? 'Close' : 'Open'} ${title}`}
+          className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-lg border border-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
         >
           <div className="flex items-center gap-3">
             {Icon && <Icon className="w-5 h-5 text-slate-600" />}
@@ -74,7 +76,9 @@ export function CollapsibleSection({
       {/* Header */}
       <button
         onClick={handleToggle}
-        className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 transition-colors"
+        aria-expanded={isOpen}
+        aria-label={`${isOpen ? 'Close' : 'Open'} ${title}`}
+        className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500"
       >
         <div className="flex items-center gap-3">
           {Icon && <Icon className="w-5 h-5 text-slate-600" />}
