@@ -732,6 +732,7 @@ export default function NetWorthInvestments({
       {/* TAB 1: ASSET REGISTER & ASSET PLANNING */}
       <>
           {activeTab === "assets" && (
+            <CollapsibleSection title="Asset Register & Planning" icon={<Layers className="w-4 h-4" />} defaultOpen={!isMobile && !isTablet}>
             <div className="lg:col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-6 text-left animate-fade-in">
           
           {/* Information Notice explaining Asset Accounting */}
@@ -1374,7 +1375,8 @@ export default function NetWorthInvestments({
               )}
             </div>
           </div>
-        </div>
+            </div>
+            </CollapsibleSection>
       )}
 
               {/* TAB 2: SME INVESTMENT DESK (INVESTMENT PORTFOLIO TRACKER) */}
