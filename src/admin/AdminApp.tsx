@@ -16,7 +16,8 @@ import {
   X as CloseIcon,
   ChatText as MessageSquare,
   Users,
-} from "@phosphor-icons/react", Activity as ActivityIcon;
+  Pulse as ActivityIcon,
+} from "@phosphor-icons/react";
 import { supabase } from "../lib/supabaseClient";
 import { api } from "../lib/api";
 import BrandLogo from "../components/BrandLogo";

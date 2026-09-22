@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Eye, Download, User, Clock, Type, Activity, Trash as Trash2, MagnifyingGlass } from "@phosphor-icons/react";
+import { Eye, Download, User, Clock, Type, Pulse, Trash as Trash2, MagnifyingGlass } from "@phosphor-icons/react";
 import { api } from "../lib/api";
 import { LoadingSwap } from "../components/LoadingSwap";
 import { SkeletonAdminFlags } from "../components/Skeleton";
