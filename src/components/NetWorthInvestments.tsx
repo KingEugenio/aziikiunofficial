@@ -2499,6 +2499,7 @@ export default function NetWorthInvestments({
 
       {/* TAB 3: WEALTH POSITION & LIABILITY MANAGEMENT */}
       {activeTab === "networth" && (
+        <CollapsibleSection title="Wealth & Net Worth" icon={<Scale className="w-4 h-4" />} defaultOpen={!isMobile && !isTablet}>
         <div className="lg:col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-6 text-left animate-fade-in">
           
           {/* Balance Sheet Ledger Presentation */}
@@ -2733,10 +2734,12 @@ export default function NetWorthInvestments({
           )}
 
         </div>
+        </CollapsibleSection>
       )}
 
       {/* TAB 4: BUSINESS SAVINGS GOALS */}
       {activeTab === "goals" && isEnabled("goals_tracking") && (
+        <CollapsibleSection title="Business Savings Goals" icon={<Target className="w-4 h-4" />} defaultOpen={!isMobile && !isTablet}>
         <div className="lg:col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-6 text-left font-sans animate-fade-in">
           
           {/* Configure Goals Left Panel */}
@@ -2984,6 +2987,7 @@ export default function NetWorthInvestments({
             </div>
           </div>
         </div>
+        </CollapsibleSection>
       )}
         </>
     </div>
