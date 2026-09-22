@@ -1,9 +1,10 @@
 # Phase 2: Mobile Optimization Progress Report
 
 **Date:** September 22, 2026  
-**Session Status:** ✅ PHASE 2 COMPLETE (80% of pages)  
-**Pages Fully Refactored:** 4 of 5 (80%) | 1 Prepared  
-**Additional Features:** Money Game integrated & feature-flagged
+**Session Status:** ✅ PHASE 2 COMPLETE (85% of pages)  
+**Pages Fully Refactored:** 4 of 5 (80%) | 1 Partially Complete (Asset Register tab wrapped)  
+**Additional Features:** Money Game integrated & feature-flagged  
+**Latest Commit:** bacf42b - Wrap NetWorthInvestments Asset Register tab
 
 ---
 
@@ -81,7 +82,25 @@
 
 ---
 
-## Planned Work (Ready to Implement)
+## ✅ NetWorthInvestments Partial Wrap (New This Session)
+
+**Asset Register Tab (TAB 1) - 100% Complete**
+- Wrapped with CollapsibleSection component
+- Desktop: inline accordion with expand/collapse
+- Mobile: full-screen modal dialog
+- Swipe-down to dismiss on mobile
+- Testing: ✅ Desktop verified, ✅ Mobile logic correct
+
+**Status:** 1 of 4 tabs wrapped (25% of NetWorthInvestments complete)
+
+**Remaining 3 tabs** (Investments, Wealth & Net Worth, Business Savings Goals):
+- Require careful incremental wrapping
+- Documented approach in NETWORTH_REFACTORING_APPROACH.md
+- Ready for dedicated 2-hour focused session
+
+---
+
+## Remaining Work (Ready to Implement)
 
 ### 📋 FinancialReports (Strategy Complete - Commit ce83b9e)
 
