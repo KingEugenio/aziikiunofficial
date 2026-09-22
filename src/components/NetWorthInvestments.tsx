@@ -1381,6 +1381,7 @@ export default function NetWorthInvestments({
 
               {/* TAB 2: SME INVESTMENT DESK (INVESTMENT PORTFOLIO TRACKER) */}
       {activeTab === "investments" && (
+        <CollapsibleSection title="Investment Portfolio" icon={<TrendingUp className="w-4 h-4" />} defaultOpen={!isMobile && !isTablet}>
         <div className="lg:col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-6 text-left animate-fade-in">
           
           {/* Important Regulatory Warning Banner */}
@@ -2493,6 +2494,7 @@ export default function NetWorthInvestments({
           )}
 
         </div>
+        </CollapsibleSection>
       )}
 
       {/* TAB 3: WEALTH POSITION & LIABILITY MANAGEMENT */}
