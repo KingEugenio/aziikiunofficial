@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { TrendUp as TrendingUp, TrendDown as TrendingDown, Calendar, Stack as Layers, Percent, Coins, BookOpen, ArrowRight, MagicWand as Sparkles, Question as HelpCircle, PiggyBank, CaretLeft as ChevronLeft, CaretRight as ChevronRight, Fire as Flame, CheckCircle as CheckCircle2, CurrencyDollar as DollarSign, Warning as AlertTriangle, Lightbulb } from "@phosphor-icons/react";
 import AziikiWealthCalculator from "./AziikiWealthCalculator";
+import CollapsibleSection from "./CollapsibleSection";
+import { useResponsive } from "../hooks/useResponsive";
 import {
   BarChart,
   Bar,
@@ -161,6 +163,7 @@ export default function FinancialReports({
   onContributeToGoal,
   onAddTransaction
 }: FinancialReportsProps) {
+  const { isMobile, isTablet } = useResponsive();
   // Report Period Type selection: "daily" | "weekly" | "monthly" | "quarterly" | "annual"
   const [periodType, setPeriodType] = useState<"daily" | "weekly" | "monthly" | "quarterly" | "annual">("monthly");
 
@@ -923,7 +926,8 @@ export default function FinancialReports({
       </div>
 
       {/* CHARTS CONTAINER: Trend Lines & Category Outlays */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      <CollapsibleSection title="Financial Charts & Trends" icon={<Layers className="w-4 h-4" />} defaultOpen={!isMobile && !isTablet}>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         
         {/* Left Column: Financial Trend performance chart (Recharts) */}
         <div className="lg:col-span-8 bg-white border border-slate-200 rounded-3xl p-5 shadow-sm text-left">
@@ -1049,10 +1053,12 @@ export default function FinancialReports({
           </div>
         </div>
 
-      </div>
+        </div>
+      </CollapsibleSection>
 
       {/* CORE INTEGRATION BLOCK: "The Richest Man in Babylon" Pay-Yourself-First (10% Gold share contribution tool) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      <CollapsibleSection title="10% Gold Share Covenant" icon={<PiggyBank className="w-4 h-4" />} defaultOpen={!isMobile && !isTablet}>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         
         {/* Golden Tablet Pay-Yourself-First panel */}
         <div className="lg:col-span-7 bg-amber-900 text-amber-50 rounded-3xl p-6 text-left border border-amber-700 shadow-md relative overflow-hidden flex flex-col justify-between min-h-[350px]">
@@ -1285,9 +1291,11 @@ export default function FinancialReports({
         </div>
 
       </div>
+      </CollapsibleSection>
 
       {/* ANALYSIS AND INTELLIGENT EXECUTIVE ALERTS (Sourced automatically) */}
-      <div className="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm text-left">
+      <CollapsibleSection title="Smart CFO Advisory Engine" icon={<Sparkles className="w-4 h-4" />} defaultOpen={!isMobile && !isTablet}>
+        <div className="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm text-left">
         <div className="border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
           <TrendingUp className="w-5 h-5 text-indigo-600" />
           <div>
@@ -1340,13 +1348,16 @@ export default function FinancialReports({
             </div>
           )}
         </div>
-      </div>
+        </div>
+      </CollapsibleSection>
 
       {/* AZIIKI BASIC VERSION 1.0: standalone compound-interest / savings-growth
           calculator, added to Core V1 per the latest spec. Purely client-side —
           does not read from or write to the (currently hidden) full Wealth &
           Goals / NetWorthInvestments module. */}
-      <AziikiWealthCalculator currencySymbol={businessCurrencySymbol} />
+      <CollapsibleSection title="Wealth Calculator" icon={<Calculator className="w-4 h-4" />} defaultOpen={!isMobile && !isTablet}>
+        <AziikiWealthCalculator currencySymbol={businessCurrencySymbol} />
+      </CollapsibleSection>
 
     </div>
   );
