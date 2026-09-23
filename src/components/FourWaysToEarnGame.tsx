@@ -174,7 +174,7 @@ export default function FourWaysToEarnGame({ currencySymbol, onOpenLesson }: Fou
   };
   const badgeLabel: Record<string, string> = {
     opportunity: "Opportunity", splurge: "Temptation", emergency: "Emergency", learn: "Learning", windfall: "Windfall",
-    scam: "Too good to be true?", illness: "Bad luck", raise: "Good news", setback: "Setback",
+    scam: "Too good to be true?", illness: "Unforeseen circumstance", raise: "Good news", setback: "Setback",
   };
   const choiceClass = (tone?: string) =>
     tone === "primary"
