@@ -20,6 +20,8 @@ import OfflineStatusBanner from "./components/OfflineStatusBanner";
 import MfaOnboardingNudge from "./components/MfaOnboardingNudge";
 import { ONBOARDING_COMPLETE_KEY } from "./components/onboarding/onboardingStorage";
 import { useFeatureFlags } from "./lib/featureFlags";
+import { useFeaturePricing } from "./lib/featurePricing";
+import FeatureLockedNotice from "./components/FeatureLockedNotice";
 import { clearCachePrefix } from "./lib/sessionCache";
 import { useRealtimeConfigSync } from "./lib/realtimeConfigSync";
 
@@ -77,6 +79,7 @@ export default function App() {
   // Inventory, ...) now has its own flag, off by default, code and routes
   // left fully intact ("hide, not delete" per the product teardown).
   const { isEnabled, tier, loaded: flagsLoaded, flags } = useFeatureFlags();
+  const { byFlagKey: featurePriceByFlagKey } = useFeaturePricing();
   // Custom 404: Aziiki is a single-page app served entirely at "/" - there
   // is no real routing, everything else is client-side tab state, not a
   // distinct URL. A path other than "/" means someone followed a stale or
@@ -169,26 +172,52 @@ export default function App() {
     return null;
   };
 
+  // Which flag a given tab needs - shared between changeTab (below) and the
+  // "show a paywall instead of this tab's content" render check further
+  // down, so the two can never drift out of sync with each other.
+  const FLAG_FOR_TAB: Record<string, string> = {
+    wealth: "net_worth_investments",
+    game: "four_ways_game",
+    moneyQuiz: "money_game_feature",
+    monetize: "ad_monetization_hub",
+    stock: "inventory_management",
+    purchaseOrders: "purchase_orders",
+    team: "team_memberships_invite_ui",
+    settings: "core_settings",
+    helpSupport: "core_help_support",
+    ...CORE_TAB_FLAGS,
+  };
+
+  // A nav button for a priced-but-locked feature stays visible (with a
+  // small price badge) instead of disappearing entirely - otherwise a paid
+  // feature would have no discoverable way to reach the paywall at all.
+  const navIsVisible = (flagKey: string) => isEnabled(flagKey) || featurePriceByFlagKey.has(flagKey);
+  const navLockBadge = (flagKey: string) => {
+    if (isEnabled(flagKey)) return null;
+    const price = featurePriceByFlagKey.get(flagKey);
+    if (!price) return null;
+    return (
+      <span className="ml-auto text-[9px] font-mono font-bold uppercase tracking-wider text-amber-600 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 shrink-0">
+        🔒 {price.price != null ? `${price.currency} ${price.price}` : "Paid"}
+      </span>
+    );
+  };
+
   const changeTab = (tab: string) => {
     // Block navigation to a tab whose feature flag is off (defends against
     // stale deep links / persisted state, not just hidden nav buttons).
-    const flagForTab: Record<string, string> = {
-      wealth: "net_worth_investments",
-      game: "four_ways_game",
-      moneyQuiz: "money_game_feature",
-      monetize: "ad_monetization_hub",
-      stock: "inventory_management",
-      purchaseOrders: "purchase_orders",
-      team: "team_memberships_invite_ui",
-      settings: "core_settings",
-      helpSupport: "core_help_support",
-      ...CORE_TAB_FLAGS,
-    };
-    const requiredFlag = flagForTab[tab];
+    const requiredFlag = FLAG_FOR_TAB[tab];
     if (requiredFlag && !isEnabled(requiredFlag)) {
-      setActiveTab(getFallbackTab() ?? tab);
-      window.scrollTo({ top: 0 });
-      return;
+      // A feature that's off but has a price attached still opens - the
+      // render block below shows what it costs and how to get it, instead
+      // of silently bouncing back with no explanation. A feature that's
+      // simply off (no price - not for sale, just not launched yet) keeps
+      // the original silent-redirect behavior.
+      if (!featurePriceByFlagKey.has(requiredFlag)) {
+        setActiveTab(getFallbackTab() ?? tab);
+        window.scrollTo({ top: 0 });
+        return;
+      }
     }
     setActiveTab(tab);
     // Tapping a nav icon should always open that screen at the top, not
@@ -2022,7 +2051,7 @@ export default function App() {
             )}
 
             {/* Wealth & Goals: off by default in Phase 1, code preserved. Toggle via admin portal -> net_worth_investments. */}
-            {isEnabled("net_worth_investments") && (
+            {navIsVisible("net_worth_investments") && (
             <button
               id="tab-wealth-btn"
               onClick={() => changeTab("wealth")}
@@ -2032,12 +2061,12 @@ export default function App() {
  : "text-slate-600 hover:bg-slate-100"
  }`}
             >
-              <Target className="w-4 h-4 shrink-0" /> Wealth & Goals
+              <Target className="w-4 h-4 shrink-0" /> Wealth & Goals {navLockBadge("net_worth_investments")}
             </button>
             )}
 
             {/* Four Ways to Earn: Phase 2 learning game. Toggle via admin portal -> four_ways_game. */}
-            {isEnabled("four_ways_game") && (
+            {navIsVisible("four_ways_game") && (
             <button
               id="tab-game-btn"
               onClick={() => changeTab("game")}
@@ -2047,14 +2076,14 @@ export default function App() {
  : "text-slate-600 hover:bg-slate-100"
  }`}
             >
-              <GameController className="w-4 h-4 shrink-0" /> Four Ways to Earn
+              <GameController className="w-4 h-4 shrink-0" /> Four Ways to Earn {navLockBadge("four_ways_game")}
             </button>
             )}
 
             {/* Money Quiz: a separate Phase 2 learning game (scenario-based quiz on
                 cash flow/pricing/budgeting), distinct from Four Ways to Earn above.
                 Toggle via admin portal -> money_game_feature. */}
-            {isEnabled("money_game_feature") && (
+            {navIsVisible("money_game_feature") && (
             <button
               id="tab-moneyQuiz-btn"
               onClick={() => changeTab("moneyQuiz")}
@@ -2064,12 +2093,12 @@ export default function App() {
  : "text-slate-600 hover:bg-slate-100"
  }`}
             >
-              <GameController className="w-4 h-4 shrink-0" /> Money Quiz
+              <GameController className="w-4 h-4 shrink-0" /> Money Quiz {navLockBadge("money_game_feature")}
             </button>
             )}
 
             {/* Warehouse Stock: off by default in Phase 1 per the product teardown (Phase 2 - "Inventory Management"), code preserved. Toggle via admin portal -> inventory_management. */}
-            {isEnabled("inventory_management") && (
+            {navIsVisible("inventory_management") && (
             <button
               id="tab-stock-btn"
               onClick={() => changeTab("stock")}
@@ -2079,12 +2108,12 @@ export default function App() {
  : "text-slate-600 hover:bg-slate-100"
  }`}
             >
-              <Warehouse className="w-4 h-4 shrink-0" /> Warehouse Stock
+              <Warehouse className="w-4 h-4 shrink-0" /> Warehouse Stock {navLockBadge("inventory_management")}
             </button>
             )}
 
             {/* Purchase Orders / Team / Exchange Rates: each its own screen now (moved out of the Billing builder's cramped sub-tab strip). Off by default in Phase 1, code preserved. Toggle via admin portal. */}
-            {isEnabled("purchase_orders") && (
+            {navIsVisible("purchase_orders") && (
             <button
               id="tab-purchaseOrders-btn"
               onClick={() => changeTab("purchaseOrders")}
@@ -2094,11 +2123,11 @@ export default function App() {
  : "text-slate-600 hover:bg-slate-100"
  }`}
             >
-              <Package className="w-4 h-4 shrink-0" /> Purchase Orders
+              <Package className="w-4 h-4 shrink-0" /> Purchase Orders {navLockBadge("purchase_orders")}
             </button>
             )}
 
-            {isEnabled("team_memberships_invite_ui") && (
+            {navIsVisible("team_memberships_invite_ui") && (
             <button
               id="tab-team-btn"
               onClick={() => changeTab("team")}
@@ -2108,7 +2137,7 @@ export default function App() {
  : "text-slate-600 hover:bg-slate-100"
  }`}
             >
-              <UsersThree className="w-4 h-4 shrink-0" /> Team
+              <UsersThree className="w-4 h-4 shrink-0" /> Team {navLockBadge("team_memberships_invite_ui")}
             </button>
             )}
 
@@ -2141,7 +2170,7 @@ export default function App() {
             )}
 
             {/* Updates & Growth (ad monetization hub): off by default in Phase 1, code preserved. Toggle via admin portal -> ad_monetization_hub. */}
-            {isEnabled("ad_monetization_hub") && (
+            {navIsVisible("ad_monetization_hub") && (
             <button
               id="tab-monetize-btn"
               onClick={() => changeTab("monetize")}
@@ -2151,7 +2180,7 @@ export default function App() {
  : "text-slate-600 hover:bg-slate-100"
  }`}
             >
-              <Sparkles className="w-4 h-4 shrink-0 text-brand-teal" /> Updates & Growth
+              <Sparkles className="w-4 h-4 shrink-0 text-brand-teal" /> Updates & Growth {navLockBadge("ad_monetization_hub")}
             </button>
             )}
 
@@ -3273,6 +3302,14 @@ export default function App() {
                   </Suspense>
                 )}
 
+                {/* Paywall: the active tab's flag is off, but it has a price attached (Admin Portal -> Payments -> Feature Pricing) - show what it costs and how to get it, instead of the silent redirect changeTab() would otherwise have already done. */}
+                {(() => {
+                  const requiredFlag = FLAG_FOR_TAB[activeTab];
+                  const price = requiredFlag ? featurePriceByFlagKey.get(requiredFlag) : undefined;
+                  if (!requiredFlag || isEnabled(requiredFlag) || !price) return null;
+                  return <FeatureLockedNotice featureName={TAB_TITLES[activeTab] ?? "This feature"} price={price} />;
+                })()}
+
                 {/* Every core screen switched off from the admin portal at once - an edge case, but one that must explain itself rather than render an empty page. */}
                 {flagsLoaded && !getFallbackTab() && (
                   <div className="text-center py-20 text-slate-400 text-sm">
@@ -3296,6 +3333,7 @@ export default function App() {
         activeTab={activeTab}
         onChangeTab={changeTab}
         isEnabled={isEnabled}
+        isPriced={(key) => featurePriceByFlagKey.has(key)}
         tier={user ? tier : undefined}
         upgradeUrl={upgradeUrl}
         nextTier={nextTier}

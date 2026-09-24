@@ -23,6 +23,10 @@ interface MobileNavBarProps {
   activeTab: string;
   onChangeTab: (tab: string) => void;
   isEnabled: (key: string) => boolean;
+  /** Whether a flag has a price attached (Admin Portal -> Payments -> Feature
+   * Pricing) - a priced-but-off feature stays visible here too, with a lock
+   * badge, instead of disappearing with no way to discover it at all. */
+  isPriced?: (key: string) => boolean;
   /** Current account's plan (basic/standard/pro) - undefined when signed
    * out/guest, in which case neither the plan row nor sign-out show. */
   tier?: string;
@@ -50,22 +54,25 @@ const PRIMARY_TABS = [
  * report this fixes. A fixed bottom tab bar is always fully visible with
  * no scrolling required, and is the standard mobile nav pattern.
  */
-export default function MobileNavBar({ activeTab, onChangeTab, isEnabled, tier, upgradeUrl, nextTier, onLogout, userEmail }: MobileNavBarProps) {
+export default function MobileNavBar({ activeTab, onChangeTab, isEnabled, isPriced, tier, upgradeUrl, nextTier, onLogout, userEmail }: MobileNavBarProps) {
   const [showMore, setShowMore] = useState(false);
 
   const visiblePrimaryTabs = PRIMARY_TABS.filter((tab) => isEnabled(tab.flag));
+  const visible = (flag: string) => isEnabled(flag) || Boolean(isPriced?.(flag));
+  const locked = (flag: string) => !isEnabled(flag) && Boolean(isPriced?.(flag));
 
   const moreItems = [
-    { id: "reports", label: "Reports & Wisdom", icon: LineChart, show: isEnabled("core_reports") },
-    { id: "guide", label: "App Guide & Academy", icon: BookOpen, show: isEnabled("core_app_guide") },
-    { id: "wealth", label: "Wealth & Goals", icon: Target, show: isEnabled("net_worth_investments") },
-    { id: "game", label: "Money Game", icon: Gamepad2, show: isEnabled("four_ways_game") },
-    { id: "stock", label: "Warehouse Stock", icon: Warehouse, show: isEnabled("inventory_management") },
-    { id: "purchaseOrders", label: "Purchase Orders", icon: Package, show: isEnabled("purchase_orders") },
-    { id: "team", label: "Team", icon: UsersThree, show: isEnabled("team_memberships_invite_ui") },
-    { id: "monetize", label: "Updates & Growth", icon: Sparkles, show: isEnabled("ad_monetization_hub") },
-    { id: "helpSupport", label: "Help & Support", icon: HelpCircle, show: isEnabled("core_help_support") },
-    { id: "settings", label: "Settings", icon: GearSix, show: isEnabled("core_settings") },
+    { id: "reports", label: "Reports & Wisdom", icon: LineChart, flag: "core_reports", show: isEnabled("core_reports") },
+    { id: "guide", label: "App Guide & Academy", icon: BookOpen, flag: "core_app_guide", show: isEnabled("core_app_guide") },
+    { id: "wealth", label: "Wealth & Goals", icon: Target, flag: "net_worth_investments", show: visible("net_worth_investments") },
+    { id: "game", label: "Four Ways to Earn", icon: Gamepad2, flag: "four_ways_game", show: visible("four_ways_game") },
+    { id: "moneyQuiz", label: "Money Quiz", icon: Gamepad2, flag: "money_game_feature", show: visible("money_game_feature") },
+    { id: "stock", label: "Warehouse Stock", icon: Warehouse, flag: "inventory_management", show: visible("inventory_management") },
+    { id: "purchaseOrders", label: "Purchase Orders", icon: Package, flag: "purchase_orders", show: visible("purchase_orders") },
+    { id: "team", label: "Team", icon: UsersThree, flag: "team_memberships_invite_ui", show: visible("team_memberships_invite_ui") },
+    { id: "monetize", label: "Updates & Growth", icon: Sparkles, flag: "ad_monetization_hub", show: visible("ad_monetization_hub") },
+    { id: "helpSupport", label: "Help & Support", icon: HelpCircle, flag: "core_help_support", show: isEnabled("core_help_support") },
+    { id: "settings", label: "Settings", icon: GearSix, flag: "core_settings", show: isEnabled("core_settings") },
   ].filter((item) => item.show);
 
   const isMoreActive = moreItems.some((item) => item.id === activeTab);
@@ -133,6 +140,11 @@ export default function MobileNavBar({ activeTab, onChangeTab, isEnabled, tier, 
                   }`}
                 >
                   <ItemIcon className="w-4.5 h-4.5 shrink-0" /> {item.label}
+                  {locked(item.flag) && (
+                    <span className="ml-auto text-[9px] font-mono font-bold uppercase tracking-wider text-amber-600 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 shrink-0">
+                      🔒 Paid
+                    </span>
+                  )}
                 </button>
               );
             })}

@@ -1798,7 +1798,7 @@ var init_sync = __esm({
 import { Router as Router5 } from "express";
 function createCrudRouter(config) {
   const router = Router5();
-  const { table, cacheKeyPrefix, createSchema: createSchema3, updateSchema: updateSchema5, toInsertRow, toUpdateRow, fromRow: fromRow18 } = config;
+  const { table, cacheKeyPrefix, createSchema: createSchema3, updateSchema: updateSchema5, toInsertRow, toUpdateRow, fromRow: fromRow19 } = config;
   const listCacheKey = (userId) => `cache:${cacheKeyPrefix}:${userId}`;
   router.get("/", async (req, res) => {
     const userId = req.user.id;
@@ -1813,7 +1813,7 @@ function createCrudRouter(config) {
       const businessId = req.query.businessId;
       rows = allRows.filter((row) => row.business_id === businessId);
     }
-    res.json({ data: rows.map(fromRow18) });
+    res.json({ data: rows.map(fromRow19) });
   });
   router.post("/", async (req, res) => {
     const parsed = createSchema3.safeParse(req.body);
@@ -1830,7 +1830,7 @@ function createCrudRouter(config) {
       return;
     }
     await invalidate(listCacheKey(userId));
-    res.status(201).json({ data: fromRow18(data) });
+    res.status(201).json({ data: fromRow19(data) });
   });
   router.patch("/:id", async (req, res) => {
     const parsed = updateSchema5.safeParse(req.body);
@@ -1855,7 +1855,7 @@ function createCrudRouter(config) {
       return;
     }
     await invalidate(listCacheKey(userId));
-    res.json({ data: fromRow18(data) });
+    res.json({ data: fromRow19(data) });
   });
   router.delete("/:id", async (req, res) => {
     const userId = req.user.id;
@@ -5104,6 +5104,25 @@ var init_config = __esm({
         }))
       });
     });
+    configRouter.get("/feature-pricing", async (_req, res) => {
+      const anonClient = getAnonClient();
+      const { data, error } = await anonClient.from("feature_pricing").select("flag_key, is_paid, price_minor_units, currency, billing_type, recurring_interval, payment_link, access_message").eq("is_paid", true);
+      if (error) {
+        res.json({ data: [] });
+        return;
+      }
+      res.json({
+        data: (data ?? []).map((row) => ({
+          flagKey: row.flag_key,
+          price: row.price_minor_units != null ? row.price_minor_units / 100 : null,
+          currency: row.currency,
+          billingType: row.billing_type,
+          recurringInterval: row.recurring_interval,
+          paymentLink: row.payment_link,
+          accessMessage: row.access_message
+        }))
+      });
+    });
     configRouter.get("/site-settings", async (_req, res) => {
       const anonClient = getAnonClient();
       const { data, error } = await anonClient.from("site_settings").select("key, value");
@@ -5697,7 +5716,7 @@ var init_documentChangeLog = __esm({
 import express, { Router as Router18 } from "express";
 async function handleSubscriptionPayment(supabase2, reference, data) {
   const { data: existing } = await supabase2.from("subscription_payment_events").select("id").eq("paystack_reference", reference).maybeSingle();
-  if (existing) return;
+  if (existing) return false;
   const email = data?.customer?.email;
   const amount = data?.amount;
   const currency = data?.currency;
@@ -5726,6 +5745,38 @@ async function handleSubscriptionPayment(supabase2, reference, data) {
     email: email ?? null,
     amount_minor_units: amount ?? null,
     matched_tier: matchedTier,
+    matched_user_id: matchedUserId,
+    raw_event: data
+  });
+  return matchedTier !== null;
+}
+async function handleFeaturePayment(supabase2, reference, data) {
+  const { data: existing } = await supabase2.from("feature_payment_events").select("id").eq("paystack_reference", reference).maybeSingle();
+  if (existing) return;
+  const email = data?.customer?.email;
+  const amount = data?.amount;
+  const currency = data?.currency;
+  let matchedFlagKey = null;
+  let matchedUserId = null;
+  if (email && typeof amount === "number") {
+    const { data: pricedFeatures } = await supabase2.from("feature_pricing").select("flag_key, price_minor_units, currency").eq("is_paid", true);
+    const feature = (pricedFeatures ?? []).find(
+      (f) => f.price_minor_units === amount && (!currency || !f.currency || f.currency === currency)
+    );
+    if (feature) {
+      const { data: profile } = await supabase2.from("profiles").select("id").eq("email", email.toLowerCase()).maybeSingle();
+      if (profile) {
+        matchedFlagKey = feature.flag_key;
+        matchedUserId = profile.id;
+        await supabase2.from("user_feature_overrides").upsert({ user_id: profile.id, flag_key: feature.flag_key, enabled: true }, { onConflict: "user_id,flag_key" });
+      }
+    }
+  }
+  await supabase2.from("feature_payment_events").insert({
+    paystack_reference: reference,
+    email: email ?? null,
+    amount_minor_units: amount ?? null,
+    matched_flag_key: matchedFlagKey,
     matched_user_id: matchedUserId,
     raw_event: data
   });
@@ -5759,7 +5810,9 @@ var init_paymentsWebhook = __esm({
       const data = payload?.data;
       const reference = data?.reference;
       if (reference && event === "charge.success") {
-        await handleSubscriptionPayment(getServiceRoleClient(), reference, data);
+        const supabase2 = getServiceRoleClient();
+        const matchedATier = await handleSubscriptionPayment(supabase2, reference, data);
+        if (!matchedATier) await handleFeaturePayment(supabase2, reference, data);
       }
       res.status(200).json({ received: true });
     });
@@ -6989,10 +7042,178 @@ var init_subscriptionPlans = __esm({
   }
 });
 
-// src/server/routes/admin/guideItems.ts
-import { Router as Router33 } from "express";
+// src/server/validation/featurePricing.ts
 import { z as z23 } from "zod";
+var priceMajorUnitsField, featurePricingUpsertSchema;
+var init_featurePricing = __esm({
+  "src/server/validation/featurePricing.ts"() {
+    init_common();
+    priceMajorUnitsField = z23.number().finite().nonnegative("Price can't be negative").max(1e6, "That price looks too large - check the number").optional().nullable();
+    featurePricingUpsertSchema = z23.object({
+      isPaid: z23.boolean(),
+      price: priceMajorUnitsField,
+      currency: currencyField.optional().nullable(),
+      billingType: z23.enum(["one_time", "recurring"]).default("one_time"),
+      recurringInterval: z23.enum(["monthly", "yearly"]).optional().nullable(),
+      provider: z23.enum(["paystack", "stripe"]).default("paystack"),
+      paymentLink: z23.string().trim().url("Must be a valid URL").max(500).optional().nullable(),
+      accessMessage: z23.string().trim().max(300).optional().nullable()
+    }).superRefine((data, ctx) => {
+      if (!data.isPaid) return;
+      if (data.price == null) {
+        ctx.addIssue({ code: z23.ZodIssueCode.custom, path: ["price"], message: "A paid feature needs a price." });
+      }
+      if (!data.currency) {
+        ctx.addIssue({ code: z23.ZodIssueCode.custom, path: ["currency"], message: "A paid feature needs a currency." });
+      }
+      if (data.billingType === "recurring" && !data.recurringInterval) {
+        ctx.addIssue({
+          code: z23.ZodIssueCode.custom,
+          path: ["recurringInterval"],
+          message: "Recurring billing needs an interval (monthly or yearly)."
+        });
+      }
+    });
+  }
+});
+
+// src/server/routes/admin/featurePricing.ts
+import { Router as Router33 } from "express";
 function fromRow15(row) {
+  return {
+    flagKey: row.flag_key,
+    isPaid: row.is_paid,
+    price: row.price_minor_units != null ? row.price_minor_units / 100 : null,
+    currency: row.currency,
+    billingType: row.billing_type,
+    recurringInterval: row.recurring_interval,
+    provider: row.provider,
+    paymentLink: row.payment_link,
+    accessMessage: row.access_message,
+    updatedAt: row.updated_at
+  };
+}
+var adminFeaturePricingRouter;
+var init_featurePricing2 = __esm({
+  "src/server/routes/admin/featurePricing.ts"() {
+    init_featurePricing();
+    init_findUserByEmail();
+    adminFeaturePricingRouter = Router33();
+    adminFeaturePricingRouter.get("/", async (req, res) => {
+      const supabase2 = req.supabase;
+      const [{ data: flags, error: flagsError }, { data: pricing, error: pricingError }] = await Promise.all([
+        supabase2.from("feature_flags").select("key, name, description, phase").order("phase").order("name"),
+        supabase2.from("feature_pricing").select("*")
+      ]);
+      if (flagsError) {
+        res.status(400).json({ error: flagsError.message });
+        return;
+      }
+      if (pricingError) {
+        res.status(400).json({ error: pricingError.message });
+        return;
+      }
+      const pricingByKey = new Map((pricing ?? []).map((row) => [row.flag_key, row]));
+      res.json({
+        data: (flags ?? []).map((flag) => {
+          const priceRow = pricingByKey.get(flag.key);
+          return {
+            flagKey: flag.key,
+            name: flag.name,
+            description: flag.description,
+            phase: flag.phase,
+            ...priceRow ? fromRow15(priceRow) : {
+              isPaid: false,
+              price: null,
+              currency: null,
+              billingType: "one_time",
+              recurringInterval: null,
+              provider: "paystack",
+              paymentLink: null,
+              accessMessage: null,
+              updatedAt: null
+            }
+          };
+        })
+      });
+    });
+    adminFeaturePricingRouter.put("/:flagKey", async (req, res) => {
+      const parsed = featurePricingUpsertSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({ error: "Invalid request body", issues: parsed.error.issues });
+        return;
+      }
+      const supabase2 = req.supabase;
+      const { data: flag, error: flagError } = await supabase2.from("feature_flags").select("key").eq("key", req.params.flagKey).maybeSingle();
+      if (flagError) {
+        res.status(400).json({ error: flagError.message });
+        return;
+      }
+      if (!flag) {
+        res.status(404).json({ error: `No feature flag "${req.params.flagKey}" exists.` });
+        return;
+      }
+      const { data, error } = await supabase2.from("feature_pricing").upsert(
+        {
+          flag_key: req.params.flagKey,
+          is_paid: parsed.data.isPaid,
+          price_minor_units: parsed.data.price != null ? Math.round(parsed.data.price * 100) : null,
+          currency: parsed.data.currency ?? null,
+          billing_type: parsed.data.billingType,
+          recurring_interval: parsed.data.billingType === "recurring" ? parsed.data.recurringInterval : null,
+          provider: parsed.data.provider,
+          payment_link: parsed.data.paymentLink ?? null,
+          access_message: parsed.data.accessMessage ?? null,
+          updated_by: req.user.id
+        },
+        { onConflict: "flag_key" }
+      ).select("*").single();
+      if (error) {
+        res.status(400).json({ error: error.message });
+        return;
+      }
+      res.json({ data: fromRow15(data) });
+    });
+    adminFeaturePricingRouter.delete("/:flagKey", async (req, res) => {
+      const supabase2 = req.supabase;
+      const { error } = await supabase2.from("feature_pricing").delete().eq("flag_key", req.params.flagKey);
+      if (error) {
+        res.status(400).json({ error: error.message });
+        return;
+      }
+      res.status(204).send();
+    });
+    adminFeaturePricingRouter.put("/:flagKey/access", async (req, res) => {
+      const email = typeof req.body?.email === "string" ? req.body.email.trim() : "";
+      const enabled = req.body?.enabled;
+      if (!email) {
+        res.status(400).json({ error: "email is required." });
+        return;
+      }
+      if (typeof enabled !== "boolean") {
+        res.status(400).json({ error: "enabled must be true or false." });
+        return;
+      }
+      const targetUser = await findUserByEmail(email);
+      if (!targetUser) {
+        res.status(404).json({ error: "No user is registered with that email." });
+        return;
+      }
+      const supabase2 = req.supabase;
+      const { error } = await supabase2.from("user_feature_overrides").upsert({ user_id: targetUser.id, flag_key: req.params.flagKey, enabled }, { onConflict: "user_id,flag_key" });
+      if (error) {
+        res.status(400).json({ error: error.message });
+        return;
+      }
+      res.json({ data: { email, flagKey: req.params.flagKey, enabled } });
+    });
+  }
+});
+
+// src/server/routes/admin/guideItems.ts
+import { Router as Router34 } from "express";
+import { z as z24 } from "zod";
+function fromRow16(row) {
   return {
     id: row.id,
     title: row.title,
@@ -7004,10 +7225,10 @@ function fromRow15(row) {
 var adminGuideItemsRouter, createSchema;
 var init_guideItems = __esm({
   "src/server/routes/admin/guideItems.ts"() {
-    adminGuideItemsRouter = Router33();
-    createSchema = z23.object({
-      title: z23.string().trim().min(1).max(200),
-      description: z23.string().trim().max(2e3).optional()
+    adminGuideItemsRouter = Router34();
+    createSchema = z24.object({
+      title: z24.string().trim().min(1).max(200),
+      description: z24.string().trim().max(2e3).optional()
     });
     adminGuideItemsRouter.get("/", async (req, res) => {
       const supabase2 = req.supabase;
@@ -7016,7 +7237,7 @@ var init_guideItems = __esm({
         res.status(400).json({ error: error.message });
         return;
       }
-      res.json({ data: (data ?? []).map(fromRow15) });
+      res.json({ data: (data ?? []).map(fromRow16) });
     });
     adminGuideItemsRouter.post("/", async (req, res) => {
       const parsed = createSchema.safeParse(req.body);
@@ -7030,7 +7251,7 @@ var init_guideItems = __esm({
         res.status(400).json({ error: error.message });
         return;
       }
-      res.status(201).json({ data: fromRow15(data) });
+      res.status(201).json({ data: fromRow16(data) });
     });
     adminGuideItemsRouter.patch("/:id", async (req, res) => {
       const isDone = typeof req.body?.isDone === "boolean" ? req.body.isDone : void 0;
@@ -7048,7 +7269,7 @@ var init_guideItems = __esm({
         res.status(404).json({ error: "Not found" });
         return;
       }
-      res.json({ data: fromRow15(data) });
+      res.json({ data: fromRow16(data) });
     });
     adminGuideItemsRouter.delete("/:id", async (req, res) => {
       const supabase2 = req.supabase;
@@ -7063,8 +7284,8 @@ var init_guideItems = __esm({
 });
 
 // src/server/routes/admin/admins.ts
-import { Router as Router34 } from "express";
-import { z as z24 } from "zod";
+import { Router as Router35 } from "express";
+import { z as z25 } from "zod";
 function requireSuperAdmin(req, res) {
   if (!req.isSuperAdmin) {
     res.status(403).json({ error: "Only a superadmin can manage other admins." });
@@ -7075,7 +7296,7 @@ function requireSuperAdmin(req, res) {
 var adminAdminsRouter, ALL_SECTIONS, grantSchema, updateSchema2;
 var init_admins = __esm({
   "src/server/routes/admin/admins.ts"() {
-    adminAdminsRouter = Router34();
+    adminAdminsRouter = Router35();
     ALL_SECTIONS = ["dashboard", "flags", "announcements", "surveys", "payments", "branding", "content", "guides", "admins"];
     adminAdminsRouter.get("/", async (req, res) => {
       if (!requireSuperAdmin(req, res)) return;
@@ -7096,9 +7317,9 @@ var init_admins = __esm({
         }))
       });
     });
-    grantSchema = z24.object({
-      email: z24.string().trim().email(),
-      sections: z24.array(z24.enum(ALL_SECTIONS)).default([])
+    grantSchema = z25.object({
+      email: z25.string().trim().email(),
+      sections: z25.array(z25.enum(ALL_SECTIONS)).default([])
     });
     adminAdminsRouter.post("/", async (req, res) => {
       if (!requireSuperAdmin(req, res)) return;
@@ -7129,8 +7350,8 @@ var init_admins = __esm({
       }
       res.status(201).json({ data: { id: profile.id, email: parsed.data.email, sections: parsed.data.sections } });
     });
-    updateSchema2 = z24.object({
-      sections: z24.array(z24.enum(ALL_SECTIONS))
+    updateSchema2 = z25.object({
+      sections: z25.array(z25.enum(ALL_SECTIONS))
     });
     adminAdminsRouter.put("/:userId/sections", async (req, res) => {
       if (!requireSuperAdmin(req, res)) return;
@@ -7172,12 +7393,12 @@ var init_admins = __esm({
 });
 
 // src/server/routes/admin/siteSettings.ts
-import { Router as Router35 } from "express";
-import { z as z25 } from "zod";
+import { Router as Router36 } from "express";
+import { z as z26 } from "zod";
 var adminSiteSettingsRouter, KNOWN_KEYS, updateSchema3;
 var init_siteSettings = __esm({
   "src/server/routes/admin/siteSettings.ts"() {
-    adminSiteSettingsRouter = Router35();
+    adminSiteSettingsRouter = Router36();
     KNOWN_KEYS = [
       "support_email",
       "support_phone",
@@ -7198,9 +7419,9 @@ var init_siteSettings = __esm({
       const byKey = new Map((data ?? []).map((row) => [row.key, row.value]));
       res.json({ data: KNOWN_KEYS.map((key) => ({ key, value: byKey.get(key) ?? "" })) });
     });
-    updateSchema3 = z25.object({
-      key: z25.enum(KNOWN_KEYS),
-      value: z25.string().max(2e4)
+    updateSchema3 = z26.object({
+      key: z26.enum(KNOWN_KEYS),
+      value: z26.string().max(2e4)
     });
     adminSiteSettingsRouter.put("/", async (req, res) => {
       const parsed = updateSchema3.safeParse(req.body);
@@ -7220,9 +7441,9 @@ var init_siteSettings = __esm({
 });
 
 // src/server/routes/admin/faqItems.ts
-import { Router as Router36 } from "express";
-import { z as z26 } from "zod";
-function fromRow16(row) {
+import { Router as Router37 } from "express";
+import { z as z27 } from "zod";
+function fromRow17(row) {
   return {
     id: row.id,
     question: row.question,
@@ -7235,7 +7456,7 @@ function fromRow16(row) {
 var adminFaqItemsRouter, createSchema2, updateSchema4;
 var init_faqItems = __esm({
   "src/server/routes/admin/faqItems.ts"() {
-    adminFaqItemsRouter = Router36();
+    adminFaqItemsRouter = Router37();
     adminFaqItemsRouter.get("/", async (req, res) => {
       const supabase2 = req.supabase;
       const { data, error } = await supabase2.from("faq_items").select("*").order("sort_order").order("created_at");
@@ -7243,12 +7464,12 @@ var init_faqItems = __esm({
         res.status(400).json({ error: error.message });
         return;
       }
-      res.json({ data: (data ?? []).map(fromRow16) });
+      res.json({ data: (data ?? []).map(fromRow17) });
     });
-    createSchema2 = z26.object({
-      question: z26.string().trim().min(1).max(300),
-      answer: z26.string().trim().min(1).max(3e3),
-      sortOrder: z26.number().int().default(0)
+    createSchema2 = z27.object({
+      question: z27.string().trim().min(1).max(300),
+      answer: z27.string().trim().min(1).max(3e3),
+      sortOrder: z27.number().int().default(0)
     });
     adminFaqItemsRouter.post("/", async (req, res) => {
       const parsed = createSchema2.safeParse(req.body);
@@ -7262,13 +7483,13 @@ var init_faqItems = __esm({
         res.status(400).json({ error: error.message });
         return;
       }
-      res.status(201).json({ data: fromRow16(data) });
+      res.status(201).json({ data: fromRow17(data) });
     });
-    updateSchema4 = z26.object({
-      question: z26.string().trim().min(1).max(300).optional(),
-      answer: z26.string().trim().min(1).max(3e3).optional(),
-      sortOrder: z26.number().int().optional(),
-      isActive: z26.boolean().optional()
+    updateSchema4 = z27.object({
+      question: z27.string().trim().min(1).max(300).optional(),
+      answer: z27.string().trim().min(1).max(3e3).optional(),
+      sortOrder: z27.number().int().optional(),
+      isActive: z27.boolean().optional()
     });
     adminFaqItemsRouter.patch("/:id", async (req, res) => {
       const parsed = updateSchema4.safeParse(req.body);
@@ -7291,7 +7512,7 @@ var init_faqItems = __esm({
         res.status(404).json({ error: "Not found" });
         return;
       }
-      res.json({ data: fromRow16(data) });
+      res.json({ data: fromRow17(data) });
     });
     adminFaqItemsRouter.delete("/:id", async (req, res) => {
       const supabase2 = req.supabase;
@@ -7306,8 +7527,8 @@ var init_faqItems = __esm({
 });
 
 // src/server/routes/admin/feedback.ts
-import { Router as Router37 } from "express";
-function fromRow17(row) {
+import { Router as Router38 } from "express";
+function fromRow18(row) {
   return {
     id: row.id,
     name: row.name,
@@ -7319,7 +7540,7 @@ function fromRow17(row) {
 var adminFeedbackRouter;
 var init_feedback3 = __esm({
   "src/server/routes/admin/feedback.ts"() {
-    adminFeedbackRouter = Router37();
+    adminFeedbackRouter = Router38();
     adminFeedbackRouter.get("/", async (req, res) => {
       const supabase2 = req.supabase;
       const { data, error } = await supabase2.from("feedback_submissions").select("id, name, email, message, created_at").order("created_at", { ascending: false }).limit(200);
@@ -7327,17 +7548,17 @@ var init_feedback3 = __esm({
         res.status(400).json({ error: error.message });
         return;
       }
-      res.json({ data: (data ?? []).map(fromRow17) });
+      res.json({ data: (data ?? []).map(fromRow18) });
     });
   }
 });
 
 // src/server/routes/admin/users.ts
-import { Router as Router38 } from "express";
+import { Router as Router39 } from "express";
 var adminUsersRouter;
 var init_users = __esm({
   "src/server/routes/admin/users.ts"() {
-    adminUsersRouter = Router38();
+    adminUsersRouter = Router39();
     adminUsersRouter.get("/", async (req, res) => {
       const supabase2 = req.supabase;
       const [{ data: profiles, error: profilesError }, { data: businesses, error: businessesError }] = await Promise.all([
@@ -7375,11 +7596,11 @@ var init_users = __esm({
 });
 
 // src/server/routes/admin/analytics.ts
-import { Router as Router39 } from "express";
+import { Router as Router40 } from "express";
 var adminAnalyticsRouter;
 var init_analytics2 = __esm({
   "src/server/routes/admin/analytics.ts"() {
-    adminAnalyticsRouter = Router39();
+    adminAnalyticsRouter = Router40();
     adminAnalyticsRouter.get("/feature-usage", async (req, res) => {
       const supabase2 = req.supabase;
       const requestedDays = Number(req.query.days);
@@ -7406,7 +7627,7 @@ var init_analytics2 = __esm({
 });
 
 // src/server/routes/admin/index.ts
-import { Router as Router40 } from "express";
+import { Router as Router41 } from "express";
 var adminRouter, ALL_SECTIONS2;
 var init_admin2 = __esm({
   "src/server/routes/admin/index.ts"() {
@@ -7417,6 +7638,7 @@ var init_admin2 = __esm({
     init_assets2();
     init_stats();
     init_subscriptionPlans();
+    init_featurePricing2();
     init_guideItems();
     init_admins();
     init_siteSettings();
@@ -7424,8 +7646,8 @@ var init_admin2 = __esm({
     init_feedback3();
     init_users();
     init_analytics2();
-    adminRouter = Router40();
-    ALL_SECTIONS2 = ["dashboard", "flags", "announcements", "surveys", "payments", "branding", "content", "guides", "admins", "feedback", "users", "analytics"];
+    adminRouter = Router41();
+    ALL_SECTIONS2 = ["dashboard", "flags", "announcements", "surveys", "payments", "featurePricing", "branding", "content", "guides", "admins", "feedback", "users", "analytics", "activity"];
     adminRouter.get("/me", (req, res) => {
       res.json({
         data: {
@@ -7442,6 +7664,7 @@ var init_admin2 = __esm({
     adminRouter.use("/assets", requireSection("branding"), adminAssetsRouter);
     adminRouter.use("/stats", requireSection("dashboard"), adminStatsRouter);
     adminRouter.use("/subscription-plans", requireSection("payments"), adminSubscriptionPlansRouter);
+    adminRouter.use("/feature-pricing", requireSection("featurePricing"), adminFeaturePricingRouter);
     adminRouter.use("/guide-items", requireSection("guides"), adminGuideItemsRouter);
     adminRouter.use("/site-settings", requireSection("content"), adminSiteSettingsRouter);
     adminRouter.use("/faq-items", requireSection("content"), adminFaqItemsRouter);

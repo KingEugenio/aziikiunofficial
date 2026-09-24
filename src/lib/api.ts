@@ -291,6 +291,18 @@ export const api = {
       request<{
         data: Array<{ tier: string; paystackLink: string | null; priceMinorUnits: number | null; currency: string; provider: string }>;
       }>("/config/plans").then((r) => r.data),
+    featurePricing: () =>
+      request<{
+        data: Array<{
+          flagKey: string;
+          price: number | null;
+          currency: string | null;
+          billingType: "one_time" | "recurring";
+          recurringInterval: "monthly" | "yearly" | null;
+          paymentLink: string | null;
+          accessMessage: string | null;
+        }>;
+      }>("/config/feature-pricing").then((r) => r.data),
     siteSettings: () => request<{ data: Record<string, string> }>("/config/site-settings").then((r) => r.data),
     siteSettingsUpdatedAt: () =>
       request<{ data: Record<string, string> }>("/config/site-settings/updated-at").then((r) => r.data),
@@ -610,6 +622,44 @@ export const api = {
           method: "PUT",
           body: JSON.stringify({ tier }),
         }),
+    },
+
+    // Per-feature pricing (Admin Portal -> Payments -> Feature Pricing).
+    featurePricing: {
+      list: () =>
+        request<{
+          data: Array<{
+            flagKey: string;
+            name: string;
+            description: string;
+            phase: number;
+            isPaid: boolean;
+            price: number | null;
+            currency: string | null;
+            billingType: "one_time" | "recurring";
+            recurringInterval: "monthly" | "yearly" | null;
+            provider: "paystack" | "stripe";
+            paymentLink: string | null;
+            accessMessage: string | null;
+            updatedAt: string | null;
+          }>;
+        }>("/admin/feature-pricing").then((r) => r.data),
+      save: (
+        flagKey: string,
+        payload: {
+          isPaid: boolean;
+          price: number | null;
+          currency: string | null;
+          billingType: "one_time" | "recurring";
+          recurringInterval: "monthly" | "yearly" | null;
+          provider: "paystack" | "stripe";
+          paymentLink: string | null;
+          accessMessage: string | null;
+        }
+      ) => request<{ data: unknown }>(`/admin/feature-pricing/${flagKey}`, { method: "PUT", body: JSON.stringify(payload) }),
+      remove: (flagKey: string) => request<void>(`/admin/feature-pricing/${flagKey}`, { method: "DELETE" }),
+      grantAccess: (flagKey: string, email: string, enabled: boolean) =>
+        request<{ data: unknown }>(`/admin/feature-pricing/${flagKey}/access`, { method: "PUT", body: JSON.stringify({ email, enabled }) }),
     },
 
     feedback: {

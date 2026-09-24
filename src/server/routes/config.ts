@@ -200,6 +200,44 @@ configRouter.get("/plans", async (_req: Request, res: Response) => {
 });
 
 /**
+ * Per-feature pricing (migration 0067, /admin -> Payments -> Feature
+ * Pricing) - what an individual feature costs, on top of (not instead of)
+ * the whole-tier plans above. Only ever contains features an admin has
+ * actually marked paid; a feature that's free simply never appears here.
+ * Public, same reasoning as /plans - a locked feature's price should be
+ * visible before signing up, not just after.
+ */
+configRouter.get("/feature-pricing", async (_req: Request, res: Response) => {
+  const anonClient = getAnonClient();
+  const { data, error } = await anonClient
+    .from("feature_pricing")
+    .select("flag_key, is_paid, price_minor_units, currency, billing_type, recurring_interval, payment_link, access_message")
+    .eq("is_paid", true);
+
+  if (error) {
+    // Fail open to an empty list (same reasoning as /plans above) - a
+    // missing table before migration 0067 is applied must not break every
+    // page load, and must never be read as "everything is free" being
+    // wrong either way - see isFeatureLocked() in lib/featurePricing.ts,
+    // which only treats a feature as priced when a row genuinely exists.
+    res.json({ data: [] });
+    return;
+  }
+
+  res.json({
+    data: (data ?? []).map((row) => ({
+      flagKey: row.flag_key,
+      price: row.price_minor_units != null ? row.price_minor_units / 100 : null,
+      currency: row.currency,
+      billingType: row.billing_type,
+      recurringInterval: row.recurring_interval,
+      paymentLink: row.payment_link,
+      accessMessage: row.access_message,
+    })),
+  });
+});
+
+/**
  * Support contact info, social links, and legal text (migration 0047) -
  * editable from /admin -> Site Content, no code change or redeploy needed.
  * Public: the footer's social icons and the pre-login Help links need this

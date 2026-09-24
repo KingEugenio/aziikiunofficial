@@ -6,6 +6,7 @@ import { adminSurveysRouter } from "./surveys";
 import { adminAssetsRouter } from "./assets";
 import { adminStatsRouter } from "./stats";
 import { adminSubscriptionPlansRouter } from "./subscriptionPlans";
+import { adminFeaturePricingRouter } from "./featurePricing";
 import { adminGuideItemsRouter } from "./guideItems";
 import { adminAdminsRouter } from "./admins";
 import { adminSiteSettingsRouter } from "./siteSettings";
@@ -16,7 +17,7 @@ import { adminAnalyticsRouter } from "./analytics";
 
 export const adminRouter = Router();
 
-const ALL_SECTIONS = ["dashboard", "flags", "announcements", "surveys", "payments", "branding", "content", "guides", "admins", "feedback", "users", "analytics"];
+const ALL_SECTIONS = ["dashboard", "flags", "announcements", "surveys", "payments", "featurePricing", "branding", "content", "guides", "admins", "feedback", "users", "analytics", "activity"];
 
 // Confirms admin access and returns just enough identity + permissions for
 // the portal's header/nav to filter itself - requireAdmin (mounted in
@@ -39,6 +40,7 @@ adminRouter.use("/surveys", requireSection("surveys"), adminSurveysRouter);
 adminRouter.use("/assets", requireSection("branding"), adminAssetsRouter);
 adminRouter.use("/stats", requireSection("dashboard"), adminStatsRouter);
 adminRouter.use("/subscription-plans", requireSection("payments"), adminSubscriptionPlansRouter);
+adminRouter.use("/feature-pricing", requireSection("featurePricing"), adminFeaturePricingRouter);
 adminRouter.use("/guide-items", requireSection("guides"), adminGuideItemsRouter);
 adminRouter.use("/site-settings", requireSection("content"), adminSiteSettingsRouter);
 adminRouter.use("/faq-items", requireSection("content"), adminFaqItemsRouter);

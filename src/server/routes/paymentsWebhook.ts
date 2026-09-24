@@ -13,14 +13,16 @@ const TIER_RANK: Record<string, number> = { basic: 0, standard: 1, pro: 2 };
 // 0042). Those links carry no reference we created ourselves, so amount
 // (+ currency) matching the email on the charge is the only correlation
 // available without the admin wiring up custom metadata per plan.
-async function handleSubscriptionPayment(supabase: ReturnType<typeof getServiceRoleClient>, reference: string, data: any) {
-  // Idempotency: Paystack can resend the same event.
+async function handleSubscriptionPayment(supabase: ReturnType<typeof getServiceRoleClient>, reference: string, data: any): Promise<boolean> {
+  // Idempotency: Paystack can resend the same event. Reports "not a tier
+  // match" on a replay - harmless either way, since handleFeaturePayment
+  // has this exact same idempotency check of its own.
   const { data: existing } = await supabase
     .from("subscription_payment_events")
     .select("id")
     .eq("paystack_reference", reference)
     .maybeSingle();
-  if (existing) return;
+  if (existing) return false;
 
   const email: string | undefined = data?.customer?.email;
   const amount: number | undefined = data?.amount;
@@ -60,6 +62,66 @@ async function handleSubscriptionPayment(supabase: ReturnType<typeof getServiceR
     email: email ?? null,
     amount_minor_units: amount ?? null,
     matched_tier: matchedTier,
+    matched_user_id: matchedUserId,
+    raw_event: data,
+  });
+
+  // Did this same payment ALSO happen to match a whole-tier plan above?
+  // Both tables get an audit row regardless (so nothing a payment matched
+  // ever goes unrecorded), but a single Payment Page link only ever
+  // represents one real offer - if it already matched a tier, don't also
+  // treat it as a feature purchase.
+  return matchedTier !== null;
+}
+
+// A single feature's own price (migration 0067, /admin -> Payments ->
+// Feature Pricing) - separate from a whole-tier plan. On a match, grants
+// the feature the same way an admin manually granting access from the
+// Feature Flags panel already does: a user_feature_overrides row. That is
+// the ONLY access-control effect - everywhere else in the app already
+// reads user_feature_overrides as the source of truth, so nothing else
+// needs to know a payment was involved at all.
+async function handleFeaturePayment(supabase: ReturnType<typeof getServiceRoleClient>, reference: string, data: any) {
+  const { data: existing } = await supabase
+    .from("feature_payment_events")
+    .select("id")
+    .eq("paystack_reference", reference)
+    .maybeSingle();
+  if (existing) return;
+
+  const email: string | undefined = data?.customer?.email;
+  const amount: number | undefined = data?.amount;
+  const currency: string | undefined = data?.currency;
+
+  let matchedFlagKey: string | null = null;
+  let matchedUserId: string | null = null;
+
+  if (email && typeof amount === "number") {
+    const { data: pricedFeatures } = await supabase
+      .from("feature_pricing")
+      .select("flag_key, price_minor_units, currency")
+      .eq("is_paid", true);
+    const feature = (pricedFeatures ?? []).find(
+      (f) => f.price_minor_units === amount && (!currency || !f.currency || f.currency === currency)
+    );
+
+    if (feature) {
+      const { data: profile } = await supabase.from("profiles").select("id").eq("email", email.toLowerCase()).maybeSingle();
+      if (profile) {
+        matchedFlagKey = feature.flag_key;
+        matchedUserId = profile.id;
+        await supabase
+          .from("user_feature_overrides")
+          .upsert({ user_id: profile.id, flag_key: feature.flag_key, enabled: true }, { onConflict: "user_id,flag_key" });
+      }
+    }
+  }
+
+  await supabase.from("feature_payment_events").insert({
+    paystack_reference: reference,
+    email: email ?? null,
+    amount_minor_units: amount ?? null,
+    matched_flag_key: matchedFlagKey,
     matched_user_id: matchedUserId,
     raw_event: data,
   });
@@ -105,7 +167,9 @@ paymentsWebhookRouter.post("/", express.raw({ type: "application/json" }), async
   const reference: string | undefined = data?.reference;
 
   if (reference && event === "charge.success") {
-    await handleSubscriptionPayment(getServiceRoleClient(), reference, data);
+    const supabase = getServiceRoleClient();
+    const matchedATier = await handleSubscriptionPayment(supabase, reference, data);
+    if (!matchedATier) await handleFeaturePayment(supabase, reference, data);
   }
 
   res.status(200).json({ received: true });
