@@ -2,6 +2,7 @@
 // Used during the Launch Promotion to record background usage metrics for future monetization plans.
 import { track } from "@vercel/analytics";
 import { api } from "./api";
+import { capturePostHogEvent } from "./posthog";
 
 // Matches analytics_events.event_category's check constraint (migration
 // 0018) - which FeatureUsage key maps to which of the 9 allowed categories,
@@ -116,6 +117,10 @@ export function trackFeatureUsage(feature: keyof FeatureUsage): FeatureUsage {
   } catch {
     // Ignore - see comment above.
   }
+
+  // Same event, to PostHog too - no-ops entirely until VITE_POSTHOG_KEY is
+  // set (see lib/posthog.ts), so this is safe to leave in place either way.
+  capturePostHogEvent(feature, { category: EVENT_CATEGORY[feature] });
 
   // Also logs to Aziiki's own analytics_events table (migration 0018/0057)
   // so the admin portal's Feature Analytics panel can show "most used

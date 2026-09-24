@@ -13,6 +13,7 @@ import "express-async-errors";
 import { env } from "./env";
 import { initSentry, setupSentryErrorHandler } from "./sentry";
 import { apiLimiter, paystackWebhookLimiter } from "./rateLimiters";
+import { activityLoggingMiddleware } from "./middleware/activityLogging";
 import { requireAuth } from "./middleware/requireAuth";
 import { requireAdmin } from "./middleware/requireAdmin";
 
@@ -49,12 +50,15 @@ import { documentNumberingRouter } from "./routes/documentNumbering";
 import { documentChangeLogRouter } from "./routes/documentChangeLog";
 import { paymentsWebhookRouter } from "./routes/paymentsWebhook";
 import { notificationsRouter } from "./routes/notifications";
+import { gameSessionsRouter } from "./routes/gameSessions";
+import { gameScoresRouter } from "./routes/gameScores";
 import { profileRouter } from "./routes/profile";
 import { signaturesRouter } from "./routes/signatures";
 import { businessMembershipsRouter } from "./routes/businessMemberships";
 import { announcementsRouter, publicAnnouncementsRouter } from "./routes/announcements";
 import { surveysRouter } from "./routes/surveys";
 import { adminRouter } from "./routes/admin";
+import { activityAuditRouter } from "./routes/activityAudit";
 
 export function createApp(): express.Express {
   // Called first, before any middleware/route is registered - no-ops
@@ -116,6 +120,11 @@ export function createApp(): express.Express {
   // ---------------------------------------------------------------------
   // Everything below requires a valid Supabase session.
   // ---------------------------------------------------------------------
+  // No requireAuth here on purpose: every route below already enforces its
+  // own auth, and by the time this middleware's res.on("finish") callback
+  // reads req.user, that per-route requireAuth has already set it. Checking
+  // the token a second time here would just be wasted work on every request.
+  app.use("/api/", activityLoggingMiddleware());
   app.use("/api/sync", requireAuth, syncRouter);
   app.use("/api/businesses", requireAuth, enforceBusinessLimits, businessesRouter);
   app.use("/api/business-partners", requireAuth, businessPartnersRouter);
@@ -142,11 +151,16 @@ export function createApp(): express.Express {
   app.use("/api/document-numbering", requireAuth, documentNumberingRouter);
   app.use("/api/document-change-log", requireAuth, documentChangeLogRouter);
   app.use("/api/notifications", requireAuth, notificationsRouter);
+  // Money Quiz (src/components/MoneyGame.tsx), the scenario-based financial
+  // literacy game behind the money_game_feature flag.
+  app.use("/api/game-sessions", requireAuth, gameSessionsRouter);
+  app.use("/api/game-scores", requireAuth, gameScoresRouter);
   app.use("/api/profile", requireAuth, profileRouter);
   app.use("/api/signatures", requireAuth, signaturesRouter);
   app.use("/api/business-memberships", requireAuth, businessMembershipsRouter);
   app.use("/api/announcements", requireAuth, announcementsRouter);
   app.use("/api/surveys", requireAuth, surveysRouter);
+  app.use("/api/admin/activity-logs", requireAuth, requireAdmin, activityAuditRouter);
 
   // ---------------------------------------------------------------------
   // Admin portal routes - requireAuth then requireAdmin (profiles.is_admin,

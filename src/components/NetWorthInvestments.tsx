@@ -4,6 +4,8 @@ import { api } from "../lib/api";
 import { Investment, Goal, Debt, Business, Asset } from "../types";
 import { SUPPORTED_CURRENCY_CODES, getCurrencySymbol } from "../lib/currency";
 import { useFeatureFlags } from "../lib/featureFlags";
+import CollapsibleSection from "./CollapsibleSection";
+import { useResponsive } from "../hooks/useResponsive";
 
 interface CountryMarketInfo {
   countryName: string;
@@ -159,6 +161,7 @@ export default function NetWorthInvestments({
   currentBusiness
 }: NetWorthInvestmentsProps) {
   const { isEnabled } = useFeatureFlags();
+  const { isMobile, isTablet } = useResponsive();
 
   // Navigation tabs: "assets" | "investments" | "networth" | "goals"
   const [activeTab, setActiveTab] = useState<"assets" | "investments" | "networth" | "goals">("assets");
@@ -767,6 +770,7 @@ export default function NetWorthInvestments({
       {/* TAB 1: ASSET REGISTER & ASSET PLANNING */}
       <>
           {activeTab === "assets" && (
+            <CollapsibleSection title="Asset Register & Planning" icon={<Layers className="w-4 h-4" />} defaultOpen={!isMobile && !isTablet}>
             <div className="lg:col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-6 text-left animate-fade-in">
           
           {/* Information Notice explaining Asset Accounting */}
@@ -1411,11 +1415,13 @@ export default function NetWorthInvestments({
               )}
             </div>
           </div>
-        </div>
+            </div>
+            </CollapsibleSection>
       )}
 
               {/* TAB 2: SME INVESTMENT DESK (INVESTMENT PORTFOLIO TRACKER) */}
       {activeTab === "investments" && (
+        <CollapsibleSection title="Investment Portfolio" icon={<TrendingUp className="w-4 h-4" />} defaultOpen={!isMobile && !isTablet}>
         <div className="lg:col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-6 text-left animate-fade-in">
           
           {/* Important Regulatory Warning Banner */}
@@ -2569,10 +2575,12 @@ export default function NetWorthInvestments({
           )}
 
         </div>
+        </CollapsibleSection>
       )}
 
       {/* TAB 3: WEALTH POSITION & LIABILITY MANAGEMENT */}
       {activeTab === "networth" && (
+        <CollapsibleSection title="Wealth & Net Worth" icon={<Scale className="w-4 h-4" />} defaultOpen={!isMobile && !isTablet}>
         <div className="lg:col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-6 text-left animate-fade-in">
           
           {/* Balance Sheet Ledger Presentation */}
@@ -2809,10 +2817,12 @@ export default function NetWorthInvestments({
           )}
 
         </div>
+        </CollapsibleSection>
       )}
 
       {/* TAB 4: BUSINESS SAVINGS GOALS */}
       {activeTab === "goals" && isEnabled("goals_tracking") && (
+        <CollapsibleSection title="Business Savings Goals" icon={<Target className="w-4 h-4" />} defaultOpen={!isMobile && !isTablet}>
         <div className="lg:col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-6 text-left font-sans animate-fade-in">
           
           {/* Configure Goals Left Panel */}
@@ -3064,6 +3074,7 @@ export default function NetWorthInvestments({
             </div>
           </div>
         </div>
+        </CollapsibleSection>
       )}
         </>
     </div>

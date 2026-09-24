@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Plus, Trash as Trash2, Warning as AlertTriangle, Package, Phone, User, Tag, Warehouse, CheckCircle, Truck, FileCsv as FileSpreadsheet, X } from "@phosphor-icons/react";
 import { InventoryItem, Business } from "../types";
 import ConfirmModal from "./ConfirmModal";
+import CollapsibleSection from "./CollapsibleSection";
+import { useResponsive } from "../hooks/useResponsive";
 
 interface InventoryManagerProps {
   currentBusiness: Business;
@@ -22,6 +24,7 @@ export default function InventoryManager({
   onDeleteInventoryItem,
   onStockAdjustment
 }: InventoryManagerProps) {
+  const { isMobile, isTablet } = useResponsive();
   const [isAdding, setIsAdding] = useState<boolean>(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -351,8 +354,12 @@ export default function InventoryManager({
 
         {/* Add physical item form */}
         {isAdding && (
-          <form onSubmit={handleSaveItem} className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3 text-xs leading-relaxed">
-            <h4 className="font-bold text-slate-900 font-sans">{editingItemId ? "Edit Product Asset" : "Add Product Asset"}</h4>
+          <CollapsibleSection
+            title={editingItemId ? "Edit Product Asset" : "Add Product Asset"}
+            icon={<Package className="w-4 h-4" />}
+            defaultOpen={!isMobile && !isTablet}
+          >
+            <form onSubmit={handleSaveItem} className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3 text-xs leading-relaxed">
 
             {saveError && (
               <div className="bg-rose-50 border border-rose-200 text-rose-700 text-[11px] font-semibold rounded-lg p-2.5 flex items-start gap-1.5">
@@ -466,7 +473,8 @@ export default function InventoryManager({
                 Cancel
               </button>
             </div>
-          </form>
+            </form>
+          </CollapsibleSection>
         )}
 
         <p className="text-[11px] text-slate-500 font-sans leading-relaxed">
@@ -475,14 +483,14 @@ export default function InventoryManager({
       </div>
 
       {/* Main Stock Table */}
-      <div className="lg:col-span-8 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm shadow-emerald-500/5">
-        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 font-sans flex items-center gap-2 border-b border-slate-100 pb-3">
-          <Warehouse className="w-4 h-4 text-emerald-600" />
-          Warehouse Registry catalog
-        </h4>
-
-        {/* Catalog list layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <CollapsibleSection
+        title="Warehouse Registry Catalog"
+        icon={<Warehouse className="w-4 h-4" />}
+        defaultOpen={!isMobile && !isTablet}
+      >
+        <div className="lg:col-span-8 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm shadow-emerald-500/5">
+          {/* Catalog list layout */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {businessInventory.map((item) => {
             const isLowStock = item.quantity <= item.minStockAlert;
 
@@ -560,8 +568,9 @@ export default function InventoryManager({
               No products mapped under this business. Click "Acquire Material" above to populate catalog.
             </div>
           )}
+          </div>
         </div>
-      </div>
+      </CollapsibleSection>
 
       {pendingDeleteItem && (
         <ConfirmModal

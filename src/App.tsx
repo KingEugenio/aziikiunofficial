@@ -32,6 +32,8 @@ const PersonalWorkspace = lazy(() => import("./components/PersonalWorkspace"));
 const InvoiceReceiptBuilder = lazy(() => import("./components/InvoiceReceiptBuilder"));
 const NetWorthInvestments = lazy(() => import("./components/NetWorthInvestments"));
 const FourWaysToEarnGame = lazy(() => import("./components/FourWaysToEarnGame"));
+// MoneyGame.tsx only has a named export - map it to the default lazy() expects.
+const MoneyGame = lazy(() => import("./components/MoneyGame").then((m) => ({ default: m.MoneyGame })));
 const FinancialReports = lazy(() => import("./components/FinancialReports"));
 const AppGuide = lazy(() => import("./components/AppGuide"));
 const AdMonetizationHub = lazy(() => import("./components/AdMonetizationHub"));
@@ -65,6 +67,7 @@ import { compressImageForStorage } from "./lib/imageCompress";
 import { detectBrowserCountryCode, detectBrowserTimezone, describeTimezoneOffsetDiff } from "./lib/location";
 import { COUNTRIES } from "./lib/countries";
 import { trackFeatureUsage } from "./lib/analytics";
+import { identifyPostHogUser, resetPostHogIdentity } from "./lib/posthog";
 
 export default function App() {
   // Granular, admin-controlled feature flags (see supabase/migrations/0032
@@ -119,7 +122,7 @@ export default function App() {
   const [onboardingPrefillEmail, setOnboardingPrefillEmail] = useState<string | undefined>(undefined);
 
   // Active Navigation Tab
-  // Options: "dashboard" | "billing" | "crm" | "wealth" | "stock" | "monetize" | "ai"
+  // Options: "dashboard" | "billing" | "crm" | "wealth" | "stock" | "monetize" | "ai" | "game"
   const [activeTab, setActiveTab] = useState<string>("dashboard");
   // A Book Library lesson to open on arrival at Reports & Wisdom (set by a
   // nudge or by the game's end-of-game notes).
@@ -133,7 +136,8 @@ export default function App() {
     billing: "Billing & PDFs",
     crm: "Customer CRM",
     wealth: "Wealth & Goals",
-    game: "Money Game",
+    game: "Four Ways to Earn",
+    moneyQuiz: "Money Quiz",
     stock: "Warehouse Stock",
     purchaseOrders: "Purchase Orders",
     team: "Team",
@@ -171,6 +175,7 @@ export default function App() {
     const flagForTab: Record<string, string> = {
       wealth: "net_worth_investments",
       game: "four_ways_game",
+      moneyQuiz: "money_game_feature",
       monetize: "ad_monetization_hub",
       stock: "inventory_management",
       purchaseOrders: "purchase_orders",
@@ -386,8 +391,11 @@ export default function App() {
       }
       if (session?.user) {
         setUser(session.user);
+        // No-ops until VITE_POSTHOG_KEY is set - see lib/posthog.ts.
+        identifyPostHogUser(session.user.id);
       } else {
         setUser(null);
+        resetPostHogIdentity();
       }
     });
 
@@ -2039,7 +2047,24 @@ export default function App() {
  : "text-slate-600 hover:bg-slate-100"
  }`}
             >
-              <GameController className="w-4 h-4 shrink-0" /> Money Game
+              <GameController className="w-4 h-4 shrink-0" /> Four Ways to Earn
+            </button>
+            )}
+
+            {/* Money Quiz: a separate Phase 2 learning game (scenario-based quiz on
+                cash flow/pricing/budgeting), distinct from Four Ways to Earn above.
+                Toggle via admin portal -> money_game_feature. */}
+            {isEnabled("money_game_feature") && (
+            <button
+              id="tab-moneyQuiz-btn"
+              onClick={() => changeTab("moneyQuiz")}
+              className={`px-4 py-2.5 rounded-xl font-bold font-sans transition-all flex items-center gap-2 cursor-pointer shrink-0 md:w-full md:justify-start ${
+ activeTab === "moneyQuiz"
+ ? "bg-brand-navy text-white shadow-sm shadow-brand-navy/15"
+ : "text-slate-600 hover:bg-slate-100"
+ }`}
+            >
+              <GameController className="w-4 h-4 shrink-0" /> Money Quiz
             </button>
             )}
 
@@ -3234,6 +3259,11 @@ export default function App() {
                       onShowTermsOfService={() => setShowTermsOfService(true)}
                       onShowRefundPolicy={() => setShowRefundPolicy(true)}
                     />
+                  </Suspense>
+                )}
+                {isEnabled("money_game_feature") && activeTab === "moneyQuiz" && (
+                  <Suspense fallback={<Skeleton width="100%" height="20rem" />}>
+                    <MoneyGame businessId={currentBusiness.id} userId={user?.id ?? ""} />
                   </Suspense>
                 )}
 

@@ -92,6 +92,15 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   return body as T;
 }
 
+/** A query string of every defined, non-empty value in `params`. */
+function buildQuery(params: Record<string, string | number | undefined>): string {
+  const query = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined && value !== "") query.set(key, String(value));
+  }
+  return query.toString();
+}
+
 function makeResource<T>(basePath: string) {
   return {
     list: (businessId?: string) =>
@@ -345,6 +354,28 @@ export const api = {
       }>(`/document-numbering/audit-log?businessId=${encodeURIComponent(businessId)}`).then((r) => r.data),
   },
 
+  // Money Quiz (src/components/MoneyGame.tsx) - a scenario-based financial
+  // literacy game behind the money_game_feature flag.
+  gameSessions: {
+    list: (businessId: string) =>
+      request<{ sessions: any[]; scores: any[] }>(`/game-sessions?businessId=${encodeURIComponent(businessId)}`),
+    create: (payload: { businessId: string; gameState?: Record<string, unknown> }) =>
+      request<{ data: any }>("/game-sessions", { method: "POST", body: JSON.stringify(payload) }).then((r) => r.data),
+    update: (id: string, payload: Record<string, unknown>) =>
+      request<{ data: any }>(`/game-sessions/${id}`, { method: "PATCH", body: JSON.stringify(payload) }).then((r) => r.data),
+  },
+  gameScores: {
+    create: (payload: {
+      businessId: string;
+      sessionId: string;
+      scenarioId: string;
+      scenarioName: string;
+      score: number;
+      maxScore: number;
+      performanceMetrics?: Record<string, unknown>;
+    }) => request<{ data: any }>("/game-scores", { method: "POST", body: JSON.stringify(payload) }).then((r) => r.data),
+  },
+
   notifications: {
     list: () => request<{ data: any[] }>("/notifications").then((r) => r.data),
     markRead: (id: string) => request<{ data: any }>(`/notifications/${id}/read`, { method: "POST" }).then((r) => r.data),
@@ -448,6 +479,21 @@ export const api = {
         }),
       removeOverride: (key: string, userId: string) =>
         request<void>(`/admin/feature-flags/${key}/overrides/${userId}`, { method: "DELETE" }),
+    },
+
+    // The Activity Monitoring panel (activity_monitoring_enabled flag).
+    activityLogs: {
+      list: (params: { businessId?: string; userId?: string; actionType?: string; entityType?: string; startDate?: string; endDate?: string; limit?: number; offset?: number }) =>
+        request<{ logs: any[]; total: number; limit: number; offset: number }>(`/admin/activity-logs?${buildQuery(params)}`),
+      stats: (businessId?: string) =>
+        request<{ totalActions: number; byActionType: Array<{ action_type: string; count: number }>; byEntityType: Array<{ entity_type: string; count: number }> }>(
+          `/admin/activity-logs/stats${businessId ? `?businessId=${encodeURIComponent(businessId)}` : ""}`
+        ),
+      userSummary: (userId: string, businessId?: string) =>
+        request<{ userId: string; totalActions: number; lastActivityAt: string | null; actionTypeDistribution: Array<{ action_type: string; count: number }> }>(
+          `/admin/activity-logs/user-summary/${userId}${businessId ? `?businessId=${encodeURIComponent(businessId)}` : ""}`
+        ),
+      exportUrl: (businessId?: string) => `/api/admin/activity-logs/export${businessId ? `?businessId=${encodeURIComponent(businessId)}` : ""}`,
     },
 
     announcements: {
