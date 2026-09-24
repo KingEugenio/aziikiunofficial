@@ -39,7 +39,12 @@ short manual version of the same result.
   `VITE_POSTHOG_KEY` with the same value, for Production (and Preview if
   you want analytics there too).
 - If your project isn't on US Cloud, also set `VITE_POSTHOG_HOST` to
-  `https://eu.i.posthog.com` (EU Cloud) or your self-hosted URL.
+  `https://eu.i.posthog.com` (EU Cloud) or your self-hosted URL. In
+  production, the app's security policy (CSP) only allows `*.i.posthog.com`
+  by default, which covers both Cloud regions - a fully custom self-hosted
+  domain needs its own entry added next to `posthog` in the `connectSrc`
+  list in `src/server/app.ts`, or events will be silently blocked by the
+  browser.
 
 **This is a `VITE_` variable**, so — same as `VITE_SUPABASE_URL` — it's
 baked in at build time. After adding it in Vercel, redeploy (Deployments →

@@ -88,7 +88,7 @@ export function createApp(): express.Express {
                 styleSrc: ["'self'", "'unsafe-inline'"],
                 fontSrc: ["'self'", "data:"],
                 imgSrc: ["'self'", "data:", "blob:"],
-                connectSrc: ["'self'", supabaseHttpsOrigin, supabaseWssOrigin, "https://*.ingest.sentry.io", "https://*.ingest.us.sentry.io"],
+                connectSrc: ["'self'", supabaseHttpsOrigin, supabaseWssOrigin, "https://*.ingest.sentry.io", "https://*.ingest.us.sentry.io", "https://*.i.posthog.com"],
                 objectSrc: ["'none'"],
                 baseUri: ["'self'"],
                 formAction: ["'self'"],
