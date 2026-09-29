@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, Suspense, lazy } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Buildings as Building2, Stack as Layers2, Coins, Users, Target, Warehouse, Brain as BrainCircuit, MagicWand as Sparkles, CurrencyDollar as DollarSign, DeviceMobile as Smartphone, CheckCircle, TrendUp as TrendingUp, WarningCircle as AlertCircle, Database, ShieldCheck, SignOut as LogOut, UserCheck, ChartLine as LineChart, BookOpen, ArrowsClockwise, Lock, GearSix, Plus, X, Globe, ArrowRight, User, UsersThree, ChartBar, LockKey, CaretDown, CaretUp, Package, Question as HelpCircle, GameController } from "@phosphor-icons/react";
+import { Buildings as Building2, Stack as Layers2, Coins, Users, Target, Warehouse, Brain as BrainCircuit, MagicWand as Sparkles, CurrencyDollar as DollarSign, DeviceMobile as Smartphone, CheckCircle, TrendUp as TrendingUp, WarningCircle as AlertCircle, Database, ShieldCheck, SignOut as LogOut, UserCheck, ChartLine as LineChart, BookOpen, ArrowsClockwise, Lock, GearSix, Plus, X, Globe, ArrowRight, User, UsersThree, ChartBar, LockKey, CaretDown, CaretUp, Package, Question as HelpCircle, GameController, ShoppingCart } from "@phosphor-icons/react";
 import WisdomNudge from "./components/WisdomNudge";
 import type { LessonTab } from "./lib/bookLibrary";
 import { Business, Customer, Transaction, Invoice, Receipt, Quotation, Investment, Asset, Goal, Debt, InventoryItem, Partner, Shareholder, UserRole, AuditLog } from "./types";
@@ -55,6 +55,7 @@ import NotFoundPage from "./components/NotFoundPage";
 // meaningful to actually be shown.
 const CustomerCRM = lazy(() => import("./components/CustomerCRM"));
 const InventoryManager = lazy(() => import("./components/InventoryManager"));
+const PointOfSale = lazy(() => import("./components/PointOfSale"));
 const PurchaseOrderManager = lazy(() => import("./components/PurchaseOrderManager"));
 const TeamManager = lazy(() => import("./components/TeamManager"));
 
@@ -142,6 +143,7 @@ export default function App() {
     game: "Four Ways to Earn",
     moneyQuiz: "Money Quiz",
     stock: "Warehouse Stock",
+    pos: "Point of Sale",
     purchaseOrders: "Purchase Orders",
     team: "Team",
     reports: "Reports & Wisdom",
@@ -181,6 +183,7 @@ export default function App() {
     moneyQuiz: "money_game_feature",
     monetize: "ad_monetization_hub",
     stock: "inventory_management",
+    pos: "retail_pos",
     purchaseOrders: "purchase_orders",
     team: "team_memberships_invite_ui",
     settings: "core_settings",
@@ -2112,6 +2115,21 @@ export default function App() {
             </button>
             )}
 
+            {/* Point of Sale: paid add-on, not part of any Basic/Standard/Pro tier - price it via admin portal -> Feature Pricing -> Point of Sale. */}
+            {navIsVisible("retail_pos") && (
+            <button
+              id="tab-pos-btn"
+              onClick={() => changeTab("pos")}
+              className={`px-4 py-2.5 rounded-xl font-bold font-sans transition-all flex items-center gap-2 cursor-pointer shrink-0 md:w-full md:justify-start ${
+ activeTab === "pos"
+ ? "bg-brand-navy text-white shadow-sm shadow-brand-navy/15"
+ : "text-slate-600 hover:bg-slate-100"
+ }`}
+            >
+              <ShoppingCart className="w-4 h-4 shrink-0" /> Point of Sale {navLockBadge("retail_pos")}
+            </button>
+            )}
+
             {/* Purchase Orders / Team / Exchange Rates: each its own screen now (moved out of the Billing builder's cramped sub-tab strip). Off by default in Phase 1, code preserved. Toggle via admin portal. */}
             {navIsVisible("purchase_orders") && (
             <button
@@ -3206,6 +3224,30 @@ export default function App() {
                       onStockAdjustment={handleStockAdjustment}
                     />
                   </Suspense>
+                )}
+
+                {/* Point of Sale: a paid add-on (see admin -> Feature Pricing), not part of any whole-tier plan. Needs a real signed-in account - a guest has no server-side inventory to decrement or receipt to record. */}
+                {isEnabled("retail_pos") && activeTab === "pos" && !isGuest && (
+                  <Suspense fallback={<SkeletonInventory />}>
+                    <PointOfSale
+                      businessId={currentBusiness.id}
+                      currencySymbol={currencySymbol}
+                      inventory={inventory}
+                      onSaleComplete={(sold) =>
+                        setInventory((prev) =>
+                          prev.map((item) => {
+                            const match = sold.find((s) => s.id === item.id);
+                            return match ? { ...item, quantity: Math.max(0, item.quantity - match.quantitySold) } : item;
+                          })
+                        )
+                      }
+                    />
+                  </Suspense>
+                )}
+                {isEnabled("retail_pos") && activeTab === "pos" && isGuest && (
+                  <div className="bg-white border border-slate-200 rounded-3xl p-8 text-center text-sm text-slate-500">
+                    Point of Sale needs a real account, signed in - it records inventory and receipts on your server, which a guest session doesn't have.
+                  </div>
                 )}
 
                 {/* Off by default in Phase 1, code preserved for the admin portal to turn on later. Each of these three used to be a cramped sub-tab inside the Billing builder; they're now their own top-level screens. */}

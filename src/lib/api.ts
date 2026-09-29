@@ -205,6 +205,16 @@ export const api = {
       ),
     removeWithReason: (id: string, changeReason: string) =>
       request<void>(`/receipts/${id}`, { method: "DELETE", body: JSON.stringify({ changeReason }) }),
+    // Point of Sale checkout - rings up real inventory rows by id/quantity
+    // only, price and description are always looked up server-side.
+    posSale: (payload: {
+      businessId: string;
+      customerId?: string;
+      customClientName?: string;
+      date: string;
+      paymentMethod: string;
+      items: Array<{ inventoryId: string; quantity: number }>;
+    }) => request<{ data: any }>(`/receipts/pos-sale`, { method: "POST", body: JSON.stringify(payload) }).then((r) => r.data),
   },
 
   documentChangeLog: {

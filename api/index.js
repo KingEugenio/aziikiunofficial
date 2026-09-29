@@ -3763,7 +3763,11 @@ var init_receipts = __esm({
         user_id: userId,
         business_id: input.businessId,
         customer_id: input.customerId ?? null,
-        custom_client_name: input.customClientName ?? null,
+        // receipts_customer_or_custom_client requires one of these two - a POS
+        // sale is the one flow where genuinely neither is known (an anonymous
+        // walk-in), so this defaults the name rather than weakening that
+        // constraint for every other receipt-creation path too.
+        custom_client_name: input.customerId ? null : input.customClientName ?? "Walk-in Customer",
         receipt_number: receiptNumber,
         date: input.date,
         description,

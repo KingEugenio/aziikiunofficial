@@ -17,6 +17,7 @@ import {
   GearSix,
   SignOut as LogOut,
   X,
+  ShoppingCart,
 } from "@phosphor-icons/react";
 
 interface MobileNavBarProps {
@@ -68,6 +69,7 @@ export default function MobileNavBar({ activeTab, onChangeTab, isEnabled, isPric
     { id: "game", label: "Four Ways to Earn", icon: Gamepad2, flag: "four_ways_game", show: visible("four_ways_game") },
     { id: "moneyQuiz", label: "Money Quiz", icon: Gamepad2, flag: "money_game_feature", show: visible("money_game_feature") },
     { id: "stock", label: "Warehouse Stock", icon: Warehouse, flag: "inventory_management", show: visible("inventory_management") },
+    { id: "pos", label: "Point of Sale", icon: ShoppingCart, flag: "retail_pos", show: visible("retail_pos") },
     { id: "purchaseOrders", label: "Purchase Orders", icon: Package, flag: "purchase_orders", show: visible("purchase_orders") },
     { id: "team", label: "Team", icon: UsersThree, flag: "team_memberships_invite_ui", show: visible("team_memberships_invite_ui") },
     { id: "monetize", label: "Updates & Growth", icon: Sparkles, flag: "ad_monetization_hub", show: visible("ad_monetization_hub") },
