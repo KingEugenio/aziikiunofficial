@@ -5801,6 +5801,38 @@ async function handleFeaturePayment(supabase2, reference, data) {
     raw_event: data
   });
 }
+async function handleSubscriptionCancellation(supabase2, subscriptionCode, data) {
+  const { data: existing } = await supabase2.from("subscription_cancellation_events").select("id").eq("subscription_code", subscriptionCode).maybeSingle();
+  if (existing) return;
+  const email = data?.customer?.email;
+  const amount = data?.amount ?? data?.plan?.amount;
+  const currency = data?.currency ?? data?.plan?.currency;
+  let matchedTier = null;
+  let matchedUserId = null;
+  if (email && typeof amount === "number") {
+    const { data: plans } = await supabase2.from("subscription_plans").select("tier, price_minor_units, currency");
+    const plan = (plans ?? []).find(
+      (p) => p.price_minor_units === amount && (!currency || !p.currency || p.currency === currency)
+    );
+    if (plan) {
+      const { data: profile } = await supabase2.from("profiles").select("id, tier").eq("email", email.toLowerCase()).maybeSingle();
+      if (profile) {
+        matchedTier = plan.tier;
+        matchedUserId = profile.id;
+        if (profile.tier === plan.tier) {
+          await supabase2.from("profiles").update({ tier: "basic" }).eq("id", profile.id);
+        }
+      }
+    }
+  }
+  await supabase2.from("subscription_cancellation_events").insert({
+    subscription_code: subscriptionCode,
+    email: email ?? null,
+    matched_tier: matchedTier,
+    matched_user_id: matchedUserId,
+    raw_event: data
+  });
+}
 var paymentsWebhookRouter, TIER_RANK;
 var init_paymentsWebhook = __esm({
   "src/server/routes/paymentsWebhook.ts"() {
@@ -5829,10 +5861,14 @@ var init_paymentsWebhook = __esm({
       const event = payload?.event;
       const data = payload?.data;
       const reference = data?.reference;
+      const subscriptionCode = data?.subscription_code;
       if (reference && event === "charge.success") {
         const supabase2 = getServiceRoleClient();
         const matchedATier = await handleSubscriptionPayment(supabase2, reference, data);
         if (!matchedATier) await handleFeaturePayment(supabase2, reference, data);
+      } else if (subscriptionCode && event === "subscription.disable") {
+        const supabase2 = getServiceRoleClient();
+        await handleSubscriptionCancellation(supabase2, subscriptionCode, data);
       }
       res.status(200).json({ received: true });
     });

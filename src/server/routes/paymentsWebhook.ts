@@ -127,6 +127,63 @@ async function handleFeaturePayment(supabase: ReturnType<typeof getServiceRoleCl
   });
 }
 
+// The other half of the lifecycle: charge.success upgrades a tier
+// automatically above, but nothing reacted when a subscription actually
+// stopped - a cancelled or non-renewing customer stayed on their paid tier
+// forever. subscription.disable is Paystack's "this subscription is now
+// over" event (sent on the next payment date after a cancellation, once
+// retries are exhausted) - not invoice.payment_failed, which fires on each
+// individual failed renewal attempt and often resolves itself on retry, so
+// acting on that one would downgrade someone over a single declined card.
+async function handleSubscriptionCancellation(supabase: ReturnType<typeof getServiceRoleClient>, subscriptionCode: string, data: any): Promise<void> {
+  const { data: existing } = await supabase
+    .from("subscription_cancellation_events")
+    .select("id")
+    .eq("subscription_code", subscriptionCode)
+    .maybeSingle();
+  if (existing) return;
+
+  const email: string | undefined = data?.customer?.email;
+  // Paystack's subscription payload carries the amount/currency both at
+  // the top level and nested under `plan` depending on the event source -
+  // checking both is cheap insurance against relying on one undocumented
+  // shape.
+  const amount: number | undefined = data?.amount ?? data?.plan?.amount;
+  const currency: string | undefined = data?.currency ?? data?.plan?.currency;
+
+  let matchedTier: string | null = null;
+  let matchedUserId: string | null = null;
+
+  if (email && typeof amount === "number") {
+    const { data: plans } = await supabase.from("subscription_plans").select("tier, price_minor_units, currency");
+    const plan = (plans ?? []).find(
+      (p) => p.price_minor_units === amount && (!currency || !p.currency || p.currency === currency)
+    );
+
+    if (plan) {
+      const { data: profile } = await supabase.from("profiles").select("id, tier").eq("email", email.toLowerCase()).maybeSingle();
+      if (profile) {
+        matchedTier = plan.tier;
+        matchedUserId = profile.id;
+        // Only downgrade if they're still on the exact tier that just got
+        // cancelled - if they've since upgraded further some other way,
+        // this stale cancellation shouldn't clobber that.
+        if (profile.tier === plan.tier) {
+          await supabase.from("profiles").update({ tier: "basic" }).eq("id", profile.id);
+        }
+      }
+    }
+  }
+
+  await supabase.from("subscription_cancellation_events").insert({
+    subscription_code: subscriptionCode,
+    email: email ?? null,
+    matched_tier: matchedTier,
+    matched_user_id: matchedUserId,
+    raw_event: data,
+  });
+}
+
 // Paystack sends this with no user session at all, so it cannot go through
 // requireAuth - the raw HMAC signature below is the ONLY thing that
 // authenticates a request as genuinely coming from Paystack. This router is
@@ -157,19 +214,22 @@ paymentsWebhookRouter.post("/", express.raw({ type: "application/json" }), async
     return;
   }
 
-  // Only a successful subscription-upgrade payment needs any action here -
-  // a failed charge attempt has nothing in Aziiki to update (no invoice
-  // payment tracking exists anymore). Acknowledge everything else as a
-  // silent 200 so Paystack doesn't keep retrying an event we were never
-  // going to act on.
+  // Only two event types need any action here: a successful charge (tier or
+  // single-feature upgrade) and a subscription actually ending (downgrade
+  // back to basic). Acknowledge everything else as a silent 200 so Paystack
+  // doesn't keep retrying an event we were never going to act on.
   const event = payload?.event;
   const data = payload?.data;
   const reference: string | undefined = data?.reference;
+  const subscriptionCode: string | undefined = data?.subscription_code;
 
   if (reference && event === "charge.success") {
     const supabase = getServiceRoleClient();
     const matchedATier = await handleSubscriptionPayment(supabase, reference, data);
     if (!matchedATier) await handleFeaturePayment(supabase, reference, data);
+  } else if (subscriptionCode && event === "subscription.disable") {
+    const supabase = getServiceRoleClient();
+    await handleSubscriptionCancellation(supabase, subscriptionCode, data);
   }
 
   res.status(200).json({ received: true });
