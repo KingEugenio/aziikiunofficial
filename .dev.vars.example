@@ -1,0 +1,29 @@
+# Cloudflare Workers local-dev secrets (wrangler dev reads this file
+# automatically). Copy to .dev.vars and fill in real values - same
+# server-side values as .env, EXCEPT no VITE_* vars here: those are
+# build-time only, baked into dist/ by `npm run build`, not runtime env
+# vars a Worker reads. For an actual deploy, these go in via
+# `wrangler secret put <NAME>` instead (see docs/cloudflare-setup-guide.md) -
+# .dev.vars is local-only and never uploaded.
+
+NODE_ENV=development
+
+SUPABASE_URL=https://your-project-ref.supabase.co
+SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+
+UPSTASH_REDIS_REST_URL=https://your-redis-instance.upstash.io
+UPSTASH_REDIS_REST_TOKEN=your-redis-token
+
+GEMINI_API_KEY=your-gemini-key
+GEMINI_API_KEY_2=
+GEMINI_API_KEY_3=
+
+APP_URL=http://localhost:8080
+
+RESEND_API_KEY=
+RESEND_FROM_EMAIL=Aziiki <no-reply@aziiki.com>
+
+PAYSTACK_SECRET_KEY=
+
+SENTRY_DSN=

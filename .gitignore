@@ -9,6 +9,13 @@ coverage/
 supabase/.temp/
 .claude/
 
+# Cloudflare Workers (wrangler.jsonc) - .dev.vars is wrangler's local-dev
+# equivalent of .env (real secrets, never committed); .wrangler/ is its
+# build cache/local state, same reasoning as node_modules/ above.
+.dev.vars*
+!.dev.vars.example
+.wrangler/
+
 # Desktop app (Electron shell, see desktop/README.md): node_modules and the
 # packaged installers are regenerable build output, same reasoning as
 # dist/ above. desktop/app is a copy of the web build's dist/ output,

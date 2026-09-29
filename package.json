@@ -15,7 +15,9 @@
     "test:watch": "vitest",
     "desktop:prep": "vite build && rm -rf desktop/app && cp -R dist desktop/app",
     "desktop:mac": "npm run desktop:prep && cd desktop && npm install && npm run build:mac",
-    "desktop:win": "npm run desktop:prep && cd desktop && npm install && npm run build:win"
+    "desktop:win": "npm run desktop:prep && cd desktop && npm install && npm run build:win",
+    "cf:dev": "vite build && wrangler dev",
+    "cf:deploy": "vite build && wrangler deploy"
   },
   "dependencies": {
     "@fontsource/jetbrains-mono": "^5.3.0",
@@ -66,6 +68,7 @@
     "typescript": "~5.8.2",
     "vite": "^6.2.3",
     "vite-plugin-compression": "^0.5.1",
-    "vitest": "^5.0.1"
+    "vitest": "^5.0.1",
+    "wrangler": "^4.143.1"
   }
 }

@@ -1,0 +1,47 @@
+{
+  // Rename/replace "aziiki" with your actual Cloudflare account's intended
+  // Worker name before your first real deploy - this becomes part of the
+  // free *.workers.dev URL (https://aziiki.<your-subdomain>.workers.dev)
+  // until a custom domain is attached (see docs/cloudflare-setup-guide.md).
+  "name": "aziiki",
+  "main": "src/cloudflare/index.ts",
+  "compatibility_date": "2026-09-29",
+  "compatibility_flags": [
+    "nodejs_compat",
+    "enable_nodejs_http_modules",
+    "enable_nodejs_http_server_modules"
+  ],
+  "assets": {
+    // dist/ is the exact same Vite build Vercel's CDN serves today -
+    // `npm run build` before `wrangler deploy`, nothing else changes.
+    "directory": "./dist/",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    // Every /api/* request invokes this Worker's own fetch handler (which
+    // bridges to Express) BEFORE the static-asset lookup - everything else
+    // falls through to dist/ with SPA fallback to index.html.
+    "run_worker_first": ["/api/*"]
+  },
+  "triggers": {
+    // Same two jobs, same schedules, as vercel.json's "crons" - see
+    // src/cloudflare/index.ts's scheduled() handler for which runs which.
+    "crons": ["0 5 * * *", "0 3 * * *"]
+  },
+  "observability": {
+    "enabled": true
+  },
+  // iconv-lite (a body-parser/raw-body dependency, pulled in by Express's
+  // express.json()) crashes at module load under Workers' current
+  // node:stream compat shim - a real, open upstream issue
+  // (cloudflare/workers-sdk#9309), not something wrong in this app. Aziiki
+  // only ever sends/receives UTF-8 JSON, so this swaps in a tiny UTF-8-only
+  // stub instead (src/cloudflare/iconvLiteStub.ts) - Vercel and local dev
+  // are unaffected, they still use the real package.
+  "alias": {
+    "iconv-lite": "./src/cloudflare/iconvLiteStub.ts",
+    // @sentry/node's Express auto-instrumentation crashes at startup under
+    // Workers (see src/cloudflare/sentryNodeStub.ts) - disabled here for
+    // now, @sentry/cloudflare is the real fix as a follow-up.
+    "@sentry/node": "./src/cloudflare/sentryNodeStub.ts"
+  }
+}
