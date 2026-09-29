@@ -573,6 +573,12 @@ export const api = {
         request<{ data: unknown }>("/admin/site-settings", { method: "PUT", body: JSON.stringify({ key, value }) }),
     },
 
+    postHogSettings: {
+      list: () => request<{ data: Array<{ key: string; value: string }> }>("/admin/posthog-settings").then((r) => r.data),
+      set: (key: string, value: string) =>
+        request<{ data: unknown }>("/admin/posthog-settings", { method: "PUT", body: JSON.stringify({ key, value }) }),
+    },
+
     faqItems: {
       list: () =>
         request<{

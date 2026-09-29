@@ -14,10 +14,11 @@ import { adminFaqItemsRouter } from "./faqItems";
 import { adminFeedbackRouter } from "./feedback";
 import { adminUsersRouter } from "./users";
 import { adminAnalyticsRouter } from "./analytics";
+import { adminPostHogSettingsRouter } from "./postHogSettings";
 
 export const adminRouter = Router();
 
-const ALL_SECTIONS = ["dashboard", "flags", "announcements", "surveys", "payments", "featurePricing", "branding", "content", "guides", "admins", "feedback", "users", "analytics", "activity"];
+const ALL_SECTIONS = ["dashboard", "flags", "announcements", "surveys", "payments", "featurePricing", "branding", "content", "guides", "admins", "feedback", "users", "analytics", "activity", "posthog"];
 
 // Confirms admin access and returns just enough identity + permissions for
 // the portal's header/nav to filter itself - requireAdmin (mounted in
@@ -44,6 +45,7 @@ adminRouter.use("/feature-pricing", requireSection("featurePricing"), adminFeatu
 adminRouter.use("/guide-items", requireSection("guides"), adminGuideItemsRouter);
 adminRouter.use("/site-settings", requireSection("content"), adminSiteSettingsRouter);
 adminRouter.use("/faq-items", requireSection("content"), adminFaqItemsRouter);
+adminRouter.use("/posthog-settings", requireSection("posthog"), adminPostHogSettingsRouter);
 adminRouter.use("/feedback", requireSection("feedback"), adminFeedbackRouter);
 adminRouter.use("/users", requireSection("users"), adminUsersRouter);
 adminRouter.use("/analytics", requireSection("analytics"), adminAnalyticsRouter);

@@ -1798,7 +1798,7 @@ var init_sync = __esm({
 import { Router as Router5 } from "express";
 function createCrudRouter(config) {
   const router = Router5();
-  const { table, cacheKeyPrefix, createSchema: createSchema3, updateSchema: updateSchema5, toInsertRow, toUpdateRow, fromRow: fromRow19 } = config;
+  const { table, cacheKeyPrefix, createSchema: createSchema3, updateSchema: updateSchema6, toInsertRow, toUpdateRow, fromRow: fromRow19 } = config;
   const listCacheKey = (userId) => `cache:${cacheKeyPrefix}:${userId}`;
   router.get("/", async (req, res) => {
     const userId = req.user.id;
@@ -1833,7 +1833,7 @@ function createCrudRouter(config) {
     res.status(201).json({ data: fromRow19(data) });
   });
   router.patch("/:id", async (req, res) => {
-    const parsed = updateSchema5.safeParse(req.body);
+    const parsed = updateSchema6.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({ error: "Invalid request body", issues: parsed.error.issues });
       return;
@@ -7626,8 +7626,47 @@ var init_analytics2 = __esm({
   }
 });
 
-// src/server/routes/admin/index.ts
+// src/server/routes/admin/postHogSettings.ts
 import { Router as Router41 } from "express";
+import { z as z28 } from "zod";
+var adminPostHogSettingsRouter, POSTHOG_KEYS, updateSchema5;
+var init_postHogSettings = __esm({
+  "src/server/routes/admin/postHogSettings.ts"() {
+    adminPostHogSettingsRouter = Router41();
+    POSTHOG_KEYS = ["posthog_enabled", "posthog_key", "posthog_host"];
+    adminPostHogSettingsRouter.get("/", async (req, res) => {
+      const supabase2 = req.supabase;
+      const { data, error } = await supabase2.from("site_settings").select("key, value").in("key", POSTHOG_KEYS);
+      if (error) {
+        res.status(400).json({ error: error.message });
+        return;
+      }
+      const byKey = new Map((data ?? []).map((row) => [row.key, row.value]));
+      res.json({ data: POSTHOG_KEYS.map((key) => ({ key, value: byKey.get(key) ?? "" })) });
+    });
+    updateSchema5 = z28.object({
+      key: z28.enum(POSTHOG_KEYS),
+      value: z28.string().max(2e3)
+    });
+    adminPostHogSettingsRouter.put("/", async (req, res) => {
+      const parsed = updateSchema5.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({ error: "Invalid request body", issues: parsed.error.issues });
+        return;
+      }
+      const supabase2 = req.supabase;
+      const { error } = await supabase2.from("site_settings").upsert({ key: parsed.data.key, value: parsed.data.value, updated_at: (/* @__PURE__ */ new Date()).toISOString() }, { onConflict: "key" });
+      if (error) {
+        res.status(400).json({ error: error.message });
+        return;
+      }
+      res.json({ data: { key: parsed.data.key, value: parsed.data.value } });
+    });
+  }
+});
+
+// src/server/routes/admin/index.ts
+import { Router as Router42 } from "express";
 var adminRouter, ALL_SECTIONS2;
 var init_admin2 = __esm({
   "src/server/routes/admin/index.ts"() {
@@ -7646,8 +7685,9 @@ var init_admin2 = __esm({
     init_feedback3();
     init_users();
     init_analytics2();
-    adminRouter = Router41();
-    ALL_SECTIONS2 = ["dashboard", "flags", "announcements", "surveys", "payments", "featurePricing", "branding", "content", "guides", "admins", "feedback", "users", "analytics", "activity"];
+    init_postHogSettings();
+    adminRouter = Router42();
+    ALL_SECTIONS2 = ["dashboard", "flags", "announcements", "surveys", "payments", "featurePricing", "branding", "content", "guides", "admins", "feedback", "users", "analytics", "activity", "posthog"];
     adminRouter.get("/me", (req, res) => {
       res.json({
         data: {
@@ -7668,6 +7708,7 @@ var init_admin2 = __esm({
     adminRouter.use("/guide-items", requireSection("guides"), adminGuideItemsRouter);
     adminRouter.use("/site-settings", requireSection("content"), adminSiteSettingsRouter);
     adminRouter.use("/faq-items", requireSection("content"), adminFaqItemsRouter);
+    adminRouter.use("/posthog-settings", requireSection("posthog"), adminPostHogSettingsRouter);
     adminRouter.use("/feedback", requireSection("feedback"), adminFeedbackRouter);
     adminRouter.use("/users", requireSection("users"), adminUsersRouter);
     adminRouter.use("/analytics", requireSection("analytics"), adminAnalyticsRouter);

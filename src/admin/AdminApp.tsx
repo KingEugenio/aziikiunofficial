@@ -37,11 +37,12 @@ import SiteContentPanel from "./SiteContentPanel";
 import FeedbackPanel from "./FeedbackPanel";
 import UsersPanel from "./UsersPanel";
 import FeatureAnalyticsPanel from "./FeatureAnalyticsPanel";
+import PostHogSettingsPanel from "./PostHogSettingsPanel";
 
 const AuthPortal = lazy(() => import("../components/AuthPortal"));
 
 type AdminStatus = "checking" | "authorized" | "unauthorized";
-type Tab = "dashboard" | "flags" | "announcements" | "surveys" | "branding" | "payments" | "featurePricing" | "content" | "guides" | "admins" | "feedback" | "users" | "analytics" | "activity";
+type Tab = "dashboard" | "flags" | "announcements" | "surveys" | "branding" | "payments" | "featurePricing" | "content" | "guides" | "admins" | "feedback" | "users" | "analytics" | "activity" | "posthog";
 
 const NAV: { id: Tab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -55,6 +56,7 @@ const NAV: { id: Tab; label: string; icon: React.ComponentType<{ className?: str
   { id: "featurePricing", label: "Feature Pricing", icon: Tag },
   { id: "branding", label: "Branding Kits", icon: ImageIcon },
   { id: "content", label: "Site Content", icon: Notebook },
+  { id: "posthog", label: "PostHog Analytics", icon: ChartBar },
   { id: "guides", label: "Guides", icon: BookOpen },
   { id: "admins", label: "Admins", icon: UsersThree },
   { id: "activity", label: "Activity Monitoring", icon: ActivityIcon },
@@ -294,6 +296,7 @@ export default function AdminApp() {
             {activeTab === "featurePricing" && <FeaturePricingPanel />}
             {activeTab === "branding" && <BrandingPanel />}
             {activeTab === "content" && <SiteContentPanel />}
+            {activeTab === "posthog" && <PostHogSettingsPanel />}
             {activeTab === "guides" && <GuidesPanel />}
             {activeTab === "admins" && <AdminsPanel />}
             {activeTab === "activity" && <ActivityMonitoringPanel />}

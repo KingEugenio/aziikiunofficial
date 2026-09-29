@@ -16,8 +16,10 @@ import './styles/mobile-modal.css';
 
 // No-ops entirely until VITE_SENTRY_DSN is set - see lib/sentry.ts.
 initSentry();
-// No-ops entirely until VITE_POSTHOG_KEY is set - see lib/posthog.ts.
-initPostHog();
+// No-ops entirely until analytics is turned on from /admin -> PostHog
+// Analytics (or VITE_POSTHOG_KEY is set) - see lib/posthog.ts. Async and
+// fire-and-forget: never blocks first render on a network round trip.
+void initPostHog();
 
 // Capture utm_source/utm_medium/utm_campaign from the URL, if present, so a
 // signup completed later in the session can be attributed to the campaign
