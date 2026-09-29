@@ -102,6 +102,29 @@ export const receiptSchema = z.object({
   path: ["customerId"],
 });
 
+// Point of Sale: unlike a hand-typed receipt, a sale's line items name an
+// actual inventory row and a quantity only - never a client-supplied price
+// or description. The server looks both up from the real inventory row at
+// sale time (see receipts.ts's posSale handler), so a tampered request
+// can't under-charge or invent a fake item.
+const posSaleItemSchema = z.object({
+  inventoryId: uuidField,
+  quantity: z.number().finite().positive().multipleOf(0.01),
+});
+
+export const posSaleSchema = z.object({
+  businessId: uuidField,
+  // Genuinely optional, unlike receiptSchema's customer requirement - most
+  // over-the-counter sales have no named customer at all.
+  customerId: uuidField.optional(),
+  customClientName: z.string().trim().max(200).optional(),
+  date: isoDateField,
+  paymentMethod: paymentMethodField,
+  items: z.array(posSaleItemSchema).min(1, "A sale needs at least one item"),
+  currency: currencyField.optional(),
+  exchangeRateToBusinessCurrency: exchangeRateField.default(1),
+});
+
 export const receiptUpdateSchema = z.object({
   // nullable: an amendment can switch a document from a saved customer to a
   // typed client name (or back), which must clear the other field.

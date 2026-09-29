@@ -1,10 +1,11 @@
 import type { Request, Response } from "express";
 import { Router } from "express";
-import { receiptSchema, receiptUpdateSchema } from "../validation/billing";
+import { receiptSchema, receiptUpdateSchema, posSaleSchema } from "../validation/billing";
 import { cached, invalidate } from "../redis";
 import { isEmailConfigured, sendTransactionalEmail } from "../email/resendClient";
 import { renderReceiptEmailHtml } from "../email/documentTemplates";
 import { resolveBusinessCurrency } from "./crudFactory";
+import { checkLowStockAndNotify } from "../notifications/lowStockCheck";
 import {
   diffFields,
   logAmendmentFailed,
@@ -144,6 +145,151 @@ receiptsRouter.post("/", async (req: Request, res: Response) => {
 
   await invalidate(`cache:receipts:${userId}`, `cache:transactions:${userId}`);
   res.status(201).json({ data: fromRow(receipt) });
+});
+
+// Point of Sale checkout (migration 0073, gated by the retail_pos feature
+// flag/paywall client-side): rings up real inventory rows by id (never a
+// client-supplied price or description - see posSaleSchema), as one
+// itemized receipt with exact stock decrement per item, instead of the
+// fuzzy description-vs-name matching runPaidWorkflow uses for invoices.
+receiptsRouter.post("/pos-sale", async (req: Request, res: Response) => {
+  const parsed = posSaleSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid request body", issues: parsed.error.issues });
+    return;
+  }
+
+  const userId = req.user!.id;
+  const supabase = req.supabase!;
+  const input = parsed.data;
+
+  const inventoryIds = input.items.map((i) => i.inventoryId);
+  const { data: stockRows, error: stockError } = await supabase
+    .from("inventory")
+    .select("*")
+    .eq("business_id", input.businessId)
+    .in("id", inventoryIds);
+  if (stockError) {
+    res.status(400).json({ error: stockError.message });
+    return;
+  }
+  const stockById = new Map((stockRows ?? []).map((r: any) => [r.id, r]));
+  const missing = inventoryIds.find((id) => !stockById.has(id));
+  if (missing) {
+    res.status(400).json({ error: `Inventory item ${missing} was not found on this business.` });
+    return;
+  }
+
+  const saleItems = input.items.map((item) => {
+    const stock = stockById.get(item.inventoryId)!;
+    return {
+      inventoryId: item.inventoryId,
+      sku: stock.sku ?? null,
+      description: String(stock.name),
+      quantity: item.quantity,
+      rate: Number(stock.unit_price),
+    };
+  });
+  const amountPaid = saleItems.reduce((sum, item) => sum + item.quantity * item.rate, 0);
+  const description = saleItems.length === 1 ? saleItems[0].description : `${saleItems.length} items`;
+
+  let receiptNumber: string;
+  {
+    const { data: reserved, error: numberError } = await supabase.rpc("next_document_number", {
+      p_business_id: input.businessId,
+      p_document_type: "receipt",
+      p_default_prefix: "REC",
+    });
+    if (numberError) {
+      res.status(400).json({ error: numberError.message });
+      return;
+    }
+    receiptNumber = reserved as string;
+  }
+
+  const currency = input.currency ?? (await resolveBusinessCurrency(supabase, input.businessId));
+
+  const { data: transaction, error: txError } = await supabase
+    .from("transactions")
+    .insert({
+      user_id: userId,
+      business_id: input.businessId,
+      customer_id: input.customerId ?? null,
+      date: input.date,
+      type: "income",
+      category: "Client Project",
+      amount: amountPaid,
+      description,
+      payment_method: input.paymentMethod,
+      currency,
+      exchange_rate_to_business_currency: input.exchangeRateToBusinessCurrency,
+    })
+    .select("id")
+    .single();
+  if (txError) console.error("[receipts] pos-sale: failed to log companion transaction:", txError.message);
+
+  const { data: receipt, error: receiptError } = await supabase
+    .from("receipts")
+    .insert({
+      user_id: userId,
+      business_id: input.businessId,
+      customer_id: input.customerId ?? null,
+      custom_client_name: input.customClientName ?? null,
+      receipt_number: receiptNumber,
+      date: input.date,
+      description,
+      amount_paid: amountPaid,
+      payment_method: input.paymentMethod,
+      currency,
+      exchange_rate_to_business_currency: input.exchangeRateToBusinessCurrency,
+      transaction_id: transaction?.id ?? null,
+    })
+    .select("*")
+    .single();
+
+  if (receiptError) {
+    if (transaction?.id) await supabase.from("transactions").delete().eq("id", transaction.id);
+    res.status(400).json({ error: receiptError.message });
+    return;
+  }
+
+  const { error: itemsError } = await supabase.from("receipt_items").insert(
+    saleItems.map((item, index) => ({
+      receipt_id: receipt.id,
+      user_id: userId,
+      inventory_id: item.inventoryId,
+      sku: item.sku,
+      description: item.description,
+      quantity: item.quantity,
+      rate: item.rate,
+      position: index,
+    }))
+  );
+  if (itemsError) console.error("[receipts] pos-sale: failed to save line items:", itemsError.message);
+
+  for (const item of saleItems) {
+    const stock = stockById.get(item.inventoryId)!;
+    const oldQuantity = Number(stock.quantity);
+    const newQuantity = Math.max(0, oldQuantity - item.quantity);
+    const { error: decrementError } = await supabase.from("inventory").update({ quantity: newQuantity }).eq("id", item.inventoryId);
+    if (decrementError) {
+      console.error("[receipts] pos-sale: failed to decrement stock:", decrementError.message);
+      continue;
+    }
+    await checkLowStockAndNotify({
+      userId,
+      businessId: input.businessId,
+      itemId: item.inventoryId,
+      itemName: item.description,
+      oldQuantity,
+      newQuantity,
+      minStockAlert: Number(stock.min_stock_alert),
+      recipientEmail: req.user!.email,
+    });
+  }
+
+  await invalidate(`cache:receipts:${userId}`, `cache:transactions:${userId}`, `cache:inventory:${userId}`);
+  res.status(201).json({ data: { ...fromRow(receipt), items: saleItems } });
 });
 
 receiptsRouter.patch("/:id", async (req: Request, res: Response) => {

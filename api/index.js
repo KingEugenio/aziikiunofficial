@@ -2480,7 +2480,7 @@ var init_personal = __esm({
 
 // src/server/validation/billing.ts
 import { z as z7 } from "zod";
-var customerSchema, transactionSchema, invoiceItemSchema, invoiceCreateSchema, invoiceUpdateSchema, receiptSchema, receiptUpdateSchema, quotationCreateSchema, quotationUpdateSchema, purchaseOrderCreateSchema, purchaseOrderUpdateSchema;
+var customerSchema, transactionSchema, invoiceItemSchema, invoiceCreateSchema, invoiceUpdateSchema, receiptSchema, posSaleItemSchema, posSaleSchema, receiptUpdateSchema, quotationCreateSchema, quotationUpdateSchema, purchaseOrderCreateSchema, purchaseOrderUpdateSchema;
 var init_billing = __esm({
   "src/server/validation/billing.ts"() {
     init_common();
@@ -2578,6 +2578,22 @@ var init_billing = __esm({
     }).refine((data) => Boolean(data.customerId) || Boolean(data.customClientName), {
       message: "Either customerId or customClientName is required",
       path: ["customerId"]
+    });
+    posSaleItemSchema = z7.object({
+      inventoryId: uuidField,
+      quantity: z7.number().finite().positive().multipleOf(0.01)
+    });
+    posSaleSchema = z7.object({
+      businessId: uuidField,
+      // Genuinely optional, unlike receiptSchema's customer requirement - most
+      // over-the-counter sales have no named customer at all.
+      customerId: uuidField.optional(),
+      customClientName: z7.string().trim().max(200).optional(),
+      date: isoDateField,
+      paymentMethod: paymentMethodField,
+      items: z7.array(posSaleItemSchema).min(1, "A sale needs at least one item"),
+      currency: currencyField.optional(),
+      exchangeRateToBusinessCurrency: exchangeRateField.default(1)
     });
     receiptUpdateSchema = z7.object({
       // nullable: an amendment can switch a document from a saved customer to a
@@ -3602,6 +3618,7 @@ var init_receipts = __esm({
     init_resendClient();
     init_documentTemplates();
     init_crudFactory();
+    init_lowStockCheck();
     init_documentIntegrity();
     LIST_CACHE_TTL_SECONDS3 = 45;
     receiptsRouter = Router8();
@@ -3680,6 +3697,122 @@ var init_receipts = __esm({
       }
       await invalidate(`cache:receipts:${userId}`, `cache:transactions:${userId}`);
       res.status(201).json({ data: fromRow2(receipt) });
+    });
+    receiptsRouter.post("/pos-sale", async (req, res) => {
+      const parsed = posSaleSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({ error: "Invalid request body", issues: parsed.error.issues });
+        return;
+      }
+      const userId = req.user.id;
+      const supabase2 = req.supabase;
+      const input = parsed.data;
+      const inventoryIds = input.items.map((i) => i.inventoryId);
+      const { data: stockRows, error: stockError } = await supabase2.from("inventory").select("*").eq("business_id", input.businessId).in("id", inventoryIds);
+      if (stockError) {
+        res.status(400).json({ error: stockError.message });
+        return;
+      }
+      const stockById = new Map((stockRows ?? []).map((r) => [r.id, r]));
+      const missing = inventoryIds.find((id) => !stockById.has(id));
+      if (missing) {
+        res.status(400).json({ error: `Inventory item ${missing} was not found on this business.` });
+        return;
+      }
+      const saleItems = input.items.map((item) => {
+        const stock = stockById.get(item.inventoryId);
+        return {
+          inventoryId: item.inventoryId,
+          sku: stock.sku ?? null,
+          description: String(stock.name),
+          quantity: item.quantity,
+          rate: Number(stock.unit_price)
+        };
+      });
+      const amountPaid = saleItems.reduce((sum, item) => sum + item.quantity * item.rate, 0);
+      const description = saleItems.length === 1 ? saleItems[0].description : `${saleItems.length} items`;
+      let receiptNumber;
+      {
+        const { data: reserved, error: numberError } = await supabase2.rpc("next_document_number", {
+          p_business_id: input.businessId,
+          p_document_type: "receipt",
+          p_default_prefix: "REC"
+        });
+        if (numberError) {
+          res.status(400).json({ error: numberError.message });
+          return;
+        }
+        receiptNumber = reserved;
+      }
+      const currency = input.currency ?? await resolveBusinessCurrency(supabase2, input.businessId);
+      const { data: transaction, error: txError } = await supabase2.from("transactions").insert({
+        user_id: userId,
+        business_id: input.businessId,
+        customer_id: input.customerId ?? null,
+        date: input.date,
+        type: "income",
+        category: "Client Project",
+        amount: amountPaid,
+        description,
+        payment_method: input.paymentMethod,
+        currency,
+        exchange_rate_to_business_currency: input.exchangeRateToBusinessCurrency
+      }).select("id").single();
+      if (txError) console.error("[receipts] pos-sale: failed to log companion transaction:", txError.message);
+      const { data: receipt, error: receiptError } = await supabase2.from("receipts").insert({
+        user_id: userId,
+        business_id: input.businessId,
+        customer_id: input.customerId ?? null,
+        custom_client_name: input.customClientName ?? null,
+        receipt_number: receiptNumber,
+        date: input.date,
+        description,
+        amount_paid: amountPaid,
+        payment_method: input.paymentMethod,
+        currency,
+        exchange_rate_to_business_currency: input.exchangeRateToBusinessCurrency,
+        transaction_id: transaction?.id ?? null
+      }).select("*").single();
+      if (receiptError) {
+        if (transaction?.id) await supabase2.from("transactions").delete().eq("id", transaction.id);
+        res.status(400).json({ error: receiptError.message });
+        return;
+      }
+      const { error: itemsError } = await supabase2.from("receipt_items").insert(
+        saleItems.map((item, index) => ({
+          receipt_id: receipt.id,
+          user_id: userId,
+          inventory_id: item.inventoryId,
+          sku: item.sku,
+          description: item.description,
+          quantity: item.quantity,
+          rate: item.rate,
+          position: index
+        }))
+      );
+      if (itemsError) console.error("[receipts] pos-sale: failed to save line items:", itemsError.message);
+      for (const item of saleItems) {
+        const stock = stockById.get(item.inventoryId);
+        const oldQuantity = Number(stock.quantity);
+        const newQuantity = Math.max(0, oldQuantity - item.quantity);
+        const { error: decrementError } = await supabase2.from("inventory").update({ quantity: newQuantity }).eq("id", item.inventoryId);
+        if (decrementError) {
+          console.error("[receipts] pos-sale: failed to decrement stock:", decrementError.message);
+          continue;
+        }
+        await checkLowStockAndNotify({
+          userId,
+          businessId: input.businessId,
+          itemId: item.inventoryId,
+          itemName: item.description,
+          oldQuantity,
+          newQuantity,
+          minStockAlert: Number(stock.min_stock_alert),
+          recipientEmail: req.user.email
+        });
+      }
+      await invalidate(`cache:receipts:${userId}`, `cache:transactions:${userId}`, `cache:inventory:${userId}`);
+      res.status(201).json({ data: { ...fromRow2(receipt), items: saleItems } });
     });
     receiptsRouter.patch("/:id", async (req, res) => {
       const parsed = receiptUpdateSchema.safeParse(req.body);
