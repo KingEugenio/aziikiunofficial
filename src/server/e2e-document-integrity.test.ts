@@ -278,3 +278,50 @@ describe("database-level enforcement (bypassing the API entirely)", () => {
     expect(error).toBeNull();
   });
 });
+
+// Regression test: an earlier version of the lock-enforcement triggers
+// above correctly refused an unlogged DELETE of a single document, but
+// also wrongly refused when a whole business/account is deleted and its
+// locked invoices/receipts cascade-delete along with it - breaking the
+// real DELETE /api/auth/account feature ("deleting your account
+// permanently removes it" per the Terms of Service) for any account with
+// invoice/receipt history. This needs its own throwaway account, since it
+// deletes it entirely.
+describe("account deletion still works even with locked documents", () => {
+  it("cascades cleanly through a locked invoice, its items, a receipt, and its items with no reason logged anywhere", async () => {
+    const admin = getServiceRoleClient();
+    const anon = createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
+    const email = `integrity-delete-${stamp}@example.com`;
+    const { data, error } = await admin.auth.admin.createUser({ email, password: PASSWORD, email_confirm: true });
+    if (error) throw error;
+    const userId = data.user.id;
+    const { data: s, error: e2 } = await anon.auth.signInWithPassword({ email, password: PASSWORD });
+    if (e2) throw e2;
+    const token = s.session!.access_token;
+    const authHeader = { Authorization: `Bearer ${token}` };
+
+    const biz = await request(app).post("/api/businesses").set(authHeader).send({ name: "Delete Me Biz", currency: "GHS", businessType: "Sole Proprietor" });
+    const bizId = biz.body.data.id;
+    const cust = await request(app).post("/api/customers").set(authHeader).send({ businessId: bizId, name: "Delete Me Customer" });
+    const custId = cust.body.data.id;
+
+    // A Sent (locked) invoice and a receipt - both locked, neither ever
+    // amended or deleted with a reason.
+    const inv = await request(app).post("/api/invoices").set(authHeader).send({
+      businessId: bizId, customerId: custId, date: "2026-09-19", dueDate: "2026-10-19", items: item(1), status: "Sent",
+    });
+    expect(inv.status).toBe(201);
+    const rec = await request(app).post("/api/receipts").set(authHeader).send({
+      businessId: bizId, customerId: custId, date: "2026-09-19", description: "Deposit", amountPaid: 100, paymentMethod: "Cash",
+    });
+    expect(rec.status).toBe(201);
+
+    const del = await request(app).delete("/api/auth/account").set(authHeader);
+    expect(del.status).toBe(204);
+
+    const { data: leftoverInvoices } = await admin.from("invoices").select("id").eq("business_id", bizId);
+    const { data: leftoverReceipts } = await admin.from("receipts").select("id").eq("business_id", bizId);
+    expect(leftoverInvoices).toEqual([]);
+    expect(leftoverReceipts).toEqual([]);
+  });
+});
