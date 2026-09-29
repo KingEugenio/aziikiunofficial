@@ -152,6 +152,24 @@ describe("receipts", () => {
     expect(del.status).toBe(204);
     expect((await history(rec.id))[0].action).toBe("deleted");
   });
+
+  it("keeps the companion ledger transaction in sync: created, amended, and removed with the receipt", async () => {
+    const rec = await newReceipt();
+    const admin = getServiceRoleClient();
+
+    const { data: created } = await admin.from("receipts").select("transaction_id").eq("id", rec.id).single();
+    expect(created?.transaction_id).toBeTruthy();
+    const { data: createdTx } = await admin.from("transactions").select("amount").eq("id", created!.transaction_id).single();
+    expect(Number(createdTx?.amount)).toBe(100);
+
+    await request(app).patch(`/api/receipts/${rec.id}`).set(auth()).send({ amountPaid: 250, changeReason: "Customer paid the balance" });
+    const { data: amendedTx } = await admin.from("transactions").select("amount").eq("id", created!.transaction_id).single();
+    expect(Number(amendedTx?.amount)).toBe(250);
+
+    await request(app).delete(`/api/receipts/${rec.id}`).set(auth()).send({ changeReason: "Duplicate of another receipt" });
+    const { data: deletedTx } = await admin.from("transactions").select("id").eq("id", created!.transaction_id).maybeSingle();
+    expect(deletedTx).toBeNull();
+  });
 });
 
 describe("the history itself", () => {
@@ -182,5 +200,81 @@ describe("the history itself", () => {
       business_id: businessId, user_id: users[0].id, document_type: "invoice", document_id: inv.id, action: "amended", reason: "short",
     });
     expect(error).not.toBeNull();
+  });
+});
+
+// The gap this closes: the rules above are all enforced by Express - someone
+// with their own valid login token calling Supabase directly skips all of
+// it. These go straight to the database, exactly like that, to prove the
+// database itself now refuses what the API would have refused.
+describe("database-level enforcement (bypassing the API entirely)", () => {
+  const asUser = () => createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY, { global: { headers: { Authorization: `Bearer ${users[0].token}` } } });
+  const logReason = (documentType: "invoice" | "receipt", documentId: string, action: "amended" | "deleted", reason = GOOD_REASON) =>
+    getServiceRoleClient()
+      .from("document_change_log")
+      .insert({ business_id: businessId, user_id: users[0].id, document_type: documentType, document_id: documentId, action, reason });
+
+  it("refuses a direct UPDATE to a locked invoice with no logged reason", async () => {
+    const inv = await newInvoice("Sent");
+    const { error } = await asUser().from("invoices").update({ discount: 999 }).eq("id", inv.id);
+    expect(error).not.toBeNull();
+  });
+
+  it("refuses a direct DELETE of a locked invoice with no logged reason", async () => {
+    const inv = await newInvoice("Sent");
+    const { error } = await asUser().from("invoices").delete().eq("id", inv.id);
+    expect(error).not.toBeNull();
+  });
+
+  it("still refuses to change a locked invoice's number, even with a genuinely logged reason", async () => {
+    const inv = await newInvoice("Sent");
+    await logReason("invoice", inv.id, "amended");
+    const { error } = await asUser().from("invoices").update({ invoice_number: "INV-HACKED" }).eq("id", inv.id);
+    expect(error).not.toBeNull();
+  });
+
+  it("allows a direct UPDATE once a genuine reason was actually logged first", async () => {
+    const inv = await newInvoice("Sent");
+    await logReason("invoice", inv.id, "amended");
+    const { error } = await asUser().from("invoices").update({ discount: 42 }).eq("id", inv.id);
+    expect(error).toBeNull();
+    const { data } = await getServiceRoleClient().from("invoices").select("discount").eq("id", inv.id).single();
+    expect(Number(data?.discount)).toBe(42);
+  });
+
+  it("still lets a locked invoice move Sent -> Paid directly, with no reason needed", async () => {
+    const inv = await newInvoice("Sent");
+    const { error } = await asUser().from("invoices").update({ status: "Paid" }).eq("id", inv.id);
+    expect(error).toBeNull();
+  });
+
+  it("refuses a direct change to a locked invoice's line items with no logged reason", async () => {
+    const inv = await newInvoice("Sent");
+    const { data: item } = await getServiceRoleClient().from("invoice_items").select("id").eq("invoice_id", inv.id).single();
+    const { error } = await asUser().from("invoice_items").update({ rate: 99999 }).eq("id", item!.id);
+    expect(error).not.toBeNull();
+  });
+
+  it("allows a direct change to a locked invoice's line items once a genuine reason was logged", async () => {
+    const inv = await newInvoice("Sent");
+    await logReason("invoice", inv.id, "amended");
+    const { data: item } = await getServiceRoleClient().from("invoice_items").select("id").eq("invoice_id", inv.id).single();
+    const { error } = await asUser().from("invoice_items").update({ rate: 250 }).eq("id", item!.id);
+    expect(error).toBeNull();
+  });
+
+  it("refuses a direct UPDATE or DELETE of a receipt with no logged reason", async () => {
+    const rec = await newReceipt();
+    const upd = await asUser().from("receipts").update({ amount_paid: 999 }).eq("id", rec.id);
+    expect(upd.error).not.toBeNull();
+    const del = await asUser().from("receipts").delete().eq("id", rec.id);
+    expect(del.error).not.toBeNull();
+  });
+
+  it("allows a direct receipt UPDATE once a genuine reason was actually logged first", async () => {
+    const rec = await newReceipt();
+    await logReason("receipt", rec.id, "amended");
+    const { error } = await asUser().from("receipts").update({ amount_paid: 321 }).eq("id", rec.id);
+    expect(error).toBeNull();
   });
 });

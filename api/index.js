@@ -3641,6 +3641,22 @@ var init_receipts = __esm({
         receiptNumber = reserved;
       }
       const currency = input.currency ?? await resolveBusinessCurrency(supabase2, input.businessId);
+      const { data: transaction, error: txError } = await supabase2.from("transactions").insert({
+        user_id: userId,
+        business_id: input.businessId,
+        customer_id: input.customerId ?? null,
+        date: input.date,
+        type: "income",
+        category: "Client Project",
+        amount: input.amountPaid,
+        description: input.description,
+        payment_method: input.paymentMethod,
+        currency,
+        exchange_rate_to_business_currency: input.exchangeRateToBusinessCurrency
+      }).select("id").single();
+      if (txError) {
+        console.error("[receipts] failed to log companion transaction:", txError.message);
+      }
       const { data: receipt, error: receiptError } = await supabase2.from("receipts").insert({
         ...input.id ? { id: input.id } : {},
         user_id: userId,
@@ -3654,27 +3670,13 @@ var init_receipts = __esm({
         amount_paid: input.amountPaid,
         payment_method: input.paymentMethod,
         currency,
-        exchange_rate_to_business_currency: input.exchangeRateToBusinessCurrency
+        exchange_rate_to_business_currency: input.exchangeRateToBusinessCurrency,
+        transaction_id: transaction?.id ?? null
       }).select("*").single();
       if (receiptError) {
+        if (transaction?.id) await supabase2.from("transactions").delete().eq("id", transaction.id);
         res.status(400).json({ error: receiptError.message });
         return;
-      }
-      const { error: txError } = await supabase2.from("transactions").insert({
-        user_id: userId,
-        business_id: input.businessId,
-        customer_id: input.customerId ?? null,
-        date: input.date,
-        type: "income",
-        category: "Client Project",
-        amount: input.amountPaid,
-        description: input.description,
-        payment_method: input.paymentMethod,
-        currency,
-        exchange_rate_to_business_currency: input.exchangeRateToBusinessCurrency
-      });
-      if (txError) {
-        console.error("[receipts] failed to log companion transaction:", txError.message);
       }
       await invalidate(`cache:receipts:${userId}`, `cache:transactions:${userId}`);
       res.status(201).json({ data: fromRow2(receipt) });
@@ -3768,7 +3770,21 @@ var init_receipts = __esm({
         res.status(404).json({ error: "Not found" });
         return;
       }
-      await invalidate(`cache:receipts:${userId}`);
+      if (existing.transaction_id) {
+        const txUpdate = {};
+        if (input.amountPaid !== void 0) txUpdate.amount = input.amountPaid;
+        if (input.date !== void 0) txUpdate.date = input.date;
+        if (input.description !== void 0) txUpdate.description = input.description;
+        if (input.paymentMethod !== void 0) txUpdate.payment_method = input.paymentMethod;
+        if (input.customerId !== void 0) txUpdate.customer_id = input.customerId ?? null;
+        if (input.currency !== void 0) txUpdate.currency = input.currency;
+        if (input.exchangeRateToBusinessCurrency !== void 0) txUpdate.exchange_rate_to_business_currency = input.exchangeRateToBusinessCurrency;
+        if (Object.keys(txUpdate).length > 0) {
+          const { error: txSyncError } = await supabase2.from("transactions").update(txUpdate).eq("id", existing.transaction_id);
+          if (txSyncError) console.error("[receipts] failed to sync companion transaction:", txSyncError.message);
+        }
+      }
+      await invalidate(`cache:receipts:${userId}`, `cache:transactions:${userId}`);
       res.json({ data: fromRow2(data) });
     });
     receiptsRouter.delete("/:id", async (req, res) => {
@@ -3812,7 +3828,11 @@ var init_receipts = __esm({
         res.status(404).json({ error: "Not found" });
         return;
       }
-      await invalidate(`cache:receipts:${userId}`);
+      if (existing.transaction_id) {
+        const { error: txDeleteError } = await supabase2.from("transactions").delete().eq("id", existing.transaction_id);
+        if (txDeleteError) console.error("[receipts] failed to delete companion transaction:", txDeleteError.message);
+      }
+      await invalidate(`cache:receipts:${userId}`, `cache:transactions:${userId}`);
       res.status(204).send();
     });
     receiptsRouter.post("/:id/send-email", async (req, res) => {

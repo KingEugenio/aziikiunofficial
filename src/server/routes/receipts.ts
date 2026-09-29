@@ -86,6 +86,33 @@ receiptsRouter.post("/", async (req: Request, res: Response) => {
 
   const currency = input.currency ?? (await resolveBusinessCurrency(supabase, input.businessId));
 
+  // Insert the companion transaction first (see documentIntegrity.ts - a
+  // receipt is locked from the moment it exists, so the receipt's own
+  // transaction_id must be set in its initial INSERT, never in a follow-up
+  // UPDATE, which the receipts_enforce_lock trigger would correctly reject
+  // as an unlogged amendment).
+  const { data: transaction, error: txError } = await supabase
+    .from("transactions")
+    .insert({
+      user_id: userId,
+      business_id: input.businessId,
+      customer_id: input.customerId ?? null,
+      date: input.date,
+      type: "income",
+      category: "Client Project",
+      amount: input.amountPaid,
+      description: input.description,
+      payment_method: input.paymentMethod,
+      currency,
+      exchange_rate_to_business_currency: input.exchangeRateToBusinessCurrency,
+    })
+    .select("id")
+    .single();
+
+  if (txError) {
+    console.error("[receipts] failed to log companion transaction:", txError.message);
+  }
+
   const { data: receipt, error: receiptError } = await supabase
     .from("receipts")
     .insert({
@@ -102,31 +129,17 @@ receiptsRouter.post("/", async (req: Request, res: Response) => {
       payment_method: input.paymentMethod,
       currency,
       exchange_rate_to_business_currency: input.exchangeRateToBusinessCurrency,
+      transaction_id: transaction?.id ?? null,
     })
     .select("*")
     .single();
 
   if (receiptError) {
+    // Compensating action: don't leave a phantom income entry behind with
+    // no receipt to back it up.
+    if (transaction?.id) await supabase.from("transactions").delete().eq("id", transaction.id);
     res.status(400).json({ error: receiptError.message });
     return;
-  }
-
-  const { error: txError } = await supabase.from("transactions").insert({
-    user_id: userId,
-    business_id: input.businessId,
-    customer_id: input.customerId ?? null,
-    date: input.date,
-    type: "income",
-    category: "Client Project",
-    amount: input.amountPaid,
-    description: input.description,
-    payment_method: input.paymentMethod,
-    currency,
-    exchange_rate_to_business_currency: input.exchangeRateToBusinessCurrency,
-  });
-
-  if (txError) {
-    console.error("[receipts] failed to log companion transaction:", txError.message);
   }
 
   await invalidate(`cache:receipts:${userId}`, `cache:transactions:${userId}`);
@@ -243,7 +256,26 @@ receiptsRouter.patch("/:id", async (req: Request, res: Response) => {
     return;
   }
 
-  await invalidate(`cache:receipts:${userId}`);
+  // Keeps the companion transaction (see POST above) in sync with whatever
+  // just changed on the receipt, so the ledger doesn't silently drift from
+  // the amended amount/date/etc - the gap flagged in the September audit.
+  if (existing.transaction_id) {
+    const txUpdate: Record<string, unknown> = {};
+    if (input.amountPaid !== undefined) txUpdate.amount = input.amountPaid;
+    if (input.date !== undefined) txUpdate.date = input.date;
+    if (input.description !== undefined) txUpdate.description = input.description;
+    if (input.paymentMethod !== undefined) txUpdate.payment_method = input.paymentMethod;
+    if (input.customerId !== undefined) txUpdate.customer_id = input.customerId ?? null;
+    if (input.currency !== undefined) txUpdate.currency = input.currency;
+    if (input.exchangeRateToBusinessCurrency !== undefined) txUpdate.exchange_rate_to_business_currency = input.exchangeRateToBusinessCurrency;
+
+    if (Object.keys(txUpdate).length > 0) {
+      const { error: txSyncError } = await supabase.from("transactions").update(txUpdate).eq("id", existing.transaction_id);
+      if (txSyncError) console.error("[receipts] failed to sync companion transaction:", txSyncError.message);
+    }
+  }
+
+  await invalidate(`cache:receipts:${userId}`, `cache:transactions:${userId}`);
   res.json({ data: fromRow(data) });
 });
 
@@ -302,7 +334,15 @@ receiptsRouter.delete("/:id", async (req: Request, res: Response) => {
     return;
   }
 
-  await invalidate(`cache:receipts:${userId}`);
+  // A deleted receipt shouldn't leave its companion income entry behind
+  // overstating the ledger - same gap as the PATCH handler above, just for
+  // the delete path.
+  if (existing.transaction_id) {
+    const { error: txDeleteError } = await supabase.from("transactions").delete().eq("id", existing.transaction_id);
+    if (txDeleteError) console.error("[receipts] failed to delete companion transaction:", txDeleteError.message);
+  }
+
+  await invalidate(`cache:receipts:${userId}`, `cache:transactions:${userId}`);
   res.status(204).send();
 });
 
