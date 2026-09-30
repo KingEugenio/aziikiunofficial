@@ -53,8 +53,8 @@ export default function FinancialReports({
   gameEnabled
 }: FinancialReportsProps) {
   const { isMobile, isTablet } = useResponsive();
-  // Report Period Type selection: "daily" | "weekly" | "monthly" | "quarterly" | "annual"
-  const [periodType, setPeriodType] = useState<"daily" | "weekly" | "monthly" | "quarterly" | "annual">("monthly");
+  // Report Period Type selection: "daily" | "weekly" | "monthly" | "quarterly" | "annual" | "custom"
+  const [periodType, setPeriodType] = useState<"daily" | "weekly" | "monthly" | "quarterly" | "annual" | "custom">("monthly");
 
   // Phase E of the currency/localization redesign: a three-way view of the
   // same underlying data.
@@ -92,6 +92,15 @@ export default function FinancialReports({
   const [selectedYear, setSelectedYear] = useState<number>(2026);
   const [selectedMonth, setSelectedMonth] = useState<string>("06"); // Defaults to June
   const [selectedQuarter, setSelectedQuarter] = useState<string>("Q2"); // Defaults to Q2 (Apr - Jun)
+
+  // Custom range: any two dates, e.g. "the middle of the month to another
+  // time" - doesn't fit the year-scoped monthly/quarterly/annual model
+  // below, so it's filtered directly by date string comparison instead.
+  // Defaults to this month so far, not a hardcoded date.
+  const todayIso = new Date().toISOString().split("T")[0];
+  const startOfMonthIso = `${todayIso.slice(0, 7)}-01`;
+  const [customStartDate, setCustomStartDate] = useState<string>(startOfMonthIso);
+  const [customEndDate, setCustomEndDate] = useState<string>(todayIso);
 
   // Helper to calculate the week range from a reference date string
   const getWeekRange = (dateStr: string) => {
@@ -177,7 +186,11 @@ export default function FinancialReports({
         const range = getWeekRange(selectedDate);
         return tx.date >= range.start && tx.date <= range.end;
       }
-      
+
+      if (periodType === "custom") {
+        return tx.date >= customStartDate && tx.date <= customEndDate;
+      }
+
       const [year, month] = tx.date.split("-");
       const numYear = parseInt(year);
       
@@ -364,6 +377,55 @@ export default function FinancialReports({
           Savings: Math.max(0, buckets[mStr].income - buckets[mStr].expense) * 0.1
         };
       });
+    } else if (periodType === "custom") {
+      // A custom range can be a few days or a couple of years - bucket by
+      // day/week/month depending on span so the chart stays readable
+      // instead of showing hundreds of bars for a long range.
+      const startD = new Date(customStartDate);
+      const endD = new Date(customEndDate);
+      if (isNaN(startD.getTime()) || isNaN(endD.getTime()) || startD > endD) return [];
+      const totalDays = Math.round((endD.getTime() - startD.getTime()) / (24 * 60 * 60 * 1000)) + 1;
+
+      const formatIso = (d: Date) => {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${y}-${m}-${day}`;
+      };
+
+      const bucketFor = (d: Date) => {
+        if (totalDays <= 31) return { key: formatIso(d), label: `${d.toLocaleDateString("en-US", { weekday: "short" })} ${d.getDate()}` };
+        if (totalDays <= 180) {
+          const sunday = new Date(d.getFullYear(), d.getMonth(), d.getDate() - d.getDay());
+          return { key: formatIso(sunday), label: `Wk of ${sunday.getMonth() + 1}/${sunday.getDate()}` };
+        }
+        const label = monthsList[d.getMonth()] ? `${monthsList[d.getMonth()].label.slice(0, 3)} ${d.getFullYear()}` : formatIso(d).slice(0, 7);
+        return { key: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`, label };
+      };
+
+      const buckets = new Map<string, { label: string; income: number; expense: number }>();
+      for (let i = 0; i < totalDays; i++) {
+        const d = new Date(startD.getTime() + i * 24 * 60 * 60 * 1000);
+        const { key, label } = bucketFor(d);
+        if (!buckets.has(key)) buckets.set(key, { label, income: 0, expense: 0 });
+      }
+
+      transactions
+        .filter(t => t.businessId === currentBusiness.id && t.date >= customStartDate && t.date <= customEndDate)
+        .forEach(t => {
+          const { key } = bucketFor(new Date(t.date));
+          const bucket = buckets.get(key);
+          if (!bucket) return;
+          if (t.type === "income") bucket.income += t.amount;
+          else bucket.expense += t.amount;
+        });
+
+      return Array.from(buckets.values()).map(b => ({
+        name: b.label,
+        Income: b.income,
+        Expense: b.expense,
+        Savings: Math.max(0, b.income - b.expense) * 0.1
+      }));
     } else {
       // Monthly: break down into days or show current month values vs preceding 4 months
       // Let's show preceding 5 months and active month to see the trajectory of monthly income
@@ -555,6 +617,16 @@ export default function FinancialReports({
           >
             Annual
           </button>
+          <button
+            onClick={() => setPeriodType("custom")}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold font-sans transition-all cursor-pointer ${
+ periodType === "custom"
+ ? "bg-indigo-600 text-white"
+ : "text-slate-600 hover:bg-slate-50"
+ }`}
+          >
+            Custom Range
+          </button>
         </div>
       </div>
 
@@ -667,6 +739,34 @@ export default function FinancialReports({
               </select>
             </div>
           )}
+
+          {/* Custom range: any two dates picked from the calendar, e.g. the
+              middle of one month to a date in another - not tied to a
+              single month/quarter/year the way the other selectors are. */}
+          {periodType === "custom" && (
+            <div className="flex flex-wrap items-center gap-3.5">
+              <div className="flex items-center gap-1.5">
+                <label className="text-[10px] text-slate-400 uppercase font-bold">From</label>
+                <input
+                  type="date"
+                  value={customStartDate}
+                  max={customEndDate}
+                  onChange={(e) => setCustomStartDate(e.target.value)}
+                  className="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 cursor-pointer focus:ring-1 focus:ring-indigo-500"
+                />
+              </div>
+              <div className="flex items-center gap-1.5">
+                <label className="text-[10px] text-slate-400 uppercase font-bold">To</label>
+                <input
+                  type="date"
+                  value={customEndDate}
+                  min={customStartDate}
+                  onChange={(e) => setCustomEndDate(e.target.value)}
+                  className="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 cursor-pointer focus:ring-1 focus:ring-indigo-500"
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -760,7 +860,7 @@ export default function FinancialReports({
                 Financial Trend Outlook
               </h4>
               <span className="text-[10px] text-slate-500">
-                Performance indicators across selected {periodType === "annual" ? "annual months" : periodType === "quarterly" ? "quarter months" : "trailing months"}
+                Performance indicators across selected {periodType === "annual" ? "annual months" : periodType === "quarterly" ? "quarter months" : periodType === "custom" ? "custom range" : "trailing months"}
               </span>
             </div>
             
